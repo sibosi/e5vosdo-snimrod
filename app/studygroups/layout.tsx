@@ -1,4 +1,4 @@
-export default function WelcomeLayout({
+export default function StudyGroupsLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -1,4 +1,4 @@
-export default function ShareLayout({
+export default function ClubsLayout({
   children,
 }: {
   children: React.ReactNode;

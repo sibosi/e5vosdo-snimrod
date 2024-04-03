@@ -1,78 +1,41 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Next.js + NextUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "E5vosdo",
+  description: "EJG DÖ oldala",
   navItems: [
     {
-      label: "Home",
+      label: "Főoldal",
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "Dokumentumok ⤤",
+      href: "https://drive.google.com/drive/u/0/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      label: "Szakkörök",
+      href: "/studygroups",
     },
     {
-      label: "Blog",
-      href: "/blog",
+      label: "Klubbok",
+      href: "/clubs",
     },
     {
-      label: "About",
+      label: "Rólunk",
       href: "/about",
     },
-    {
-      label: "Share",
-      href: "/share",
-    },
-    {
-      label: "Welcome",
-      href: "/welcome",
-    },
   ],
-  navMenuItems: [
-    {
-      label: "Profile",
-      href: "/profile",
-    },
-    {
-      label: "Dashboard",
-      href: "/dashboard",
-    },
-    {
-      label: "Projects",
-      href: "/projects",
-    },
-    {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
-    },
-  ],
+  //navMenuItems: [],
   links: {
-    github: "https://github.com/nextui-org/nextui",
+    github: "https://github.com/Sibosi",
     twitter: "https://twitter.com/getnextui",
     docs: "https://nextui.org",
     discord: "https://discord.gg/9b6yyZKmH4",
     sponsor: "https://patreon.com/jrgarciadev",
     mypage: "https://github.com/Sibosi",
+    instagram: "https://instagram.com/e5vosdo/",
+    gdrive:
+      "https://drive.google.com/drive/u/0/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA",
+    feedback: "https://forms.gle/XdMtAx6fsubWEBW97",
   },
 };

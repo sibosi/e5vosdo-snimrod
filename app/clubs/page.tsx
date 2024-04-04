@@ -11,7 +11,7 @@ export default function ClubsPage() {
           linkStyles({ color: "foreground", isBlock: true })
         )}
       >
-        Klubbok
+        Klubok
       </h1>
     </div>
   );

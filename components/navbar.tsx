@@ -128,9 +128,10 @@ export const Navbar = () => {
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
                 color={
-                  index === 2
+                  index === 1
                     ? "primary"
-                    : index === siteConfig.navItems.length - 1
+                    : index === siteConfig.navItems.length - 2 ||
+                      index === siteConfig.navItems.length - 3
                     ? "danger"
                     : "foreground"
                 }

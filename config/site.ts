@@ -17,7 +17,7 @@ export const siteConfig = {
       href: "/studygroups",
     },
     {
-      label: "Klubbok",
+      label: "Klubok",
       href: "/clubs",
     },
     {

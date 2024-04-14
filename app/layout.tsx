@@ -8,6 +8,7 @@ import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { link as linkStyles } from "@nextui-org/theme";
 import { color } from "framer-motion";
+import { PageNav } from "@/components/pagenav";
 
 export const metadata: Metadata = {
   title: {
@@ -62,6 +63,7 @@ export default function RootLayout({
               </Link>
             </footer>
           </div>
+          <PageNav />
         </Providers>
       </body>
     </html>

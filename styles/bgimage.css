@@ -1,4 +1,13 @@
 .bgimage {
-  background-image: url("/opinion.jpg");
+  background-image: url("/opinion.png");
   height: 50vh;
+  width: 100%;
+}
+
+.bgcolor {
+  background-color: hsl(
+    var(--nextui-foreground) /
+      var(--nextui-foreground-opacity, var(--tw-text-opacity))
+  );
+  --tw-bg-opacity: 0.8;
 }

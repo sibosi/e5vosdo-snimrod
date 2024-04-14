@@ -19,7 +19,13 @@ export const InfoCard = ({ title, image, details, children }: CardProps) => {
         onClick={() => setFlip(!flip)}
       >
         <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
-          <Image src={image} alt="image" fill={true} />
+          <Image
+            fill={true}
+            className="w-full h-auto"
+            src={image}
+            alt="image"
+            priority={true}
+          />
         </figure>
         <div className="card-body flex">
           <h2 className="card-title">{title}</h2>

@@ -9,7 +9,7 @@ import { groupsConfig } from "@/config/groups";
 export default function Home() {
   return (
     <div>
-      <div className="gap-2 grid grid-cols-2 sm:grid-cols-4 border-b-8 border-transparent justify-items-center">
+      <div className="gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center">
         {groupsConfig.clubs.map((groups, index) => (
           <InfoCard
             key={index}
@@ -23,7 +23,7 @@ export default function Home() {
       <div className="hero bgimage">
         <div className="hero-overlay bg-opacity-60"></div>
         <div className="hero-content text-center text-neutral-content">
-          <div className="max-w-md">
+          <div className="max-w-md text-foreground">
             <h1 className="mb-5 text-5xl font-bold">Helló Eötvös népe!</h1>
             <p className="mb-5">
               A DÖ kötelessége a diákok érdekeinek eleget tenni. Egy rövid

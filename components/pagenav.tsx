@@ -15,7 +15,7 @@ const pages = {
     label: "Clubs",
   },
   groups: {
-    route: "/groups",
+    route: "/studygroups",
     icon: "bi bi-journal-bookmark-fill",
     label: "Groups",
   },

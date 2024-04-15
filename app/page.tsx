@@ -27,7 +27,7 @@ export default function Home() {
           <div className="max-w-md text-black rounded-lg p-4 backdrop-blur-sm bg-danger-foreground bg-opacity-70">
             <h1
               className={clsx(
-                "mb-5 text-5xl font-bold"
+                "mb-5 text-4xl font-bold"
                 //title({ color: "blue" })
               )}
             >
@@ -43,7 +43,6 @@ export default function Home() {
               A DÖ kötelessége a diákok érdekeinek eleget tenni. Egy rövid
               űrlapon megoszthatjátok észrevételeiteket, javaslataitokat és
               esetleges problémáitokat.
-              <br />
               <br />
             </p>
             <Link

@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.card__face--front {
+  background-color: red;
+}
+
+.card__face--back {
+  background-color: #000;
+  color: white;
+  transform: rotateY(180deg);
+}
+
+.card_contents {
+  overflow-y: auto;
+  margin: 0;
+  display: flex;
+}

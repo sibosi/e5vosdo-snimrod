@@ -6,13 +6,17 @@ import { button as buttonStyles } from "@nextui-org/theme";
 
 import { groupsConfig } from "@/config/groups";
 import clsx from "clsx";
+import { cookies } from "next/headers";
+import { PopupCard } from "@/components/popupcard";
 
 export default function Home() {
+  const cookieStore = cookies();
+  const theme = cookieStore.get("theme");
   return (
     <div>
       <div className="gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center">
         {groupsConfig.clubs.map((groups, index) => (
-          <InfoCard
+          <PopupCard
             key={index}
             title={groups.title}
             details={groups.details}

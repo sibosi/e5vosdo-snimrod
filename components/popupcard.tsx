@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { FaTimes } from "react-icons/fa";
 import { Button } from "@nextui-org/button";
 import Image from "next/image";
@@ -15,6 +15,7 @@ type CardProps = {
 export const PopupCard = ({ title, image, details, children }: CardProps) => {
   const [showWindow, setShowWindow] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null); // Use ref for the popup element
 
   const handleButtonClick = () => {
     setShowPopup(true);
@@ -28,21 +29,37 @@ export const PopupCard = ({ title, image, details, children }: CardProps) => {
   useEffect(() => {
     if (showWindow) {
       document.body.classList.add("no-scroll");
+
+      // Add event listener for clicks outside the popup
+      const handleClickOutside = (event: MouseEvent) => {
+        // Check if the clicked element is outside the popup element
+        if (
+          popupRef.current &&
+          !popupRef.current.contains(event.target as Node)
+        ) {
+          handleCloseWindow();
+        }
+      };
+
+      document.addEventListener("click", handleClickOutside);
+
+      // Cleanup effect by removing the event listener
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
     } else {
       document.body.classList.remove("no-scroll");
     }
-
-    // Cleanup effect by removing the class
-    return () => {
-      document.body.classList.remove("no-scroll");
-    };
   }, [showWindow]);
 
   return (
     <>
       {showWindow && (
         <div className="fixed top-0 left-0 right-0 h-[100%] z-50 pt-[10%] pb-[20%] px-4 text-black">
-          <div className="light:bg-primary-content myglass md:h-[100%] h-full bg-opacity-60 p-4 rounded-xl flex flex-col justify-normal items-start text-center">
+          <div
+            ref={popupRef} // Assign ref to the popup element
+            className="light:bg-primary-content myglass md:h-[100%] h-full bg-opacity-60 p-4 rounded-xl flex flex-col justify-normal items-start text-center"
+          >
             <Button
               className="absolute top-0 right-0 p-3"
               onClick={handleCloseWindow}

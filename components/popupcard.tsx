@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { Button } from "@nextui-org/button";
 import Image from "next/image";
@@ -25,18 +25,31 @@ export const PopupCard = ({ title, image, details, children }: CardProps) => {
     setShowWindow(false); // Update state variable to hide window
   };
 
+  useEffect(() => {
+    if (showWindow) {
+      document.body.classList.add("no-scroll");
+    } else {
+      document.body.classList.remove("no-scroll");
+    }
+
+    // Cleanup effect by removing the class
+    return () => {
+      document.body.classList.remove("no-scroll");
+    };
+  }, [showWindow]);
+
   return (
     <>
       {showWindow && (
         <div className="fixed top-0 left-0 right-0 h-[100%] z-50 pt-[10%] pb-[20%] px-4 text-black">
-          <div className="light:bg-primary-content myglass bg-opacity-60 p-4 h-full rounded-xl flex flex-col justify-normal items-start text-center">
+          <div className="light:bg-primary-content myglass md:h-[100%] h-full bg-opacity-60 p-4 rounded-xl flex flex-col justify-normal items-start text-center">
             <Button
               className="absolute top-0 right-0 p-3"
               onClick={handleCloseWindow}
             >
               <FaTimes className="text-2xl" />
             </Button>
-            <div className="md:flex h-auto pt-7">
+            <div className="overflow-auto md:flex h-auto pt-7">
               <div className="relative w-32 h-auto p-14 md:w-56 md:p-28">
                 <Image
                   fill={true}
@@ -46,8 +59,13 @@ export const PopupCard = ({ title, image, details, children }: CardProps) => {
                   priority={true}
                 />
               </div>
-              <p className="text-lg text-foreground hidden">{title}</p>
-              <p className="text-lg text-foreground">{details}</p>
+              <div className="overflow-auto fill-overlay h-auto md:max-h-[100%] text-left text-foreground">
+                <p className="text-lg">
+                  {title}
+                  <br />
+                </p>
+                <p className="text-md whitespace-pre-line pb-4">{details}</p>
+              </div>
             </div>
           </div>
         </div>

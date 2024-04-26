@@ -15,7 +15,9 @@ export const Table = async () => {
           <thead className="">
             <tr>
               {teachersConfig.showHeaders.map((head) => (
-                <td className="">{head}</td>
+                <td className="" key={head}>
+                  {head}
+                </td>
               ))}
             </tr>
           </thead>

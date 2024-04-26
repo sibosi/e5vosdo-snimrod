@@ -15,11 +15,17 @@ export const InfoCard = ({ title, image, details, children }: CardProps) => {
   return (
     <ReactCardFlip isFlipped={flip} flipDirection="horizontal">
       <div
-        className="card glass w-40 sm:w-60 dark:text-white mb-2"
+        className="card glass w-40 sm:w-60 mb-2 text-foreground"
         onClick={() => setFlip(!flip)}
       >
         <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
-          <Image src={image} alt="image" fill={true} />
+          <Image
+            fill={true}
+            className="w-full h-auto"
+            src={image}
+            alt="image"
+            priority={true}
+          />
         </figure>
         <div className="card-body flex">
           <h2 className="card-title">{title}</h2>
@@ -31,7 +37,7 @@ export const InfoCard = ({ title, image, details, children }: CardProps) => {
       </div>
 
       <div
-        className="card glass w-40 sm:w-60 dark:text-white mb-2 shadow-xl card-body"
+        className="card glass w-40 sm:w-60 text-foreground mb-2 shadow-xl card-body"
         onClick={() => setFlip(!flip)}
       >
         <h2 className="card-title">{title}</h2>

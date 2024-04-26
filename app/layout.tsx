@@ -8,6 +8,7 @@ import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { link as linkStyles } from "@nextui-org/theme";
 import { color } from "framer-motion";
+import { PageNav } from "@/components/pagenav";
 
 export const metadata: Metadata = {
   title: {
@@ -51,6 +52,10 @@ export default function RootLayout({
               {children}
             </main>
             <footer className="w-full flex items-center justify-center py-3">
+              <br />
+              <br />
+              <br />
+
               <Link
                 isExternal
                 className="flex items-center gap-1 text-current"
@@ -60,6 +65,7 @@ export default function RootLayout({
                 <span className="text-default-600">Developed by</span>
                 <p className="text-primary">Sibosi</p>
               </Link>
+              <PageNav />
             </footer>
           </div>
         </Providers>

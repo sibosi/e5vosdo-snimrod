@@ -6,13 +6,17 @@ import { button as buttonStyles } from "@nextui-org/theme";
 
 import { groupsConfig } from "@/config/groups";
 import clsx from "clsx";
+import { cookies } from "next/headers";
+import { PopupCard } from "@/components/popupcard";
 
 export default function Home() {
+  const cookieStore = cookies();
+  const theme = cookieStore.get("theme");
   return (
     <div>
       <div className="gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center">
         {groupsConfig.clubs.map((groups, index) => (
-          <InfoCard
+          <PopupCard
             key={index}
             title={groups.title}
             details={groups.details}
@@ -27,7 +31,7 @@ export default function Home() {
           <div className="max-w-md text-black rounded-lg p-4 backdrop-blur-sm bg-danger-foreground bg-opacity-70">
             <h1
               className={clsx(
-                "mb-5 text-5xl font-bold"
+                "mb-5 text-4xl font-bold"
                 //title({ color: "blue" })
               )}
             >
@@ -43,7 +47,6 @@ export default function Home() {
               A DÖ kötelessége a diákok érdekeinek eleget tenni. Egy rövid
               űrlapon megoszthatjátok észrevételeiteket, javaslataitokat és
               esetleges problémáitokat.
-              <br />
               <br />
             </p>
             <Link

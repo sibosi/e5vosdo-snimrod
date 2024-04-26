@@ -1,0 +1,14 @@
+{
+  "short_name": "E5 DO",
+  "name": "Eötvös DÖ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#fff",
+  "icons": [
+    {
+      "src": "favico.ico",
+      "sizes": "48x48"
+    }
+  ]
+}

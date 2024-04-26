@@ -38,6 +38,7 @@ export const PageNav = () => {
       <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         {tabs.map((page, index) => (
           <Link
+            key={index}
             href={page.route}
             className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group"
           >

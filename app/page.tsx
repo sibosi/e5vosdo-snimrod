@@ -24,7 +24,6 @@ export default function Home() {
           />
         ))}
       </div>
-
       <div className="hero bgimage">
         <div className="hero-overlay bgcolor"></div>
         <div className="hero-content text-center text-neutral-content">

@@ -30,29 +30,31 @@ const tabs = [pages.groups, pages.clubs, pages.home, pages.about];
 
 export const PageNav = () => {
   return (
-    <div className="fixed bottom-0 left-0 z-50 w-full h-16 backdrop-blur-lg md:hidden">
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
-      ></link>
-      <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
-        {tabs.map((page, index) => (
-          <Link
-            key={index}
-            href={page.route}
-            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group"
-          >
-            <i
-              className={clsx(
-                page.icon,
-                " fill-current w-auto h-auto  mb-1 text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-black"
-              )}
-            ></i>
-            <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-black">
-              {page.label}
-            </span>
-          </Link>
-        ))}
+    <div className="fixed bottom-0 items-center z-50 w-[90%] h-16 md:hidden ">
+      <div className="backdrop-blur-lg rounded-lg border-gray-500 border-1 h-14">
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
+        ></link>
+        <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+          {tabs.map((page, index) => (
+            <Link
+              key={index}
+              href={page.route}
+              className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group"
+            >
+              <i
+                className={clsx(
+                  page.icon,
+                  "fill-current text-xl w-auto h-auto text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-black"
+                )}
+              ></i>
+              <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-black">
+                {/*page.label*/}
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

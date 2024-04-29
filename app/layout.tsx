@@ -41,6 +41,7 @@ export default function RootLayout({
   return (
     <html lang="hu" suppressHydrationWarning className="bg-background">
       <head>
+        <link rel="apple-touch-icon" href="ios/1024.png" sizes="1024x1024" />
         <link rel="manifest" href="/manifest.json" />
         <link
           rel="icon"
@@ -77,7 +78,6 @@ export default function RootLayout({
           href="android/android-launchericon-192-192.png"
           sizes="192x192"
         />
-        <link rel="apple-touch-icon" href="ios/1024.png" sizes="1024x1024" />
       </head>
       <body
         className={clsx(

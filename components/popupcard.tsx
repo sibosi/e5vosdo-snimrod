@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import { FaTimes } from "react-icons/fa";
-import { Button } from "@nextui-org/button";
 import Image from "next/image";
 import "../styles/globals.css";
+import { Button } from "@nextui-org/button";
 
 type CardProps = {
   title: string;

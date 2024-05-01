@@ -6,8 +6,6 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
-import { link as linkStyles } from "@nextui-org/theme";
-import { color } from "framer-motion";
 import { PageNav } from "@/components/pagenav";
 
 export const metadata: Metadata = {
@@ -21,9 +19,6 @@ export const metadata: Metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/ios/1024.png",
   },
-
-  //name:"apple-mobile-web-app-capable",
-  //content:"yes"
 };
 
 export const viewport = {
@@ -89,7 +84,7 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
             <Navbar />
-            <main className="container mx-auto max-w-7xl pt-16 pl-3 pr-5 flex-grow">
+            <main className="container mx-auto max-w-7xl pt-16 pl-3 pr-3 flex-grow">
               {children}
             </main>
             <footer className="w-full flex items-center justify-center py-3">

@@ -103,7 +103,7 @@ export const PopupCard = ({ title, image, details, children }: CardProps) => {
           <p>If a dog chews shoes whose shoes does he choose?</p>
           <div className="card-actions justify-end">
             <button className="btn btn-primary" onClick={handleButtonClick}>
-              Buy Now
+              Részletek
             </button>
           </div>
         </div>

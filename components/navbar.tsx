@@ -70,7 +70,7 @@ export const Navbar = () => {
           </NextLink>
         </NavbarBrand>
 
-        <ul className="hidden md:flex gap-4 justify-start ml-2">
+        <ul className="hidden sm:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
@@ -120,6 +120,9 @@ export const Navbar = () => {
           aria-label="Instagram"
         >
           <InstagramIcon className="text-default-500" />
+        </Link>
+        <Link isExternal href={siteConfig.links.github} aria-label="Github">
+          <GithubIcon className="text-default-500" />
         </Link>
         <ThemeSwitch />
         <NavbarMenuToggle />

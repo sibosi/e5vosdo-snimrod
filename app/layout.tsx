@@ -88,10 +88,6 @@ export default function RootLayout({
               {children}
             </main>
             <footer className="w-full flex items-center justify-center py-3">
-              <br />
-              <br />
-              <br />
-
               <Link
                 isExternal
                 className="flex items-center gap-1 text-current"
@@ -99,7 +95,7 @@ export default function RootLayout({
                 title="Sibosi's homepage"
               >
                 <span className="text-default-600">Developed by</span>
-                <p className="text-primary">Sibosi</p>
+                <p className="text-primary">Nimród</p>
               </Link>
               <PageNav />
             </footer>

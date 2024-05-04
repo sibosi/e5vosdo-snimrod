@@ -13,8 +13,8 @@ export const siteConfig = {
       href: "https://drive.google.com/drive/u/0/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA",
     },
     {
-      label: "Szakkörök",
-      href: "/studygroups",
+      label: "Események",
+      href: "/events",
     },
     {
       label: "Klubok",

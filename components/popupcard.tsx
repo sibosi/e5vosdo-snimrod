@@ -70,17 +70,15 @@ export const PopupCard = ({ title, image, details, children }: CardProps) => {
               <div className="relative w-32 h-auto p-14 md:w-56 md:p-28">
                 <Image
                   fill={true}
-                  className="object-contain h-auto"
+                  className="object-contain h-auto rounded-md"
                   src={image}
                   alt="image"
                   priority={true}
                 />
               </div>
-              <div className="overflow-auto fill-overlay h-auto md:max-h-[100%] text-left text-foreground">
-                <p className="text-lg">
-                  {title}
-                  <br />
-                </p>
+              <div className="overflow-auto fill-overlay h-auto md:max-h-[100%] text-left text-foreground px-6 py-6">
+                <h2 className="text-lg font-bold">{title}</h2>
+                <br />
                 <p className="text-md whitespace-pre-line pb-4">{details}</p>
               </div>
             </div>

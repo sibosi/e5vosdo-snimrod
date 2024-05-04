@@ -16,13 +16,13 @@ export default function Home() {
   // const theme = cookieStore.get("theme");
   return (
     <div>
-      <div className="text-center justify-center py-9 text-foreground">
+      <div className="text-center justify-center py-14 text-foreground">
         <h1 className={title()}>Valami&nbsp;</h1>
         <h1 className={title({ color: "violet" })}>jó&nbsp;</h1>
         <h1 className={title()}>keszul...</h1>
       </div>
 
-      <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center">
+      <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center pb-5">
         {groupsConfig.clubs.map((groups, index) => (
           <PopupCard
             key={index}

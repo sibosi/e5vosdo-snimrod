@@ -18,7 +18,7 @@ export const groupsConfig = {
       title: "Debate Club",
       details:
         "A Debate club egy lehetőség az Eötvös József Gimnázium diákjai számára, hogy jó hangulat és érdekes témák között fejlesszék a vita tudásukat angol nyelven. Heti egy alkalommal és számos csapatépítő programmal várunk minden érdeklődőt!",
-      image: "/groups/debate.jpg",
+      image: "/groups/debate.png",
     },
     {
       title: "Eötvös Diák",
@@ -30,7 +30,7 @@ export const groupsConfig = {
       title: "Eötvös Alkotó Műhely",
       details:
         "Az V. Kerületi Eötvös József Gimnáziumban működő E5vös Alkotó Műhely egy tér a játékhoz, az alkotáshoz, a tanuláshoz, a mentoráláshoz, a feltaláláshoz. Másképp megfogalmazva a tanulás és az innováció helye. Ez a nyitott tanulói tér a diákok és tanárok számára egyaránt rendelkezésre áll a projektjeik és ötleteik megvalósításához. A Műhely hozzáférést biztosít egy egyedi alkotókörnyezethez, ami segít a különböző hard és soft skillek elsajátításában azáltal, hogy a legkorszerűbb technológiákhoz, szoftverekhez és anyagokhoz nyújt hozzáférést. Így az iskola polgárai képesek elkészíteni (szinte) akármit , amit csak el tudnak képzelni.",
-      image: "/groups/eam.jpg",
+      image: "/groups/eam.png",
     },
     {
       title: "Elsősegélynyújtó Diákkör",
@@ -60,30 +60,30 @@ export const groupsConfig = {
       title: "MUN-Club",
       details:
         "Nálunk kipróbálhatod magad egy ENSZ delegált cipőjében, és fejlesztheted a public speaking képességed, az önbizalmad, az angol tudásod. Miközben nemzetközi problémákat és kríziseket oldasz meg, tanulhatsz a modern geopolitikáról, és arról, hogyan működik a nemzetközi diplomácia, és, hogy mit jelent felelős vezetőnek lenni (vagy éppen diktátornak). Velünk tarthatsz a nemzetközi konferenciákra, és az itthoniakra egyaránt. Ha még sosem próbáltad a munozást, akkor se aggódj, tapasztalt mentorokkal várunk, akik végigkísérnek a tanuláson! Sok szeretettel várunk téged is a közösségünkben!",
-      image: "/groups/munclub.jpg",
+      image: "/groups/munclub.png",
     },
     {
       title: "Nekünk X",
       details: "Iskolai közösségi szolgálatos órák összegyűjtésében segítünk.",
-      image: "/groups/nekunkx.jpg",
+      image: "/groups/nekunkx.png",
     },
     {
       title: "Iskolarádió (biz. Sulirádió)",
       details:
         "Mi irányítjuk az iskolai szünetekben és az Eötvös programjain a stúdiót. Mi vagyunk az iskola audió formájú hangulatfelelősei. Olyanokat várunk a csapatunkba, akik képesek a közjót, az iskola hangulatát szolgálni empatikus, alázatos módon, nem pedig a saját extrém ízlésüket prezentálni ezer állampolgár kínzatásául.",
-      image: "/groups/suliradio.jpg",
+      image: "/groups/suliradio.png",
     },
     {
       title: "Sakk - klub",
       details:
         "Szeretsz sakkozni, de nincs kivel? Szeretnéd fejleszteni a sakk tudásod? Szeretnéd kipróbálni, fejleszteni játékod vagy taktikád? Akkor a legjobb helyen jársz! Itt elsajátíthatsz mindent a sakkozás alapjairól és egy CM-rel (Candidate Master) is találkozhatsz akár oktatóként, akár diákként. Már három oktatónk is van, és a résztvevők száma is egyre nő. Ha szeretnél egy vidám környezetben sakkozni barátaiddal és osztálytársaiddal jelentkezz a Sakk - klubba és mehet a parti.",
-      image: "/groups/zoldbiz.png",
+      image: "/groups/sakk.png",
     },
     {
       title: "Színjátszó",
       details:
         "Színt játszunk. Szeretjük az összes színt, a kéket, a pirosat, a zöldet, de még a khakit, meg a bézst is. Komolyra fordítva a szót igyekszünk minden évben rendezni egy darabot -ami tavaj meg is valósult!!-, és rengeteget játszunk. Minden péntek délután sokszínű gyakorlatokkal, és ikonikus játékokkal készülünk a darabra.",
-      image: "/groups/zoldbiz.png",
+      image: "/groups/szinjatszo.png",
     },
     {
       title: "TársasTár",

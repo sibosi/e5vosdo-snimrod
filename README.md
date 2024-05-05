@@ -1,6 +1,6 @@
-# Next.js & NextUI Template
+# E5vosDo Site
 
-This is a template for creating applications using Next.js 13 (app directory) and NextUI (v2).
+This is a web application for the student government of the Eötvös József Secondary School.
 
 ## Technologies Used
 
@@ -11,22 +11,28 @@ This is a template for creating applications using Next.js 13 (app directory) an
 - [TypeScript](https://www.typescriptlang.org/)
 - [Framer Motion](https://www.framer.com/motion/)
 - [next-themes](https://github.com/pacocoursey/next-themes)
+- [Python3 & PIP](https://www.python.org/downloads/)
 
 ## How to Use
 
+### Clone this repository
 
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
+To clone this repository, run the following command:
 
 ```bash
-npx create-next-app -e https://github.com/nextui-org/next-app-template
+git clone https://github.com/sibosi/e5vosdo-basic.git
 ```
 
 ### Install dependencies
 
 ```bash
 npm install
+```
+
+### Install python packages
+
+```bash
+pip install -r requirements.txt
 ```
 
 ### Run the development server

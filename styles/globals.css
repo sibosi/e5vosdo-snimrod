@@ -20,7 +20,6 @@
 
 .myglass,
 .myglass.btn-active {
-  border: none;
   -webkit-backdrop-filter: blur(var(--glass-blur, 40px));
   backdrop-filter: blur(var(--glass-blur, 40px));
   background-color: transparent;

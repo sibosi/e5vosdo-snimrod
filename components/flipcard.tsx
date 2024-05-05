@@ -23,6 +23,7 @@ export const FlipCard = ({ text, children }: CardProps) => {
         <div className="card sm:card-side glass shadow-xl">
           <figure>
             <Image
+              sizes="100vw"
               src={image1}
               alt="Album"
               className="object-fit sm:h-72 sm:w-auto"

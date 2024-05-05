@@ -1,4 +1,4 @@
-export default function StudyGroupsLayout({
+export default function E5eventsLayout({
   children,
 }: {
   children: React.ReactNode;

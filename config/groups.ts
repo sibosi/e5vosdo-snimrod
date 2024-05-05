@@ -98,5 +98,4 @@ export const groupsConfig = {
       image: "/groups/techteam.jpg",
     },
   ],
-  studygroups: [],
 };

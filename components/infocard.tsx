@@ -21,6 +21,7 @@ export const InfoCard = ({ title, image, details, children }: CardProps) => {
         <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
           <Image
             fill={true}
+            sizes="100vw"
             className="w-full h-auto"
             src={image}
             alt="image"

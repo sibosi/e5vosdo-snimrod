@@ -70,6 +70,7 @@ export const PopupCard = ({ title, image, details, children }: CardProps) => {
               <div className="relative w-32 h-auto p-14 md:w-56 md:p-28">
                 <Image
                   fill={true}
+                  sizes="100vw"
                   className="object-contain h-auto rounded-md"
                   src={image}
                   alt="image"
@@ -90,6 +91,7 @@ export const PopupCard = ({ title, image, details, children }: CardProps) => {
         <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
           <Image
             fill={true}
+            sizes="100vw"
             className="w-full h-auto"
             src={image}
             alt="image"

@@ -16,7 +16,7 @@ const pages = {
     label: "Clubs",
   },
   groups: {
-    route: "/studygroups",
+    route: "/events",
     icon: "bi bi-journal-bookmark-fill",
     label: "Groups",
   },
@@ -47,7 +47,7 @@ export const PageNav = () => {
               <i
                 className={clsx(
                   page.icon,
-                  "fill-current text-xl w-auto h-auto text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-black"
+                  "text-foreground text-xl w-auto h-auto -text-gray-500 -dark:text-gray-400 group-hover:text-black dark:group-hover:text-black"
                 )}
               ></i>
               <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-black">

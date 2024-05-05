@@ -1,3 +1,5 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.autoImportCompletions": false
 }

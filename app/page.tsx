@@ -1,4 +1,3 @@
-import { InfoCard } from "@/components/infocard";
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
@@ -28,7 +27,9 @@ export default function Home() {
             key={index}
             title={groups.title}
             details={groups.details}
+            description={groups.description}
             image={groups.image}
+            popup={true}
           />
         ))}
       </div>

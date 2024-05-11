@@ -26,7 +26,9 @@ export default async function ClubsPage() {
             key={index}
             title={groups.title}
             details={groups.details}
+            description={groups.description}
             image={groups.image}
+            popup={true}
           />
         ))}
       </div>

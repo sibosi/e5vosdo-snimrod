@@ -1,5 +1,5 @@
 {
-  "name": "next-app-template",
+  "name": "e5vos-do",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -27,15 +27,11 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.16",
-    "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
-    "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.0.0",
-    "cookies-next": "^4.1.1",
     "eslint": "8.48.0",
     "eslint-config-next": "14.0.2",
     "framer-motion": "^10.18.0",
-    "glob": "^10.3.12",
     "iconv-lite": "^0.6.3",
     "intl-messageformat": "^10.5.0",
     "next": "^14.0.2",
@@ -44,24 +40,20 @@
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "postcss": "8.4.31",
-    "pyscript": "^1.0.6",
     "react": "18.2.0",
     "react-card-flip": "^1.2.2",
     "react-dom": "18.2.0",
     "react-icons": "^5.1.0",
     "react-router-dom": "^6.22.3",
-    "react-table": "^7.8.0",
-    "reactjs-popup": "^2.0.6",
-    "reactstrap": "^9.2.2",
     "sharp": "^0.33.3",
     "tailwind-variants": "^0.1.18",
     "tailwindcss": "3.3.5",
-    "theme-change": "^2.5.0",
     "typescript": "5.0.4"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/react-table": "^7.7.20",
-    "daisyui": "^4.9.0"
+    "daisyui": "^4.9.0",
+    "depcheck": "^1.4.7"
   }
 }

@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import { PopupCard } from "@/components/popupcard";
 import { title } from "@/components/primitives";
 import { link as linkStyles } from "@nextui-org/theme";
+import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 
 export default function Home() {
   // const cookieStore = cookies();
@@ -21,7 +22,9 @@ export default function Home() {
         <h1 className={title()}>keszul...</h1>
       </div>
 
-      <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center pb-5">
+      <QuickTeachers />
+
+      <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center py-5">
         {groupsConfig.clubs.map((groups, index) => (
           <PopupCard
             key={index}

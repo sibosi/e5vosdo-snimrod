@@ -11,6 +11,8 @@ import { title } from "@/components/primitives";
 import { link as linkStyles } from "@nextui-org/theme";
 import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
+import { Push } from "@/components/push";
+import { Install } from "@/components/install";
 
 export default function Home() {
   // const cookieStore = cookies();
@@ -26,6 +28,13 @@ export default function Home() {
       <QuickTeachers />
 
       <Menu />
+
+      <Push />
+      <button id="install" hidden>
+        Install
+      </button>
+
+      {/*<Install />*/}
 
       <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center py-5">
         {groupsConfig.clubs.map((groups, index) => (

@@ -43,8 +43,8 @@ export const Menu = () => {
         <p className="text-sm">{date}</p>
       </h1>
 
-      <div className="gap-2 grid grid-cols-2 max-w-max overflow-hidden">
-        <div>
+      <div className="gap-2 grid grid-cols-2 md:grid-cols-1 max-w-max overflow-hidden">
+        <div className="overflow-auto">
           <Button key={"Amenu1"} color="primary" variant="solid">
             🍴 A menü:
           </Button>
@@ -62,7 +62,7 @@ export const Menu = () => {
             </Button>
           )}
         </div>
-        <div>
+        <div className="overflow-auto">
           <Button key={"Bmenu1"} color="secondary" variant="solid">
             🍴 B menü:
           </Button>

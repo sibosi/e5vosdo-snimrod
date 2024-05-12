@@ -43,7 +43,7 @@ export const QuickTeachers = () => {
 
   return (
     <Skeleton isLoaded={isLoaded} className="rounded-lg h-auto w-auto">
-      <h1 className={clsx(title(), "text-lg")}>Helyettesítések</h1>
+      <h1 className="text-2xl font-medium py-1">Helyettesítések</h1>
       <br />
 
       <React.Fragment>

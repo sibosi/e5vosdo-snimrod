@@ -1,6 +1,7 @@
 {
   "short_name": "E5 DO",
   "name": "Eötvös DÖ",
+  "author": "Simon Nimród Zalán",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fff",

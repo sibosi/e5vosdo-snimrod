@@ -20,7 +20,7 @@ export const PopupCard = ({
   popup,
   children,
 }: CardProps) => {
-  description = "If a dog chews shoes whose shoes does he choose?";
+  //description = "If a dog chews shoes whose shoes does he choose?";
   //popup = false;
 
   const OptionalButton = (popup: boolean) => {

@@ -21,7 +21,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, InstagramIcon } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Chip } from "@nextui-org/react";
 
 export const Navbar = () => {
   const searchInput = (
@@ -59,6 +59,13 @@ export const Navbar = () => {
             >
               E5
             </p>
+            <Chip
+              size="sm"
+              color="warning"
+              className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg"
+            >
+              PREVIEW
+            </Chip>
           </NextLink>
         </NavbarBrand>
 

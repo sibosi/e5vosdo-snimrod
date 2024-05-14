@@ -1,6 +1,10 @@
 # E5vosDo Site
 
-This is a web application for the student government of the Eötvös József Secondary School.
+This is a web application by Nimród Simon for the student government of the Eötvös József Secondary School.
+
+## Authors
+
+- [Simon Nimród](https://www.github.com/sibosi)
 
 ## Technologies Used
 
@@ -43,4 +47,14 @@ npm run dev
 
 ## License
 
+The project or any part of the project may be distributed or used only with the written permission of the author.
+
 Licensed under the [MIT license](https://github.com/nextui-org/next-app-template/blob/main/LICENSE).
+
+##
+
+Acknowledgements
+
+- Barnabás for the support
+
+- Zsolt for the support

@@ -5,7 +5,7 @@ import { TeacherTable } from "@/components/helyettesites/teachers-table";
 
 export default function EventsPage() {
   return (
-    <div>
+    <div className="max-w-max max-h-max overflow-auto">
       <div className="py-2">
         <h1
           className={clsx(
@@ -13,7 +13,7 @@ export default function EventsPage() {
             linkStyles({ color: "foreground", isBlock: true })
           )}
         >
-          Események
+          🚧 Események 🚧
         </h1>
       </div>
       <TeacherTable />

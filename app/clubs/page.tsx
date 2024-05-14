@@ -1,7 +1,6 @@
 import { title } from "@/components/primitives";
 import clsx from "clsx";
 import { link as linkStyles } from "@nextui-org/theme";
-
 import { groupsConfig } from "@/config/groups";
 import { PopupCard } from "@/components/popupcard";
 
@@ -16,7 +15,7 @@ export default async function ClubsPage() {
             linkStyles({ color: "foreground", isBlock: true })
           )}
         >
-          Klubok és szakkörök
+          🚧 Klubok és szakkörök 🚧
         </h1>
       </div>
       <br />

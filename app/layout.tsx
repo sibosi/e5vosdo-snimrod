@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  authors: [{ name: "Simon Nimród Zalán", url: "https://github.com/sibosi" }],
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",

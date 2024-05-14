@@ -4,7 +4,7 @@ const headers = [
   { name: "dátum", show: true },
   { name: "hiányzó tanár", show: true },
   { name: "óra / terem", show: true },
-  { name: "csoport", show: false },
+  { name: "csoport", show: true },
   { name: "tárgy", show: true },
   { name: "helyettes tanár", show: true },
   { name: "megjegyzés", show: true },

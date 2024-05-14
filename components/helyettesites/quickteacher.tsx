@@ -67,7 +67,15 @@ export const QuickTeachers = () => {
 
             <DropdownMenu aria-label="Static Actions">
               {teacher[2].map((event: any, eventIndex: number) => (
-                <DropdownItem key={eventIndex}>{event[0]}</DropdownItem>
+                <DropdownItem key={eventIndex}>
+                  {event[0] +
+                    " | " +
+                    event[2] +
+                    " | " +
+                    event[4] +
+                    " | " +
+                    event[5]}
+                </DropdownItem>
               ))}
             </DropdownMenu>
           </Dropdown>

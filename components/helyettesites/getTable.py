@@ -16,7 +16,8 @@ soup = BeautifulSoup(html_content, 'html.parser')
 
 table = soup.find('table')
 
-data = [['Ma', 'Deák Anna', '3', '4', '5'], ['Ma', 'Szeredás Lőrinc', '3', '4', '5'],['Ma', 'Tóthné Tarsoly Zita', '3', '4', '5'],['Holnap', 'Deák Anna', '3', '4', '5']]
+data = []
+# data.append(['Ma', 'Deák Anna', '3', '4', '5'], ['Ma', 'Szeredás Lőrinc', '3', '4', '5'],['Ma', 'Tóthné Tarsoly Zita', '3', '4', '5'],['Holnap', 'Deák Anna', '3', '4', '5'])
 rows = table.find_all('tr')
 for row in rows:
     cells = row.find_all('td')

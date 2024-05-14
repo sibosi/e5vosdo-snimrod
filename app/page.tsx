@@ -5,36 +5,23 @@ import { button as buttonStyles } from "@nextui-org/theme";
 
 import { groupsConfig } from "@/config/groups";
 import clsx from "clsx";
-import { cookies } from "next/headers";
 import { PopupCard } from "@/components/popupcard";
 import { title } from "@/components/primitives";
-import { link as linkStyles } from "@nextui-org/theme";
 import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
-import { Push } from "@/components/push";
-import { Install } from "@/components/install";
 
 export default function Home() {
-  // const cookieStore = cookies();
-  // const theme = cookieStore.get("theme");
   return (
     <div>
       <div className="text-center justify-center py-14 text-foreground">
         <h1 className={title()}>Valami&nbsp;</h1>
         <h1 className={title({ color: "violet" })}>jó&nbsp;</h1>
-        <h1 className={title()}>keszul...</h1>
+        <h1 className={title()}>készül...</h1>
       </div>
 
       <QuickTeachers />
 
       <Menu />
-
-      <Push />
-      <button id="install" hidden>
-        Install
-      </button>
-
-      {/*<Install />*/}
 
       <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center py-5">
         {groupsConfig.clubs.map((groups, index) => (
@@ -53,21 +40,11 @@ export default function Home() {
         <div className="hero-overlay bgcolor"></div>
         <div className="hero-content text-center text-neutral-content">
           <div className="max-w-md text-black rounded-lg p-4 backdrop-blur-sm bg-danger-foreground bg-opacity-70">
-            <h1
-              className={clsx(
-                "mb-5 text-4xl font-bold"
-                //title({ color: "blue" })
-              )}
-            >
+            <h1 className={clsx("mb-5 text-4xl font-bold")}>
               Helló Eötvös népe!
               <br />
             </h1>
-            <p
-              className={clsx(
-                "mb-5 w-auto text-lg lg:text-lg"
-                //title({ color: "blue" })
-              )}
-            >
+            <p className={clsx("mb-5 w-auto text-lg lg:text-lg")}>
               A DÖ kötelessége a diákok érdekeinek eleget tenni. Egy rövid
               űrlapon megoszthatjátok észrevételeiteket, javaslataitokat és
               esetleges problémáitokat.

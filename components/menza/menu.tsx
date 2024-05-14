@@ -37,7 +37,7 @@ export const Menu = () => {
   }, []);
 
   return (
-    <div className="py-2">
+    <div className="py-2 text-foreground">
       <h1 className="text-2xl font-medium py-1">
         Mi a mai menü?
         <p className="text-sm">{date}</p>
@@ -50,8 +50,13 @@ export const Menu = () => {
           </Button>
           {tableData[date] && tableData[date].A ? (
             tableData[date].A.map((fogas: string, rowIndex: number) => (
-              <div key={rowIndex}>
-                <Button key={rowIndex} color="primary" variant="flat">
+              <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
+                <Button
+                  key={rowIndex}
+                  color="primary"
+                  variant="flat"
+                  className="border-1 md:border-blue-700"
+                >
                   {fogas}
                 </Button>
               </div>
@@ -68,8 +73,13 @@ export const Menu = () => {
           </Button>
           {tableData[date] && tableData[date].A ? (
             tableData[date].B.map((fogas: string, rowIndex: number) => (
-              <div key={rowIndex}>
-                <Button key={rowIndex} color="secondary" variant="flat">
+              <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
+                <Button
+                  key={rowIndex}
+                  color="secondary"
+                  variant="flat"
+                  className="border-1 md:border-fuchsia-700"
+                >
                   {fogas}
                 </Button>
               </div>

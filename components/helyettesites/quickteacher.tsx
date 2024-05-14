@@ -9,10 +9,7 @@ import {
   Skeleton,
 } from "@nextui-org/react";
 
-import { teachersConfig } from "@/config/teachers";
 import { useState, useEffect } from "react";
-import { title } from "../primitives";
-import clsx from "clsx";
 
 type Teacher = {
   country: string;
@@ -23,7 +20,6 @@ type Teacher = {
 };
 
 type rowType = [string, string, Teacher[]];
-const columns = teachersConfig.showHeaders;
 const rows: rowType[] = [];
 
 export const QuickTeachers = () => {
@@ -42,16 +38,16 @@ export const QuickTeachers = () => {
   }, [isLoaded]);
 
   return (
-    <Skeleton isLoaded={isLoaded} className="rounded-lg h-auto w-auto">
+    <Skeleton
+      isLoaded={isLoaded}
+      className="rounded-lg h-auto w-auto text-foreground"
+    >
       <h1 className="text-2xl font-medium py-1">Helyettesítések</h1>
-      <br />
 
       <React.Fragment>
         {tableData.map((teacher: rowType, rowIndex: number) => (
           <Dropdown key={rowIndex}>
             <DropdownTrigger>
-              {/* Wrap User in a React Fragment */}
-
               <User
                 as="button"
                 type="button"
@@ -67,7 +63,7 @@ export const QuickTeachers = () => {
 
             <DropdownMenu aria-label="Static Actions">
               {teacher[2].map((event: any, eventIndex: number) => (
-                <DropdownItem key={eventIndex}>
+                <DropdownItem key={eventIndex} className="text-foreground">
                   {event[0] +
                     " | " +
                     event[2] +

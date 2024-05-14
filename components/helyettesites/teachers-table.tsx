@@ -8,12 +8,10 @@ import {
   TableCell,
   getKeyValue,
 } from "@nextui-org/react";
-
 import { teachersConfig } from "@/config/teachers";
 import { useState, useEffect } from "react";
 
 type rowType = string[];
-
 const columns = teachersConfig.showHeaders;
 const rows: rowType[] = [];
 
@@ -35,21 +33,26 @@ export const TeacherTable = () => {
   }, []);
 
   return (
-    <Table aria-label="Example table with dynamic content">
-      <TableHeader>
-        {columns.map((column, colIndex) => (
-          <TableColumn key={colIndex}>{column}</TableColumn>
-        ))}
-      </TableHeader>
-      <TableBody emptyContent={"Úgy látszik minden tanár órára kész!"}>
-        {tableData.map((row: rowType, rowIndex: number) => (
-          <TableRow key={rowIndex}>
-            {(columnKey: any) => (
-              <TableCell>{getKeyValue(row[columnKey], columnKey)}</TableCell>
-            )}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div className="text-foreground max-w-max max-h-max">
+      <Table
+        aria-label="Example table with dynamic content"
+        className="text-foreground max-w-max max-h-max"
+      >
+        <TableHeader>
+          {columns.map((column, colIndex) => (
+            <TableColumn key={colIndex}>{column}</TableColumn>
+          ))}
+        </TableHeader>
+        <TableBody emptyContent={"Úgy látszik minden tanár órára kész!"}>
+          {tableData.map((row: rowType, rowIndex: number) => (
+            <TableRow key={rowIndex}>
+              {(columnKey: any) => (
+                <TableCell>{getKeyValue(row[columnKey], columnKey)}</TableCell>
+              )}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };

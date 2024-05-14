@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import { useEffect } from "react";
 
 export const Push = () => {
   function notifyMe() {

@@ -54,6 +54,31 @@ for new_event in data:
 
         if not found:
             quick_data.append([new_event[1], TEACHER_AVATAR, [new_event]])
+
+napok = []
+
+for i in range(len(quick_data)):
+    for j in range(len(quick_data[i][2])):
+        ora_terem = quick_data[i][2][j][2]
+        ora_terem : str
+        ora = ora_terem[0]
+        if ora == 'h': nap = 'Hétfő'
+        elif ora == 'k': nap = 'Kedd'
+        elif ora == 's': nap = 'Szerda'
+        elif ora == 'c': nap = 'Csütörtök'
+        elif ora == 'p': nap = 'Péntek'
+        quick_data[i][2][j].append(nap)
+        quick_data[i][2][j].append(ora_terem.split(' ')[0][-1])
+        if nap not in napok: napok.append(nap)
+
+        terem = ora_terem.split(' ')[1][1:]
+        quick_data[i][2][j].append(terem)
+
+
+
+# quick_data.append(napok)
+
+
         
 
 with open('public\\storage\\quick-teachers.json', 'w') as outfile:

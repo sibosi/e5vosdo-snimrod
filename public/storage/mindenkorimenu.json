@@ -1,5 +1,4 @@
 {
-  "test": null,
   "2024.04.29": {
     "A": [
       "Hamis guly\u00e1sleves",
@@ -203,8 +202,8 @@
     ],
     "nap": "Friday"
   },
-  "2024.05.18": { "A": ["\u00dcnnep"], "B": ["\u00dcnnep"], "nap": "Saturday" },
-  "2024.05.19": {
+  "2024.05.20": { "A": ["\u00dcnnep"], "B": ["\u00dcnnep"], "nap": "Monday" },
+  "2024.05.21": {
     "A": [
       "Csurgatott toj\u00e1sleves",
       "Burgonyaf\u0151zel\u00e9k",
@@ -217,9 +216,9 @@
       "P\u00e1rolt rizs",
       "Gy\u00fcm\u00f6lcs"
     ],
-    "nap": "Sunday"
+    "nap": "Tuesday"
   },
-  "2024.05.20": {
+  "2024.05.22": {
     "A": [
       "Csicseribors\u00f3 kr\u00e9mleves zsemlekocka",
       "Tarhony\u00e1sh\u00fas",
@@ -230,9 +229,9 @@
       "\u00cdnyenc sert\u00e9sborda",
       "Has\u00e1bburgonya"
     ],
-    "nap": "Monday"
+    "nap": "Wednesday"
   },
-  "2024.05.21": {
+  "2024.05.23": {
     "A": [
       "\u0150szibarackleves",
       "Sokmagvas r\u00e1ntott harcsa",
@@ -245,9 +244,9 @@
       "Joghurtos friss kevert sal\u00e1ta",
       "Pita"
     ],
-    "nap": "Tuesday"
+    "nap": "Thursday"
   },
-  "2024.05.22": {
+  "2024.05.24": {
     "A": [
       "Z\u00f6ldbors\u00f3leves",
       "Francia rakott burgonya",
@@ -260,7 +259,7 @@
       "P\u00e1rolt rizs",
       "\u00c1fonya lekv\u00e1r"
     ],
-    "nap": "Wednesday"
+    "nap": "Friday"
   },
   "2024.05.27": {
     "A": [

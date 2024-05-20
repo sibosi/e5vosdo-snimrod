@@ -9,8 +9,24 @@ import { PopupCard } from "@/components/popupcard";
 import { title } from "@/components/primitives";
 import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
+import { Countdown } from "@/components/countdown";
 
 export default function Home() {
+  const calculateTimeLeft = () => {
+    let year = new Date().getFullYear();
+    const difference = +new Date(`${year}-10-1`) - +new Date();
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+  };
+
   return (
     <div>
       <div className="text-center justify-center py-14 text-foreground">
@@ -18,6 +34,16 @@ export default function Home() {
         <h1 className={title({ color: "violet" })}>jó&nbsp;</h1>
         <h1 className={title()}>készül...</h1>
       </div>
+
+      <>
+        <h1 className="flex justify-center text-foreground text-3xl font-semibold py-1">
+          Tanévzárás
+        </h1>
+
+        <div className="flex justify-center items-center text-foreground">
+          <Countdown date="2024-6-21 9:00" />
+        </div>
+      </>
 
       <QuickTeachers />
 

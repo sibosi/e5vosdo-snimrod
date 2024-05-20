@@ -34,6 +34,7 @@ const withPWA = withPWAInit({
   dest: 'public',
   disable: isDev,
 
+
   exclude: [
     // add buildExcludes here
     ({ asset, compilation }) => {
@@ -54,6 +55,9 @@ const withPWA = withPWAInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  plugins: [
+    require('daisyui'),
+  ],
   logging: {
     fetches: {
       fullUrl: true

@@ -55,9 +55,6 @@ const withPWA = withPWAInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  plugins: [
-    require('daisyui'),
-  ],
   logging: {
     fetches: {
       fullUrl: true

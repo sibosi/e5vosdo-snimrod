@@ -1,32 +1,19 @@
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
-import Link from "next/link";
+import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
 
-import { groupsConfig } from "@/config/groups";
 import clsx from "clsx";
 import { PopupCard } from "@/components/popupcard";
 import { title } from "@/components/primitives";
 import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
 import { Countdown } from "@/components/countdown";
+import { eventsConfig } from "@/config/events";
+import { Chip } from "@nextui-org/react";
+import { Section } from "@/components/section";
 
 export default function Home() {
-  const calculateTimeLeft = () => {
-    let year = new Date().getFullYear();
-    const difference = +new Date(`${year}-10-1`) - +new Date();
-    let timeLeft = {};
-
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-  };
-
   return (
     <div>
       <div className="text-center justify-center py-14 text-foreground">
@@ -45,22 +32,48 @@ export default function Home() {
         </div>
       </>
 
-      <QuickTeachers />
+      <Section title={"Helyettesítések"}>
+        <QuickTeachers />
+      </Section>
 
-      <Menu />
+      <Section title="Mi a mai menü?">
+        <Menu />
+      </Section>
 
-      <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center py-5">
-        {groupsConfig.clubs.map((groups, index) => (
-          <PopupCard
-            key={index}
-            title={groups.title}
-            details={groups.details}
-            description={groups.description}
-            image={groups.image}
-            popup={true}
-          />
-        ))}
-      </div>
+      <Section title="Események">
+        <div className="text-left gap-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center pb-5">
+          {eventsConfig.events.map(
+            (event, index) =>
+              new Date(event._hide_time_) > new Date() && (
+                <PopupCard
+                  key={index}
+                  title={event.title}
+                  details={event.details}
+                  description={event.time}
+                  image={event.image}
+                  popup={true}
+                >
+                  <div className="flex gap-2">
+                    {event.tags.map((tag, index) => (
+                      <Chip key={tag + "" + index} color="warning" size="sm">
+                        {tag}
+                      </Chip>
+                    ))}
+                  </div>
+                </PopupCard>
+              )
+          )}
+        </div>
+      </Section>
+
+      <Section title="Keresel valamit?">
+        <Link href={"/clubs"} color="primary" className="block">
+          Klubok és szakkörök ➜
+        </Link>
+        <Link href={"/clubs"} color="primary" className="block">
+          Összes esemény ➜
+        </Link>
+      </Section>
 
       <div className="hero bgimage">
         <div className="hero-overlay bgcolor"></div>

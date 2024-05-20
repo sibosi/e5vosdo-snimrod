@@ -42,8 +42,6 @@ export const QuickTeachers = () => {
       isLoaded={isLoaded}
       className="rounded-lg h-auto w-auto text-foreground"
     >
-      <h1 className="text-2xl font-medium py-1">Helyettesítések</h1>
-
       <React.Fragment>
         {tableData.length ? (
           tableData.map((teacher: rowType, rowIndex: number) => (

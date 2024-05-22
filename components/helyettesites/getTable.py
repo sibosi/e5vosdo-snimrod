@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
+print('Updating the table...')
+
 TEACHER_AVATAR = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcOsfFbgyCMm_frzL_cdUQfSjOJD1RSWhHFKKUKZWhaQ&s'
 
 # Main: https://suli.ejg.hu/intranet/helyettes/refresh.php
@@ -81,3 +83,6 @@ for i in range(len(quick_data)):
 
 with open('public\\storage\\quick-teachers.json', 'w') as outfile:
     json.dump(quick_data, outfile)
+
+
+print('Updating ended')

@@ -26,7 +26,7 @@ for row in rows:
     row_data = [cell.get_text() for cell in cells]
     if row_data != []: data.append(row_data)
 
-with open('public\\storage\\teachers.json', 'w') as outfile:
+with open('public/storage/teachers.json', 'w') as outfile:
     json.dump(data, outfile)
 
 

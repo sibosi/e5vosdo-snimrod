@@ -31,7 +31,7 @@ with open('public\\storage\\teachers.json', 'w') as outfile:
 
 
 
-with open('components\\helyettesites\\osszestanar.json', 'r', encoding='utf-8') as outfile:
+with open('components/helyettesites/osszestanar.json', 'r', encoding='utf-8') as outfile:
     tanarok_tabla = outfile.read()
     tanarok_tabla = json.loads(tanarok_tabla)
 

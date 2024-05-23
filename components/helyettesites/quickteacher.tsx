@@ -45,7 +45,7 @@ export const QuickTeachers = () => {
       <React.Fragment>
         {tableData.length ? (
           tableData.map((teacher: rowType, rowIndex: number) => (
-            <Dropdown key={rowIndex}>
+            <Dropdown key={rowIndex} className="block md:">
               <DropdownTrigger>
                 <User
                   as="button"

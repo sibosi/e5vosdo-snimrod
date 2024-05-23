@@ -13,14 +13,12 @@ import { eventsConfig } from "@/config/events";
 import { Chip } from "@nextui-org/react";
 import { Section } from "@/components/section";
 
-{
-  /*const { execSync } = require("child_process");
+const { execSync } = require("child_process");
 const command = "python components/helyettesites/getTable.py";
 const output = execSync(command, { encoding: "utf-8" }); // Capture output
 
 console.log(output); // Print the output of the command
-*/
-}
+
 export default function Home() {
   return (
     <div>

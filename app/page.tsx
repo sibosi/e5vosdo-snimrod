@@ -14,14 +14,11 @@ import { Chip } from "@nextui-org/react";
 import { Section } from "@/components/section";
 
 const { execSync } = require("child_process");
-const command1 = "pip3 install -r requirements.txt";
-const output1 = execSync(command1, { encoding: "utf-8" }); // Capture output
-console.log(output1); // Print the output of the command
 
-const command2 = "python3 components/helyettesites/getTable.py";
-const output2 = execSync(command2, { encoding: "utf-8" }); // Capture output
+const command = "python3 components/helyettesites/getTable.py";
+const output = execSync(command, { encoding: "utf-8" }); // Capture output
 
-console.log(output2); // Print the output of the command
+console.log(output); // Print the output of the command
 
 export default function Home() {
   return (

@@ -1,30 +1,15 @@
 /** @type {import('next').NextConfig} */
-const cron = require('node-cron');
-const { spawn } = require('child_process');
 
-cron.schedule('* * * * *', function () {
-  console.log('Say scheduled hello')
 
-  // Python szkript futtatása
-  const pythonProcess = spawn('python', ['components\\helyettesites\\getTable.py']);
+const { execSync } = require("child_process");
+const command1 = "pip3 install bs4";
+const output1 = execSync(command1, { encoding: "utf-8" }); // Capture output
+console.log(output1); // Print the output of the command
 
-  // A folyamat kimenetének kezelése
-  pythonProcess.stdout.on('data', (data) => {
-    console.log(`Output from Python script: ${data}`);
-  });
+const command2 = "pip3 install requests";
+const output2 = execSync(command2, { encoding: "utf-8" }); // Capture output
 
-  // Hiba kezelése
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(`Error from Python script: ${data}`);
-  });
-
-  // Folyamat befejezésének kezelése
-  pythonProcess.on('close', (code) => {
-    //console.log(`Python script exited with code ${code}`);
-    console.log('Python script is finished.')
-  });
-});
-
+console.log(output2); // Print the output of the command
 
 const withPWAInit = require("next-pwa");
 
@@ -33,6 +18,7 @@ const isDev = process.env.NODE_ENV !== "production";
 const withPWA = withPWAInit({
   dest: 'public',
   disable: isDev,
+
 
   exclude: [
     // add buildExcludes here

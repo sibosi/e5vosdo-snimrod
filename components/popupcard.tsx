@@ -5,8 +5,8 @@ import { PopupButton } from "./popupbutton";
 
 type CardProps = {
   title: string;
-  image: string;
-  details: string;
+  image?: string;
+  details?: string;
   description: string;
   popup: boolean;
   children?: React.ReactNode;
@@ -26,30 +26,34 @@ export const PopupCard = ({
   const OptionalButton = (popup: boolean) => {
     if (popup) {
       return (
-        <PopupButton
-          key={undefined}
-          title={title}
-          image={image}
-          details={details}
-        />
+        typeof details === "string" && (
+          <PopupButton
+            key={undefined}
+            title={title}
+            image={image}
+            details={details}
+          />
+        )
       );
     }
   };
 
   return (
     <>
-      <div className="card myglass w-40 sm:w-60 mb-2 text-foreground">
-        <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
-          <Image
-            width={"400"}
-            height={"400"}
-            className="w-full h-auto"
-            src={image}
-            alt="image"
-            priority={true}
-            //fill={true}
-          />
-        </figure>
+      <div className="card myglass w-40 sm:w-60 mb-2 h-auto text-foreground">
+        {typeof image === "string" && (
+          <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
+            <Image
+              fill={true}
+              sizes="100vw"
+              className="object-contain h-auto rounded-md"
+              src={image} // Ensure image is always a string here
+              alt="image"
+              priority={true}
+            />
+          </figure>
+        )}
+
         <div className="card-body flex">
           <h2 className="card-title text-clip overflow-hidden">{title}</h2>
           <p>{description}</p>

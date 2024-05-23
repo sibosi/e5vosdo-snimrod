@@ -1,5 +1,2 @@
-os
-datetime
-json
 requests
 bs4

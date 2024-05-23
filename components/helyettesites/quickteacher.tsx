@@ -42,40 +42,45 @@ export const QuickTeachers = () => {
       isLoaded={isLoaded}
       className="rounded-lg h-auto w-auto text-foreground"
     >
-      <h1 className="text-2xl font-medium py-1">Helyettesítések</h1>
-
       <React.Fragment>
-        {tableData.map((teacher: rowType, rowIndex: number) => (
-          <Dropdown key={rowIndex}>
-            <DropdownTrigger>
-              <User
-                as="button"
-                type="button"
-                avatarProps={{
-                  isBordered: true,
-                  src: teacher[1],
-                }}
-                className="transition-transform p-2"
-                description="@Tanár"
-                name={teacher[0]}
-              />
-            </DropdownTrigger>
+        {tableData.length ? (
+          tableData.map((teacher: rowType, rowIndex: number) => (
+            <Dropdown key={rowIndex} className="block md:">
+              <DropdownTrigger>
+                <User
+                  as="button"
+                  type="button"
+                  avatarProps={{
+                    isBordered: true,
+                    src: teacher[1],
+                  }}
+                  className="transition-transform p-2"
+                  description="@Tanár"
+                  name={teacher[0]}
+                />
+              </DropdownTrigger>
 
-            <DropdownMenu aria-label="Static Actions">
-              {teacher[2].map((event: any, eventIndex: number) => (
-                <DropdownItem key={eventIndex} className="text-foreground">
-                  {event[0] +
-                    " | " +
-                    event[2] +
-                    " | " +
-                    event[4] +
-                    " | " +
-                    event[5]}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-        ))}
+              <DropdownMenu aria-label="Static Actions">
+                {teacher[2] &&
+                  teacher[2].map((event: any, eventIndex: number) => (
+                    <DropdownItem key={eventIndex} className="text-foreground">
+                      {event[7] +
+                        " | " +
+                        event[8] +
+                        ". ó | terem: " +
+                        event[9] +
+                        " | " +
+                        event[4] +
+                        " | " +
+                        event[5]}
+                    </DropdownItem>
+                  ))}
+              </DropdownMenu>
+            </Dropdown>
+          ))
+        ) : (
+          <p>Nincs információ</p>
+        )}
       </React.Fragment>
     </Skeleton>
   );

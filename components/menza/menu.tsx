@@ -37,11 +37,8 @@ export const Menu = () => {
   }, []);
 
   return (
-    <div className="py-2 text-foreground">
-      <h1 className="text-2xl font-medium py-1">
-        Mi a mai menü?
-        <p className="text-sm">{date}</p>
-      </h1>
+    <div className="text-foreground">
+      <p className="font-medium pb-1 text-sm">{date}</p>
 
       <div className="gap-2 grid grid-cols-2 md:grid-cols-1 max-w-max overflow-hidden">
         <div className="overflow-auto md:flex">
@@ -78,7 +75,7 @@ export const Menu = () => {
                   key={rowIndex}
                   color="secondary"
                   variant="flat"
-                  className="border-1 md:border-fuchsia-700"
+                  className="border-1 md:border-purple-800"
                 >
                   {fogas}
                 </Button>

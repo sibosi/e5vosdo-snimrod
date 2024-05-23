@@ -34,4 +34,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/hello-ngrok/
+public/storage/quick-teachers.json
+public/storage/teachers.json

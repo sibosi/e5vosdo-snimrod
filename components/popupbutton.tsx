@@ -4,7 +4,7 @@ import "../styles/globals.css";
 
 type CardProps = {
   title: string;
-  image: string;
+  image?: string;
   details: string;
   children?: React.ReactNode;
 };
@@ -34,20 +34,20 @@ export const PopupButton = ({ title, image, details, children }: CardProps) => {
         <ModalContent className="max-h-[95vh] overflow-auto">
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Modal Title
-              </ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
               <ModalBody>
                 <div className="overflow-auto md:flex h-auto pt-7">
                   <div className="relative w-32 h-auto p-14 md:w-56 md:p-28">
-                    <Image
-                      fill={true}
-                      sizes="100vw"
-                      className="object-contain h-auto rounded-md"
-                      src={image}
-                      alt="image"
-                      priority={true}
-                    />
+                    {typeof image === "string" && (
+                      <Image
+                        fill={true}
+                        sizes="100vw"
+                        className="object-contain h-auto rounded-md"
+                        src={image}
+                        alt="image"
+                        priority={true}
+                      />
+                    )}
                   </div>
                   <div className="overflow-auto fill-overlay h-auto md:max-h-[100%] text-left text-foreground px-6 py-6">
                     <h2 className="text-lg font-bold">{title}</h2>

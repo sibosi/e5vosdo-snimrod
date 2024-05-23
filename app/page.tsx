@@ -1,14 +1,27 @@
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
-import Link from "next/link";
+import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
 
-import { groupsConfig } from "@/config/groups";
 import clsx from "clsx";
 import { PopupCard } from "@/components/popupcard";
 import { title } from "@/components/primitives";
 import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
+import { Countdown } from "@/components/countdown";
+import { eventsConfig } from "@/config/events";
+import { Chip } from "@nextui-org/react";
+import { Section } from "@/components/section";
+
+const { execSync } = require("child_process");
+const command1 = "pip3 install -r requirements.txt";
+const output1 = execSync(command1, { encoding: "utf-8" }); // Capture output
+console.log(output1); // Print the output of the command
+
+const command2 = "python3 components/helyettesites/getTable.py";
+const output2 = execSync(command2, { encoding: "utf-8" }); // Capture output
+
+console.log(output2); // Print the output of the command
 
 export default function Home() {
   return (
@@ -19,22 +32,58 @@ export default function Home() {
         <h1 className={title()}>készül...</h1>
       </div>
 
-      <QuickTeachers />
+      <>
+        <h1 className="flex justify-center text-foreground text-3xl font-semibold py-1">
+          Tanévzárás
+        </h1>
 
-      <Menu />
+        <div className="flex justify-center items-center text-foreground">
+          <Countdown date="2024-6-21 9:00" />
+        </div>
+      </>
 
-      <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center py-5">
-        {groupsConfig.clubs.map((groups, index) => (
-          <PopupCard
-            key={index}
-            title={groups.title}
-            details={groups.details}
-            description={groups.description}
-            image={groups.image}
-            popup={true}
-          />
-        ))}
-      </div>
+      <Section title={"Helyettesítések"}>
+        <QuickTeachers />
+      </Section>
+
+      <Section title="Mi a mai menü?">
+        <Menu />
+      </Section>
+
+      <Section title="Események">
+        <div className="text-left gap-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center pb-5">
+          {eventsConfig.events.map(
+            (event, index) =>
+              new Date(event._hide_time_) > new Date() && (
+                <PopupCard
+                  key={index}
+                  title={event.title}
+                  details={event.details}
+                  description={event.time}
+                  image={event.image}
+                  popup={true}
+                >
+                  <div className="flex gap-2">
+                    {event.tags.map((tag, index) => (
+                      <Chip key={tag + "" + index} color="warning" size="sm">
+                        {tag}
+                      </Chip>
+                    ))}
+                  </div>
+                </PopupCard>
+              )
+          )}
+        </div>
+      </Section>
+
+      <Section title="Keresel valamit?">
+        <Link href={"/clubs"} color="primary" className="block">
+          Klubok és szakkörök ➜
+        </Link>
+        <Link href={"/clubs"} color="primary" className="block">
+          Összes esemény ➜
+        </Link>
+      </Section>
 
       <div className="hero bgimage">
         <div className="hero-overlay bgcolor"></div>

@@ -79,14 +79,14 @@ def main (path : str):
         
     datum = kovetkezo_datum(datum, lepes=-1)
     for sor in nyers_menu:
-        if sor[""] == 'Gimnázium': 
-            datum = sor['2']
-            datum = datum.split('-')[0]
-            datum = kovetkezo_datum(datum, lepes=-1)
-        if sor['1'] == None or sor['1'] == 'B menü': continue
 
+        if sor['1'] == None or sor['1'] == 'B menü': continue
+        
         if sor["KinderF.ésK.Kft."] != None:
             datum = kovetkezo_datum(datum)
+            if het_napja(datum=datum) == 'Saturday':
+                datum = kovetkezo_datum(datum=datum, lepes=2)
+
             havi_menu.update({datum : {'A' : [], 'B' : [], 'nap' : het_napja(datum)}})
         havi_menu[datum]['A'].append(sor[""])
         havi_menu[datum]['B'].append(sor["1"])
@@ -96,7 +96,7 @@ def main (path : str):
     with open('components\\menza\\mindenkorimenu.json', 'r', encoding='utf-8') as outfile:
         mindenkori_menu = json.loads(outfile.read())
 
-    mindenkori_menu.update(havi_menu)
+    mindenkori_menu = havi_menu
 
     with open('components\\menza\\mindenkorimenu.json', 'w', encoding='utf-8') as outfile:
         json.dump(mindenkori_menu, outfile)

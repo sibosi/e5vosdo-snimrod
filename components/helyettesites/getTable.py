@@ -81,7 +81,7 @@ for i in range(len(quick_data)):
 # quick_data.append(napok)
         
 
-with open('public\\storage\\quick-teachers.json', 'w') as outfile:
+with open('public/storage/quick-teachers.json', 'w') as outfile:
     json.dump(quick_data, outfile)
 
 

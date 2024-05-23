@@ -75,7 +75,7 @@ export const Menu = () => {
                   key={rowIndex}
                   color="secondary"
                   variant="flat"
-                  className="border-1 md:border-fuchsia-700"
+                  className="border-1 md:border-purple-800"
                 >
                   {fogas}
                 </Button>

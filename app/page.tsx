@@ -14,7 +14,7 @@ import { Chip } from "@nextui-org/react";
 import { Section } from "@/components/section";
 
 const { execSync } = require("child_process");
-const command1 = "pip install -r requirements.txt";
+const command1 = "pip3 install -r requirements.txt";
 const output1 = execSync(command1, { encoding: "utf-8" }); // Capture output
 console.log(output1); // Print the output of the command
 

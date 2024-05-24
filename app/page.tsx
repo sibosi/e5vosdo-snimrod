@@ -30,14 +30,7 @@ export default function Home() {
         <h1 className={title()}>készül...</h1>
       </div>
 
-      <Scoreboard
-        player1Name="Player 1"
-        player2Name="Player 2"
-        player1Score={10}
-        player2Score={15}
-        player1Color="blue"
-        player2Color="red"
-      />
+      <Scoreboard />
 
       <>
         <h1 className="flex justify-center text-foreground text-3xl font-semibold py-1">
@@ -87,7 +80,7 @@ export default function Home() {
         <Link href={"/clubs"} color="primary" className="block">
           Klubok és szakkörök ➜
         </Link>
-        <Link href={"/clubs"} color="primary" className="block">
+        <Link href={"/events"} color="primary" className="block">
           Összes esemény ➜
         </Link>
       </Section>

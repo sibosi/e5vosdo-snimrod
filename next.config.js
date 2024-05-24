@@ -23,6 +23,13 @@ cron.schedule('0 * * * *', function () {
   });
 });
 
+cron.schedule('* * * * *', function () {
+  console.log('Say scheduled hello - updater')
+  const command = "python3 updater.py";
+  const output = execSync(command, { encoding: "utf-8" }); // Capture output
+  console.log(output); // Print the output of the command
+});
+
 const withPWAInit = require("next-pwa");
 const isDev = process.env.NODE_ENV !== "production";
 

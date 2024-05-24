@@ -6,9 +6,7 @@ const Scoreboard = () => {
 
   useEffect(() => {
     // Fetch data from results.json
-    fetch(
-      "https://raw.githubusercontent.com/sibosi/e5vosdo-snimrod/dev/foci.json"
-    )
+    fetch("/foci.json")
       .then((response) => response.json())
       .then((data) => {
         // Set the player data from the JSON

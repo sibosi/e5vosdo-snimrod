@@ -1,18 +1,36 @@
 /** @type {import('next').NextConfig} */
-
-
 const { execSync } = require("child_process");
-const command1 = "pip3 install bs4";
-const output1 = execSync(command1, { encoding: "utf-8" }); // Capture output
-console.log(output1); // Print the output of the command
+const cron = require('node-cron');
 
-const command2 = "pip3 install requests";
-const output2 = execSync(command2, { encoding: "utf-8" }); // Capture output
+const command1 = "pip3 install -r requirements.txt";
+const output1 = execSync(command1, { encoding: "utf-8" });
+console.log(output1);
 
-console.log(output2); // Print the output of the command
+cron.schedule('0 * * * *', function () {
+  console.log('Say scheduled hello')
+  const pythonProcess = spawn('python3', ['components/helyettesites/getTable.py']);
+
+  pythonProcess.stdout.on('data', (data) => {
+    console.log(`Output from Python script: ${data}`);
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Error from Python script: ${data}`);
+  });
+
+  pythonProcess.on('close', (code) => {
+    console.log('Python script is finished.')
+  });
+});
+
+cron.schedule('* * * * *', function () {
+  console.log('Say scheduled hello - updater')
+  const command = "python3 updater.py";
+  const output = execSync(command, { encoding: "utf-8" }); // Capture output
+  console.log(output); // Print the output of the command
+});
 
 const withPWAInit = require("next-pwa");
-
 const isDev = process.env.NODE_ENV !== "production";
 
 const withPWA = withPWAInit({

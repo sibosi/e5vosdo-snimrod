@@ -1,16 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-const Scoreboard = () => {
-  const [playerData, setPlayerData] = useState(null);
+export const Scoreboard = () => {
+  const [teamData, setteamData] = useState(null);
 
   useEffect(() => {
     // Fetch data from results.json
     fetch("/foci.json")
       .then((response) => response.json())
       .then((data) => {
-        // Set the player data from the JSON
-        setPlayerData(data);
+        // Set the team data from the JSON
+        setteamData(data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -18,19 +18,19 @@ const Scoreboard = () => {
   }, []); // Empty dependency array to only run once on component mount
 
   // If data is not yet loaded, display loading message
-  if (!playerData) {
+  if (!teamData) {
     return <div>Loading...</div>;
   }
 
-  // Destructure player data
+  // Destructure team data
   const {
-    player1Name,
-    player2Name,
-    player1Score,
-    player2Score,
-    player1Color,
-    player2Color,
-  } = playerData;
+    team1Name,
+    team2Name,
+    team1Score,
+    team2Score,
+    team1Color,
+    team2Color,
+  } = teamData;
 
   return (
     <div className="pb-32">
@@ -39,24 +39,22 @@ const Scoreboard = () => {
       </div>
       <div className="scoreboard grid grid-cols-2 w-auto justify-items-center ">
         <div
-          className="player w-52 h-20 text-foreground font-bold text-2xl text-center bg-red-600 rounded-lg pt-1"
-          style={{ backgroundColor: player1Color }}
+          className="team w-40 md:w-52 h-20 text-foreground font-bold text-2xl text-center bg-red-600 rounded-lg pt-1"
+          style={{ backgroundColor: team1Color }}
         >
-          <span className="player-name">{player1Name}</span>
+          <span className="team-name">{team1Name}</span>
           <br />
-          <span className="player-score">{player1Score}</span>
+          <span className="team-score">{team1Score}</span>
         </div>
         <div
-          className="player w-52 h-20 text-foreground font-bold text-2xl text-center bg-cyan-500 rounded-lg pt-1"
-          style={{ backgroundColor: player2Color }}
+          className="team w-40 md:w-52 h-20 text-foreground font-bold text-2xl text-center bg-cyan-500 rounded-lg pt-1"
+          style={{ backgroundColor: team2Color }}
         >
-          <span className="player-name">{player2Name}</span>
+          <span className="team-name">{team2Name}</span>
           <br />
-          <span className="player-score">{player2Score}</span>
+          <span className="team-score">{team2Score}</span>
         </div>
       </div>
     </div>
   );
 };
-
-export default Scoreboard;

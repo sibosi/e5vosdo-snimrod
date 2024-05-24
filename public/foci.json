@@ -1,8 +1,27 @@
 {
-  "player1Name": "Csapat 1",
-  "player2Name": "Csapat 2",
-  "player1Score": 0,
-  "player2Score": 0,
-  "player1Color": "blue",
-  "player2Color": "red"
+  "team1Name": "Csapat 1",
+  "team2Name": "Csapat 2",
+  "team1Score": 0,
+  "team2Score": 0,
+  "team1Color": "blue",
+  "team2Color": "red",
+  
+  "player4Name11": "Csapat 1",
+  "player4Name12": "Csapat 1",
+  "player4Name21": "Csapat 1",
+  "player4Name22": "Csapat 1",
+  "player4Name31": "Csapat 1",
+  "player4Name32": "Csapat 1",
+  "player4Name41": "Csapat 1",
+  "player4Name42": "Csapat 1",
+
+  "player2Name11": "",
+  "player2Name12": "",
+  "player2Name21": "",
+  "player2Name22": "",
+
+  "player1Name1": "",
+  "player1Name2": "",
+  
+  "player1Name0": ""
 }

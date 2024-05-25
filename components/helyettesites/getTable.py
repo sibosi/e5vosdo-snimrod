@@ -1,3 +1,4 @@
+import datetime
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -24,6 +25,8 @@ for row in rows:
     cells = row.find_all('td')
     row_data = [cell.get_text() for cell in cells]
     if row_data != []: data.append(row_data)
+
+# data.append(["2024-05-21", "TMP", "k3 /\u00c9nek", "10an1xcdf3abelanna", "an1", "\u00a0", str(datetime.datetime.now())])
 
 with open('public/storage/teachers.json', 'w') as outfile:
     json.dump(data, outfile)

@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <div>
       <div className="text-center justify-center pb-14 text-foreground">
-        <div className="text-sm w-auto bg-amber-300 rounded-lg py-2 px-3 border-3 border-amber-400 max-w-xs justify-center text-center mx-auto mb-3 self-center">
+        <div className="text-sm w-auto bg-amber-300 rounded-lg py-2 px-3 border-3 border-amber-400 max-w-xs justify-center text-center mx-auto mb-3 self-center text-black">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="stroke-current shrink-0 h-6 w-6 inline"
@@ -55,7 +55,7 @@ export default function Home() {
         <h1 className={title()}>készül...</h1>
       </div>
 
-      <>
+      <div className="pb-3">
         <h1 className="flex justify-center text-foreground text-3xl font-semibold py-1">
           Tanévzárás
         </h1>
@@ -63,7 +63,7 @@ export default function Home() {
         <div className="flex justify-center items-center text-foreground">
           <Countdown date="2024-6-21 9:00" />
         </div>
-      </>
+      </div>
 
       <Section title={"Helyettesítések"}>
         <QuickTeachers />
@@ -99,7 +99,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section title="Keresel valamit?">
+      <Section title="Keresel valamit?" className="max-w-xs">
         <Link href={"/clubs"} color="primary" className="block">
           Klubok és szakkörök ➜
         </Link>
@@ -119,8 +119,7 @@ export default function Home() {
             <p className={clsx("mb-5 w-auto text-lg lg:text-lg")}>
               A DÖ kötelessége a diákok érdekeinek eleget tenni. Az űrlapon
               megoszthatjátok észrevételeiteket, javaslataitokat és esetleges
-              problémáitokat. Az oldallal kapcsolatos visszajelzéseket is itt
-              fogadjuk
+              problémáitokat.
               <br />
             </p>
             <Link

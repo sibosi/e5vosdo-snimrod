@@ -54,7 +54,7 @@ export const PopupCard = ({
           </figure>
         )}
 
-        <div className="card-body flex">
+        <div className="card-body flex p-6">
           <h2 className="card-title text-clip overflow-hidden">{title}</h2>
           <p>{description}</p>
           {children}

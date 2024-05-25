@@ -1,4 +1,5 @@
 "use client";
+import { button as buttonStyles } from "@nextui-org/theme";
 import { Button } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 
@@ -42,13 +43,14 @@ export const Menu = () => {
 
       <div className="gap-2 grid grid-cols-2 md:grid-cols-1 max-w-max overflow-hidden">
         <div className="overflow-auto md:flex">
-          <Button key={"Amenu1"} color="primary" variant="solid">
+          <Button disabled key={"Amenu1"} color="primary" variant="solid">
             🍴 A menü:
           </Button>
           {tableData[date] && tableData[date].A ? (
             tableData[date].A.map((fogas: string, rowIndex: number) => (
               <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
                 <Button
+                  disabled
                   key={rowIndex}
                   color="primary"
                   variant="flat"
@@ -59,19 +61,20 @@ export const Menu = () => {
               </div>
             ))
           ) : (
-            <Button key={"Amenu2"} color="default" variant="solid">
+            <Button disabled key={"Amenu2"} color="default" variant="solid">
               <p>Nincs információ</p>
             </Button>
           )}
         </div>
         <div className="overflow-auto md:flex">
-          <Button key={"Bmenu1"} color="secondary" variant="solid">
+          <Button disabled key={"Bmenu1"} color="secondary" variant="solid">
             🍴 B menü:
           </Button>
           {tableData[date] && tableData[date].A ? (
             tableData[date].B.map((fogas: string, rowIndex: number) => (
               <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
                 <Button
+                  disabled
                   key={rowIndex}
                   color="secondary"
                   variant="flat"
@@ -82,7 +85,7 @@ export const Menu = () => {
               </div>
             ))
           ) : (
-            <Button key={"Bmenu2"} color="default" variant="solid">
+            <Button disabled key={"Bmenu2"} color="default" variant="solid">
               <p>Nincs információ</p>
             </Button>
           )}

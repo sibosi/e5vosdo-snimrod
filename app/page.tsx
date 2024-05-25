@@ -23,7 +23,33 @@ console.log(output); // Print the output of the command
 export default function Home() {
   return (
     <div>
-      <div className="text-center justify-center py-14 text-foreground">
+      <div className="text-center justify-center pb-14 text-foreground">
+        <div className="text-sm w-auto bg-amber-300 rounded-lg py-2 px-3 border-3 border-amber-400 max-w-xs justify-center text-center mx-auto mb-3 self-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="stroke-current shrink-0 h-6 w-6 inline"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <p className="inline pl-1">
+            {"Az oldal fejlesztés alatt áll. Segíts Te is a fejlesztésben!"}
+          </p>
+          <p className="inline">
+            <Link href={siteConfig.links.feedback} className="pl-1 text-sm">
+              Funkció kérése
+            </Link>
+            <Link href={siteConfig.links.feedback} className="pl-1 text-sm">
+              Hiba jelentése
+            </Link>
+          </p>
+        </div>
         <h1 className={title()}>Valami&nbsp;</h1>
         <h1 className={title({ color: "violet" })}>jó&nbsp;</h1>
         <h1 className={title()}>készül...</h1>
@@ -91,9 +117,10 @@ export default function Home() {
               <br />
             </h1>
             <p className={clsx("mb-5 w-auto text-lg lg:text-lg")}>
-              A DÖ kötelessége a diákok érdekeinek eleget tenni. Egy rövid
-              űrlapon megoszthatjátok észrevételeiteket, javaslataitokat és
-              esetleges problémáitokat.
+              A DÖ kötelessége a diákok érdekeinek eleget tenni. Az űrlapon
+              megoszthatjátok észrevételeiteket, javaslataitokat és esetleges
+              problémáitokat. Az oldallal kapcsolatos visszajelzéseket is itt
+              fogadjuk
               <br />
             </p>
             <Link

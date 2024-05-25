@@ -49,7 +49,7 @@ export const PopupCard = ({
               className="object-contain h-auto rounded-md"
               src={image} // Ensure image is always a string here
               alt="image"
-              priority={true}
+              priority={false}
             />
           </figure>
         )}

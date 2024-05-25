@@ -12,12 +12,20 @@ export const eventsConfig = {
     },
     {
       title: "Dzsungel könyve előadások",
-      time: "május 27.-30.",
+      time: "május 27.-30. 18:00",
       _hide_time_: "2024-5-31",
       image: "/events/junglebook.jpg",
       details:
         "A Színjátszó szakkör egyhetes előadássorozata, mely a Dzsungel könyvét hozza színpadra. Jegyek vásárlása a büfénél.",
-      tags: ["9. évf", "7.A"],
+      tags: ["előadás"],
+    },
+    {
+      title: "Pedagógus nap",
+      time: "május 31.",
+      _hide_time_: "2024-6-1",
+      image: "/events/pedagogusnap.png",
+      details: undefined,
+      tags: [],
     },
   ],
 };

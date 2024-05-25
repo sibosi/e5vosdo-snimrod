@@ -12,8 +12,6 @@ import { Countdown } from "@/components/countdown";
 import { eventsConfig } from "@/config/events";
 import { Chip } from "@nextui-org/react";
 import { Section } from "@/components/section";
-import { SportTable } from "@/components/sporttable";
-import { Scoreboard } from "@/components/sportresults";
 
 const { execSync } = require("child_process");
 
@@ -30,9 +28,6 @@ export default function Home() {
         <h1 className={title({ color: "violet" })}>jó&nbsp;</h1>
         <h1 className={title()}>készül...</h1>
       </div>
-
-      <SportTable />
-      <Scoreboard />
 
       <>
         <h1 className="flex justify-center text-foreground text-3xl font-semibold py-1">

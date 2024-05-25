@@ -59,7 +59,7 @@ export const Menu = () => {
               </div>
             ))
           ) : (
-            <Button key={"Amenu2"} color="warning" variant="solid">
+            <Button key={"Amenu2"} color="default" variant="solid">
               <p>Nincs információ</p>
             </Button>
           )}
@@ -82,7 +82,7 @@ export const Menu = () => {
               </div>
             ))
           ) : (
-            <Button key={"Bmenu2"} color="warning" variant="solid">
+            <Button key={"Bmenu2"} color="default" variant="solid">
               <p>Nincs információ</p>
             </Button>
           )}

@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import json
 
 print('Updating the table...')
+print(str(datetime.datetime.now()))
 
 TEACHER_AVATAR = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcOsfFbgyCMm_frzL_cdUQfSjOJD1RSWhHFKKUKZWhaQ&s'
 

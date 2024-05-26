@@ -27,29 +27,6 @@ export const QuickTeachers = () => {
   const [isLoaded, setIsLoaded] = React.useState(false);
 
   useEffect(() => {
-    // Define a function to fetch data from the server API
-    const fetchData = async () => {
-      try {
-        // Make a GET request to the server API
-        const response = await fetch("/api/cron");
-
-        // Check if the response is successful
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        // Parse the JSON response
-        const jsonData = await response.json();
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    // Call the fetchData function when the component mounts
-    fetchData();
-  }, []); // Empty dependency array ensures this effect runs only once
-
-  useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("/storage/quick-teachers.json"); // Adjust path if needed
       const data = await res.json();

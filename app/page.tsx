@@ -54,7 +54,7 @@ export default function Home() {
         </h1>
 
         <div className="flex justify-center items-center text-foreground">
-          <Countdown date="2024-6-21 9:00" />
+          <Countdown date="2024/6/21 9:00" />
         </div>
       </div>
 

@@ -105,6 +105,8 @@ async function update() {
       });
   }
   const updatedData = await update();
+  console.log("Gate 2:");
+  console.log(updatedData);
 
   return {
     props: {

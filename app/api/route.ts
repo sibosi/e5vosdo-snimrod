@@ -99,6 +99,7 @@ async function update() {
         // fs.writeFileSync("public/storage/quick-teachers.json",JSON.stringify(quick_data));
 
         console.log("Updating ended");
+        return quick_data;
       })
       .catch((error: any) => {
         console.error("Error fetching data:", error);

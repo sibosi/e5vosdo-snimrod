@@ -102,7 +102,7 @@ async function update() {
 
   return {
     props: {
-      data: quick_dataí,
+      data: quick_data,
     },
   };
 }

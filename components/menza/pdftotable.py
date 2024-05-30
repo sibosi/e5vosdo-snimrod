@@ -91,19 +91,10 @@ def main (path : str):
         havi_menu[datum]['A'].append(sor[""])
         havi_menu[datum]['B'].append(sor["1"])
         
-
-
-    with open('components\\menza\\mindenkorimenu.json', 'r', encoding='utf-8') as outfile:
-        mindenkori_menu = json.loads(outfile.read())
-
     mindenkori_menu = havi_menu
 
-    with open('components\\menza\\mindenkorimenu.json', 'w', encoding='utf-8') as outfile:
+    with open('src\\mindenkorimenu.json', 'w', encoding='utf-8') as outfile:
         json.dump(mindenkori_menu, outfile)
-    
-    with open('public\\storage\\mindenkorimenu.json', 'w', encoding='utf-8') as outfile:
-        json.dump(mindenkori_menu, outfile)
-
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))

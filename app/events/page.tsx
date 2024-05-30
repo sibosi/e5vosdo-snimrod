@@ -1,7 +1,6 @@
 import { title } from "@/components/primitives";
 import clsx from "clsx";
 import { link as linkStyles } from "@nextui-org/theme";
-import { TeacherTable } from "@/components/helyettesites/teachers-table";
 import { PopupCard } from "@/components/popupcard";
 import { eventsConfig } from "@/config/events";
 import { Chip } from "@nextui-org/react";
@@ -42,7 +41,6 @@ export default function EventsPage() {
             )
         )}
       </div>
-      <TeacherTable />
     </>
   );
 }

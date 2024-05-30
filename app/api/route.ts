@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import * as fs from "fs";
 import axios from "axios";
 import cheerio from "cheerio";
 const iconv = require("iconv-lite");
+import tanarok_tabla from "@/components/helyettesites/osszestanar.json";
 
 async function update() {
   async function update() {
@@ -32,10 +32,6 @@ async function update() {
 
           if (row_data.length !== 0) data.push(row_data);
         });
-
-        const tanarok_tabla = JSON.parse(
-          fs.readFileSync("storage/osszestanar.json", "utf-8")
-        );
 
         let quick_data: any[][] = [];
         data.forEach((new_event) => {
@@ -81,6 +77,7 @@ async function update() {
                 break;
               case "c":
                 nap = "CsÃ¼tÃ¶rtÃ¶k";
+                nap = new Date().toString();
                 break;
               case "p":
                 nap = "PÃ©ntek";

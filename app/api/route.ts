@@ -33,8 +33,6 @@ async function update() {
           if (row_data.length !== 0) data.push(row_data);
         });
 
-        fs.writeFileSync("public/storage/teachers.json", JSON.stringify(data));
-
         const tanarok_tabla = JSON.parse(
           fs.readFileSync("storage/osszestanar.json", "utf-8")
         );
@@ -99,10 +97,9 @@ async function update() {
           });
         });
 
-        fs.writeFileSync(
-          "public/storage/quick-teachers.json",
-          JSON.stringify(quick_data)
-        );
+        //fs.writeFileSync("public/storage/teachers.json", JSON.stringify(data));
+
+        // fs.writeFileSync("public/storage/quick-teachers.json",JSON.stringify(quick_data));
 
         console.log("Updating ended");
       })

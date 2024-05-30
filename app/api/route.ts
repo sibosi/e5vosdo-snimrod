@@ -95,17 +95,11 @@ async function update() {
 
   // fs.writeFileSync("public/storage/quick-teachers.json",JSON.stringify(quick_data));
 
-  console.log("Updating ended");
-
-  console.log("Gate 2:");
-  console.log(quick_data);
-
   return quick_data;
 }
 
 export async function GET() {
-  const table = await update();
-  return NextResponse.json(table);
+  return NextResponse.json(await update());
 }
 
 export async function POST(request: Request) {

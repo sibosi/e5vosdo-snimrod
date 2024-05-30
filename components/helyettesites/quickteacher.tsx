@@ -28,7 +28,7 @@ export const QuickTeachers = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("/storage/quick-teachers.json"); // Adjust path if needed
+      const res = await fetch("/api/"); // Adjust path if needed
       const data = await res.json();
       setTableData(data as rowType[]); // Type assertion for clarity
       setIsLoaded(true);

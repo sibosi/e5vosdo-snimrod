@@ -100,17 +100,13 @@ async function update() {
   console.log("Gate 2:");
   console.log(quick_data);
 
-  return {
-    props: {
-      data: quick_data,
-    },
-  };
+  return quick_data;
 }
 
 export async function GET() {
   const table = await update();
   return NextResponse.json({
-    req: table,
+    table,
   });
 }
 

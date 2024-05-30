@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import cheerio from "cheerio";
 const iconv = require("iconv-lite");
-import tanarok_tabla from "@/components/helyettesites/osszestanar.json";
+import tanarok_tabla from "@/src/osszestanar.json";
 
 async function update() {
   console.log("Updating the table...");
@@ -64,7 +64,7 @@ async function update() {
       let nap = "";
       switch (ora) {
         case "h":
-          nap = "HÃ©tfÅ";
+          nap = "Hétfő";
           break;
         case "k":
           nap = "Kedd";
@@ -73,11 +73,10 @@ async function update() {
           nap = "Szerda";
           break;
         case "c":
-          nap = "CsÃ¼tÃ¶rtÃ¶k";
-          nap = new Date().toString();
+          nap = "Csütörtök";
           break;
         case "p":
-          nap = "PÃ©ntek";
+          nap = "Péntek";
           break;
       }
       event.push(nap);
@@ -91,15 +90,12 @@ async function update() {
     });
   });
 
-  //fs.writeFileSync("public/storage/teachers.json", JSON.stringify(data));
-
-  // fs.writeFileSync("public/storage/quick-teachers.json",JSON.stringify(quick_data));
-
   return quick_data;
 }
 
 export async function GET() {
-  return NextResponse.json(await update());
+  const data = await update();
+  return NextResponse.json(data);
 }
 
 export async function POST(request: Request) {

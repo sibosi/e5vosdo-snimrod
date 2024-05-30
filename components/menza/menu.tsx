@@ -1,40 +1,27 @@
-"use client";
 import { Button } from "@nextui-org/react";
-import { useState, useEffect } from "react";
 
-type RowType = {
+interface MenuData {
   [date: string]: {
-    [x: string]: any;
     A: string[];
     B: string[];
-    nap: string;
+    nap?: string; // Optional nap property
   };
-};
+}
 
-const rows: RowType[] = [];
+import tableData from "@/src/mindenkorimenu.json";
+const menuData = tableData as MenuData;
 
 function padTo2Digits(num: number) {
   return num.toString().padStart(2, "0");
 }
 
 export const Menu = () => {
-  const [tableData, setTableData] = useState<RowType[]>(rows);
   const now = new Date();
-  const date: any = [
+  const date = [
     now.getFullYear(),
     padTo2Digits(now.getMonth() + 1),
     now.getDate(),
   ].join(".");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/storage/mindenkorimenu.json"); // Adjust path if needed
-      const data = await res.json();
-      setTableData(data);
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <div className="text-foreground">
@@ -45,15 +32,15 @@ export const Menu = () => {
           <Button disabled key={"Amenu1"} color="primary" variant="solid">
             🍴 A menü:
           </Button>
-          {tableData[date] && tableData[date].A ? (
-            tableData[date].A.map((fogas: string, rowIndex: number) => (
+          {menuData[date] && menuData[date].A ? (
+            menuData[date].A.map((fogas: string, rowIndex: number) => (
               <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
                 <Button
                   disabled
                   key={rowIndex}
                   color="primary"
                   variant="flat"
-                  className="border-1 md:border-blue-700"
+                  className="border-1 border-blue-700"
                 >
                   {fogas}
                 </Button>
@@ -69,15 +56,15 @@ export const Menu = () => {
           <Button disabled key={"Bmenu1"} color="secondary" variant="solid">
             🍴 B menü:
           </Button>
-          {tableData[date] && tableData[date].A ? (
-            tableData[date].B.map((fogas: string, rowIndex: number) => (
+          {menuData[date] && menuData[date].A ? (
+            menuData[date].B.map((fogas: string, rowIndex: number) => (
               <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
                 <Button
                   disabled
                   key={rowIndex}
                   color="secondary"
                   variant="flat"
-                  className="border-1 md:border-purple-800"
+                  className="border-1 border-purple-800"
                 >
                   {fogas}
                 </Button>

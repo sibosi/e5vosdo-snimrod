@@ -20,7 +20,7 @@ export const TeacherTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("/storage/teachers.json"); // Adjust path if needed
+      const res = await fetch("/api"); // Adjust path if needed
       const data = await res.json();
       setTableData(
         data.filter((_: any, index: any) =>

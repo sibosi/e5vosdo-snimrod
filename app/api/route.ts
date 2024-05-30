@@ -105,9 +105,7 @@ async function update() {
 
 export async function GET() {
   const table = await update();
-  return NextResponse.json({
-    table,
-  });
+  return NextResponse.json(table);
 }
 
 export async function POST(request: Request) {

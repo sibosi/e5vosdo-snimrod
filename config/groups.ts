@@ -107,10 +107,10 @@ export const groupsConfig = {
       description: "",
     },
     {
-      title: "TechTeam",
+      title: "Technikusi Szervezet",
       details:
-        "Mi vagyunk a TechTeam. Ott vagyunk mindenhol: évnyitó, évzáró, KMT, könnyűzenei, jazz koncert, M15, karácsony. Hangosítunk, fényezünk, videózunk, technikát gyártunk, rendezvényt szervezünk, újító technikai megoldásokkal állunk elő.",
-      image: "/groups/techteam.jpg",
+        "Mi vagyunk a Technikusi Szervezet. Ott vagyunk mindenhol: évnyitó, évzáró, KMT, könnyűzenei, jazz koncert, M15, karácsony. Hangosítunk, fényezünk, videózunk, technikát gyártunk, rendezvényt szervezünk, újító technikai megoldásokkal állunk elő.",
+      image: "/groups/technikusi.png",
       description: "",
     },
   ],

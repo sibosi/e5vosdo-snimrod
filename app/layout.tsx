@@ -7,7 +7,7 @@ import { Navbar } from "@/components/navbar";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
-import { MyAnalytics } from "@/components/myanalytics";
+// import { MyAnalytics } from "@/components/myanalytics";
 
 export const metadata: Metadata = {
   title: {
@@ -88,7 +88,7 @@ export default function RootLayout({
             <Navbar />
             <main className="container mx-auto max-w-7xl pt-4 pl-3 pr-3 flex-grow">
               {children}
-              <MyAnalytics />
+              {/*<MyAnalytics />*/}
             </main>
             <footer className="w-full flex items-center justify-center py-3">
               <Link

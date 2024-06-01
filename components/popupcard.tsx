@@ -20,9 +20,6 @@ export const PopupCard = ({
   popup,
   children,
 }: CardProps) => {
-  //description = "If a dog chews shoes whose shoes does he choose?";
-  //popup = false;
-
   const OptionalButton = (popup: boolean) => {
     if (popup) {
       return (
@@ -49,7 +46,7 @@ export const PopupCard = ({
               className="object-contain h-auto rounded-md"
               src={image} // Ensure image is always a string here
               alt="image"
-              priority={false}
+              priority={true}
             />
           </figure>
         )}

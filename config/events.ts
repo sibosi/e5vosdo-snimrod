@@ -27,5 +27,13 @@ export const eventsConfig = {
       details: undefined,
       tags: [],
     },
+    {
+      title: "Tanévzáró ünnepség",
+      time: "június 21.",
+      _hide_time_: "2024-6-22",
+      image: "/events/evnyito.jpg",
+      details: undefined,
+      tags: [],
+    },
   ],
 };

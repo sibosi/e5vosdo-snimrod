@@ -6,7 +6,7 @@ import tanarok_tabla from "@/src/osszestanar.json";
 
 let cachedData: any[] | null = null;
 let lastUpdated: number | null = null;
-const CACHE_DURATION = 3600 * 1000; // Cache duration in milliseconds (1 hour)
+const CACHE_DURATION = (3600 * 1000) / 2; // Cache duration in milliseconds (1 hour)
 
 async function update() {
   console.log("Updating the table...");
@@ -40,7 +40,7 @@ async function update() {
       let i = 0;
       for (const added_event of quick_data) {
         if (new_event[1] === added_event[0] && i != -1) {
-          quick_data[i][2].push(new_event);
+          quick_data[i][3].push(new_event);
           i = -1;
           break;
         }
@@ -51,7 +51,12 @@ async function update() {
         let found = false;
         for (const tanar of tanarok_tabla) {
           if (tanar["Name"] === new_event[1] && !found && tanar["Photo"]) {
-            quick_data.push([new_event[1], tanar["Photo"], [new_event]]);
+            quick_data.push([
+              new_event[1],
+              tanar["Photo"],
+              tanar["Subjects"],
+              [new_event],
+            ]);
             found = true;
             break;
           }
@@ -63,7 +68,7 @@ async function update() {
 
     const napok: string[] = [];
     quick_data.forEach((teacherData) => {
-      teacherData[2].forEach((event: any[]) => {
+      teacherData[3].forEach((event: any[]) => {
         const ora_terem = event[2];
         const ora = ora_terem.charAt(0);
         let nap = "";

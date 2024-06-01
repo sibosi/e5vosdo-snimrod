@@ -23,7 +23,7 @@ export const PageWarning = () => {
       <p className="inline">
         <Link
           href={siteConfig.links.feedback}
-          className="pl-1 text-sm text-blue-800"
+          className="pl-1 text-sm text-blue-700"
         >
           Funkció kérése Hiba jelentése
         </Link>

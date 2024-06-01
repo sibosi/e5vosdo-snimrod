@@ -1,16 +1,7 @@
-import { title } from "@/components/primitives";
-import { link as linkStyles } from "@nextui-org/theme";
-import clsx from "clsx";
-
 export default function AboutPage() {
   return (
     <div>
-      <h1
-        className={clsx(
-          title(),
-          linkStyles({ color: "foreground", isBlock: true })
-        )}
-      >
+      <h1 className="text-4xl font-semibold lg:text-5xl text-foreground block">
         🚧 About 🚧
       </h1>
     </div>

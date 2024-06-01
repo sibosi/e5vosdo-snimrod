@@ -18,7 +18,7 @@ type Teacher = {
   bronze: number;
 };
 
-type rowType = [string, string, Teacher[]];
+type rowType = [string, string, string, Teacher[]];
 const rows: rowType[] = [];
 
 export const QuickTeachers = () => {
@@ -45,14 +45,14 @@ export const QuickTeachers = () => {
                     src: teacher[1],
                   }}
                   className="transition-transform p-2"
-                  description="@Tanár"
+                  description={teacher[2]}
                   name={teacher[0]}
                 />
               </DropdownTrigger>
 
               <DropdownMenu aria-label="Static Actions">
-                {teacher[2] &&
-                  teacher[2].map((event: any, eventIndex: number) => (
+                {teacher[3] &&
+                  teacher[3].map((event: any, eventIndex: number) => (
                     <DropdownItem key={eventIndex} className="text-foreground">
                       {event[7] +
                         " | " +

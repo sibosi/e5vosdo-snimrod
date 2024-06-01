@@ -4,7 +4,7 @@ import { link as linkStyles } from "@nextui-org/theme";
 import { groupsConfig } from "@/config/groups";
 import { PopupCard } from "@/components/popupcard";
 
-export default async function ClubsPage() {
+export default function ClubsPage() {
   return (
     <div className="text-center">
       <div>

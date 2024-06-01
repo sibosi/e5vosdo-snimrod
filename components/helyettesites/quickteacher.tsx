@@ -8,8 +8,7 @@ import {
   User,
   Skeleton,
 } from "@nextui-org/react";
-
-import { useState, useEffect } from "react";
+import useSWR from "swr";
 
 type Teacher = {
   country: string;
@@ -23,19 +22,8 @@ type rowType = [string, string, Teacher[]];
 const rows: rowType[] = [];
 
 export const QuickTeachers = () => {
-  const [tableData, setTableData] = useState<rowType[]>(rows);
-  const [isLoaded, setIsLoaded] = React.useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/api/"); // Adjust path if needed
-      const data = await res.json();
-      setTableData(data as rowType[]); // Type assertion for clarity
-      setIsLoaded(true);
-    };
-
-    fetchData();
-  }, [isLoaded]);
+  const { data: tableData, error } = useSWR("/api/", fetcher);
+  const isLoaded = !error && !!tableData;
 
   return (
     <Skeleton
@@ -43,7 +31,9 @@ export const QuickTeachers = () => {
       className="rounded-lg h-auto w-auto text-foreground"
     >
       <React.Fragment>
-        {tableData.length ? (
+        {error && <p>Error fetching data</p>}
+        {!isLoaded && !error && <p>Loading...</p>}
+        {isLoaded && tableData && tableData.length ? (
           tableData.map((teacher: rowType, rowIndex: number) => (
             <Dropdown key={rowIndex} className="block md:">
               <DropdownTrigger>
@@ -84,4 +74,10 @@ export const QuickTeachers = () => {
       </React.Fragment>
     </Skeleton>
   );
+};
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch data");
+  return res.json();
 };

@@ -4,14 +4,12 @@ import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
 
 import clsx from "clsx";
-import { PopupCard } from "@/components/popupcard";
 import { title } from "@/components/primitives";
 import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
 import { Countdown } from "@/components/countdown";
-import { eventsConfig } from "@/config/events";
-import { Chip } from "@nextui-org/react";
 import { Section } from "@/components/section";
+import { Events } from "@/components/events";
 
 export default function Home() {
   return (
@@ -67,29 +65,7 @@ export default function Home() {
       </Section>
 
       <Section title="Események">
-        <div className="text-left gap-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center pb-5">
-          {eventsConfig.events.map(
-            (event, index) =>
-              new Date(event._hide_time_) > new Date() && (
-                <PopupCard
-                  key={index}
-                  title={event.title}
-                  details={event.details}
-                  description={event.time}
-                  image={event.image}
-                  popup={true}
-                >
-                  <div className="flex gap-2">
-                    {event.tags.map((tag, index) => (
-                      <Chip key={tag + "" + index} color="warning" size="sm">
-                        {tag}
-                      </Chip>
-                    ))}
-                  </div>
-                </PopupCard>
-              )
-          )}
-        </div>
+        <Events />
       </Section>
 
       <Section title="Keresel valamit?" className="max-w-xs">

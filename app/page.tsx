@@ -4,48 +4,25 @@ import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
 
 import clsx from "clsx";
-import { PopupCard } from "@/components/popupcard";
-import { title } from "@/components/primitives";
 import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
 import { Countdown } from "@/components/countdown";
-import { eventsConfig } from "@/config/events";
-import { Chip } from "@nextui-org/react";
 import { Section } from "@/components/section";
+import { Events } from "@/components/events";
+import { PageWarning } from "@/components/pagewarning";
 
 export default function Home() {
   return (
     <div>
-      <div className="text-center justify-center pb-14 text-foreground">
-        <div className="text-sm w-auto bg-amber-300 rounded-lg py-2 px-3 border-3 border-amber-400 max-w-xs justify-center text-center mx-auto mb-3 self-center text-black">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="stroke-current shrink-0 h-6 w-6 inline"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-          <p className="inline pl-1">
-            {"Az oldal fejlesztés alatt áll. Segíts Te is a fejlesztésben!"}
+      <div className="text-center pb-14 text-foreground">
+        <PageWarning />
+        <h1 className="inline text-4xl font-semibold lg:text-5xl">
+          Valami&nbsp;
+          <p className="inline from-[#FF1CF7] to-[#b249f8] bg-clip-text text-transparent bg-gradient-to-l">
+            jó&nbsp;
           </p>
-          <p className="inline">
-            <Link href={siteConfig.links.feedback} className="pl-1 text-sm">
-              Funkció kérése
-            </Link>
-            <Link href={siteConfig.links.feedback} className="pl-1 text-sm">
-              Hiba jelentése
-            </Link>
-          </p>
-        </div>
-        <h1 className={title()}>Valami&nbsp;</h1>
-        <h1 className={title({ color: "violet" })}>jó&nbsp;</h1>
-        <h1 className={title()}>készül...</h1>
+          készül...
+        </h1>
       </div>
 
       <div className="pb-3">
@@ -67,29 +44,7 @@ export default function Home() {
       </Section>
 
       <Section title="Események">
-        <div className="text-left gap-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center pb-5">
-          {eventsConfig.events.map(
-            (event, index) =>
-              new Date(event._hide_time_) > new Date() && (
-                <PopupCard
-                  key={index}
-                  title={event.title}
-                  details={event.details}
-                  description={event.time}
-                  image={event.image}
-                  popup={true}
-                >
-                  <div className="flex gap-2">
-                    {event.tags.map((tag, index) => (
-                      <Chip key={tag + "" + index} color="warning" size="sm">
-                        {tag}
-                      </Chip>
-                    ))}
-                  </div>
-                </PopupCard>
-              )
-          )}
-        </div>
+        <Events />
       </Section>
 
       <Section title="Keresel valamit?" className="max-w-xs">

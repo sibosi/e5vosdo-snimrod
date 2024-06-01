@@ -46,19 +46,23 @@ export const Menu = () => {
             🍴 A menü:
           </Button>
           {tableData[date] && tableData[date].A ? (
-            tableData[date].A.map((fogas: string, rowIndex: number) => (
-              <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
-                <Button
-                  disabled
-                  key={rowIndex}
-                  color="primary"
-                  variant="flat"
-                  className="border-1 md:border-blue-700"
-                >
-                  {fogas}
-                </Button>
-              </div>
-            ))
+            tableData[date].A.map((fogas: string, rowIndex: number) =>
+              fogas ? (
+                <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
+                  <Button
+                    disabled
+                    key={rowIndex}
+                    color="primary"
+                    variant="flat"
+                    className="border-1 border-blue-700"
+                  >
+                    {fogas}
+                  </Button>
+                </div>
+              ) : (
+                <></>
+              )
+            )
           ) : (
             <Button disabled key={"Amenu2"} color="default" variant="solid">
               <p>Nincs információ</p>
@@ -70,19 +74,23 @@ export const Menu = () => {
             🍴 B menü:
           </Button>
           {tableData[date] && tableData[date].A ? (
-            tableData[date].B.map((fogas: string, rowIndex: number) => (
-              <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
-                <Button
-                  disabled
-                  key={rowIndex}
-                  color="secondary"
-                  variant="flat"
-                  className="border-1 md:border-purple-800"
-                >
-                  {fogas}
-                </Button>
-              </div>
-            ))
+            tableData[date].B.map((fogas: string, rowIndex: number) =>
+              fogas ? (
+                <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
+                  <Button
+                    disabled
+                    key={rowIndex}
+                    color="secondary"
+                    variant="flat"
+                    className="border-1 border-purple-800"
+                  >
+                    {fogas}
+                  </Button>
+                </div>
+              ) : (
+                <></>
+              )
+            )
           ) : (
             <Button disabled key={"Bmenu2"} color="default" variant="solid">
               <p>Nincs információ</p>

@@ -22,7 +22,7 @@ export const eventsConfig = {
     {
       title: "Pedagógus nap",
       time: "május 31.",
-      _hide_time_: "2024-6-1",
+      _hide_time_: "2024-6-2",
       image: "/events/pedagogusnap.png",
       details: undefined,
       tags: [],

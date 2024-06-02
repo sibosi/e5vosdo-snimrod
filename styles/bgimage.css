@@ -1,9 +1,3 @@
-.bgimage {
-  background-image: url("/opinion.png");
-  height: 50vh;
-  width: 100%;
-}
-
 .bgcolor {
   background-color: hsl(
     var(--nextui-foreground) /

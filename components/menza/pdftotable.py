@@ -93,7 +93,13 @@ def main (path : str):
         
     mindenkori_menu = havi_menu
 
-    with open('src\\mindenkorimenu.json', 'w', encoding='utf-8') as outfile:
+    with open('public\\storage\\mindenkorimenu.json', 'r') as outfile:
+        data = outfile.read()
+        if data == '': data = '{}'
+        data = json.loads(data)
+        mindenkori_menu.update(data)
+
+    with open('public\\storage\\mindenkorimenu.json', 'w', encoding='utf-8') as outfile:
         json.dump(mindenkori_menu, outfile)
 
 

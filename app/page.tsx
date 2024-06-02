@@ -56,8 +56,8 @@ export default function Home() {
         </Link>
       </Section>
 
-      <div className="hero bgimage">
-        <div className="hero-overlay bgcolor"></div>
+      <div className="hero bg-[url('/opinion.png')]">
+        <div className="hero-overlay bgcolor "></div>
         <div className="hero-content text-center text-neutral-content">
           <div className="max-w-md text-black rounded-lg p-4 backdrop-blur-sm bg-danger-foreground bg-opacity-70">
             <h1 className={clsx("mb-5 text-4xl font-bold")}>
@@ -82,6 +82,12 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </div>
+
+      <div className="hidden">
+        {
+          "Az oldal a Budapest V. Kerületi Eötvös József Gimnázium (más néven EJG) Diákönkormányzatának (más néven DÖ) tájékoztató oldala."
+        }
       </div>
     </div>
   );

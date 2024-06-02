@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import { useState, useEffect } from "react";
+import nyersMenu from "@/public/storage/mindenkorimenu.json";
 
 type RowType = {
   [date: string]: {
@@ -11,30 +11,20 @@ type RowType = {
   };
 };
 
-const rows: RowType[] = [];
+const mindenkorimenu = nyersMenu as unknown as RowType[];
 
 function padTo2Digits(num: number) {
   return num.toString().padStart(2, "0");
 }
 
 export const Menu = () => {
-  const [tableData, setTableData] = useState<RowType[]>(rows);
+  const tableData = mindenkorimenu;
   const now = new Date();
   const date: any = [
     now.getFullYear(),
     padTo2Digits(now.getMonth() + 1),
     now.getDate(),
   ].join(".");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/storage/mindenkorimenu.json"); // Adjust path if needed
-      const data = await res.json();
-      setTableData(data);
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <div className="text-foreground">

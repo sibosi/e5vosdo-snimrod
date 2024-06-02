@@ -37,21 +37,21 @@ export const SideCard = ({
 
   return (
     <>
-      <div className="card image-full bg-base-100 max-w-sm shadow-2xl rounded-2xl overflow-hidden">
+      <div className="card image-full max-w-sm rounded-2xl overflow-hidden">
         {typeof image === "string" && (
           <figure>
             <Image
               fill
-              className="object-filld"
+              className="z-20 dark:opacity-50 opacity-100"
               src={image}
-              alt="Movie"
+              alt="image"
               priority={true}
             />
           </figure>
         )}
-        <div className="card-body">
-          <h2 className="card-title">{title}</h2>
-          <p>{description}</p>
+        <div className="card-body bg-neutral-200 bg-opacity-50 dark:bg-none dark:bg-opacity-0">
+          <h2 className="card-title text-foreground">{title}</h2>
+          <p className="text-foreground">{description}</p>
           {children}
           <div className="card-actions justify-end">
             {OptionalButton(popup)}

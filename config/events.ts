@@ -5,6 +5,7 @@ export const eventsConfig = {
     {
       title: "Példa esemény",
       time: "május 20. 17:43",
+      _show_time_: "2024-4-2",
       _hide_time_: "2024-5-21",
       image: undefined,
       details: undefined,
@@ -13,6 +14,7 @@ export const eventsConfig = {
     {
       title: "Dzsungel könyve előadások",
       time: "május 27.-30. 18:00",
+      _show_time_: "2024-4-2",
       _hide_time_: "2024-5-31",
       image: "/events/junglebook.jpg",
       details:
@@ -22,7 +24,8 @@ export const eventsConfig = {
     {
       title: "Pedagógus nap",
       time: "május 31.",
-      _hide_time_: "2024-6-2",
+      _show_time_: "2024-4-2",
+      _hide_time_: "2024-5-2",
       image: "/events/pedagogusnap.png",
       details: undefined,
       tags: [],
@@ -30,6 +33,7 @@ export const eventsConfig = {
     {
       title: "Tanévzáró ünnepség",
       time: "június 21.",
+      _show_time_: "2024-6-2",
       _hide_time_: "2024-6-22",
       image: "/events/evnyito.jpg",
       details: undefined,

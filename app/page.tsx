@@ -83,6 +83,12 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <div className="hidden">
+        {
+          "Az oldal a Budapest V. Kerületi Eötvös József Gimnázium (más néven EJG) Diákönkormányzatának (más néven DÖ) tájékoztató oldala."
+        }
+      </div>
     </div>
   );
 }

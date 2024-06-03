@@ -11,7 +11,7 @@ export const Events = () => {
         (event, index) =>
           new Date(event._show_time_) < new Date() &&
           new Date(event._hide_time_) > new Date() && (
-            <div key={index + 0.1} className="pb-4">
+            <div key={index + 100} className="pb-4">
               {(noneEvent = true)}
               <SideCard
                 key={index}

@@ -24,7 +24,7 @@ export const Alert = ({ children, className }: Alert) => {
           d="M12 17V11"
           stroke="#1C274C"
           stroke-width="1.5"
-          stroke-linecap="round"
+          strokeLinecap="round"
         />
         <circle
           cx="1"

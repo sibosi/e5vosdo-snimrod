@@ -62,7 +62,12 @@ async function update() {
           }
         }
         if (!found)
-          quick_data.push([new_event[1], TEACHER_AVATAR, [new_event]]);
+          quick_data.push([
+            new_event[1],
+            TEACHER_AVATAR,
+            "@Tanár",
+            [new_event],
+          ]);
       }
     });
 

@@ -38,7 +38,7 @@ export default function Home() {
 
       <Alert className="bg-blue-300 border-blue-400">
         <Link
-          className="text-sm"
+          className="text-sm font-bold"
           href="https://docs.google.com/forms/d/1WUhZoIFFll-IHyVV2GtYMvgMsBlDh0RC_lqChSSEMmg/edit#settings"
         >
           {"Jelentkezz"}

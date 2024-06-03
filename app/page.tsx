@@ -10,6 +10,7 @@ import { Countdown } from "@/components/countdown";
 import { Section } from "@/components/section";
 import { Events } from "@/components/events";
 import { PageWarning } from "@/components/pagewarning";
+import { Alert } from "@/components/alert";
 
 export default function Home() {
   return (
@@ -35,15 +36,27 @@ export default function Home() {
         </div>
       </div>
 
-      <Section title={"Helyettesítések"}>
+      <Alert className="bg-blue-300 border-blue-400">
+        <Link
+          className="text-sm font-bold"
+          href="https://docs.google.com/forms/d/1WUhZoIFFll-IHyVV2GtYMvgMsBlDh0RC_lqChSSEMmg/edit#settings"
+        >
+          {"Jelentkezz"}
+        </Link>
+        {
+          " 4+1 fős csapatoddal a június 14-i EJG x Apáczai röplabda bajnoksága! "
+        }
+      </Alert>
+
+      <Section title={"Helyettesítések"} dropdownable={true}>
         <QuickTeachers />
       </Section>
 
-      <Section title="Mi a mai menü?">
+      <Section title="Mi a mai menü?" dropdownable={true}>
         <Menu />
       </Section>
 
-      <Section title="Események">
+      <Section title="Események" dropdownable={true}>
         <Events />
       </Section>
 

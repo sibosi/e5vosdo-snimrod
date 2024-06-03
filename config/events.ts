@@ -31,6 +31,16 @@ export const eventsConfig = {
       tags: [],
     },
     {
+      title: "Eötvös-Apáczai röplabda bajnokság",
+      time: "június 21. 16:00",
+      _show_time_: "2024-6-2",
+      _hide_time_: "2024-6-22",
+      image: "/events/ropi2.jpg",
+      details:
+        "Helyszín: Eötvös nagy tornaterem \nCsapatok: 4+1 fős csapatok jelentkezését várjuk.\nMindkét iskolából 4-4 csapatra számítunk, túljelentkezés esetén az iskola megszavazza, hogy mely csapatok induljanak.",
+      tags: ["sport", "E5vos x Apáczai"],
+    },
+    {
       title: "Tanévzáró ünnepség",
       time: "június 21.",
       _show_time_: "2024-6-2",

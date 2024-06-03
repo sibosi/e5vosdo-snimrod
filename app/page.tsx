@@ -35,15 +35,15 @@ export default function Home() {
         </div>
       </div>
 
-      <Section title={"Helyettesítések"}>
+      <Section title={"Helyettesítések"} dropdownable={true}>
         <QuickTeachers />
       </Section>
 
-      <Section title="Mi a mai menü?">
+      <Section title="Mi a mai menü?" dropdownable={true}>
         <Menu />
       </Section>
 
-      <Section title="Események">
+      <Section title="Események" dropdownable={true}>
         <Events />
       </Section>
 

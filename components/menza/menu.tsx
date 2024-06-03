@@ -23,7 +23,7 @@ export const Menu = () => {
   const date: any = [
     now.getFullYear(),
     padTo2Digits(now.getMonth() + 1),
-    now.getDate(),
+    padTo2Digits(now.getDate()),
   ].join(".");
 
   return (

@@ -8,13 +8,7 @@ export default function ClubsPage() {
   return (
     <div className="text-center">
       <div>
-        <h1
-          className={clsx(
-            "flex-col items-center justify-center gap-4 py-8 md:py-10 inline-block max-w-lg text-center",
-            title(),
-            linkStyles({ color: "foreground", isBlock: true })
-          )}
-        >
+        <h1 className="py-2 text-4xl font-semibold lg:text-5xl text-foreground block">
           🚧 Klubok és szakkörök 🚧
         </h1>
       </div>

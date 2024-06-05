@@ -71,7 +71,7 @@ const pages = {
   },
 };
 
-const tabs = [pages.groups, pages.clubs, pages.home, pages.about];
+const tabs = [pages.home, pages.groups, pages.clubs, pages.about];
 
 export const PageNav = () => {
   return (

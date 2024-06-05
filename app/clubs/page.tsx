@@ -1,6 +1,3 @@
-import { title } from "@/components/primitives";
-import clsx from "clsx";
-import { link as linkStyles } from "@nextui-org/theme";
 import { groupsConfig } from "@/config/groups";
 import { PopupCard } from "@/components/popupcard";
 

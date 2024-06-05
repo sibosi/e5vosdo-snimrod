@@ -1,6 +1,6 @@
 "use client";
-import { eventsConfig } from "@/config/events";
-import { Chip } from "@nextui-org/react";
+import eventsConfig from "@/config/events";
+import { Chip, Link } from "@nextui-org/react";
 import { SideCard } from "./sidecard";
 
 export const Events = () => {
@@ -9,7 +9,9 @@ export const Events = () => {
     <div className="text-left items-start grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-b-8 border-transparent pb-5">
       {eventsConfig.events.map(
         (event, index) =>
-          new Date(event._show_time_) < new Date() &&
+          (event._show_time_ != undefined
+            ? new Date(event._show_time_) < new Date()
+            : true) &&
           new Date(event._hide_time_) > new Date() && (
             <div key={index + 100} className="pb-4">
               {(noneEvent = true)}
@@ -20,13 +22,30 @@ export const Events = () => {
                 description={event.time}
                 image={event.image}
                 popup={true}
+                button_size="sm"
               >
                 <div className="flex gap-2">
-                  {event.tags.map((tag, index) => (
-                    <Chip key={tag + "" + index} color="warning" size="sm">
-                      {tag}
+                  {event.tags != undefined ? (
+                    event.tags.map((tag, index) => (
+                      <Chip key={tag + "" + index} color="warning" size="sm">
+                        {tag}
+                      </Chip>
+                    ))
+                  ) : (
+                    <></>
+                  )}
+                  {event._img_src_ ? (
+                    <Chip size="sm" variant="flat">
+                      <Link
+                        className="text-xs text-foreground"
+                        href={event._img_src_}
+                      >
+                        Kép forrása
+                      </Link>
                     </Chip>
-                  ))}
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </SideCard>
             </div>

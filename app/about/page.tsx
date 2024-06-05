@@ -1,9 +1,9 @@
 export default function AboutPage() {
   return (
-    <div>
-      <h1 className="text-4xl font-semibold lg:text-5xl text-foreground block">
+    <>
+      <h1 className="pb-8 text-4xl lg:text-5xl font-semibold text-foreground text-center">
         🚧 About 🚧
       </h1>
-    </div>
+    </>
   );
 }

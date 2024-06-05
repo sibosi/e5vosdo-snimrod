@@ -3,13 +3,10 @@ import { PopupCard } from "@/components/popupcard";
 
 export default function ClubsPage() {
   return (
-    <div className="text-center">
-      <div>
-        <h1 className="py-2 text-4xl font-semibold lg:text-5xl text-foreground block">
-          🚧 Klubok és szakkörök 🚧
-        </h1>
-      </div>
-      <br />
+    <>
+      <h1 className="pb-8 text-4xl lg:text-5xl font-semibold text-foreground text-center">
+        Klubok és szakkörök
+      </h1>
       <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center">
         {groupsConfig.clubs.map((groups, index) => (
           <PopupCard
@@ -22,6 +19,6 @@ export default function ClubsPage() {
           />
         ))}
       </div>
-    </div>
+    </>
   );
 }

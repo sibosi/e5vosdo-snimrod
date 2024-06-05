@@ -49,7 +49,7 @@ const eventsConfig = {
       _img_src_:
         "https://assets.snitt.hu/system/covers/normal/covers_127630.jpg?1709542655",
       details:
-        "Délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Kék Pelikán \nmoderátor: Ott Anna (irodalmár) \n\nLesz büfé is. ( :",
+        "Június 17-én, délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Kék Pelikán \nmoderátor: Ott Anna (irodalmár) \n\nLesz büfé is. ( :",
       tags: ["filmezés"],
     },
     {
@@ -59,7 +59,7 @@ const eventsConfig = {
       image: "/events/semmelweis.jpeg",
       _img_src_: "https://wmn.hu/picture/112586/normal/298/00298459.jpeg",
       details:
-        "Délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Semmelweis \nmoderátor: Hargitai Petra (korábbi DÖ elnök) \n\nLesz büfé is. ( :",
+        "Június 18-án, délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Semmelweis \nmoderátor: Hargitai Petra (korábbi DÖ elnök) \n\nLesz büfé is. ( :",
       tags: ["filmezés"],
     },
     {
@@ -69,7 +69,7 @@ const eventsConfig = {
       image: "/events/hadik.jpg",
       _img_src_: "https://wmn.hu/picture/112586/normal/298/00298459.jpeg",
       details:
-        "Délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Hadik \nmoderátor: Bosznai Tibor (Hadik étterem és kávéház tulajdonosa és ügyvezetője) \n\nLesz büfé is. ( :",
+        "Június 19-én, délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Hadik \nmoderátor: Bosznai Tibor (Hadik étterem és kávéház tulajdonosa és ügyvezetője) \n\nLesz büfé is. ( :",
       tags: ["filmezés"],
     },
     {

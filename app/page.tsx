@@ -44,7 +44,7 @@ export default function Home() {
           {"Jelentkezz"}
         </Link>
         {
-          " 4+1 fős csapatoddal a június 14-i EJG x Apáczai röplabda bajnoksága! "
+          " még a héten 4+1 fős csapatoddal a június 14-i EJG x Apáczai röplabda bajnoksága! "
         }
       </Alert>
 

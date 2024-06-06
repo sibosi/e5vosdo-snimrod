@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "typeRoots": ["./node_modules/@types"], // Path to the @types folder
     "types": ["glob"],
     "target": "es5",

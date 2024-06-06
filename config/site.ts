@@ -28,7 +28,7 @@ export const siteConfig = {
   //navMenuItems: [],
   links: {
     github: "https://github.com/Sibosi",
-    mypage: "https://github.com/Sibosi",
+    mypage: "https://linktr.ee/snimrod",
     instagram: "https://instagram.com/e5vosdo/",
     gdrive:
       "https://drive.google.com/drive/u/0/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA",

@@ -38,10 +38,13 @@ export const Menu = () => {
           {tableData[date] && tableData[date].A ? (
             tableData[date].A.map((fogas: string, rowIndex: number) =>
               fogas ? (
-                <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
+                <div
+                  key={rowIndex + 0.01}
+                  className="py-1 px-0 md:py-0 md:px-1"
+                >
                   <Button
+                    key={rowIndex + 0.011}
                     disabled
-                    key={rowIndex}
                     color="primary"
                     variant="flat"
                     className="border-1 border-blue-700"
@@ -66,10 +69,13 @@ export const Menu = () => {
           {tableData[date] && tableData[date].A ? (
             tableData[date].B.map((fogas: string, rowIndex: number) =>
               fogas ? (
-                <div key={rowIndex} className="py-1 px-0 md:py-0 md:px-1">
+                <div
+                  key={rowIndex + 0.02}
+                  className="py-1 px-0 md:py-0 md:px-1"
+                >
                   <Button
+                    key={rowIndex + 0.021}
                     disabled
-                    key={rowIndex}
                     color="secondary"
                     variant="flat"
                     className="border-1 border-purple-800"

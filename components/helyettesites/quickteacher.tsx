@@ -19,7 +19,6 @@ type Teacher = {
 };
 
 type rowType = [string, string, string, Teacher[]];
-const rows: rowType[] = [];
 
 export const QuickTeachers = () => {
   const { data: tableData, error } = useSWR("/api/", fetcher);

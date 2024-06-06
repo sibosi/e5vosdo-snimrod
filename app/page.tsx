@@ -11,6 +11,7 @@ import { Section } from "@/components/section";
 import { Events } from "@/components/events";
 import { PageWarning } from "@/components/pagewarning";
 import { Alert } from "@/components/alert";
+import { RoomChanges } from "@/components/roomchanges";
 
 export default function Home() {
   return (
@@ -47,6 +48,10 @@ export default function Home() {
           " még a héten 4+1 fős csapatoddal a június 14-i EJG x Apáczai röplabda bajnoksága! "
         }
       </Alert>
+
+      <Section title={"Teremcserék"} dropdownable={true}>
+        <RoomChanges />
+      </Section>
 
       <Section title={"Helyettesítések"} dropdownable={true}>
         <QuickTeachers />

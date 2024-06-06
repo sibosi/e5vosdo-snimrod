@@ -4,8 +4,8 @@ export default function ClubsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="">
-      <div className="">{children}</div>
+    <section className="pt-8 md:pt-10">
+      <div className="p-1">{children}</div>
     </section>
   );
 }

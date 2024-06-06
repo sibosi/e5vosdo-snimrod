@@ -4,10 +4,8 @@ export default function E5eventsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-full p-1 text-center justify-center">
-        {children}
-      </div>
+    <section className="pt-8 md:pt-10">
+      <div className="p-1">{children}</div>
     </section>
   );
 }

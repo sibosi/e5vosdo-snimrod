@@ -5,7 +5,7 @@ import "../styles/globals.css";
 type CardProps = {
   title: string;
   image?: string;
-  details: string;
+  details: React.ReactNode;
   button_size?: "sm" | "md" | "lg";
   className?: string;
   children?: React.ReactNode;

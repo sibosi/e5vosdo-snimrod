@@ -6,7 +6,7 @@ import { PopupButton } from "./popupbutton";
 type SideCardProps = {
   title: string;
   image?: string;
-  details?: string;
+  details?: React.ReactNode;
   description: string;
   popup: boolean;
   button_size?: "sm" | "md" | "lg";
@@ -25,7 +25,7 @@ export const SideCard = ({
   const OptionalButton = (popup: boolean) => {
     if (popup) {
       return (
-        typeof details === "string" && (
+        typeof details != undefined && (
           <PopupButton
             key={undefined}
             title={title}

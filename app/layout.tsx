@@ -93,13 +93,15 @@ export default function RootLayout({
             <footer className="w-full flex items-center justify-center py-3">
               <Link
                 isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://github.com/Sibosi"
-                title="Sibosi's homepage"
+                className="flex items-center gap-1 text-current pb-14"
+                href={siteConfig.links.mypage}
+                title="Nimród oldala"
               >
-                <span className="text-default-600">Developed by</span>
-                <p className="text-primary">Nimród</p>
+                <span className="text-default-600">Fejlesztette</span>
+                <p className="text-primary">Simon Nimród</p>
+                <span className="text-default-600">9.C</span>
               </Link>
+              <br />
               <PageNav />
             </footer>
           </div>

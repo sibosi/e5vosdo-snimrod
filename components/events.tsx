@@ -1,5 +1,5 @@
 "use client";
-import eventsConfig from "@/config/events";
+import eventsConfig from "@/config/events.tsx";
 import { Chip, Link } from "@nextui-org/react";
 import { SideCard } from "./sidecard";
 

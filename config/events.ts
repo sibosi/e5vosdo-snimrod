@@ -1,6 +1,17 @@
-export type EventsConfig = typeof eventsConfig;
+type EventsConfig = {
+  events: {
+    title: string;
+    time: string;
+    _hide_time_: string;
+    image: string;
+    _show_time_?: string;
+    _img_src_?: string;
+    details?: string;
+    tags?: string[];
+  }[];
+};
 
-export const eventsConfig = {
+const eventsConfig = {
   events: [
     {
       title: "Példa esemény",
@@ -31,6 +42,37 @@ export const eventsConfig = {
       tags: [],
     },
     {
+      title: "Kertmozi: Kék Pelikán",
+      time: "június 17. - Hétfő",
+      _hide_time_: "2024/6/18",
+      image: "/events/kekpelikan.jpg",
+      _img_src_:
+        "https://assets.snitt.hu/system/covers/normal/covers_127630.jpg?1709542655",
+      details:
+        "Délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Kék Pelikán \nmoderátor: Ott Anna (irodalmár) \n\nLesz büfé is. ( :",
+      tags: ["filmezés"],
+    },
+    {
+      title: "Kertmozi: Semmelweis",
+      time: "június 18. - Kedd",
+      _hide_time_: "2024/6/19",
+      image: "/events/semmelweis.jpeg",
+      _img_src_: "https://wmn.hu/picture/112586/normal/298/00298459.jpeg",
+      details:
+        "Délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Semmelweis \nmoderátor: Hargitai Petra (korábbi DÖ elnök) \n\nLesz büfé is. ( :",
+      tags: ["filmezés"],
+    },
+    {
+      title: "Kertmozi: Hadik",
+      time: "június 19. - Szerda.",
+      _hide_time_: "2024/6/20",
+      image: "/events/hadik.jpg",
+      _img_src_: "https://wmn.hu/picture/112586/normal/298/00298459.jpeg",
+      details:
+        "Délutáni filmnézés az udvaron, a Kertmozi keretében. \nFilm: Hadik \nmoderátor: Bosznai Tibor (Hadik étterem és kávéház tulajdonosa és ügyvezetője) \n\nLesz büfé is. ( :",
+      tags: ["filmezés"],
+    },
+    {
       title: "Eötvös/Apáczai röplabda bajnokság",
       time: "június 21. 16:00",
       _show_time_: "2024/6/2",
@@ -51,3 +93,5 @@ export const eventsConfig = {
     },
   ],
 };
+
+export default eventsConfig as unknown as EventsConfig;

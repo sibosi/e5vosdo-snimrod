@@ -9,6 +9,7 @@ type SideCardProps = {
   details?: string;
   description: string;
   popup: boolean;
+  button_size?: "sm" | "md" | "lg";
   children?: React.ReactNode;
 };
 
@@ -17,6 +18,7 @@ export const SideCard = ({
   image,
   details,
   description,
+  button_size,
   popup,
   children,
 }: SideCardProps) => {
@@ -28,6 +30,7 @@ export const SideCard = ({
             key={undefined}
             title={title}
             image={image}
+            button_size={button_size}
             details={details}
           />
         )
@@ -50,12 +53,12 @@ export const SideCard = ({
           </figure>
         )}
         <div className="card-body bg-neutral-200 bg-opacity-50 dark:bg-none dark:bg-opacity-0">
-          <h2 className="card-title text-foreground">{title}</h2>
+          <div className="flex">
+            <h2 className="card-title w-full text-foreground">{title}</h2>
+            <div>{OptionalButton(popup)}</div>
+          </div>
           <p className="text-foreground">{description}</p>
           {children}
-          <div className="card-actions justify-end">
-            {OptionalButton(popup)}
-          </div>
         </div>
       </div>
     </>

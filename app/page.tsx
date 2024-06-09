@@ -11,6 +11,7 @@ import { Section } from "@/components/section";
 import { Events } from "@/components/events";
 import { PageWarning } from "@/components/pagewarning";
 import { Alert } from "@/components/alert";
+import { RoomChanges } from "@/components/roomchanges/roomchanges";
 
 export default function Home() {
   return (
@@ -36,27 +37,37 @@ export default function Home() {
         </div>
       </div>
 
-      <Alert className="bg-blue-300 border-blue-400">
-        <Link
-          className="text-sm font-bold"
-          href="https://docs.google.com/forms/d/1WUhZoIFFll-IHyVV2GtYMvgMsBlDh0RC_lqChSSEMmg/edit#settings"
-        >
-          {"Jelentkezz"}
-        </Link>
-        {
-          " még a héten 4+1 fős csapatoddal a június 14-i EJG x Apáczai röplabda bajnoksága! "
-        }
-      </Alert>
+      <Section
+        title={"Teremcserék"}
+        dropdownable={true}
+        className={`${!siteConfig.pageSections["teremcserek"] ? "hidden" : ""}`}
+      >
+        <RoomChanges />
+      </Section>
 
-      <Section title={"Helyettesítések"} dropdownable={true}>
+      <Section
+        title={"Helyettesítések"}
+        dropdownable={true}
+        className={`${
+          !siteConfig.pageSections["helyettesitesek"] ? "hidden" : ""
+        }`}
+      >
         <QuickTeachers />
       </Section>
 
-      <Section title="Mi a mai menü?" dropdownable={true}>
+      <Section
+        title="Mi a mai menü?"
+        dropdownable={true}
+        className={`${!siteConfig.pageSections["menza"] ? "hidden" : ""}`}
+      >
         <Menu />
       </Section>
 
-      <Section title="Események" dropdownable={true}>
+      <Section
+        title="Események"
+        dropdownable={true}
+        className={`${!siteConfig.pageSections["esemenyek"] ? "hidden" : ""}`}
+      >
         <Events />
       </Section>
 

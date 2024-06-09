@@ -1,8 +1,15 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "E5vosdo",
-  description: "EJG DÖ oldala",
+  name: "Eötvös DÖ",
+  description: "Az Eötvös József Gimnázium Diákönkormányzat oldala",
+  pageSections: {
+    teremcserek: false,
+    helyettesitesek: true,
+    menza: true,
+    esemenyek: true,
+  },
+
   navItems: [
     {
       label: "Főoldal",

@@ -11,7 +11,7 @@ import { Section } from "@/components/section";
 import { Events } from "@/components/events";
 import { PageWarning } from "@/components/pagewarning";
 import { Alert } from "@/components/alert";
-import { RoomChanges } from "@/components/roomchanges";
+import { RoomChanges } from "@/components/roomchanges/roomchanges";
 
 export default function Home() {
   return (
@@ -49,19 +49,37 @@ export default function Home() {
         }
       </Alert>
 
-      <Section title={"Teremcserék"} dropdownable={true}>
+      <Section
+        title={"Teremcserék"}
+        dropdownable={true}
+        className={`${!siteConfig.pageSections["teremcserek"] ? "hidden" : ""}`}
+      >
         <RoomChanges />
       </Section>
 
-      <Section title={"Helyettesítések"} dropdownable={true}>
+      <Section
+        title={"Helyettesítések"}
+        dropdownable={true}
+        className={`${
+          !siteConfig.pageSections["helyettesitesek"] ? "hidden" : ""
+        }`}
+      >
         <QuickTeachers />
       </Section>
 
-      <Section title="Mi a mai menü?" dropdownable={true}>
+      <Section
+        title="Mi a mai menü?"
+        dropdownable={true}
+        className={`${!siteConfig.pageSections["menza"] ? "hidden" : ""}`}
+      >
         <Menu />
       </Section>
 
-      <Section title="Események" dropdownable={true}>
+      <Section
+        title="Események"
+        dropdownable={true}
+        className={`${!siteConfig.pageSections["esemenyek"] ? "hidden" : ""}`}
+      >
         <Events />
       </Section>
 

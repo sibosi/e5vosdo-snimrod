@@ -37,18 +37,6 @@ export default function Home() {
         </div>
       </div>
 
-      <Alert className="bg-blue-300 border-blue-400">
-        <Link
-          className="text-sm font-bold"
-          href="https://docs.google.com/forms/d/1WUhZoIFFll-IHyVV2GtYMvgMsBlDh0RC_lqChSSEMmg/edit#settings"
-        >
-          {"Jelentkezz"}
-        </Link>
-        {
-          " még a héten 4+1 fős csapatoddal a június 14-i EJG x Apáczai röplabda bajnoksága! "
-        }
-      </Alert>
-
       <Section
         title={"Teremcserék"}
         dropdownable={true}

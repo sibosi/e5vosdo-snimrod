@@ -46,12 +46,20 @@ const eventsConfig = {
     {
       title: "Eötvös/Apáczai röplabda bajnokság",
       time: "június 14. 16:00",
-      _show_time_: "2024/6/2",
       _hide_time_: "2024/6/15",
       image: "/events/ropi2.jpg",
       details:
         "Időpont: június 14. (péntek) 16:00 \n Helyszín: Eötvös nagy tornaterem \n\n Jelentkezni 4+1 fős csapatoknak lehet.\nMindkét iskolából 4/4 csapatra számítunk, túljelentkezés esetén az iskola megszavazza, hogy mely csapatok induljanak.",
       tags: ["sport", "E5vos x Apáczai"],
+    },
+    {
+      title: "Tremoloes koncert",
+      time: "június 14. 19:00",
+      _hide_time_: "2024/6/15",
+      image: "/events/disztomeg.jpg",
+      details:
+        "Június 14-én szeretettel várunk mindenkit a Tremoloes 1 éves jubileumi koncertjén 19:00-tól a díszteremben! Családtagokat, külsős barátokat bátran hozzatok magatokkal! \n\n Szeretettel vár a Tremoloes",
+      tags: ["koncert"],
     },
     {
       title: "Kertmozi: Kék Pelikán",

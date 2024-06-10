@@ -37,39 +37,45 @@ export default function Home() {
         </div>
       </div>
 
-      <Section
-        title={"Teremcserék"}
-        dropdownable={true}
-        className={`${!siteConfig.pageSections["teremcserek"] ? "hidden" : ""}`}
-      >
-        <RoomChanges />
-      </Section>
+      {siteConfig.pageSections["teremcserek"] != "hidden" && (
+        <Section
+          title={"Teremcserék"}
+          dropdownable={true}
+          defaultStatus={siteConfig.pageSections["teremcserek"]}
+        >
+          <RoomChanges />
+        </Section>
+      )}
 
-      <Section
-        title={"Helyettesítések"}
-        dropdownable={true}
-        className={`${
-          !siteConfig.pageSections["helyettesitesek"] ? "hidden" : ""
-        }`}
-      >
-        <QuickTeachers />
-      </Section>
+      {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
+        <Section
+          title={"Helyettesítések"}
+          dropdownable={true}
+          defaultStatus={siteConfig.pageSections["helyettesitesek"]}
+        >
+          <QuickTeachers />
+        </Section>
+      )}
 
-      <Section
-        title="Mi a mai menü?"
-        dropdownable={true}
-        className={`${!siteConfig.pageSections["menza"] ? "hidden" : ""}`}
-      >
-        <Menu />
-      </Section>
+      {siteConfig.pageSections["menza"] != "hidden" && (
+        <Section
+          title="Mi a mai menü?"
+          dropdownable={true}
+          defaultStatus={siteConfig.pageSections["menza"]}
+        >
+          <Menu />
+        </Section>
+      )}
 
-      <Section
-        title="Események"
-        dropdownable={true}
-        className={`${!siteConfig.pageSections["esemenyek"] ? "hidden" : ""}`}
-      >
-        <Events />
-      </Section>
+      {siteConfig.pageSections["esemenyek"] != "hidden" && (
+        <Section
+          title="Események"
+          dropdownable={true}
+          defaultStatus={siteConfig.pageSections["esemenyek"]}
+        >
+          <Events />
+        </Section>
+      )}
 
       <Section title="Keresel valamit?" className="max-w-xs">
         <Link href={"/clubs"} color="primary" className="block">

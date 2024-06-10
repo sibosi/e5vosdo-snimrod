@@ -5,6 +5,7 @@ import { Link } from "@nextui-org/react";
 
 type SectionProps = {
   title: string;
+  defaultStatus?: "opened" | "closed";
   dropdownable?: boolean;
   children: React.ReactNode;
   className?: string;
@@ -12,11 +13,14 @@ type SectionProps = {
 
 export const Section = ({
   title,
+  defaultStatus,
   dropdownable,
   children,
   className,
 }: SectionProps) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(
+    defaultStatus == "closed" ? false : true
+  );
 
   const toggleDropdown = () => {
     if (dropdownable) {

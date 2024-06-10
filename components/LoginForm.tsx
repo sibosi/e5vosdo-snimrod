@@ -1,6 +1,6 @@
 "use server";
 import { Button } from "@nextui-org/react";
-import { doSocialLogin } from "@/app/actions/route";
+import { doSocialLogin } from "@/actions/route";
 
 export const LoginForm = () => {
   return (

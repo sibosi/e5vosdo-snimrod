@@ -56,7 +56,7 @@ const eventsConfig = {
       title: "Tremoloes koncert",
       time: "június 14. 19:00",
       _hide_time_: "2024/6/15",
-      image: "/events/disztomeg.jpg",
+      image: "/events/koncert.jpg",
       details:
         "Június 14-én szeretettel várunk mindenkit a Tremoloes 1 éves jubileumi koncertjén 19:00-tól a díszteremben! Családtagokat, külsős barátokat bátran hozzatok magatokkal! \n\n Szeretettel vár a Tremoloes",
       tags: ["koncert"],

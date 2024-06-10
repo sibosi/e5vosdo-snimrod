@@ -4,7 +4,7 @@ export const siteConfig = {
   name: "Eötvös DÖ",
   description: "Az Eötvös József Gimnázium Diákönkormányzat oldala",
   pageSections: {
-    teremcserek: false,
+    teremcserek: true,
     helyettesitesek: true,
     menza: true,
     esemenyek: true,

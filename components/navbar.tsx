@@ -22,8 +22,10 @@ import { SearchIcon, InstagramIcon } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
 import { Avatar, Chip } from "@nextui-org/react";
+import { auth } from "@/auth";
 
-export const Navbar = () => {
+export const Navbar = async () => {
+  const session = await auth();
   const searchInput = (
     <Input
       aria-label="Search"
@@ -101,9 +103,13 @@ export const Navbar = () => {
           </Link>
           <ThemeSwitch />
         </NavbarItem>
-        <NavbarItem className="hidden md:flex">
+        <NavbarItem className="flex">
           <div className="flex gap-4 items-center">
-            <Avatar isBordered color="default" src="apa-logo.jpg" />
+            {session?.user?.image && session?.user?.name ? (
+              <Avatar isBordered color="default" src={session?.user?.image} />
+            ) : (
+              <Avatar isBordered color="default" src="apa-logo.jpg" />
+            )}
           </div>
         </NavbarItem>
       </NavbarContent>
@@ -119,6 +125,15 @@ export const Navbar = () => {
         </Link>
         <ThemeSwitch />
         <NavbarMenuToggle className="text-foreground hidden" />
+        <NavbarItem className="flex">
+          <div className="flex gap-4 items-center">
+            {session?.user?.image && session?.user?.name ? (
+              <Avatar isBordered color="default" src={session?.user?.image} />
+            ) : (
+              <Avatar isBordered color="default" src="apa-logo.jpg" />
+            )}
+          </div>
+        </NavbarItem>
       </NavbarContent>
 
       {/*legördülő menü*/}

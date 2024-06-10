@@ -61,7 +61,7 @@ export const RoomChanges = () => {
                   change[3] +
                   " | " +
                   change[1] +
-                  " -> " +
+                  " ➜ " +
                   change[2]}
               </p>
             )

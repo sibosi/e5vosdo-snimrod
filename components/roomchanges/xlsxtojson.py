@@ -112,7 +112,7 @@ for sor in nyers_cserek:
 ##############################
 
 
-KEZDO_DATUM = '2024.06.03'
+KEZDO_DATUM = '2024.06.10'
 
 ossz_cserek = []
 

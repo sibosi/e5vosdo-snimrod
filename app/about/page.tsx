@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/LoginForm";
+import Login from "@/components/LoginForm";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";

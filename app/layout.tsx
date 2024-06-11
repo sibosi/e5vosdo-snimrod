@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import { Metadata } from "next";
+import { GetServerSideProps, Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
@@ -8,6 +8,7 @@ import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { Analytics } from "@vercel/analytics/react";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: {
@@ -30,11 +31,12 @@ export const viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html lang="hu" suppressHydrationWarning className="bg-background">
       <head>
@@ -85,29 +87,25 @@ export default function RootLayout({
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
-            <div className="text-center pb-14 text-foreground">
-              <main>
-                <br />
-                <br />
-                <br />
-                <h1 className="inline text-4xl font-semibold lg:text-5xl pt-24">
-                  Valami&nbsp;
-                  <p className="inline from-[#FF1CF7] to-[#b249f8] bg-clip-text text-transparent bg-gradient-to-l">
-                    jó&nbsp;
-                  </p>
-                  készül...
-                </h1>
-                <br />
-                <h2 className="inline text-xl font-semibold lg:text-5xl pt-24">
-                  De most egy kis szünetet tartunk...
-                </h2>
-                <br />
-                <br />
-                <h2 className="inline text-xl lg:text-5xl py-24">
-                  Várunk vissza holnap!
-                </h2>
-              </main>
-            </div>
+            <Navbar session={session} />
+            <main className="container mx-auto max-w-7xl pt-4 pl-3 pr-3 flex-grow">
+              {children}
+              <Analytics />
+            </main>
+            <footer className="w-full flex items-center justify-center py-3">
+              <Link
+                isExternal
+                className="flex items-center gap-1 text-current pb-14"
+                href={siteConfig.links.mypage}
+                title="Nimród oldala"
+              >
+                <span className="text-default-600">Fejlesztette</span>
+                <p className="text-primary">Simon Nimród</p>
+                <span className="text-default-600">9.C</span>
+              </Link>
+              <br />
+              <PageNav />
+            </footer>
           </div>
         </Providers>
       </body>

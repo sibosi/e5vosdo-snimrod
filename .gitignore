@@ -36,6 +36,6 @@ next-env.d.ts
 
 public/storage/quick-teachers.json
 public/storage/teachers.json
-public/sw.json
+public/sw.js
 
 .env

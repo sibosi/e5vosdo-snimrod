@@ -19,7 +19,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, InstagramIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
 import { Chip } from "@nextui-org/react";
-import ProfileIcon from "@/components/profileicon"; // Ensure the path is correct
+import { ProfileIcon } from "@/components/profileicon"; // Ensure the path is correct
 import { Session } from "next-auth";
 
 export const Navbar = ({ session }: { session: Session | null }) => {

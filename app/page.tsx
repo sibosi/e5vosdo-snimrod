@@ -12,7 +12,7 @@ import { Events } from "@/components/events";
 import { PageWarning } from "@/components/pagewarning";
 import { Alert } from "@/components/alert";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
-import { LoginForm } from "@/components/LoginForm";
+import Login from "@/components/LoginForm";
 import LogOut from "@/components/LogOut";
 
 export default function Home() {
@@ -86,7 +86,7 @@ export default function Home() {
         <Link href={"/events"} color="primary" className="block">
           Összes esemény ➜
         </Link>
-        <LoginForm />
+        <Login />
         <LogOut />
       </Section>
 

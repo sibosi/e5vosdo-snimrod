@@ -1,8 +1,8 @@
-"use server";
-import { Button } from "@nextui-org/react";
 import { doSocialLogin } from "@/actions/route";
+import { Button } from "@nextui-org/react";
+import React from "react";
 
-export const LoginForm = () => {
+const Login = () => {
   return (
     <form action={doSocialLogin}>
       <Button
@@ -13,8 +13,10 @@ export const LoginForm = () => {
         size="sm"
         className="rounded-badge"
       >
-        Sign In with Google
+        Bejelentkezés
       </Button>
     </form>
   );
 };
+
+export default Login;

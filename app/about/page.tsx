@@ -1,8 +1,9 @@
-import { LoginForm } from "@/components/LoginForm";
+import Login from "@/components/LoginForm";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import LogOut from "@/components/LogOut";
+import { siteConfig } from "@/config/site";
 
 const AboutPage = async () => {
   const session = await auth();

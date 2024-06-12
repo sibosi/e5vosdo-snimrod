@@ -12,21 +12,33 @@ import { Events } from "@/components/events";
 import { PageWarning } from "@/components/pagewarning";
 import { Alert } from "@/components/alert";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
-import { LoginForm } from "@/components/LoginForm";
-import LogOut from "@/components/LogOut";
+import { auth } from "@/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
   return (
     <div>
       <div className="text-center pb-14 text-foreground">
         <PageWarning />
-        <h1 className="inline text-4xl font-semibold lg:text-5xl">
-          Valami&nbsp;
-          <p className="inline from-[#FF1CF7] to-[#b249f8] bg-clip-text text-transparent bg-gradient-to-l">
-            jó&nbsp;
-          </p>
-          készül...
-        </h1>
+        {session?.user?.name ? (
+          <>
+            <h1 className="inline text-4xl font-semibold lg:text-5xl">
+              Helló{" "}
+              <p className="inline from-[#397cf8] to-[#0026ff] bg-clip-text text-transparent bg-gradient-to-l">
+                {session.user.name.split(" ")[0]}
+              </p>
+              !
+            </h1>
+          </>
+        ) : (
+          <h1 className="inline text-4xl font-semibold lg:text-5xl">
+            Valami&nbsp;
+            <p className="inline from-[#FF1CF7] to-[#b249f8] bg-clip-text text-transparent bg-gradient-to-l">
+              jó&nbsp;
+            </p>
+            készül...
+          </h1>
+        )}
       </div>
 
       <div className="pb-3">
@@ -86,8 +98,6 @@ export default function Home() {
         <Link href={"/events"} color="primary" className="block">
           Összes esemény ➜
         </Link>
-        <LoginForm />
-        <LogOut />
       </Section>
 
       <div className="hero bg-[url('/opinion.png')]">

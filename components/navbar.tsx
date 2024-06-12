@@ -1,3 +1,4 @@
+// components/navbar.tsx
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -10,22 +11,18 @@ import {
 import { Kbd } from "@nextui-org/kbd";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
-
 import { link as linkStyles } from "@nextui-org/theme";
-
 import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
 import clsx from "clsx";
-
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, InstagramIcon } from "@/components/icons";
-
 import { Logo } from "@/components/icons";
-import { Avatar, Chip } from "@nextui-org/react";
-import { auth } from "@/auth";
+import { Chip } from "@nextui-org/react";
+import { ProfileIcon } from "@/components/profileicon"; // Ensure the path is correct
+import { Session } from "next-auth";
 
-export const Navbar = async () => {
-  const session = await auth();
+export const Navbar = ({ session }: { session: Session | null }) => {
   const searchInput = (
     <Input
       aria-label="Search"
@@ -49,7 +46,7 @@ export const Navbar = async () => {
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
-      <NavbarContent className="basis-1/5 md:basis-full" justify="start">
+      <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Logo />
@@ -70,7 +67,6 @@ export const Navbar = async () => {
             </Chip>
           </NextLink>
         </NavbarBrand>
-
         <ul className="hidden md:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
@@ -90,10 +86,10 @@ export const Navbar = async () => {
       </NavbarContent>
 
       <NavbarContent
-        className="hidden md:flex basis-1/5 md:basis-full"
+        className="basis-1 md:basis-full pl-4 md:pl-0 gap-2"
         justify="end"
       >
-        <NavbarItem className="hidden md:flex gap-2">
+        <NavbarItem>
           <Link
             isExternal
             href={siteConfig.links.instagram}
@@ -101,42 +97,15 @@ export const Navbar = async () => {
           >
             <InstagramIcon className="text-default-500" />
           </Link>
+        </NavbarItem>
+        <NavbarItem>
           <ThemeSwitch />
         </NavbarItem>
-        <NavbarItem className="flex">
-          <div className="flex gap-4 items-center">
-            {session?.user?.image && session?.user?.name ? (
-              <Avatar isBordered color="default" src={session?.user?.image} />
-            ) : (
-              <Avatar isBordered color="default" src="apa-logo.jpg" />
-            )}
-          </div>
+        <NavbarItem className="flex items-center pl-2">
+          <ProfileIcon session={session} />
         </NavbarItem>
       </NavbarContent>
 
-      {/*telefon ikonok*/}
-      <NavbarContent className="md:hidden basis-1 pl-4" justify="end">
-        <Link
-          isExternal
-          href={siteConfig.links.instagram}
-          aria-label="Instagram"
-        >
-          <InstagramIcon className="text-default-500" />
-        </Link>
-        <ThemeSwitch />
-        <NavbarMenuToggle className="text-foreground hidden" />
-        <NavbarItem className="flex">
-          <div className="flex gap-4 items-center">
-            {session?.user?.image && session?.user?.name ? (
-              <Avatar isBordered color="default" src={session?.user?.image} />
-            ) : (
-              <Avatar isBordered color="default" src="apa-logo.jpg" />
-            )}
-          </div>
-        </NavbarItem>
-      </NavbarContent>
-
-      {/*legördülő menü*/}
       <NavbarMenu>
         {searchInput}
         <div className="mx-4 mt-2 flex flex-col gap-2">

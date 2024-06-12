@@ -2,7 +2,7 @@ import { doLogout } from "@/actions/route";
 import { Button } from "@nextui-org/react";
 import React from "react";
 
-const LogOut = () => {
+const Logout = () => {
   return (
     <form action={doLogout}>
       <Button
@@ -13,10 +13,10 @@ const LogOut = () => {
         size="sm"
         className="rounded-badge"
       >
-        Log out
+        Kijelentkezés
       </Button>
     </form>
   );
 };
 
-export default LogOut;
+export default Logout;

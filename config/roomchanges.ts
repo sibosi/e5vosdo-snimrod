@@ -72,6 +72,4 @@ roomchangesConfig.map((day, dayIndex) => {
   });
 });
 
-console.log(quickRoomchangesConfig);
-
 export default quickRoomchangesConfig as QuickRoomchangesConfig;

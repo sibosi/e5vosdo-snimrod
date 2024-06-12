@@ -22,6 +22,7 @@ const Access = ({ name }: { name: string | undefined }) => {
             </h1>
             <br />
             <p>Sajnáljuk, jelenleg nincs hozzáférésed az oldalhoz.</p>
+            <p>Hozzáférés igénylése esetén, add meg a nevedet is az űrlapon!</p>
             <br />
             <Button color="primary">
               <Link href={siteConfig.links.feedback}>Hozzáférés kérése</Link>

@@ -32,7 +32,9 @@ export const ProfileIcon = ({ session }: { session: Session | null }) => {
 
       <div
         className={`fixed top-14 backdrop-blur-md bg-default-300/90 rounded-2xl transition-all duration-400 overflow-hidden text-center text-foreground ${
-          !showButtons ? "h-0 p-0 w-0 right-10" : "h-auto p-6 right-6"
+          !showButtons
+            ? "h-0 p-0 w-0 right-10 2xl:right-48"
+            : "h-auto p-6 right-6 2xl:right-48"
         } `}
       >
         <>

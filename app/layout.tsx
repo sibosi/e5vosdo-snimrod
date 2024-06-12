@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import { GetServerSideProps, Metadata } from "next";
+import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
@@ -9,6 +9,7 @@ import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { Analytics } from "@vercel/analytics/react";
 import { auth } from "@/auth";
+import Access from "@/components/account/access";
 
 export const metadata: Metadata = {
   title: {
@@ -88,24 +89,42 @@ export default async function RootLayout({
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
             <Navbar session={session} />
-            <main className="container mx-auto max-w-7xl pt-4 pl-3 pr-3 flex-grow">
-              {children}
-              <Analytics />
-            </main>
-            <footer className="w-full flex items-center justify-center py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 text-current pb-14"
-                href={siteConfig.links.mypage}
-                title="Nimród oldala"
-              >
-                <span className="text-default-600">Fejlesztette</span>
-                <p className="text-primary">Simon Nimród</p>
-                <span className="text-default-600">9.C</span>
-              </Link>
-              <br />
-              <PageNav />
-            </footer>
+            {session &&
+            session.user &&
+            session.user.email &&
+            siteConfig.users.includes(session.user.email) ? (
+              <>
+                {console.log("New login from " + session.user.email)}
+                <main className="container mx-auto max-w-7xl pt-4 pl-3 pr-3 flex-grow">
+                  {children}
+                  <Analytics />
+                </main>
+                <footer className="w-full flex items-center justify-center py-3">
+                  <Link
+                    isExternal
+                    className="flex items-center gap-1 text-current pb-14"
+                    href={siteConfig.links.mypage}
+                    title="Nimród oldala"
+                  >
+                    <span className="text-default-600">Fejlesztette</span>
+                    <p className="text-primary">Simon Nimród</p>
+                    <span className="text-default-600">9.C</span>
+                  </Link>
+                  <br />
+                  <PageNav />
+                </footer>
+              </>
+            ) : (
+              <>
+                <Access
+                  name={
+                    session && session.user && session.user.name
+                      ? session.user.name
+                      : undefined
+                  }
+                />
+              </>
+            )}
           </div>
         </Providers>
       </body>

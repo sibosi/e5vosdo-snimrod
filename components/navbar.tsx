@@ -46,7 +46,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
-      <NavbarContent className="basis-1/5 md:basis-full" justify="start">
+      <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Logo />
@@ -84,11 +84,12 @@ export const Navbar = ({ session }: { session: Session | null }) => {
           ))}
         </ul>
       </NavbarContent>
+
       <NavbarContent
-        className="hidden md:flex basis-1/5 md:basis-full"
+        className="basis-1 md:basis-full pl-4 md:pl-0 gap-2"
         justify="end"
       >
-        <NavbarItem className="hidden md:flex gap-2">
+        <NavbarItem>
           <Link
             isExternal
             href={siteConfig.links.instagram}
@@ -96,30 +97,15 @@ export const Navbar = ({ session }: { session: Session | null }) => {
           >
             <InstagramIcon className="text-default-500" />
           </Link>
+        </NavbarItem>
+        <NavbarItem>
           <ThemeSwitch />
         </NavbarItem>
-        <NavbarItem className="flex">
-          <div className="flex gap-4 items-center">
-            <ProfileIcon session={session} />
-          </div>
+        <NavbarItem className="flex items-center pl-2">
+          <ProfileIcon session={session} />
         </NavbarItem>
       </NavbarContent>
-      <NavbarContent className="md:hidden basis-1 pl-4" justify="end">
-        <Link
-          isExternal
-          href={siteConfig.links.instagram}
-          aria-label="Instagram"
-        >
-          <InstagramIcon className="text-default-500" />
-        </Link>
-        <ThemeSwitch />
-        <NavbarMenuToggle className="text-foreground hidden" />
-        <NavbarItem className="flex">
-          <div className="flex gap-4 items-center">
-            <ProfileIcon session={session} />
-          </div>
-        </NavbarItem>
-      </NavbarContent>
+
       <NavbarMenu>
         {searchInput}
         <div className="mx-4 mt-2 flex flex-col gap-2">

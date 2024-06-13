@@ -13,6 +13,7 @@ import { PageWarning } from "@/components/pagewarning";
 import { Alert } from "@/components/alert";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { auth } from "@/auth";
+import { Vakacio } from "@/components/vakacio";
 
 export default async function Home() {
   const session = await auth();
@@ -22,9 +23,9 @@ export default async function Home() {
         <PageWarning />
         {session?.user?.name ? (
           <>
-            <h1 className="inline text-4xl font-semibold lg:text-5xl">
+            <h1 className="inline text-5xl font-semibold lg:text-5xl">
               Helló{" "}
-              <p className="inline from-[#397cf8] to-[#0026ff] bg-clip-text text-transparent bg-gradient-to-l">
+              <p className="inline from-[#39b2f8] to-[#2747fc] bg-clip-text text-transparent bg-gradient-to-l">
                 {session.user.name.split(" ")[0]}
               </p>
               !
@@ -42,6 +43,8 @@ export default async function Home() {
       </div>
 
       <div className="pb-3">
+        <Vakacio date="2024/6/21 0:00" />
+
         <h1 className="flex justify-center text-foreground text-3xl font-semibold py-1">
           Tanévzárás
         </h1>

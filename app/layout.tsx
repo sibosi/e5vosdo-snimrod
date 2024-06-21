@@ -7,9 +7,11 @@ import { Navbar } from "@/components/navbar";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
-import { Analytics } from "@vercel/analytics/react";
 import { auth } from "@/auth";
 import Access from "@/components/account/access";
+import ReactGA from "react-ga";
+
+ReactGA.initialize("G-P74RJ9THHS");
 
 export const metadata: Metadata = {
   title: {
@@ -97,7 +99,6 @@ export default async function RootLayout({
                 {console.log("New login from " + session.user.email)}
                 <main className="container mx-auto max-w-7xl pt-4 pl-3 pr-3 flex-grow">
                   {children}
-                  <Analytics />
                 </main>
                 <footer className="w-full flex items-center justify-center py-3">
                   <Link

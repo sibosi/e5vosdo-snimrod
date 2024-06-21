@@ -12,6 +12,7 @@
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
+    "@bradgarropy/next-google-analytics": "^1.0.2",
     "@nextui-org/input": "2.1.16",
     "@nextui-org/kbd": "2.0.25",
     "@nextui-org/link": "2.0.26",

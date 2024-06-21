@@ -9,9 +9,8 @@ import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { auth } from "@/auth";
 import Access from "@/components/account/access";
-import ReactGA from "react-ga";
-
-ReactGA.initialize("G-P74RJ9THHS");
+import Script from "next/script";
+import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 
 export const metadata: Metadata = {
   title: {
@@ -81,6 +80,7 @@ export default async function RootLayout({
           sizes="192x192"
         />
       </head>
+
       <body
         className={clsx(
           "min-h-screen bg-background font-sans antialiased",
@@ -88,6 +88,21 @@ export default async function RootLayout({
           "light:bg-white"
         )}
       >
+        <Script
+          async
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-P74RJ9THHS"
+        />
+
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P74RJ9THHS');
+          `}
+        </Script>
+
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
             <Navbar session={session} />
@@ -128,6 +143,7 @@ export default async function RootLayout({
             )}
           </div>
         </Providers>
+        <GoogleAnalytics measurementId="G-P74RJ9THHS" />
       </body>
     </html>
   );

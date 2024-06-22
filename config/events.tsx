@@ -71,7 +71,7 @@ const eventsConfig = {
       details: (
         <>
           {
-            "Időpont: június 17. (Hétfő) 20:00 - 23:00 \n Helyszín: Eötvös udvara\nFilm: Kék Pelikán \nmoderátor: Ott Anna (irodalmár) \n\n A filmalatt büfé is áll a rendelkezésetekre. Várunk Titeket szeretettel! "
+            "Időpont: június 17. (Hétfő) 20:00 - 23:00 \n Helyszín: Eötvös udvara\nFilm: Kék Pelikán \nmoderátor: Ott Anna (irodalmár) \n\n A film alatt büfé is áll a rendelkezésetekre. Várunk Titeket szeretettel! "
           }
 
           <Link
@@ -93,7 +93,7 @@ const eventsConfig = {
       details: (
         <>
           {
-            "Időpont: június 18. (Kedd) 20:00 - 23:00 \n Helyszín: Eötvös udvara\nFilm: Semmelweis \nmoderátor: Hargitai Petra (korábbi DÖ elnök) \n\n A filmalatt büfé is áll a rendelkezésetekre. Várunk Titeket szeretettel! "
+            "Időpont: június 18. (Kedd) 20:00 - 23:00 \n Helyszín: Eötvös udvara\nFilm: Semmelweis \nmoderátor: Hargitai Petra (korábbi DÖ elnök) \n\n A film alatt büfé is áll a rendelkezésetekre. Várunk Titeket szeretettel! "
           }
 
           <Link
@@ -115,7 +115,7 @@ const eventsConfig = {
       details: (
         <>
           {
-            "Időpont: június 18. (Kedd) 20:00 - 23:00 \n Helyszín: Eötvös udvara\nFilm: Hadik \nmoderátor: Bosznai Tibor (Hadik étterem és kávéház tulajdonosa és ügyvezetője) \n\n A filmalatt büfé is áll a rendelkezésetekre. Várunk Titeket szeretettel! "
+            "Időpont: június 18. (Kedd) 20:00 - 23:00 \n Helyszín: Eötvös udvara\nFilm: Hadik \nmoderátor: Bosznai Tibor (Hadik étterem és kávéház tulajdonosa és ügyvezetője) \n\n A film alatt büfé is áll a rendelkezésetekre. Várunk Titeket szeretettel! "
           }
 
           <Link

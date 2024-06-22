@@ -15,7 +15,6 @@ This is a web application by Nimród Simon for the student government of the Eö
 - [TypeScript](https://www.typescriptlang.org/)
 - [Framer Motion](https://www.framer.com/motion/)
 - [next-themes](https://github.com/pacocoursey/next-themes)
-- [Python3 & PIP](https://www.python.org/downloads/)
 
 ## How to Use
 
@@ -24,19 +23,13 @@ This is a web application by Nimród Simon for the student government of the Eö
 To clone this repository, run the following command:
 
 ```bash
-git clone https://github.com/sibosi/e5vosdo-basic.git
+git clone https://github.com/sibosi/e5vosdo-snimrod.git
 ```
 
 ### Install dependencies
 
 ```bash
 npm install
-```
-
-### Install python packages
-
-```bash
-pip install -r requirements.txt
 ```
 
 ### Run the development server
@@ -55,6 +48,14 @@ Licensed under the [MIT license](https://github.com/nextui-org/next-app-template
 
 Acknowledgements
 
+- Lajos for the support
+
+- Zoltán for the support
+
 - Barnabás for the support
 
 - Zsolt for the support
+
+- Vince for the testing
+
+- Timi for the testing

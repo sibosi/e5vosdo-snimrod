@@ -21,4 +21,6 @@ export const {
       },
     }),
   ],
+  secret: process.env.AUTH_SECRET,
+  basePath: "/api/auth",
 });

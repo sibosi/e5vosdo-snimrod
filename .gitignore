@@ -39,3 +39,5 @@ public/storage/teachers.json
 public/sw.js
 
 .env
+public/sw.js
+public/workbox-07a7b4f2.js

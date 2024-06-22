@@ -11,6 +11,7 @@ import { auth } from "@/auth";
 import Access from "@/components/account/access";
 import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
+import ServiceWorker from "@/components/PWA/serviceWorker";
 
 export const metadata: Metadata = {
   title: {
@@ -39,6 +40,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  ServiceWorker;
   return (
     <html lang="hu" suppressHydrationWarning className="bg-background">
       <head>
@@ -93,7 +95,6 @@ export default async function RootLayout({
           strategy="afterInteractive"
           src="https://www.googletagmanager.com/gtag/js?id=G-P74RJ9THHS"
         />
-
         <Script id="google-analytics" strategy="afterInteractive">
           {`
           window.dataLayer = window.dataLayer || [];
@@ -102,7 +103,6 @@ export default async function RootLayout({
           gtag('config', 'G-P74RJ9THHS');
           `}
         </Script>
-
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
             <Navbar session={session} />

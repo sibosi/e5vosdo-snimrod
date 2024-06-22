@@ -18,9 +18,9 @@ import clsx from "clsx";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, InstagramIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
-import { Chip } from "@nextui-org/react";
-import { ProfileIcon } from "@/components/profileicon"; // Ensure the path is correct
+import { ProfileIcon } from "@/components/profileicon";
 import { Session } from "next-auth";
+import GetApp from "./PWA/getApp";
 
 export const Navbar = ({ session }: { session: Session | null }) => {
   const searchInput = (
@@ -50,22 +50,9 @@ export const Navbar = ({ session }: { session: Session | null }) => {
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Logo />
-            <p
-              className={clsx(
-                "font-bold dark:text-white",
-                linkStyles({ color: "foreground", isBlock: true })
-              )}
-            >
-              E5
-            </p>
-            <Chip
-              size="sm"
-              color="warning"
-              className="bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg"
-            >
-              PREVIEW
-            </Chip>
+            <p className="font-bold text-foreground block p-2">E5</p>
           </NextLink>
+          <GetApp />
         </NavbarBrand>
         <ul className="hidden md:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (

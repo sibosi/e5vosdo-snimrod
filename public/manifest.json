@@ -1,15 +1,35 @@
 {
-  "short_name": "E5 DO",
+  "short_name": "E5 DÖ",
   "name": "Eötvös József Gimnázium Diákönkormányzat",
   "author": "Simon Nimród Zalán",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
   "background_color": "#fff",
   "theme_color": "#fff",
   "icons": [
     {
       "src": "favico.ico",
-      "sizes": "48x48"
+      "sizes": "256x256"
+    },
+    {
+      "src": "icon-144-144.png",
+      "sizes": "144x144"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot.png",
+      "sizes": "626x1021",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Application"
+    },
+    {
+      "src": "screenshot.png",
+      "sizes": "626x1021",
+      "type": "image/png",
+      "label": "Application"
     }
   ]
 }

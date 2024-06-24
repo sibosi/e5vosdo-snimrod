@@ -42,18 +42,6 @@ export default async function Home() {
         )}
       </div>
 
-      <div className="pb-3">
-        <Vakacio date="2024/6/21 0:00" />
-
-        <h1 className="flex justify-center text-foreground text-3xl font-semibold py-1">
-          Tanévzárás
-        </h1>
-
-        <div className="flex justify-center items-center text-foreground">
-          <Countdown date="2024/6/21 9:00" />
-        </div>
-      </div>
-
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section
           title={"Teremcserék"}

@@ -1,38 +1,43 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { updateUser, User } from "./db/dbreq";
 
-let auth: any;
-
-if (process.env.FAKE_AUTH == "true") {
-  auth = () => {
-    return {
-      user: {
-        name: process.env.FAKE_NAME,
-        email: process.env.FAKE_EMAIL,
-        image: process.env.FAKE_IMAGE,
-      },
-    };
-  };
-} else {
-  auth = NextAuth({
-    providers: [
-      GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-
-        authorization: {
-          params: {
-            prompt: "consent",
-            access_type: "offline",
-            response_type: "code",
-          },
+function getAuth() {
+  if (process.env.FAKE_AUTH == "true") {
+    return () => {
+      return {
+        user: {
+          name: process.env.FAKE_NAME,
+          email: process.env.FAKE_EMAIL,
+          image: process.env.FAKE_IMAGE,
         },
-      }),
-    ],
-    secret: process.env.AUTH_SECRET,
-    basePath: "/api/auth",
-  });
+      };
+    };
+  } else {
+    const { auth } = NextAuth({
+      providers: [
+        GoogleProvider({
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+
+          authorization: {
+            params: {
+              prompt: "consent",
+              access_type: "offline",
+              response_type: "code",
+            },
+          },
+        }),
+      ],
+      secret: process.env.AUTH_SECRET,
+      basePath: "/api/auth",
+    });
+
+    return auth;
+  }
 }
+
+const auth = getAuth();
 
 const {
   handlers: { GET, POST },
@@ -56,5 +61,12 @@ const {
   secret: process.env.AUTH_SECRET,
   basePath: "/api/auth",
 });
+
+async function update() {
+  const session = await auth();
+  updateUser(session?.user as User);
+}
+
+update();
 
 export { GET, POST, auth, signIn, signOut };

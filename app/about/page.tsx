@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import LogOut from "@/components/LogOut";
 import { siteConfig } from "@/config/site";
+import { getUsers } from "@/db/dbreq";
 
 const AboutPage = async () => {
   const session = await auth();
@@ -27,6 +28,14 @@ const AboutPage = async () => {
         )}
       </div>
       <LogOut />
+
+      {await getUsers().then((users) =>
+        users.map((user) => (
+          <div key={user.id}>
+            <h1 className="text-foreground">{user.username}</h1>
+          </div>
+        ))
+      )}
     </>
   );
 };

@@ -13,7 +13,13 @@ import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
 import { Session } from "next-auth";
-import { getStudentUsersEmail, getUsers, getUsersEmail } from "@/db/dbreq";
+import {
+  getStudentUsersEmail,
+  getUsers,
+  getUsersEmail,
+  updateUser,
+  User,
+} from "@/db/dbreq";
 
 export const metadata: Metadata = {
   title: {
@@ -42,6 +48,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  session?.user ? await updateUser(session?.user as User) : null;
   const users = await getStudentUsersEmail();
   ServiceWorker;
   return (

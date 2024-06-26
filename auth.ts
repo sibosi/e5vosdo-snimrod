@@ -62,11 +62,4 @@ const {
   basePath: "/api/auth",
 });
 
-async function update() {
-  const session = await auth();
-  updateUser(session?.user as User);
-}
-
-update();
-
 export { GET, POST, auth, signIn, signOut };

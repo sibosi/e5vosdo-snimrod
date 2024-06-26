@@ -12,6 +12,7 @@ import Access from "@/components/account/access";
 import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
+import { Session } from "next-auth";
 
 export const metadata: Metadata = {
   title: {
@@ -105,7 +106,7 @@ export default async function RootLayout({
         </Script>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
-            <Navbar session={session} />
+            <Navbar session={session as Session} />
             {session &&
             session.user &&
             session.user.email &&

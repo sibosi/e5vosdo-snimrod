@@ -29,12 +29,26 @@ const AboutPage = async () => {
       </div>
       <LogOut />
 
-      {await getUsers().then((users) =>
-        users.map((user) => (
-          <div key={user.id}>
-            <h1 className="text-foreground">{user.username}</h1>
-          </div>
-        ))
+      {session?.user?.email == siteConfig.admin ? (
+        await getUsers().then((users) =>
+          (users as any).map((user: any) => (
+            <div key={user.id}>
+              <br />
+              <Image
+                src={user.image}
+                alt={user.username}
+                width={72}
+                height={72}
+                className="rounded-full"
+              />
+              <h1 className="text-foreground">{user.username}</h1>
+              <p>{user.email}</p>
+              <p>{String(user.last_login)}</p>
+            </div>
+          ))
+        )
+      ) : (
+        <></>
       )}
     </>
   );

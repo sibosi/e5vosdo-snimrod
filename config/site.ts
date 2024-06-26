@@ -19,6 +19,8 @@ export const siteConfig = {
   description: "Az Eötvös József Gimnázium Diákönkormányzat oldala",
   pageSections: pageSections,
 
+  admin: "simon.nimrod.zalan@e5vos.hu",
+
   users: [
     "simon.nimrod.zalan@e5vos.hu",
     "pal.adam@e5vos.hu",

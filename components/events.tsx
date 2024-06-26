@@ -22,7 +22,7 @@ export const Events = () => {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const response = await fetch("/api/db");
+      const response = await fetch("/api/getEvents");
       const data = await response.json();
       setEvents(data);
     };

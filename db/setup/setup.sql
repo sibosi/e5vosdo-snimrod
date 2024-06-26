@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `class` varchar(255),
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `permissions` JSON,
     `food_menu` CHAR(1),
     `coming_year` INT,
     `class_character` CHAR(1),
@@ -45,3 +46,8 @@ DROP TABLE users;
 UPDATE users
 SET EJG_code = '2023C25EJG462'
 WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Add permissions to nimrod user
+UPDATE users
+SET permissions = '["student"]'
+WHERE email = 'no.one@e5vos.hu';

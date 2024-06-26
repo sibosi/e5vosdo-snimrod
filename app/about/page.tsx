@@ -1,13 +1,12 @@
-import Login from "@/components/LoginForm";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import LogOut from "@/components/LogOut";
-import { siteConfig } from "@/config/site";
-import { getUsers } from "@/db/dbreq";
+import { getAdminUsersEmail, getUsers } from "@/db/dbreq";
 
 const AboutPage = async () => {
   const session = await auth();
+  const admins = await getAdminUsersEmail();
   if (!session?.user) redirect("/");
 
   return (
@@ -28,8 +27,9 @@ const AboutPage = async () => {
         )}
       </div>
       <LogOut />
-
-      {session?.user?.email == siteConfig.admin ? (
+      {admins}
+      <br />
+      {admins.includes(session?.user?.email ?? "") ? (
         await getUsers().then((users) =>
           (users as any).map((user: any) => (
             <div key={user.id}>

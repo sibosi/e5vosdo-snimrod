@@ -1,12 +1,12 @@
-import Login from "@/components/LoginForm";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import LogOut from "@/components/LogOut";
-import { siteConfig } from "@/config/site";
+import { getAdminUsersEmail, getUsers } from "@/db/dbreq";
 
 const AboutPage = async () => {
   const session = await auth();
+  const admins = await getAdminUsersEmail();
   if (!session?.user) redirect("/");
 
   return (
@@ -27,6 +27,29 @@ const AboutPage = async () => {
         )}
       </div>
       <LogOut />
+      {admins}
+      <br />
+      {admins.includes(session?.user?.email ?? "") ? (
+        await getUsers().then((users) =>
+          (users as any).map((user: any) => (
+            <div key={user.id}>
+              <br />
+              <Image
+                src={user.image}
+                alt={user.username}
+                width={72}
+                height={72}
+                className="rounded-full"
+              />
+              <h1 className="text-foreground">{user.username}</h1>
+              <p>{user.email}</p>
+              <p>{String(user.last_login)}</p>
+            </div>
+          ))
+        )
+      ) : (
+        <></>
+      )}
     </>
   );
 };

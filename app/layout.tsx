@@ -12,6 +12,8 @@ import Access from "@/components/account/access";
 import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
+import { Session } from "next-auth";
+import { getStudentUsersEmail, getUsers, getUsersEmail } from "@/db/dbreq";
 
 export const metadata: Metadata = {
   title: {
@@ -40,6 +42,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const users = await getStudentUsersEmail();
   ServiceWorker;
   return (
     <html lang="hu" suppressHydrationWarning className="bg-background">
@@ -105,11 +108,11 @@ export default async function RootLayout({
         </Script>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
-            <Navbar session={session} />
+            <Navbar session={session as Session} />
             {session &&
             session.user &&
             session.user.email &&
-            siteConfig.users.includes(session.user.email) ? (
+            (users as string[]).includes(session.user.email) ? (
               <>
                 {console.log("New login from " + session.user.email)}
                 <main className="container mx-auto max-w-7xl pt-4 pl-3 pr-3 flex-grow">

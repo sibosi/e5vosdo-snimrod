@@ -19,12 +19,6 @@ export const siteConfig = {
   description: "Az Eötvös József Gimnázium Diákönkormányzat oldala",
   pageSections: pageSections,
 
-  users: [
-    "simon.nimrod.zalan@e5vos.hu",
-    "pal.adam@e5vos.hu",
-    "goz.barnabas@e5vos.hu",
-  ],
-
   navItems: [
     {
       label: "Főoldal",

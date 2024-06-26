@@ -38,6 +38,8 @@ public/storage/quick-teachers.json
 public/storage/teachers.json
 public/sw.js
 
+.vscode
+
 .env
 public/sw.js
 public/workbox-07a7b4f2.js

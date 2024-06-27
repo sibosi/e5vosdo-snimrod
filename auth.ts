@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { updateUser, User } from "./db/dbreq";
 
 function getAuth() {
   if (process.env.FAKE_AUTH == "true") {

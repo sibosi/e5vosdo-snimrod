@@ -1,26 +1,31 @@
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import LogOut from "@/components/LogOut";
-import { getAdminUsersEmail, getUsers } from "@/db/dbreq";
+import {
+  apireq,
+  getAdminUsersEmail,
+  getAuth,
+  getUsers,
+  hasPermission,
+} from "@/db/dbreq";
 import ListUsers from "@/components/account/listusers";
 
 const AboutPage = async () => {
-  const session = await auth();
+  const selfUser = await getAuth();
   const admins = await getAdminUsersEmail();
-  if (!session?.user) redirect("/");
+  if (!selfUser) redirect("/");
 
   return (
     <>
       <h1 className="pb-8 text-4xl lg:text-5xl font-semibold text-foreground text-center">
         🚧 About 🚧
       </h1>
-      <h1>{session?.user.name}</h1>
+      <h1>{selfUser.name}</h1>
       <div>
-        {session?.user?.image && session?.user?.name && (
+        {selfUser?.image && selfUser?.name && (
           <Image
-            src={session?.user?.image}
-            alt={session?.user?.name}
+            src={selfUser?.image}
+            alt={selfUser?.name}
             width={72}
             height={72}
             className="rounded-full"
@@ -28,9 +33,17 @@ const AboutPage = async () => {
         )}
       </div>
       <LogOut />
-      {admins}
+      {"Adminok: " + admins.join(", ")}
       <br />
-      <ListUsers admins={admins} session={session} users={await getUsers()} />
+      {(await hasPermission(selfUser.email, "getUsers")) ? (
+        <ListUsers
+          admins={admins}
+          selfUser={selfUser}
+          initialUsers={await getUsers()}
+        />
+      ) : (
+        <></>
+      )}
     </>
   );
 };

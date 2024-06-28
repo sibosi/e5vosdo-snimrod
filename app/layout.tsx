@@ -14,6 +14,7 @@ import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
 import { Session } from "next-auth";
 import {
+  getAuth,
   getStudentUsersEmail,
   getUsers,
   getUsersEmail,
@@ -50,6 +51,7 @@ export default async function RootLayout({
   const session = await auth();
   session?.user ? await updateUser(session?.user as User) : null;
   const users = await getStudentUsersEmail();
+  const selfUser = await getAuth(session?.user?.email ?? undefined);
   ServiceWorker;
   return (
     <html lang="hu" suppressHydrationWarning className="bg-background">
@@ -115,7 +117,7 @@ export default async function RootLayout({
         </Script>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
-            <Navbar session={session as Session} />
+            <Navbar selfUser={selfUser} />
             {session &&
             session.user &&
             session.user.email &&

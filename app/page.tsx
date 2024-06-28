@@ -12,21 +12,21 @@ import { Events } from "@/components/events";
 import { PageWarning } from "@/components/pagewarning";
 import { Alert } from "@/components/alert";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
-import { auth } from "@/auth";
 import { Vakacio } from "@/components/vakacio";
+import { getAuth } from "@/db/dbreq";
 
 export default async function Home() {
-  const session = await auth();
+  const selfUser = await getAuth();
   return (
     <div>
       <div className="text-center pb-14 text-foreground">
         <PageWarning />
-        {session?.user?.name ? (
+        {selfUser?.name ? (
           <>
             <h1 className="inline text-5xl font-semibold lg:text-5xl">
               Helló{" "}
               <p className="inline from-[#39b2f8] to-[#2747fc] bg-clip-text text-transparent bg-gradient-to-l">
-                {session.user.name.split(" ")[0]}
+                {selfUser.name.split(" ")[0]}
               </p>
               !
             </h1>

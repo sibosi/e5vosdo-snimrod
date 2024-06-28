@@ -76,27 +76,29 @@ export async function updateUser(user: User | undefined) {
   return await dbreq(REQ1), await dbreq(REQ2);
 }
 
-export async function addUserPermissions(
-  user: User | undefined,
-  permissions: string
+export async function addUserPermission(
+  email: string | undefined,
+  permission: string
 ) {
-  if (!user) return;
+  if (!email) return "no email";
 
-  const REQ1 = `UPDATE \`users\` SET \`permissions\` = JSON_ARRAY_APPEND(permissions, '$', '${permissions}') WHERE \`email\` = '${user.email}';`;
+  if (((await getUser(email)) as any)[0].permissions.includes(permission))
+    return "The user already has this permission";
 
-  await dbreq(REQ1);
-  return await getUser(user.email);
+  const REQ1 = `UPDATE users SET permissions = JSON_ARRAY_APPEND(permissions, '$', '${permission}') WHERE \`email\` = '${email}';`;
+
+  return await dbreq(REQ1);
 }
 
 export async function removeUserPermissions(
-  user: User | undefined,
-  permissions: string
+  email: string | undefined,
+  permission: string
 ) {
-  if (!user) return;
+  if (!email) return;
 
-  const REQ1 = `UPDATE \`users\` SET \`permissions\` = JSON_REMOVE(permissions, '$[${permissions}]') WHERE \`email\` = '${user.email}';`;
+  const REQ2 = `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', '${permission}'))) WHERE email = '${email}';`;
 
-  return await dbreq(REQ1);
+  return await dbreq(REQ2);
 }
 
 export interface apireqType {
@@ -107,7 +109,7 @@ export interface apireqType {
     | "getAdminUsers"
     | "getUsersEmail"
     | "getAdminUsersEmail"
-    | "addUserPermissions"
+    | "addUserPermission"
     | "removeUserPermissions";
 }
 export const apioptions = [
@@ -117,7 +119,7 @@ export const apioptions = [
   "getAdminUsers",
   "getUsersEmail",
   "getAdminUsersEmail",
-  "addUserPermissions",
+  "addUserPermission",
   "removeUserPermissions",
 ];
 
@@ -129,7 +131,7 @@ export const apireq = {
   getAdminUsers: { req: getAdminUsers, perm: "admin" },
   getUsersEmail: { req: getUsersEmail, perm: "admin" },
   getAdminUsersEmail: { req: getAdminUsersEmail, perm: "admin" },
-  addUserPermissions: { req: addUserPermissions, perm: "admin" },
+  addUserPermission: { req: addUserPermission, perm: "admin" },
   removeUserPermissions: { req: removeUserPermissions, perm: "admin" },
 };
 
@@ -140,10 +142,13 @@ export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getAdminUsers") return await getAdminUsers();
   if (req === "getUsersEmail") return await getUsersEmail();
   if (req === "getAdminUsersEmail") return await getAdminUsersEmail();
-  if (req === "addUserPermissions") {
-    const { user, permissions } = body;
-    console.log(body);
-    console.log(user, permissions);
-    return await addUserPermissions(user, permissions);
+  if (req === "addUserPermission") {
+    const { email, permission } = body;
+    const response = await addUserPermission(email, permission);
+    return "MyResponse: " + String(response);
+  }
+  if (req === "removeUserPermissions") {
+    const { email, permission } = body;
+    return await removeUserPermissions(email, permission);
   }
 };

@@ -28,9 +28,13 @@ const AboutPage = async () => {
         )}
       </div>
       <LogOut />
-      {admins}
+      {admins.join(", ")}
       <br />
-      <ListUsers admins={admins} session={session} users={await getUsers()} />
+      <ListUsers
+        admins={admins}
+        session={session}
+        initialUsers={await getUsers()}
+      />
     </>
   );
 };

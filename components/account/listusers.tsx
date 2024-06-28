@@ -1,17 +1,17 @@
 "use client";
 import { Button, Image } from "@nextui-org/react";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const ListUsers = ({
   admins,
   session,
-  users,
+  initialUsers,
 }: {
   admins: any[];
   session: any;
-  users: any;
+  initialUsers: any;
 }) => {
-  function sortUsers(users: []) {
+  function sortUsers(users: any[]) {
     return users.sort((a: any, b: any) => {
       return (
         new Date(b.last_login).getTime() - new Date(a.last_login).getTime()
@@ -19,32 +19,49 @@ const ListUsers = ({
     });
   }
 
-  async function addUserPermissions(user: any, permission: string) {
-    const response = await fetch(`/api/addUserPermissions`, {
+  const [users, setUsers] = useState(sortUsers(initialUsers));
+  const [reloadUsers, setReloadUsers] = useState(false);
+
+  async function fetchUsers() {
+    const response = await fetch("/api/getUsers"); // Adjust the endpoint as necessary
+    const data = await response.json();
+    setUsers(sortUsers(data));
+  }
+
+  async function addUserPermission(email: any, permission: string) {
+    const response = await fetch(`/api/addUserPermission`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: user.email, permission: permission }),
+      body: JSON.stringify({ email: email, permission: permission }),
     });
     console.log(response);
+    setReloadUsers(true);
   }
 
-  async function removeUserPermissions(user: any, permission: string) {
+  async function removeUserPermissions(email: any, permission: string) {
     const response = await fetch(`/api/removeUserPermissions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: user.email, permission: permission }),
+      body: JSON.stringify({ email: email, permission: permission }),
     });
     console.log(response);
+    setReloadUsers(true);
   }
+
+  useEffect(() => {
+    if (reloadUsers) {
+      fetchUsers().then(() => setReloadUsers(false));
+    }
+  }, [reloadUsers]);
 
   return (
     <>
       {admins.includes(session?.user?.email ?? "") ? (
-        (sortUsers(users) as any).map((user: any) => (
+        users.map((user: any) => (
           <div
             key={user.email}
             className="rounded-xl bg-foreground-100 my-4 p-3 text-foreground"
@@ -60,6 +77,36 @@ const ListUsers = ({
             <p>{user.email}</p>
             <p>{String(user.last_login)}</p>
             <p>Permissions: {(user.permissions ?? []).join(" ")}</p>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                color="primary"
+                onClick={() => addUserPermission(user.email, "student")}
+              >
+                + student
+              </Button>
+              <Button
+                size="sm"
+                color="primary"
+                onClick={() => addUserPermission(user.email, "admin")}
+              >
+                + admin
+              </Button>
+              <Button
+                size="sm"
+                color="primary"
+                onClick={() => removeUserPermissions(user.email, "student")}
+              >
+                - student
+              </Button>
+              <Button
+                size="sm"
+                color="primary"
+                onClick={() => removeUserPermissions(user.email, "admin")}
+              >
+                - admin
+              </Button>
+            </div>
           </div>
         ))
       ) : (

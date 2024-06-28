@@ -12,13 +12,6 @@ type Params = {
   db: string;
 };
 
-type User = {
-  email: string;
-  name: string;
-  image: string;
-  last_login: string;
-};
-
 export const GET = async (request: Request, context: { params: Params }) => {
   const session = await auth();
   if (!session?.user) {
@@ -56,9 +49,17 @@ export const GET = async (request: Request, context: { params: Params }) => {
     );
   }
 
+  // const bodyData = streamToString(request.body);
+  let bodyData: string | Promise<string>;
   try {
-    const data = await defaultApiReq(gate as apireqType["gate"], request.body);
-    console.log(data);
+    bodyData = JSON.parse(await request.text());
+    console.log(bodyData);
+  } catch (error) {
+    bodyData = "";
+  }
+
+  try {
+    const data = await defaultApiReq(gate as apireqType["gate"], bodyData);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching events:", error);

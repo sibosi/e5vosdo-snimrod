@@ -69,7 +69,7 @@ export const Section = ({
           !isOpen ? "max-h-0 overflow-hidden" : "h-auto"
         }`}
       >
-        {children}
+        <div className="transition-none">{children}</div>
       </div>
     </div>
   );

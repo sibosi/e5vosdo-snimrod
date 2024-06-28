@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `class` varchar(255),
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `permissions` JSON,
+    `permissions` JSON NOT NULL DEFAULT '[]',
     `food_menu` CHAR(1),
     `coming_year` INT,
     `class_character` CHAR(1),
@@ -51,3 +51,27 @@ WHERE email = 'simon.nimrod.zalan@e5vos.hu';
 UPDATE users
 SET permissions = '["student"]'
 WHERE email = 'no.one@e5vos.hu';
+--@block
+SELECT email,
+    permissions
+FROM users;
+--@block
+-- Add user permissions to nimrod user
+UPDATE users
+SET permissions = '["student", "admin"]'
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Append permissions to nimrod user
+UPDATE users
+SET permissions = JSON_ARRAY_APPEND(permissions, '$', 'tester')
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Remove 'admin' permission from 'simon.nimrod.zalan@e5vos.hu' user
+UPDATE users
+SET permissions = JSON_REMOVE(
+        permissions,
+        JSON_UNQUOTE(
+            JSON_SEARCH(permissions, 'one', 'tester')
+        )
+    )
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';

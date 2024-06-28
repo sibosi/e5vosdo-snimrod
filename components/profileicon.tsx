@@ -3,11 +3,11 @@
 
 import { useState } from "react";
 import { Avatar } from "@nextui-org/react";
-import { Session } from "next-auth";
 import Login from "./LoginForm";
 import LogOut from "./LogOut";
+import { User } from "@/db/dbreq";
 
-export const ProfileIcon = ({ session }: { session: Session | null }) => {
+export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
   const [showButtons, setShowButtons] = useState(false);
 
   const handleIconClick = () => {
@@ -17,8 +17,8 @@ export const ProfileIcon = ({ session }: { session: Session | null }) => {
   return (
     <div>
       <div onClick={handleIconClick}>
-        {session?.user?.image && session?.user?.name ? (
-          <Avatar isBordered color="default" src={session.user.image} />
+        {selfUser?.image && selfUser?.name ? (
+          <Avatar isBordered color="default" src={selfUser.image} />
         ) : (
           <Avatar isBordered color="default" src="apa-logo.jpg" />
         )}
@@ -38,9 +38,9 @@ export const ProfileIcon = ({ session }: { session: Session | null }) => {
         } `}
       >
         <>
-          {session ? (
+          {selfUser ? (
             <>
-              <p>{String(session.user?.name)}</p>
+              <p>{String(selfUser?.name)}</p>
               <LogOut />
             </>
           ) : (

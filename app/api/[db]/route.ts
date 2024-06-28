@@ -4,17 +4,17 @@ import {
   apireq,
   apireqType,
   defaultApiReq,
+  getAuth,
   getUser,
 } from "@/db/dbreq";
-import { auth } from "@/auth";
 
 type Params = {
   db: string;
 };
 
 export const GET = async (request: Request, context: { params: Params }) => {
-  const session = await auth();
-  if (!session?.user) {
+  const selfUser = await getAuth();
+  if (!selfUser) {
     return NextResponse.json(
       { error: "Please log in to use this API" },
       { status: 400 }
@@ -29,17 +29,17 @@ export const GET = async (request: Request, context: { params: Params }) => {
     );
   }
 
-  const user_pack = await getUser(session.user.email ?? undefined);
-  const user = (user_pack as any)[0];
+  const user = await getUser(selfUser.email ?? undefined);
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 500 });
   }
 
+  const userPermissionsSet = new Set(user.permissions);
+  const gatePermissions = new Set(apireq[gate as apireqType["gate"]].perm);
+
   if (
     apireq[gate as apireqType["gate"]].perm != null &&
-    !user.permissions?.includes(
-      apireq[gate as apireqType["gate"]].perm as string
-    )
+    !Array.from(gatePermissions).some((item) => userPermissionsSet.has(item))
   ) {
     return NextResponse.json(
       {

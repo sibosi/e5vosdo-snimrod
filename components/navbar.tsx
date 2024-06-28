@@ -19,10 +19,10 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, InstagramIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/profileicon";
-import { Session } from "next-auth";
 import GetApp from "./PWA/getApp";
+import { User } from "@/db/dbreq";
 
-export const Navbar = ({ session }: { session: Session | null }) => {
+export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
   const searchInput = (
     <Input
       aria-label="Search"
@@ -89,7 +89,7 @@ export const Navbar = ({ session }: { session: Session | null }) => {
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="flex items-center pl-2">
-          <ProfileIcon session={session} />
+          <ProfileIcon selfUser={selfUser} />
         </NavbarItem>
       </NavbarContent>
 

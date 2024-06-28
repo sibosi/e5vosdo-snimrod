@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { dbreq } from "./db";
 
 export interface User {
@@ -17,6 +18,26 @@ export async function getUser(email: string | undefined) {
   return (await dbreq(
     `SELECT * FROM \`users\` WHERE email = '${email}'`
   )) as User;
+}
+
+export async function getAuth(email?: string | undefined) {
+  if (!email) {
+    const session = await auth();
+    if (!session?.user) return;
+    const authEmail = session.user.email;
+
+    const response = (await dbreq(
+      `SELECT * FROM \`users\` WHERE email = '${authEmail}'`
+    )) as User[];
+
+    return response[0];
+  } else {
+    const response = (await dbreq(
+      `SELECT * FROM \`users\` WHERE email = '${email}'`
+    )) as User[];
+
+    return response[0];
+  }
 }
 
 export async function getUsersEmail() {
@@ -69,9 +90,9 @@ export async function getAdminUsersEmail() {
 export async function updateUser(user: User | undefined) {
   if (!user) return;
 
-  const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
+  const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`) SELECT '${user.name}', '${user.email}', '${user.image}' WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
 
   return await dbreq(REQ1), await dbreq(REQ2);
 }

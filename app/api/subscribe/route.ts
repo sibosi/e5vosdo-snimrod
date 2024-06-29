@@ -13,8 +13,8 @@ webPush.setVapidDetails(
 
 let subscriptions: Array<any> = [];
 
-export function POST(req: NextRequest, res: NextResponse) {
-  const subscription = JSON.parse(req.body as any);
+export async function POST(req: NextRequest, res: NextResponse) {
+  const subscription = await req.body?.getReader().read();
 
   if (!subscription) {
     return NextResponse.json({
@@ -34,7 +34,15 @@ export function POST(req: NextRequest, res: NextResponse) {
     body: "This is a test notification",
   });
 
-  webPush.sendNotification(subscription, payload).catch((error) => {
+  const pushSubscription: any = subscription.value;
+  if (!pushSubscription) {
+    return NextResponse.json({
+      status: 400,
+      error: "Subscription is required",
+    });
+  }
+  console.log("Sending notification to:", pushSubscription);
+  webPush.sendNotification(pushSubscription, payload).catch((error) => {
     console.error("Error sending notification:", error);
     return NextResponse.json({ status: 500, error: error });
   });

@@ -19,6 +19,9 @@ export function POST(req: NextRequest, res: NextResponse) {
   // Save the subscription to the subscriptions list
   subscriptions.push(subscription);
 
+  console.log("Subscription added:", subscription);
+  console.log("Subscriptions:", subscriptions);
+
   const payload = JSON.stringify({
     title: "Test Notification",
     body: "This is a test notification",
@@ -41,11 +44,14 @@ export function GET(req: NextRequest, res: NextResponse) {
     body: "This is a test notification",
   });
 
-  const sendPromises = subscriptions.map((sub) =>
+  console.log("Subscriptions:", subscriptions);
+
+  const sendPromises = subscriptions.map((sub) => {
+    console.log("Sending notification to:", sub);
     webPush.sendNotification(sub, payload).catch((error) => {
       console.error("Error sending notification:", error);
-    })
-  );
+    });
+  });
 
   // Wait for all notifications to be sent
   Promise.all(sendPromises)

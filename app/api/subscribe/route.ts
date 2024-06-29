@@ -14,7 +14,14 @@ webPush.setVapidDetails(
 let subscriptions: Array<any> = [];
 
 export function POST(req: NextRequest, res: NextResponse) {
-  const subscription = req.body as any;
+  const subscription = JSON.parse(req.body as any);
+
+  if (!subscription) {
+    return NextResponse.json({
+      status: 400,
+      error: "Subscription is required",
+    });
+  }
 
   // Save the subscription to the subscriptions list
   subscriptions.push(subscription);

@@ -14,19 +14,22 @@ webPush.setVapidDetails(
 let subscriptions: Array<any> = [];
 
 export async function POST(req: NextRequest, res: NextResponse) {
-  const subscription = await req.body?.getReader().read();
+  const { value: subscription } = (await req.body?.getReader().read()) as {
+    value: Uint8Array;
+  };
+  const subscriptionObj = JSON.parse(new TextDecoder().decode(subscription));
 
-  if (!subscription) {
+  if (!subscriptionObj || !subscriptionObj.endpoint) {
     return NextResponse.json({
       status: 400,
-      error: "Subscription is required",
+      error: "Subscription with a valid endpoint is required",
     });
   }
 
   // Save the subscription to the subscriptions list
-  subscriptions.push(subscription);
+  subscriptions.push(subscriptionObj);
 
-  console.log("Subscription added:", subscription);
+  console.log("Subscription added:", subscriptionObj);
   console.log("Subscriptions:", subscriptions);
 
   const payload = JSON.stringify({
@@ -34,23 +37,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
     body: "This is a test notification",
   });
 
-  const pushSubscription: any = subscription.value;
-  if (!pushSubscription) {
+  try {
+    console.log("Sending notification to:", subscriptionObj);
+    await webPush.sendNotification(subscriptionObj, payload);
     return NextResponse.json({
-      status: 400,
-      error: "Subscription is required",
+      status: 201,
+      message: "Subscription added and notification sent",
     });
-  }
-  console.log("Sending notification to:", pushSubscription);
-  webPush.sendNotification(pushSubscription, payload).catch((error) => {
+  } catch (error) {
     console.error("Error sending notification:", error);
     return NextResponse.json({ status: 500, error: error });
-  });
-
-  return NextResponse.json({
-    status: 201,
-    message: "Subscription added and notification sent",
-  });
+  }
 }
 
 export function GET(req: NextRequest, res: NextResponse) {

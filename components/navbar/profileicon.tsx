@@ -38,7 +38,12 @@ async function fetchNotifications(
   }
   setNotificationsIds(notificationsIds);
   const response = await fetch("/api/getUserNotifications"); // Adjust the endpoint as necessary
-  const data = await response.json();
+  const data: [] = await response.json();
+  // if type is array
+  if (!Array.isArray(data)) {
+    return;
+  }
+  data.reverse();
   setNotifications(data);
 }
 
@@ -113,7 +118,10 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                     <p className="truncate">{item.title}</p>
                     <p>&middot;</p>
                     <p className="text-foreground-600 text-sm my-auto">
-                      ma 18:00
+                      {new Date(item.time).toLocaleString("hu-HU", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
                     </p>
                   </h3>
                   <span className="text-sm break-words text-foreground-600">

@@ -114,3 +114,10 @@ SET users.notifications = JSON_ARRAY_APPEND(
         '$',
         CAST(@notification_id AS JSON)
     );
+--@block
+-- Update the notifications to [] from NULL
+UPDATE users
+SET notifications = '[3]';
+--@block
+SELECT *
+FROM users;

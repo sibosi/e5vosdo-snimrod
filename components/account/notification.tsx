@@ -34,7 +34,9 @@ const NewNotification = () => {
 
   return (
     <div className="rounded-3xl bg-primary-50 my-4 p-6 text-foreground">
-      <h2 className="text-2xl font-semibold">Új értesítés</h2>
+      <h2 className="text-2xl font-semibold">
+        Új értesítés &middot; csak adminoknak
+      </h2>
       <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4 py-2">
         <Input
           size="md"

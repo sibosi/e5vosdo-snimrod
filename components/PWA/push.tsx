@@ -2,20 +2,16 @@
 import { useEffect } from "react";
 
 const publicVapidKey =
-  "BH7pxWz73TVKf6kND942hW_tEskJ_wmWJaGvSRrCSOccRIlTXumOOAfMadW-BrxdmCDyYaQScMBlHsfBohAG7oE"; // Replace with your public VAPID key
+  "BH7pxWz73TVKf6kND942hW_tEskJ_wmWJaGvSRrCSOccRIlTXumOOAfMadW-BrxdmCDyYaQScMBlHsfBohAG7oE";
 
 async function subscribeUser() {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     try {
-      console.log("Registering service worker");
       const registration = await navigator.serviceWorker.ready;
-      console.log("Service worker is registered");
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
       });
-
-      console.log("User is subscribed:", subscription);
 
       await fetch("/api/subscribe", {
         method: "POST",
@@ -48,22 +44,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 const PushManagerComponent = () => {
-  self.addEventListener("install", () => {
-    console.log("service worker installed");
-  });
-
-  self.addEventListener("activate", () => {
-    console.log("service worker activated");
-  });
-  window.addEventListener("load", () => {
-    if ("serviceWorker" in navigator) {
-      console.log("Registering service worker from push manager");
-      navigator.serviceWorker.register("/sw.js");
-      console.log("Service worker registered");
-    }
-  });
   useEffect(() => {
-    console.log("PushManagerComponent mounted");
     subscribeUser();
   }, []);
 

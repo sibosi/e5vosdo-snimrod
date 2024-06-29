@@ -1,6 +1,4 @@
 // pages/api/subscribe.ts
-import { m } from "framer-motion";
-import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import webPush from "web-push";
 
@@ -13,10 +11,13 @@ webPush.setVapidDetails(
   privateVapidKey
 );
 
+let subscriptions: Array<any> = [];
+
 export function POST(req: NextRequest, res: NextResponse) {
   const subscription = req.body as any;
 
-  NextResponse.json({ status: 201 });
+  // Save the subscription to the subscriptions list
+  subscriptions.push(subscription);
 
   const payload = JSON.stringify({
     title: "Test Notification",
@@ -27,10 +28,13 @@ export function POST(req: NextRequest, res: NextResponse) {
     console.error("Error sending notification:", error);
     return NextResponse.json({ status: 500, error: error });
   });
-  return NextResponse.json({ status: 200, message: "Notification sent?" });
+
+  return NextResponse.json({
+    status: 201,
+    message: "Subscription added and notification sent",
+  });
 }
 
-let subscriptions: any[] = [];
 export function GET(req: NextRequest, res: NextResponse) {
   const payload = JSON.stringify({
     title: "Test Notification",
@@ -42,4 +46,14 @@ export function GET(req: NextRequest, res: NextResponse) {
       console.error("Error sending notification:", error);
     })
   );
+
+  // Wait for all notifications to be sent
+  Promise.all(sendPromises)
+    .then(() => {
+      return NextResponse.json({ status: 200, message: "Notifications sent" });
+    })
+    .catch((error) => {
+      console.error("Error sending notifications:", error);
+      return NextResponse.json({ status: 500, error: error });
+    });
 }

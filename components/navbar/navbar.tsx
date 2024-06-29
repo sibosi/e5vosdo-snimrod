@@ -21,7 +21,6 @@ import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
 import { User } from "@/db/dbreq";
-import Inbox from "./inbox";
 
 export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
   const searchInput = (
@@ -85,12 +84,6 @@ export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
           >
             <InstagramIcon className="text-default-500" />
           </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <ThemeSwitch />
-        </NavbarItem>
-        <NavbarItem>
-          <Inbox />
         </NavbarItem>
         <NavbarItem className="flex items-center pl-2">
           <ProfileIcon selfUser={selfUser} />

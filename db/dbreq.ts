@@ -164,8 +164,6 @@ export async function getUserNotifications() {
     )) as any
   )[0].notifications as number[];
 
-  console.log(response);
-
   let notifications: any[] = [];
   for (let i = 0; i < response.length; i++) {
     notifications.push(await getNotificationById(response[i]));

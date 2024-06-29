@@ -59,10 +59,14 @@ export function GET(req: NextRequest, res: NextResponse) {
   console.log("Subscriptions:", subscriptions);
 
   const sendPromises = subscriptions.map((sub) => {
-    console.log("Sending notification to:", sub);
-    webPush.sendNotification(sub, payload).catch((error) => {
+    try {
+      console.log("Sending notification to:", sub);
+      webPush.sendNotification(sub, payload).catch((error) => {
+        console.error("Error sending notification:", error);
+      });
+    } catch (error) {
       console.error("Error sending notification:", error);
-    });
+    }
   });
 
   // Wait for all notifications to be sent

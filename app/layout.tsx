@@ -48,7 +48,6 @@ export default async function RootLayout({
   session?.user ? await updateUser(session?.user as User) : null;
   const users = await getStudentUsersEmail();
   const selfUser = await getAuth(session?.user?.email ?? undefined);
-  ServiceWorker;
 
   return (
     <html lang="hu" suppressHydrationWarning className="bg-background">
@@ -112,6 +111,7 @@ export default async function RootLayout({
           gtag('config', 'G-P74RJ9THHS');
           `}
         </Script>
+        <ServiceWorker />
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>

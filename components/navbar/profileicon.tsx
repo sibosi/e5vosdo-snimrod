@@ -3,8 +3,8 @@
 
 import { useState } from "react";
 import { Avatar } from "@nextui-org/react";
-import Login from "./LoginForm";
-import LogOut from "./LogOut";
+import Login from "../LoginForm";
+import LogOut from "../LogOut";
 import { User } from "@/db/dbreq";
 
 export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {

@@ -9,6 +9,7 @@ import {
   hasPermission,
 } from "@/db/dbreq";
 import ListUsers from "@/components/account/listusers";
+import NewNotification from "@/components/account/notification";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -20,6 +21,11 @@ const AboutPage = async () => {
       <h1 className="pb-8 text-4xl lg:text-5xl font-semibold text-foreground text-center">
         🚧 About 🚧
       </h1>
+      {(await hasPermission(selfUser.email, "getUsers")) ? (
+        <NewNotification />
+      ) : (
+        <></>
+      )}
       <h1>{selfUser.name}</h1>
       <div>
         {selfUser?.image && selfUser?.name && (

@@ -7,11 +7,14 @@ const publicVapidKey =
 async function subscribeUser() {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     try {
+      console.log("Registering service worker");
       const registration = await navigator.serviceWorker.ready;
+      console.log("Service Worker is registered");
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
       });
+      console.log("Push notification subscription:", subscription);
 
       await fetch("/api/subscribe", {
         method: "POST",

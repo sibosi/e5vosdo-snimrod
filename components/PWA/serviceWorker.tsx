@@ -20,6 +20,44 @@ function ServiceWorker() {
           }
         );
       });
+      self.addEventListener("push", function (event: any) {
+        console.log("Push event received:", event);
+
+        let data: {
+          title?: string;
+          body?: string;
+          icon?: string;
+          badge?: string;
+        } = {};
+        if (event.data) {
+          data = event.data.json();
+        }
+
+        const title = data.title || "Default title";
+        const options = {
+          body: data.body || "Default body",
+          icon: data.icon || "/icon-144-144.png",
+          badge: data.badge || "/icon-144-144.png",
+        };
+
+        event.waitUntil(
+          (self as any).registration.showNotification(title, options)
+        );
+      });
+
+      self.addEventListener("notificationclick", function (event: any) {
+        console.log("Notification click received:", event);
+
+        event.notification.close();
+
+        try {
+          event.waitUntil(
+            (self as any).clients.openWindow("https://info.e5vosdo.hu")
+          );
+        } catch (error) {
+          console.error("Error opening window:", error);
+        }
+      });
     }
   }, []);
   return <> </>;

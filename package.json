@@ -45,14 +45,15 @@
     "swr": "^2.2.5",
     "tailwind-variants": "^0.1.18",
     "tailwindcss": "3.3.5",
-    "typescript": "5.0.4",
     "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.2.3",
     "@types/glob": "^8.1.0",
+    "@types/serviceworker": "^0.0.88",
     "@types/web-push": "^3.6.3",
     "cross-env": "^7.0.3",
-    "daisyui": "^4.11.1"
+    "daisyui": "^4.11.1",
+    "typescript": "^5.5.2"
   }
 }

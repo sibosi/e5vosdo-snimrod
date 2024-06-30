@@ -57,8 +57,10 @@ export function GET(req: NextRequest, res: NextResponse) {
   });
 
   console.log("Subscriptions:", subscriptions);
+  const subscriptionsList = subscriptions;
+  subscriptionsList.reverse();
 
-  const sendPromises = subscriptions.map((sub) => {
+  const sendPromises = subscriptionsList.map((sub) => {
     try {
       console.log("Sending notification to:", sub);
       webPush.sendNotification(sub, payload).catch((error) => {

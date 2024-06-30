@@ -56,16 +56,19 @@ export function GET(req: NextRequest, res: NextResponse) {
     body: "This is a test notification",
   });
 
-  console.log("Subscriptions:", subscriptions);
+  console.log("Subscriptions len:", subscriptions.length);
   const subscriptionsList = subscriptions;
   subscriptionsList.reverse();
 
-  const sendPromises = subscriptionsList.map((sub) => {
+  const sendPromises = subscriptionsList.map(async (sub) => {
     try {
       console.log("Sending notification to:", sub);
-      webPush.sendNotification(sub, payload).catch((error) => {
-        console.error("Error sending notification:", error);
-      });
+      const result = await webPush
+        .sendNotification(sub, payload)
+        .catch((error) => {
+          console.error("Error sending notification:", error);
+        });
+      console.log("Notification sent:", result);
     } catch (error) {
       console.error("Error sending notification:", error);
     }

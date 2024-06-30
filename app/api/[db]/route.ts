@@ -53,7 +53,6 @@ export const GET = async (request: Request, context: { params: Params }) => {
   let bodyData: string | Promise<string>;
   try {
     bodyData = JSON.parse(await request.text());
-    console.log(bodyData);
   } catch (error) {
     bodyData = "";
   }

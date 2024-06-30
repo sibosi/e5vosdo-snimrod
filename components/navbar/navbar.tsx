@@ -18,8 +18,8 @@ import clsx from "clsx";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, InstagramIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
-import { ProfileIcon } from "@/components/profileicon";
-import GetApp from "./PWA/getApp";
+import { ProfileIcon } from "@/components/navbar/profileicon";
+import GetApp from "../PWA/getApp";
 import { User } from "@/db/dbreq";
 
 export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
@@ -50,7 +50,7 @@ export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Logo />
-            <p className="font-bold text-foreground block p-2">E5</p>
+            <p className="font-bold text-foreground block- p-2 hidden">E5</p>
           </NextLink>
           <GetApp />
         </NavbarBrand>
@@ -84,9 +84,6 @@ export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
           >
             <InstagramIcon className="text-default-500" />
           </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="flex items-center pl-2">
           <ProfileIcon selfUser={selfUser} />

@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/navbar/navbar";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
@@ -12,15 +12,11 @@ import Access from "@/components/account/access";
 import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
-import { Session } from "next-auth";
-import {
-  getAuth,
-  getStudentUsersEmail,
-  getUsers,
-  getUsersEmail,
-  updateUser,
-  User,
-} from "@/db/dbreq";
+import { getAuth, getStudentUsersEmail, updateUser, User } from "@/db/dbreq";
+import dynamic from "next/dynamic";
+const PushManager = dynamic(() => import("../components/PWA/push"), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: {
@@ -52,7 +48,7 @@ export default async function RootLayout({
   session?.user ? await updateUser(session?.user as User) : null;
   const users = await getStudentUsersEmail();
   const selfUser = await getAuth(session?.user?.email ?? undefined);
-  ServiceWorker;
+
   return (
     <html lang="hu" suppressHydrationWarning className="bg-background">
       <head>
@@ -115,6 +111,8 @@ export default async function RootLayout({
           gtag('config', 'G-P74RJ9THHS');
           `}
         </Script>
+        <ServiceWorker />
+        <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
             <Navbar selfUser={selfUser} />

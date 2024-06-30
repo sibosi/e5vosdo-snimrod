@@ -33,8 +33,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
   console.log("Subscriptions:", subscriptions);
 
   const payload = JSON.stringify({
-    title: "Test Notification",
-    body: "This is a test notification",
+    title: "Írj Nimródnak: a #1 működik",
+    body: "Ha ezt látod, írj Simon Nimródnak, hogy a #1 működik!",
   });
 
   try {
@@ -52,8 +52,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
 export function GET(req: NextRequest, res: NextResponse) {
   const payload = JSON.stringify({
-    title: "Test Notification",
-    body: "This is a test notification",
+    title: "Írj Nimródnak: a #1 működik",
+    body: "Ha ezt látod, írj Simon Nimródnak, hogy a #1 működik!",
   });
 
   console.log("Subscriptions len:", subscriptions.length);

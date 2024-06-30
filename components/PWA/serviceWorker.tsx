@@ -21,46 +21,61 @@ function ServiceWorker() {
         );
       });
 
-      window.addEventListener("push", async function (event: any) {
-        console.log("Push event received:", event);
+      self.addEventListener("push", async function (event) {
+        console.log("Received a push message", event);
 
-        let data: {
-          title?: string;
-          body?: string;
-          icon?: string;
-          badge?: string;
-        } = {};
-        let data2: string = "";
-        if (event.data) {
-          data = event.data.json();
-          data2 = event.data.text();
-        }
-
-        const title = data.title || "Default title";
-        const options = {
-          body: data.body || "Default body",
-          icon: data.icon || "/icon-144-144.png",
-          badge: data.badge || "/icon-144-144.png",
-        };
+        var title = "Yay a message.";
+        var body = "We have received a push message.";
+        var icon = "/images/icon-192x192.png";
+        var tag = "simple-push-demo-notification-tag";
 
         const registration = await navigator.serviceWorker.ready;
 
-        event.waitUntil(registration.showNotification(title, options));
+        (event as any).waitUntil(
+          registration.showNotification(title, {
+            body: body,
+            icon: icon,
+            tag: tag,
+          })
+        );
       });
 
-      window.addEventListener("notificationclick", function (event: any) {
-        console.log("Notification click received:", event);
-
-        event.notification.close();
-
-        try {
-          event.waitUntil(
-            (window as any).clients.openWindow("https://info.e5vosdo.hu")
-          );
-        } catch (error) {
-          console.error("Error opening window:", error);
-        }
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        console.log("Service Worker received message:", event);
       });
+
+      navigator.serviceWorker.addEventListener("controllerchange", (event) => {
+        console.log("Service Worker controller change:", event);
+      });
+
+      navigator.serviceWorker.addEventListener("statechange", (event) => {
+        console.log("Service Worker state change:", event);
+      });
+
+      navigator.serviceWorker.addEventListener("updatefound", (event) => {
+        console.log("Service Worker update found:", event);
+      });
+
+      navigator.serviceWorker.addEventListener("controllerchange", (event) => {
+        console.log("Service Worker controller change:", event);
+      });
+
+      navigator.serviceWorker.addEventListener("error", (event) => {
+        console.log("Service Worker error:", event);
+      });
+
+      navigator.serviceWorker.addEventListener("install", (event) => {
+        console.log("Service Worker install:", event);
+      });
+
+      navigator.serviceWorker.addEventListener("activate", (event) => {
+        console.log("Service Worker activate:", event);
+      });
+
+      navigator.serviceWorker.addEventListener("fetch", (event) => {
+        console.log("Service Worker fetch:", event);
+      });
+
       console.log("Service Worker got all of the events.");
     }
   }, []);

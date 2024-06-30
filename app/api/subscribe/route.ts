@@ -83,4 +83,6 @@ export function GET(req: NextRequest, res: NextResponse) {
       console.error("Error sending notifications:", error);
       return NextResponse.json({ status: 500, error: error });
     });
+
+  return NextResponse.json({ status: 200, message: "Notifications sent" });
 }

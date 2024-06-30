@@ -20,7 +20,7 @@ function ServiceWorker() {
           }
         );
       });
-      /*
+
       window.addEventListener("push", async function (event: any) {
         console.log("Push event received:", event);
 
@@ -43,9 +43,9 @@ function ServiceWorker() {
           badge: data.badge || "/icon-144-144.png",
         };
 
-        event.waitUntil(
-          (self as any).registration.showNotification("Hello, world.")
-        );
+        const registration = await navigator.serviceWorker.ready;
+
+        event.waitUntil(registration.showNotification(title, options));
       });
 
       window.addEventListener("notificationclick", function (event: any) {
@@ -62,7 +62,6 @@ function ServiceWorker() {
         }
       });
       console.log("Service Worker got all of the events.");
-      */
     }
   }, []);
   return <> </>;

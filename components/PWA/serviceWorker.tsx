@@ -20,7 +20,7 @@ function ServiceWorker() {
           }
         );
       });
-      window.addEventListener("push", function (event: any) {
+      window.addEventListener("push", async function (event: any) {
         console.log("Push event received:", event);
 
         let data: {
@@ -40,8 +40,8 @@ function ServiceWorker() {
           badge: data.badge || "/icon-144-144.png",
         };
 
-        event.waitUntil(
-          (window as any).registration.showNotification(title, options)
+        await event.waitUntil(
+          await (window as any).registration.showNotification(title, options)
         );
       });
 

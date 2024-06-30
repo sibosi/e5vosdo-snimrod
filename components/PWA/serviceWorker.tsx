@@ -20,7 +20,7 @@ function ServiceWorker() {
           }
         );
       });
-      self.addEventListener("push", function (event: any) {
+      window.addEventListener("push", function (event: any) {
         console.log("Push event received:", event);
 
         let data: {
@@ -41,23 +41,24 @@ function ServiceWorker() {
         };
 
         event.waitUntil(
-          (self as any).registration.showNotification(title, options)
+          (window as any).registration.showNotification(title, options)
         );
       });
 
-      self.addEventListener("notificationclick", function (event: any) {
+      window.addEventListener("notificationclick", function (event: any) {
         console.log("Notification click received:", event);
 
         event.notification.close();
 
         try {
           event.waitUntil(
-            (self as any).clients.openWindow("https://info.e5vosdo.hu")
+            (window as any).clients.openWindow("https://info.e5vosdo.hu")
           );
         } catch (error) {
           console.error("Error opening window:", error);
         }
       });
+      console.log("Service Worker got all of the events.");
     }
   }, []);
   return <> </>;

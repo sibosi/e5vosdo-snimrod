@@ -2,7 +2,7 @@ if (!self.define) { let e, a = {}; const i = (i, s) => (i = new URL(i + ".js", s
 
 // pushEventListener.js
 function registerPushEventListener() {
-    window.addEventListener("push", (event) => {
+    self.addEventListener("push", (event) => {
         const data = event.data?.json();
         const notificationTitle = data?.title || "Default Title";
         const notificationOptions = {

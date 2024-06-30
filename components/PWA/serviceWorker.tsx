@@ -20,6 +20,7 @@ function ServiceWorker() {
           }
         );
       });
+      /*
       window.addEventListener("push", async function (event: any) {
         console.log("Push event received:", event);
 
@@ -43,18 +44,7 @@ function ServiceWorker() {
         };
 
         event.waitUntil(
-          (window as any).registration.showNotification("Hello, world.")
-        );
-
-        await event.waitUntil(
-          await (window as any).registration.showNotification(title, options)
-        );
-
-        await event.waitUntil(
-          await (window as any).registration.showNotification(
-            (data2 as any).title,
-            options
-          )
+          (self as any).registration.showNotification("Hello, world.")
         );
       });
 
@@ -72,6 +62,7 @@ function ServiceWorker() {
         }
       });
       console.log("Service Worker got all of the events.");
+      */
     }
   }, []);
   return <> </>;

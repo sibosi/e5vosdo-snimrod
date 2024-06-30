@@ -29,8 +29,10 @@ function ServiceWorker() {
           icon?: string;
           badge?: string;
         } = {};
+        let data2: string = "";
         if (event.data) {
           data = event.data.json();
+          data2 = event.data.text();
         }
 
         const title = data.title || "Default title";
@@ -40,8 +42,19 @@ function ServiceWorker() {
           badge: data.badge || "/icon-144-144.png",
         };
 
+        event.waitUntil(
+          (window as any).registration.showNotification("Hello, world.")
+        );
+
         await event.waitUntil(
           await (window as any).registration.showNotification(title, options)
+        );
+
+        await event.waitUntil(
+          await (window as any).registration.showNotification(
+            (data2 as any).title,
+            options
+          )
         );
       });
 

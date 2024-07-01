@@ -32,8 +32,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
   console.log("Subscription added:", subscriptionObj);
 
   const payload = JSON.stringify({
-    title: "Írj Nimródnak: a #1 működik",
-    body: "Ha ezt látod, írj Simon Nimródnak, hogy a #1 működik!",
+    title: "Írj Nimródnak: a #2 működik",
+    message: "Sikeres azonosítás!",
   });
 
   try {
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 export async function GET(req: NextRequest, res: NextResponse) {
   const payload = JSON.stringify({
     title: "Írj Nimródnak: a #1 működik",
-    body: "Ha ezt látod, írj Simon Nimródnak, hogy a #1 működik!",
+    message: "Ha ezt látod, írj Simon Nimródnak, hogy a #1 működik!",
   });
 
   const subscriptions = await getServiceWorkersByPermission("student");

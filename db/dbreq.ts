@@ -193,8 +193,7 @@ export async function newNotification(
 
 export async function addServiceWorker(serviceWorker: any) {
   const email = (await getAuth())?.email;
-  const subscriptionObj = `{ endpoint: ${serviceWorker.endpoint}, expirationTime: ${serviceWorker.expirationTime}, keys: { p256dh: ${serviceWorker.keys.p256dh}, auth: ${serviceWorker.keys.auth} }`;
-  const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', '${subscriptionObj}') WHERE email = '${email}';`;
+  const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', JSON_OBJECT('endpoint', '${serviceWorker.endpoint}', 'expirationTime', '${serviceWorker.expirationTime}', 'keys', JSON_OBJECT('p256dh', '${serviceWorker.keys.p256dh}', 'auth', '${serviceWorker.keys.auth}'))) WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
 }
@@ -205,7 +204,7 @@ export async function getServiceWorkersByPermission(permission: string) {
   )) as any;
   let service_workers: any[] = [];
   users_service_workers.map((user: { service_workers: [] }) =>
-    user.service_workers.map((sw: any) => service_workers.push(JSON.parse(sw)))
+    user.service_workers.map((sw: any) => service_workers.push(sw))
   );
 
   return service_workers;

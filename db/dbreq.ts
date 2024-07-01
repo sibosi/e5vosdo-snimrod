@@ -1,5 +1,15 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
+import webPush from "web-push";
+
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string; // Replace with your public VAPID key
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string; // Replace with your private VAPID key
+
+webPush.setVapidDetails(
+  "mailto:spam.sibosi@gmail.com", // Replace with your email
+  publicVapidKey,
+  privateVapidKey
+);
 
 export interface User {
   name: string;
@@ -109,7 +119,7 @@ export async function updateUser(user: User | undefined) {
 
   const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}', '[]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}', '[]', '[]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
 
   return await dbreq(REQ1), await dbreq(REQ2);
 }
@@ -137,6 +147,15 @@ export async function removeUserPermissions(
   const REQ2 = `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', '${permission}'))) WHERE email = '${email}';`;
 
   return await dbreq(REQ2);
+}
+
+export async function getUsersEmailByPermission(permission: string) {
+  const response = (await dbreq(
+    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`
+  )) as any;
+  let emails: string[] = [];
+  response.map((user: { email: string }) => emails.push(user.email));
+  return emails;
 }
 
 export async function getNotificationById(id: number) {
@@ -171,14 +190,73 @@ export async function getUserNotifications() {
   return notifications;
 }
 
+export async function addServiceWorker(serviceWorker: any) {
+  const email = (await getAuth())?.email;
+  const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', JSON_OBJECT('endpoint', '${serviceWorker.endpoint}', 'expirationTime', '${serviceWorker.expirationTime}', 'keys', JSON_OBJECT('p256dh', '${serviceWorker.keys.p256dh}', 'auth', '${serviceWorker.keys.auth}'))) WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
+export async function getServiceWorkersByPermission(permission: string) {
+  const users_service_workers: { service_workers: [] }[] = (await dbreq(
+    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`
+  )) as any;
+  let service_workers: any[] = [];
+  users_service_workers.map((user: { service_workers: [] }) =>
+    user.service_workers.map((sw: any) => service_workers.push(sw))
+  );
+
+  return service_workers;
+}
+
+export async function getServiceWorkersByEmail(email: string) {
+  const response = (await dbreq(
+    `SELECT service_workers FROM users WHERE email = '${email}'`
+  )) as any;
+  return response[0].service_workers;
+}
+
+export async function checkPushAuth(auth: string) {
+  const response: any = await dbreq(`SELECT * FROM push_auths;`);
+
+  const auths: string[] = response.map((auth: any) => auth.auth);
+  return auths.includes(auth);
+}
+export async function addPushAuth(auth: string) {
+  return await dbreq(`INSERT INTO push_auths (auth) VALUES ('${auth}');`);
+}
+
+export async function newPush(email: string, payload: any) {
+  const service_workers = await getServiceWorkersByEmail(email);
+  service_workers.map(async (sw: any) => {
+    try {
+      console.log("Sending notification to:", sw);
+      await webPush.sendNotification(sw, payload);
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  });
+}
+
 export async function newNotification(
   title: string,
   message: string,
   receiving_emails: string[]
 ) {
   const sender_email = (await getAuth())?.email;
+
+  let valid_receiving_emails: string[] = [];
+
+  if (!receiving_emails[0].includes("@")) {
+    getUsersEmailByPermission(receiving_emails[0]).then((emails) => {
+      valid_receiving_emails = emails;
+    });
+  } else {
+    valid_receiving_emails = receiving_emails;
+  }
+
   const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails) VALUES ('${title}', '${message}', '${sender_email}', '${JSON.stringify(
-    receiving_emails
+    valid_receiving_emails
   )}');`;
   const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
   const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_ARRAY_APPEND(users.notifications, '$', CAST(@notification_id AS JSON));`;
@@ -187,6 +265,16 @@ export async function newNotification(
   const MAINRRQ = [REQ1, REQ2, REQ3, REQ4];
 
   const response = await multipledbreq(MAINRRQ);
+
+  valid_receiving_emails.map(async (email) => {
+    await newPush(
+      email,
+      JSON.stringify({
+        title: sender_email + " üzenetet küldött",
+        message: title,
+      })
+    );
+  });
 
   return { data: "success" };
 }
@@ -209,7 +297,8 @@ export interface apireqType {
     | "getNotificationById"
     | "getUserNotificationsIds"
     | "getUserNotifications"
-    | "newNotification";
+    | "newNotification"
+    | "checkPushAuth";
 }
 export const apioptions = [
   "getUsers",
@@ -229,6 +318,7 @@ export const apioptions = [
   "getUserNotificationsIds",
   "getUserNotifications",
   "newNotification",
+  "checkPushAuth",
 ];
 
 export const apireq = {
@@ -249,6 +339,7 @@ export const apireq = {
   getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["student"] },
   getUserNotifications: { req: getUserNotifications, perm: ["student"] },
   newNotification: { req: newNotification, perm: ["admin"] },
+  checkPushAuth: { req: checkPushAuth, perm: ["student"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
@@ -273,5 +364,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   else if (req === "newNotification") {
     const { title, message, receiving_emails } = body;
     return await newNotification(title, message, receiving_emails);
+  } else if (req === "checkPushAuth") {
+    const { auth } = body;
+    return await checkPushAuth(auth);
   } else return "No such request";
 };

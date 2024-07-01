@@ -121,3 +121,32 @@ SET notifications = '[3]';
 --@block
 SELECT *
 FROM users;
+--@block
+UPDATE users
+SET service_workers = JSON_ARRAY_APPEND(
+        service_workers,
+        '$',
+        JSON_OBJECT(
+            'endpoint',
+            'str',
+            'expirationTime',
+            NULL,
+            'keys',
+            JSON_OBJECT(
+                'p256dh',
+                'str',
+                'auth',
+                'str'
+            )
+        )
+    )
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+UPDATE users
+SET service_workers = '[]';
+UPDATE push_auths
+SET auth = NULL;
+--@block
+SELECT *
+FROM push_auths;
+--@block

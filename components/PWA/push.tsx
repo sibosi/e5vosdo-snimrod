@@ -1,4 +1,5 @@
 "use client";
+import { checkPushAuth } from "@/db/dbreq";
 import { useEffect } from "react";
 
 const publicVapidKey =
@@ -10,21 +11,43 @@ async function subscribeUser() {
       console.log("Registering service worker");
       const registration = await navigator.serviceWorker.ready;
       console.log("Service Worker is registered");
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-      });
-      console.log("Push notification subscription:", subscription);
+      const existingSubscription =
+        await registration.pushManager.getSubscription();
 
-      await fetch("/api/subscribe", {
-        method: "POST",
-        body: JSON.stringify(subscription),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("User is subscribed:", subscription);
+      let subscription;
+      if (!existingSubscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+        });
+        await fetch("/api/subscribe", {
+          method: "POST",
+          body: JSON.stringify(subscription),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      } else {
+        console.log("Existing subscription found");
+        subscription = existingSubscription;
+        const response = await fetch("/api/subscribe", {
+          method: "POST",
+          body: JSON.stringify((subscription as any).keys.auth || ""),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log("Response:", response);
+        if (!response) {
+          await fetch("/api/subscribe", {
+            method: "POST",
+            body: JSON.stringify(subscription),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        }
+      }
     } catch (error) {
       console.error("Failed to subscribe the user: ", error);
     }

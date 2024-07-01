@@ -191,9 +191,10 @@ export async function newNotification(
   return { data: "success" };
 }
 
-export async function addServiceWorker(serviceWorker: string) {
+export async function addServiceWorker(serviceWorker: any) {
   const email = (await getAuth())?.email;
-  const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', '${serviceWorker}') WHERE email = '${email}';`;
+  const subscriptionObj = `{ endpoint: ${serviceWorker.endpoint}, expirationTime: ${serviceWorker.expirationTime}, keys: { p256dh: ${serviceWorker.keys.p256dh}, auth: ${serviceWorker.keys.auth} }`;
+  const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', '${subscriptionObj}') WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
 }

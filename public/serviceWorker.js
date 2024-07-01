@@ -5,7 +5,7 @@ self.addEventListener('push', function (event) {
     event.waitUntil(
         registration.showNotification(data.title, {
             body: data.message,
-            icon: data.icon
+            icon: '/favicon-16x16.png'
         })
     )
 })

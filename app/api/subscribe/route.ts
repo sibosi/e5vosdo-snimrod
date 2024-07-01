@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   }
 
   // Save the subscription to the subscriptions list
-  console.log(await addServiceWorker(subscriptionObj));
+  console.log(await addServiceWorker(JSON.stringify(subscriptionObj))));
 
   console.log("Subscription added:", subscriptionObj);
 

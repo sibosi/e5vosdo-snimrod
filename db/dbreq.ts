@@ -191,7 +191,7 @@ export async function newNotification(
   return { data: "success" };
 }
 
-export async function addServiceWorker(serviceWorker: JSON) {
+export async function addServiceWorker(serviceWorker: string) {
   const email = (await getAuth())?.email;
   const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', '${serviceWorker}') WHERE email = '${email}';`;
 
@@ -200,11 +200,11 @@ export async function addServiceWorker(serviceWorker: JSON) {
 
 export async function getServiceWorkersByPermission(permission: string) {
   const users_service_workers: { service_workers: [] }[] = (await dbreq(
-    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '${permission}', '$')`
+    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`
   )) as any;
   let service_workers: any[] = [];
   users_service_workers.map((user: { service_workers: [] }) =>
-    user.service_workers.map((sw: any) => service_workers.push(sw))
+    user.service_workers.map((sw: any) => service_workers.push(JSON.parse(sw)))
   );
 
   return service_workers;

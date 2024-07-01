@@ -193,7 +193,7 @@ export async function newNotification(
 
 export async function addServiceWorker(serviceWorker: JSON) {
   const email = (await getAuth())?.email;
-  const REQ1 = `UPDATE users SET serviceWorkers = JSON_ARRAY_APPEND(serviceWorkers, '$', '${serviceWorker}') WHERE email = '${email}';`;
+  const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', '${serviceWorker}') WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
 }

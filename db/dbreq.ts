@@ -270,7 +270,8 @@ export async function newNotification(
     await newPush(
       email,
       JSON.stringify({
-        message: sender_email + " üzenetet küldött",
+        title: sender_email + " üzenetet küldött",
+        message: title,
       })
     );
   });

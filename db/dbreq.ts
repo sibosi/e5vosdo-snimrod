@@ -149,6 +149,15 @@ export async function removeUserPermissions(
   return await dbreq(REQ2);
 }
 
+export async function getUsersEmailByPermission(permission: string) {
+  const response = (await dbreq(
+    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`
+  )) as any;
+  let emails: string[] = [];
+  response.map((user: { email: string }) => emails.push(user.email));
+  return emails;
+}
+
 export async function getNotificationById(id: number) {
   const response = (await dbreq(
     `SELECT * FROM notifications WHERE id = ${Number(id)}`
@@ -235,8 +244,19 @@ export async function newNotification(
   receiving_emails: string[]
 ) {
   const sender_email = (await getAuth())?.email;
+
+  let valid_receiving_emails: string[] = [];
+
+  if (!receiving_emails[0].includes("@")) {
+    getUsersEmailByPermission(receiving_emails[0]).then((emails) => {
+      valid_receiving_emails = emails;
+    });
+  } else {
+    valid_receiving_emails = receiving_emails;
+  }
+
   const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails) VALUES ('${title}', '${message}', '${sender_email}', '${JSON.stringify(
-    receiving_emails
+    valid_receiving_emails
   )}');`;
   const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
   const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_ARRAY_APPEND(users.notifications, '$', CAST(@notification_id AS JSON));`;
@@ -246,7 +266,7 @@ export async function newNotification(
 
   const response = await multipledbreq(MAINRRQ);
 
-  receiving_emails.map(async (email) => {
+  valid_receiving_emails.map(async (email) => {
     await newPush(
       email,
       JSON.stringify({

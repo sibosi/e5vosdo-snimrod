@@ -144,6 +144,9 @@ WHERE email = 'simon.nimrod.zalan@e5vos.hu';
 --@block
 UPDATE users
 SET service_workers = '[]';
+UPDATE push_auths
+SET auth = NULL;
 --@block
 SELECT *
 FROM push_auths;
+--@block

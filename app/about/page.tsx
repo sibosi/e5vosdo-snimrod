@@ -10,6 +10,10 @@ import {
 } from "@/db/dbreq";
 import ListUsers from "@/components/account/listusers";
 import NewNotification from "@/components/account/notification";
+import {
+  DeleteServiceWorker,
+  NewServiceWorker,
+} from "@/components/PWA/managesw";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -39,7 +43,10 @@ const AboutPage = async () => {
         )}
       </div>
       <LogOut />
-      {"Adminok: " + admins.join(", ")}
+      <div>{"Adminok: " + admins.join(", ")}</div>
+      <DeleteServiceWorker />
+      <NewServiceWorker />
+      <br />
       <br />
       {(await hasPermission(selfUser.email, "getUsers")) ? (
         <ListUsers

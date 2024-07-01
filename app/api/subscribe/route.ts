@@ -1,5 +1,9 @@
 // pages/api/subscribe.ts
-import { addServiceWorker, getServiceWorkersByPermission } from "@/db/dbreq";
+import {
+  addPushAuth,
+  addServiceWorker,
+  getServiceWorkersByPermission,
+} from "@/db/dbreq";
 import { NextRequest, NextResponse } from "next/server";
 import webPush from "web-push";
 
@@ -28,6 +32,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   // Save the subscription to the subscriptions list
   console.log("Adding subscription:", subscriptionObj);
   console.log(await addServiceWorker(subscriptionObj));
+  console.log(await addPushAuth(subscriptionObj.keys.auth));
 
   console.log("Subscription added:", subscriptionObj);
 

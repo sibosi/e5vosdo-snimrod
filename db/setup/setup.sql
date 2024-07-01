@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `order_number` INT,
     CHECK (food_menu IN ('A', 'B')),
     `notifications` JSON NOT NULL,
-    `service_workers` JSON NOT NULL
+    `service_workers` JSON NOT NULL,
+    `push_auth` JSON NOT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 -- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE
@@ -48,3 +49,11 @@ CREATE TABLE IF NOT EXISTS notifications (
     sender_email VARCHAR(255) NOT NULL,
     receiving_emails JSON NOT NULL
 );
+--@block
+CREATE TABLE IF NOT EXISTS push_auths (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    auth VARCHAR(255) NOT NULL
+);
+--@block
+SELECT *
+FROM push_auths;

@@ -210,6 +210,16 @@ export async function getServiceWorkersByPermission(permission: string) {
   return service_workers;
 }
 
+export async function checkPushAuth(auth: string) {
+  const response: any = await dbreq(`SELECT * FROM push_auths;`);
+
+  const auths: string[] = response.map((auth: any) => auth.auth);
+  return auths.includes(auth);
+}
+export async function addPushAuth(auth: string) {
+  return await dbreq(`INSERT INTO push_auths (auth) VALUES ('${auth}');`);
+}
+
 export interface apireqType {
   gate:
     | "getUsers"
@@ -228,7 +238,8 @@ export interface apireqType {
     | "getNotificationById"
     | "getUserNotificationsIds"
     | "getUserNotifications"
-    | "newNotification";
+    | "newNotification"
+    | "checkPushAuth";
 }
 export const apioptions = [
   "getUsers",
@@ -248,6 +259,7 @@ export const apioptions = [
   "getUserNotificationsIds",
   "getUserNotifications",
   "newNotification",
+  "checkPushAuth",
 ];
 
 export const apireq = {
@@ -268,6 +280,7 @@ export const apireq = {
   getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["student"] },
   getUserNotifications: { req: getUserNotifications, perm: ["student"] },
   newNotification: { req: newNotification, perm: ["admin"] },
+  checkPushAuth: { req: checkPushAuth, perm: ["student"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
@@ -292,5 +305,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   else if (req === "newNotification") {
     const { title, message, receiving_emails } = body;
     return await newNotification(title, message, receiving_emails);
+  } else if (req === "checkPushAuth") {
+    const { auth } = body;
+    return await checkPushAuth(auth);
   } else return "No such request";
 };

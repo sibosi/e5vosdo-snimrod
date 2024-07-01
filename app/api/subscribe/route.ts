@@ -1,4 +1,5 @@
 // pages/api/subscribe.ts
+import { addServiceWorker, getServiceWorkersByPermission } from "@/db/dbreq";
 import { NextRequest, NextResponse } from "next/server";
 import webPush from "web-push";
 
@@ -10,8 +11,6 @@ webPush.setVapidDetails(
   publicVapidKey,
   privateVapidKey
 );
-
-let subscriptions: Array<any> = [];
 
 export async function POST(req: NextRequest, res: NextResponse) {
   const { value: subscription } = (await req.body?.getReader().read()) as {
@@ -27,10 +26,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
   }
 
   // Save the subscription to the subscriptions list
-  subscriptions.push(subscriptionObj);
+  console.log(await addServiceWorker(subscriptionObj));
 
   console.log("Subscription added:", subscriptionObj);
-  console.log("Subscriptions:", subscriptions);
 
   const payload = JSON.stringify({
     title: "Írj Nimródnak: a #1 működik",
@@ -50,11 +48,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
   }
 }
 
-export function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest, res: NextResponse) {
   const payload = JSON.stringify({
     title: "Írj Nimródnak: a #1 működik",
     body: "Ha ezt látod, írj Simon Nimródnak, hogy a #1 működik!",
   });
+
+  const subscriptions = await getServiceWorkersByPermission("student");
 
   console.log("Subscriptions len:", subscriptions.length);
   const subscriptionsList = subscriptions;

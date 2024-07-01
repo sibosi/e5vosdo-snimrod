@@ -109,7 +109,7 @@ export async function updateUser(user: User | undefined) {
 
   const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}', '[]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}', '[]', '[]', '[]  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
 
   return await dbreq(REQ1), await dbreq(REQ2);
 }
@@ -189,6 +189,25 @@ export async function newNotification(
   const response = await multipledbreq(MAINRRQ);
 
   return { data: "success" };
+}
+
+export async function addServiceWorker(serviceWorker: JSON) {
+  const email = (await getAuth())?.email;
+  const REQ1 = `UPDATE users SET serviceWorkers = JSON_ARRAY_APPEND(serviceWorkers, '$', '${serviceWorker}') WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
+export async function getServiceWorkersByPermission(permission: string) {
+  const users_service_workers: { service_workers: [] }[] = (await dbreq(
+    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '${permission}', '$')`
+  )) as any;
+  let service_workers: any[] = [];
+  users_service_workers.map((user: { service_workers: [] }) =>
+    user.service_workers.map((sw: any) => service_workers.push(sw))
+  );
+
+  return service_workers;
 }
 
 export interface apireqType {

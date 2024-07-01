@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `class_character` CHAR(1),
     `order_number` INT,
     CHECK (food_menu IN ('A', 'B')),
-    `notifications` JSON NOT NULL
+    `notifications` JSON NOT NULL,
+    `service_workers` JSON NOT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 -- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE

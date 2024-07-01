@@ -39,6 +39,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const payload = JSON.stringify({
     title: "Írj Nimródnak: a #2 működik",
     message: "Sikeres azonosítás!",
+    icon: "/favicon-16x16.png",
   });
 
   try {
@@ -58,6 +59,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   const payload = JSON.stringify({
     title: "Írj Nimródnak: a #1 működik",
     message: "Ha ezt látod, írj Simon Nimródnak, hogy a #1 működik!",
+    icon: "/favicon-16x16.png",
   });
 
   const subscriptions = await getServiceWorkersByPermission("student");

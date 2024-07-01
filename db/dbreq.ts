@@ -1,5 +1,15 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
+import webPush from "web-push";
+
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string; // Replace with your public VAPID key
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string; // Replace with your private VAPID key
+
+webPush.setVapidDetails(
+  "mailto:spam.sibosi@gmail.com", // Replace with your email
+  publicVapidKey,
+  privateVapidKey
+);
 
 export interface User {
   name: string;
@@ -171,26 +181,6 @@ export async function getUserNotifications() {
   return notifications;
 }
 
-export async function newNotification(
-  title: string,
-  message: string,
-  receiving_emails: string[]
-) {
-  const sender_email = (await getAuth())?.email;
-  const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails) VALUES ('${title}', '${message}', '${sender_email}', '${JSON.stringify(
-    receiving_emails
-  )}');`;
-  const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
-  const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_ARRAY_APPEND(users.notifications, '$', CAST(@notification_id AS JSON));`;
-  const REQ4 = `SELECT * FROM notifications WHERE id = @notification_id;`;
-
-  const MAINRRQ = [REQ1, REQ2, REQ3, REQ4];
-
-  const response = await multipledbreq(MAINRRQ);
-
-  return { data: "success" };
-}
-
 export async function addServiceWorker(serviceWorker: any) {
   const email = (await getAuth())?.email;
   const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', JSON_OBJECT('endpoint', '${serviceWorker.endpoint}', 'expirationTime', '${serviceWorker.expirationTime}', 'keys', JSON_OBJECT('p256dh', '${serviceWorker.keys.p256dh}', 'auth', '${serviceWorker.keys.auth}'))) WHERE email = '${email}';`;
@@ -210,6 +200,13 @@ export async function getServiceWorkersByPermission(permission: string) {
   return service_workers;
 }
 
+export async function getServiceWorkersByEmail(email: string) {
+  const response = (await dbreq(
+    `SELECT service_workers FROM users WHERE email = '${email}'`
+  )) as any;
+  return response[0].service_workers;
+}
+
 export async function checkPushAuth(auth: string) {
   const response: any = await dbreq(`SELECT * FROM push_auths;`);
 
@@ -218,6 +215,47 @@ export async function checkPushAuth(auth: string) {
 }
 export async function addPushAuth(auth: string) {
   return await dbreq(`INSERT INTO push_auths (auth) VALUES ('${auth}');`);
+}
+
+export async function newPush(email: string, payload: any) {
+  const service_workers = await getServiceWorkersByEmail(email);
+  service_workers.map(async (sw: any) => {
+    try {
+      console.log("Sending notification to:", sw);
+      await webPush.sendNotification(sw, payload);
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  });
+}
+
+export async function newNotification(
+  title: string,
+  message: string,
+  receiving_emails: string[]
+) {
+  const sender_email = (await getAuth())?.email;
+  const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails) VALUES ('${title}', '${message}', '${sender_email}', '${JSON.stringify(
+    receiving_emails
+  )}');`;
+  const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
+  const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_ARRAY_APPEND(users.notifications, '$', CAST(@notification_id AS JSON));`;
+  const REQ4 = `SELECT * FROM notifications WHERE id = @notification_id;`;
+
+  const MAINRRQ = [REQ1, REQ2, REQ3, REQ4];
+
+  const response = await multipledbreq(MAINRRQ);
+
+  receiving_emails.map(async (email) => {
+    await newPush(
+      email,
+      JSON.stringify({
+        message: sender_email + " üzenetet küldött",
+      })
+    );
+  });
+
+  return { data: "success" };
 }
 
 export interface apireqType {

@@ -150,3 +150,5 @@ SET auth = NULL;
 SELECT *
 FROM push_auths;
 --@block
+SELECT *
+FROM notifications;

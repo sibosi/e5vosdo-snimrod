@@ -3,10 +3,7 @@
 self.addEventListener('push', function (event) {
     const data = JSON.parse(event.data.text())
     event.waitUntil(
-        registration.showNotification(data.title, {
-            body: data.message,
-            icon: '/favicon-16x16.png'
-        })
+        registration.showNotification(data.title, data)
     )
 })
 

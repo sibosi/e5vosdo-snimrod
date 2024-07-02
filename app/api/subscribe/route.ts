@@ -1,17 +1,12 @@
-// pages/api/subscribe.ts
-import {
-  addPushAuth,
-  addServiceWorker,
-  getServiceWorkersByPermission,
-} from "@/db/dbreq";
+import { addPushAuth, addServiceWorker } from "@/db/dbreq";
 import { NextRequest, NextResponse } from "next/server";
 import webPush from "web-push";
 
-const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string; // Replace with your public VAPID key
-const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string; // Replace with your private VAPID key
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 
 webPush.setVapidDetails(
-  "mailto:spam.sibosi@gmail.com", // Replace with your email
+  "mailto:spam.sibosi@gmail.com",
   publicVapidKey,
   privateVapidKey
 );
@@ -55,40 +50,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 }
 
 export async function GET(req: NextRequest, res: NextResponse) {
-  const payload = JSON.stringify({
-    title: "Írj Nimródnak: a #1 működik",
-    message: "Ha ezt látod, írj Simon Nimródnak, hogy a #1 működik!",
+  return NextResponse.json({
+    message: "GET requests are not supported",
   });
-
-  const subscriptions = await getServiceWorkersByPermission("student");
-
-  console.log("Subscriptions len:", subscriptions.length);
-  const subscriptionsList = subscriptions;
-  subscriptionsList.reverse();
-
-  const sendPromises = subscriptionsList.map(async (sub) => {
-    try {
-      console.log("Sending notification to:", sub);
-      const result = await webPush
-        .sendNotification(sub, payload)
-        .catch((error) => {
-          console.error("Error sending notification:", error);
-        });
-      console.log("Notification sent:", result);
-    } catch (error) {
-      console.error("Error sending notification:", error);
-    }
-  });
-
-  // Wait for all notifications to be sent
-  Promise.all(sendPromises)
-    .then(() => {
-      return NextResponse.json({ status: 200, message: "Notifications sent" });
-    })
-    .catch((error) => {
-      console.error("Error sending notifications:", error);
-      return NextResponse.json({ status: 500, error: error });
-    });
-
-  return NextResponse.json({ status: 200, message: "Notifications sent" });
 }

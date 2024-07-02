@@ -60,7 +60,7 @@ const ListUsers = ({
       {users.map((user: any) => (
         <div
           key={user.email}
-          className="rounded-3xl bg-primary-50 my-4 p-6 text-foreground"
+          className="rounded-3xl bg-primary-50 p-6 text-foreground"
         >
           <Image
             src={user.image}

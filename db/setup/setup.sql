@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS `users` (
+    `name` varchar(255) NOT NULL,
     `username` varchar(255) NOT NULL,
     `email` varchar(255) PRIMARY KEY NOT NULL UNIQUE,
     `image` varchar(255) NOT NULL,
@@ -6,13 +7,17 @@ CREATE TABLE IF NOT EXISTS `users` (
     `class` varchar(255),
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `permissions` JSON NOT NULL DEFAULT '[]',
+    `permissions` JSON NOT NULL,
     `food_menu` CHAR(1),
     `coming_year` INT,
     `class_character` CHAR(1),
     `order_number` INT,
-    CHECK (food_menu IN ('A', 'B'))
+    CHECK (food_menu IN ('A', 'B')),
+    `notifications` JSON NOT NULL,
+    `service_workers` JSON NOT NULL,
+    `push_auth` JSON NOT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+-- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE
 INSERT ON users FOR EACH ROW BEGIN
 SET NEW.coming_year = SUBSTRING(NEW.EJG_code, 1, 4);
@@ -35,43 +40,20 @@ CREATE TABLE IF NOT EXISTS events (
     details TEXT,
     tags JSON
 );
+-- Add notifications table
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    sender_email VARCHAR(255) NOT NULL,
+    receiving_emails JSON NOT NULL
+);
+--@block
+CREATE TABLE IF NOT EXISTS push_auths (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    auth VARCHAR(255) NOT NULL
+);
 --@block
 SELECT *
-FROM users;
---@block
--- Delete all tables
-DROP TABLE users;
---@block
--- Add A food menu to nimrod user
-UPDATE users
-SET EJG_code = '2023C25EJG462'
-WHERE email = 'simon.nimrod.zalan@e5vos.hu';
---@block
--- Add permissions to nimrod user
-UPDATE users
-SET permissions = '["student"]'
-WHERE email = 'no.one@e5vos.hu';
---@block
-SELECT email,
-    permissions
-FROM users;
---@block
--- Add user permissions to nimrod user
-UPDATE users
-SET permissions = '["student", "admin"]'
-WHERE email = 'simon.nimrod.zalan@e5vos.hu';
---@block
--- Append permissions to nimrod user
-UPDATE users
-SET permissions = JSON_ARRAY_APPEND(permissions, '$', 'tester')
-WHERE email = 'simon.nimrod.zalan@e5vos.hu';
---@block
--- Remove 'admin' permission from 'simon.nimrod.zalan@e5vos.hu' user
-UPDATE users
-SET permissions = JSON_REMOVE(
-        permissions,
-        JSON_UNQUOTE(
-            JSON_SEARCH(permissions, 'one', 'tester')
-        )
-    )
-WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+FROM push_auths;

@@ -25,7 +25,7 @@ export const SideCard = ({
   const OptionalButton = (popup: boolean) => {
     if (popup) {
       return (
-        typeof details != undefined && (
+        details != undefined && (
           <PopupButton
             key={undefined}
             title={title}

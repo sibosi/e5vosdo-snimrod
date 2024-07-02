@@ -43,7 +43,7 @@ export const Events = () => {
               <SideCard
                 key={index}
                 title={event.title}
-                details={event.details}
+                details={event.details ?? undefined}
                 description={event.time}
                 image={event.image ?? undefined}
                 popup={true}

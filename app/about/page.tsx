@@ -14,6 +14,7 @@ import {
   DeleteServiceWorker,
   NewServiceWorker,
 } from "@/components/PWA/managesw";
+import { ButtonGroup } from "@nextui-org/react";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -42,10 +43,14 @@ const AboutPage = async () => {
           />
         )}
       </div>
-      <LogOut />
+      <div className="inline-flex gap-2">
+        <LogOut size="md" />
+        <ButtonGroup>
+          <DeleteServiceWorker />
+          <NewServiceWorker />
+        </ButtonGroup>
+      </div>
       <div>{"Adminok: " + admins.join(", ")}</div>
-      <DeleteServiceWorker />
-      <NewServiceWorker />
       <br />
       <br />
       {(await hasPermission(selfUser.email, "getUsers")) ? (

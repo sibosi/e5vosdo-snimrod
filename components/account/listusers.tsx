@@ -62,13 +62,16 @@ const ListUsers = ({
           key={user.email}
           className="rounded-3xl bg-primary-50 p-6 text-foreground"
         >
-          <Image
-            src={user.image}
-            alt={user.username}
-            width={72}
-            height={72}
-            className="rounded-full"
-          />
+          <div className="flex">
+            <Image
+              src={user.image}
+              alt={user.username}
+              width={72}
+              height={72}
+              className="rounded-full"
+            />
+            {user.service_workers.length != 0 && <span>🔔</span>}
+          </div>
           <h1 className="text-foreground">{user.username}</h1>
           <p>{user.email}</p>
           <p>{String(user.last_login)}</p>

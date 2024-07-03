@@ -104,50 +104,54 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
             <Login />
           )}
         </Navbar>
-        {selfUser ? (
-          notifications.map((item: any, index: number) => (
-            <div key={index}>
-              <div
-                key={"Notification" + String(index)}
-                className="flex my-3 gap-2"
-                onClick={() => setShowModal(index)}
-              >
-                <div className="block w-5 h-5 m-1 my-auto">{Bell}</div>
-                <div className="text-left truncate">
-                  <h3 className="flex font-bold gap-1">
-                    <p className="truncate">{item.title}</p>
-                    <p>&middot;</p>
-                    <p className="text-foreground-600 text-sm my-auto">
-                      {new Date(item.time).toLocaleString("hu-HU", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
-                    </p>
-                  </h3>
-                  <span className="text-sm break-words text-foreground-600">
-                    {item.message}
-                  </span>
-                </div>
-              </div>
-              <Modal
-                size="md"
-                key={"NotModal" + String(index)}
-                isOpen={showModal === index}
-                onClose={() => setShowModal(-1)}
-                className="overflow-auto"
-              >
-                <ModalContent className="max-h-[95vh] overflow-auto p-10">
-                  <div className="flex flex-col gap-2">
-                    <h3 className="font-bold text-foreground">{item.title}</h3>
-                    <p className="text-foreground-600">{item.message}</p>
+        <div className="max-h-72 overflow-auto scrollbar-default">
+          {selfUser ? (
+            notifications.map((item: any, index: number) => (
+              <div key={index}>
+                <div
+                  key={"Notification" + String(index)}
+                  className="flex my-3 gap-2"
+                  onClick={() => setShowModal(index)}
+                >
+                  <div className="block w-5 h-5 m-1 my-auto">{Bell}</div>
+                  <div className="text-left truncate">
+                    <h3 className="flex font-bold gap-1">
+                      <p className="truncate">{item.title}</p>
+                      <p>&middot;</p>
+                      <p className="text-foreground-600 text-sm my-auto">
+                        {new Date(item.time).toLocaleString("hu-HU", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </p>
+                    </h3>
+                    <span className="text-sm break-words text-foreground-600">
+                      {item.message}
+                    </span>
                   </div>
-                </ModalContent>
-              </Modal>
-            </div>
-          ))
-        ) : (
-          <></>
-        )}
+                </div>
+                <Modal
+                  size="md"
+                  key={"NotModal" + String(index)}
+                  isOpen={showModal === index}
+                  onClose={() => setShowModal(-1)}
+                  className="overflow-auto"
+                >
+                  <ModalContent className="max-h-[95vh] overflow-auto p-10">
+                    <div className="flex flex-col gap-2">
+                      <h3 className="font-bold text-foreground">
+                        {item.title}
+                      </h3>
+                      <p className="text-foreground-600">{item.message}</p>
+                    </div>
+                  </ModalContent>
+                </Modal>
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -123,6 +123,10 @@ SELECT *
 FROM users;
 --@block
 UPDATE users
+SET service_workers = '[]'
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+UPDATE users
 SET service_workers = JSON_ARRAY_APPEND(
         service_workers,
         '$',
@@ -143,7 +147,9 @@ SET service_workers = JSON_ARRAY_APPEND(
 WHERE email = 'simon.nimrod.zalan@e5vos.hu';
 --@block
 UPDATE users
-SET service_workers = '[]';
+SET service_workers = '[]'
+WHERE service_workers IS NULL;
+--@block
 UPDATE push_auths
 SET auth = NULL;
 --@block

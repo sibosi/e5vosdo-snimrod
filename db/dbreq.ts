@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
+import { badge, image } from "@nextui-org/theme";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string; // Replace with your public VAPID key
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string; // Replace with your private VAPID key
@@ -21,6 +22,15 @@ export interface User {
 
 export async function getUsers() {
   return await dbreq(`SELECT * FROM \`users\``);
+}
+
+export async function getUsersName() {
+  const response = await dbreq(`SELECT name FROM users;`);
+  let names: string[] = [];
+  (response as unknown as []).map((user: { name: string }) =>
+    names.push(user.name)
+  );
+  return names;
 }
 
 export async function getUser(email: string | undefined) {
@@ -197,6 +207,24 @@ export async function addServiceWorker(serviceWorker: any) {
   return await dbreq(REQ1);
 }
 
+export async function removeServiceWorker(serviceWorker: any, email: string) {
+  let users_service_workers = (
+    (await dbreq(
+      `SELECT service_workers FROM users WHERE email = '${email}'`
+    )) as any
+  )[0].service_workers;
+
+  users_service_workers = users_service_workers.filter(
+    (sw: any) => sw.endpoint !== serviceWorker.endpoint
+  );
+
+  const REQ1 = `UPDATE users SET service_workers = '${JSON.stringify(
+    users_service_workers
+  )}' WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
 export async function getServiceWorkersByPermission(permission: string) {
   const users_service_workers: { service_workers: [] }[] = (await dbreq(
     `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`
@@ -234,11 +262,14 @@ export async function newPush(email: string, payload: any) {
       await webPush.sendNotification(sw, payload);
     } catch (error) {
       console.error("Error sending notification:", error);
+      if ((error as any).statusCode === 410) {
+        console.log(await removeServiceWorker(sw, email));
+      }
     }
   });
 }
 
-export async function newNotification(
+export async function newNotificationByEmails(
   title: string,
   message: string,
   receiving_emails: string[]
@@ -272,6 +303,9 @@ export async function newNotification(
       JSON.stringify({
         title: sender_email + " üzenetet küldött",
         message: title,
+        body: title,
+        icon: "favicon.ico",
+        badge: "favicon-16x16.ico",
       })
     );
   });
@@ -279,9 +313,45 @@ export async function newNotification(
   return { data: "success" };
 }
 
+export async function newNotificationByNames(
+  title: string,
+  message: string,
+  receiving_names: string[]
+) {
+  const sender_email = (await getAuth())?.email;
+  let receiving_emails: string[] = [];
+  let valid_receiving_emails: string[] = [];
+
+  const usersNameAndEmail: Array<{ name: string; email: string }> =
+    (await dbreq(`SELECT name, email FROM users`)) as any;
+
+  const usersNameAndEmailDict: { [key: string]: string } = {};
+  usersNameAndEmail.map((user: { name: string; email: string }) => {
+    usersNameAndEmailDict[user.name] = user.email;
+  });
+
+  receiving_names.map((name) => {
+    receiving_emails.push(usersNameAndEmailDict[name] ?? name);
+  });
+
+  await receiving_emails.map(async (email) => {
+    if (email.includes("@")) {
+      valid_receiving_emails.push(email);
+    } else {
+      valid_receiving_emails = [
+        ...valid_receiving_emails,
+        ...(await getUsersEmailByPermission(email)),
+      ];
+    }
+  });
+
+  return await newNotificationByEmails(title, message, valid_receiving_emails);
+}
+
 export interface apireqType {
   gate:
     | "getUsers"
+    | "getUsersName"
     | "getUser"
     | "getAuth"
     | "hasPermission"
@@ -297,11 +367,13 @@ export interface apireqType {
     | "getNotificationById"
     | "getUserNotificationsIds"
     | "getUserNotifications"
-    | "newNotification"
+    | "newNotificationByEmails"
+    | "newNotificationByNames"
     | "checkPushAuth";
 }
 export const apioptions = [
   "getUsers",
+  "getUsersName",
   "getUser",
   "getAuth",
   "hasPermission",
@@ -317,12 +389,14 @@ export const apioptions = [
   "getNotificationById",
   "getUserNotificationsIds",
   "getUserNotifications",
-  "newNotification",
+  "newNotificationByEmails",
+  "newNotificationByNames",
   "checkPushAuth",
 ];
 
 export const apireq = {
   getUsers: { req: getUsers, perm: ["admin", "tester"] },
+  getUsersName: { req: getUsersName, perm: ["student"] },
   getUser: { req: getUser, perm: [] },
   getAuth: { req: getAuth, perm: [] },
   hasPermission: { req: hasPermission, perm: [] },
@@ -338,12 +412,14 @@ export const apireq = {
   getNotificationById: { req: getNotificationById, perm: ["student"] },
   getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["student"] },
   getUserNotifications: { req: getUserNotifications, perm: ["student"] },
-  newNotification: { req: newNotification, perm: ["admin"] },
+  newNotificationByEmails: { req: newNotificationByEmails, perm: ["admin"] },
+  newNotificationByNames: { req: newNotificationByNames, perm: ["admin"] },
   checkPushAuth: { req: checkPushAuth, perm: ["student"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getUsers") return await getUsers();
+  else if (req === "getUsersName") return await getUsersName();
   else if (req === "getEvents") return await getEvents();
   else if (req === "getStudentUsers") return await getStudentUsers();
   else if (req === "getAdminUsers") return await getAdminUsers();
@@ -361,9 +437,12 @@ export const defaultApiReq = async (req: string, body: any) => {
   else if (req === "getUserNotificationsIds")
     return await getUserNotificationsIds();
   else if (req === "getUserNotifications") return await getUserNotifications();
-  else if (req === "newNotification") {
+  else if (req === "newNotificationByEmails") {
     const { title, message, receiving_emails } = body;
-    return await newNotification(title, message, receiving_emails);
+    return await newNotificationByEmails(title, message, receiving_emails);
+  } else if (req === "newNotificationByNames") {
+    const { title, message, receiving_names } = body;
+    return await newNotificationByNames(title, message, receiving_names);
   } else if (req === "checkPushAuth") {
     const { auth } = body;
     return await checkPushAuth(auth);

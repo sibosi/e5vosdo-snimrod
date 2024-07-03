@@ -4,8 +4,8 @@ import { Button, Input } from "@nextui-org/react";
 import React, { useState } from "react";
 
 const NewNotification = () => {
-  const [notificationTitle, setNotificationTitle] = React.useState("");
-  const [notificationMessage, setNotificationMessage] = useState("");
+  const [notificationTitle, setNotificationTitle] = React.useState<string>();
+  const [notificationMessage, setNotificationMessage] = useState<string>();
   const [notificationAddressees, setNotificationAddressees] = useState<
     string[]
   >([]);
@@ -18,6 +18,11 @@ const NewNotification = () => {
       const response = await fetch("/api/getUsersName");
       const data: string[] = await response.json();
       setAllUsers(data.sort());
+    }
+
+    if (searchName.length < 2) {
+      setOptions([]);
+      return;
     }
 
     let filteredUsers: string[] = [];
@@ -65,6 +70,7 @@ const NewNotification = () => {
           label="Cím"
           value={notificationTitle}
           onValueChange={setNotificationTitle}
+          color={notificationTitle == "" ? "danger" : "default"}
         />
         <Input
           size="md"
@@ -72,6 +78,7 @@ const NewNotification = () => {
           label="Üzenet"
           value={notificationMessage}
           onValueChange={setNotificationMessage}
+          color={notificationMessage == "" ? "danger" : "default"}
         />
         <Input
           size="md"
@@ -134,11 +141,13 @@ const NewNotification = () => {
           )
         )}
       </div>
-      <p>{String(notificationTitle)}</p>
-      <p>{String(notificationMessage)}</p>
-      <p>{String(notificationAddressees)}</p>
       <Button
         color="primary"
+        isDisabled={
+          !notificationTitle ||
+          !notificationMessage ||
+          notificationAddressees.length == 0
+        }
         onClick={() =>
           sendNotification(
             setNotificationTitle,

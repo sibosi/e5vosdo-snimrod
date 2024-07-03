@@ -207,6 +207,24 @@ export async function addServiceWorker(serviceWorker: any) {
   return await dbreq(REQ1);
 }
 
+export async function removeServiceWorker(serviceWorker: any, email: string) {
+  let users_service_workers = (
+    (await dbreq(
+      `SELECT service_workers FROM users WHERE email = '${email}'`
+    )) as any
+  )[0].service_workers;
+
+  users_service_workers = users_service_workers.filter(
+    (sw: any) => sw.endpoint !== serviceWorker.endpoint
+  );
+
+  const REQ1 = `UPDATE users SET service_workers = '${JSON.stringify(
+    users_service_workers
+  )}' WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
 export async function getServiceWorkersByPermission(permission: string) {
   const users_service_workers: { service_workers: [] }[] = (await dbreq(
     `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`
@@ -244,6 +262,9 @@ export async function newPush(email: string, payload: any) {
       await webPush.sendNotification(sw, payload);
     } catch (error) {
       console.error("Error sending notification:", error);
+      if ((error as any).statusCode === 410) {
+        console.log(await removeServiceWorker(sw, email));
+      }
     }
   });
 }

@@ -207,7 +207,6 @@ export async function getUserNotifications() {
   for (let i = 0; i < response.sent.length; i++) {
     notifications.sent.push(await getNotificationById(response.sent[i]));
   }
-  console.log("notifications: ", notifications);
   return notifications;
 }
 
@@ -269,12 +268,11 @@ export async function newPush(email: string, payload: any) {
   const service_workers = await getServiceWorkersByEmail(email);
   service_workers.map(async (sw: any) => {
     try {
-      console.log("Sending notification to:", sw);
       await webPush.sendNotification(sw, payload);
     } catch (error) {
       console.error("Error sending notification:", error);
       if ((error as any).statusCode === 410) {
-        console.log(await removeServiceWorker(sw, email));
+        await removeServiceWorker(sw, email);
       }
     }
   });
@@ -296,8 +294,6 @@ export async function markAsRead(id: number) {
   const REQ1 = `UPDATE users SET notifications = JSON_SET(notifications, '$.new', JSON_ARRAY(${filtered_new_notifications.join(
     ", "
   )})) WHERE email = '${email}';`;
-
-  console.log("REQ1: ", REQ1);
 
   const REQ2 = `UPDATE users SET notifications = JSON_SET(notifications, '$.read', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.read'), '$', ${id})) WHERE email = '${email}';`;
 

@@ -158,3 +158,18 @@ FROM push_auths;
 --@block
 SELECT *
 FROM notifications;
+--@block
+UPDATE users
+Set notifications = '{ "new": [1, 109], "read": [], "sent": []  }';
+--@block
+UPDATE users
+SET notifications = JSON_SET(
+        notifications,
+        '$.new',
+        JSON_ARRAY(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    )
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+SELECT *
+FROM users
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';

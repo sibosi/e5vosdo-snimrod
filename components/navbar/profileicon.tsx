@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Avatar,
+  Badge,
   Modal,
   ModalContent,
   Navbar,
@@ -37,22 +38,35 @@ async function fetchNotifications(
     return;
   }
   setNotificationsIds(notificationsIds);
-  const response = await fetch("/api/getUserNotifications"); // Adjust the endpoint as necessary
-  const data: [] = await response.json();
-  // if type is array
-  if (!Array.isArray(data)) {
+  const response = await fetch("/api/getUserNotifications");
+  const data: JSON = await response.json();
+  console.log(data);
+  setNotifications(data);
+}
+
+async function markAsRead(id: number) {
+  const response = await fetch("/api/markAsRead", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: id,
+    }),
+  });
+  if (response.status == 200) {
     return;
   }
-  data.reverse();
-  setNotifications(data);
 }
 
 export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
   const [showButtons, setShowButtons] = useState(false);
   const [showModal, setShowModal] = useState(-1);
 
-  const [notificationsIds, setNotificationsIds] = useState<number[]>([]); // [id, id, id]
-  const [notifications, setNotifications] = useState<any>([]); // [title, message, addressee]
+  const [notificationsIds, setNotificationsIds] = useState<number[]>([]);
+  // {new: [id, id], read: [id, id], sent: [id, id]}
+  const [notifications, setNotifications] = useState<any>(undefined);
+  // {new: [{id, title, message, time}, {id, title, message, time}], read: [{id, title, message, time}]}
 
   useEffect(() => {
     if (!selfUser) return;
@@ -63,11 +77,34 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
     setShowButtons(!showButtons);
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchNotifications(
+        notificationsIds,
+        setNotificationsIds,
+        setNotifications
+      );
+    }, 8000); // in ms
+
+    return () => clearInterval(interval);
+  }, [notificationsIds]);
+
   return (
     <div>
       <div onClick={handleIconClick}>
         {selfUser?.image && selfUser?.name ? (
-          <Avatar isBordered color="default" src={selfUser.image} />
+          <Badge
+            content={String(
+              notifications != undefined ? notifications.new.length : 0
+            )}
+            shape="circle"
+            color="danger"
+            isInvisible={
+              notifications == undefined ? true : notifications.new.length == 0
+            }
+          >
+            <Avatar isBordered color="default" src={selfUser.image} />
+          </Badge>
         ) : (
           <Avatar isBordered color="default" src="apa-logo.jpg" />
         )}
@@ -105,13 +142,65 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
           )}
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">
-          {selfUser ? (
-            notifications.map((item: any, index: number) => (
-              <div key={index}>
+          {console.log(notifications)}
+          {selfUser && notifications ? (
+            notifications.new.map((item: any) => (
+              <div key={item.id}>
                 <div
-                  key={"Notification" + String(index)}
+                  key={"Notification" + String(item.id)}
                   className="flex my-3 gap-2"
-                  onClick={() => setShowModal(index)}
+                  onClick={() => {
+                    setShowModal(item.id);
+                    markAsRead(item.id);
+                  }}
+                >
+                  <div className="block w-5 h-5 m-1 my-auto text-danger-500">
+                    {Bell}
+                  </div>
+                  <div className="text-left truncate">
+                    <h3 className="flex font-bold gap-1">
+                      <p className="truncate">{item.title}</p>
+                      <p>&middot;</p>
+                      <p className="text-foreground-600 text-sm my-auto">
+                        {new Date(item.time).toLocaleString("hu-HU", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </p>
+                    </h3>
+                    <span className="text-sm break-words text-foreground-600">
+                      {item.message}
+                    </span>
+                  </div>
+                </div>
+                <Modal
+                  size="md"
+                  key={"NotModal" + String(item.id)}
+                  isOpen={showModal === item.id}
+                  onClose={() => setShowModal(-1)}
+                  className="overflow-auto"
+                >
+                  <ModalContent className="max-h-[95vh] overflow-auto p-10">
+                    <div className="flex flex-col gap-2">
+                      <h3 className="font-bold text-foreground">
+                        {item.title}
+                      </h3>
+                      <p className="text-foreground-600">{item.message}</p>
+                    </div>
+                  </ModalContent>
+                </Modal>
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+          {selfUser && notifications ? (
+            notifications.read.map((item: any) => (
+              <div key={item.id}>
+                <div
+                  key={"Notification" + String(item.id)}
+                  className="flex my-3 gap-2"
+                  onClick={() => setShowModal(item.id)}
                 >
                   <div className="block w-5 h-5 m-1 my-auto">{Bell}</div>
                   <div className="text-left truncate">
@@ -132,8 +221,8 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                 </div>
                 <Modal
                   size="md"
-                  key={"NotModal" + String(index)}
-                  isOpen={showModal === index}
+                  key={"NotModal" + String(item.id)}
+                  isOpen={showModal === item.id}
                   onClose={() => setShowModal(-1)}
                   className="overflow-auto"
                 >

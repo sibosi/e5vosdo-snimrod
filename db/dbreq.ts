@@ -129,7 +129,7 @@ export async function updateUser(user: User | undefined) {
 
   const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}', '[]', '[]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}', '[]', '[ { new: [], read: [], sent: []  } ]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
 
   return await dbreq(REQ1), await dbreq(REQ2);
 }
@@ -170,7 +170,7 @@ export async function getUsersEmailByPermission(permission: string) {
 
 export async function getNotificationById(id: number) {
   const response = (await dbreq(
-    `SELECT * FROM notifications WHERE id = ${Number(id)}`
+    `SELECT * FROM notifications WHERE id = ${id}`
   )) as any[];
   return response[0];
 }
@@ -191,12 +191,23 @@ export async function getUserNotifications() {
     (await dbreq(
       `SELECT notifications FROM users WHERE email = '${email}'`
     )) as any
-  )[0].notifications as number[];
+  )[0].notifications;
 
-  let notifications: any[] = [];
-  for (let i = 0; i < response.length; i++) {
-    notifications.push(await getNotificationById(response[i]));
+  let notifications: { new: any[]; read: any[]; sent: any[] } = {
+    new: [],
+    read: [],
+    sent: [],
+  };
+  for (let i = 0; i < response.new.length; i++) {
+    notifications.new.push(await getNotificationById(response.new[i]));
   }
+  for (let i = 0; i < response.read.length; i++) {
+    notifications.read.push(await getNotificationById(response.read[i]));
+  }
+  for (let i = 0; i < response.sent.length; i++) {
+    notifications.sent.push(await getNotificationById(response.sent[i]));
+  }
+  console.log("notifications: ", notifications);
   return notifications;
 }
 
@@ -269,6 +280,30 @@ export async function newPush(email: string, payload: any) {
   });
 }
 
+export async function markAsRead(id: number) {
+  const email = (await getAuth())?.email;
+
+  const new_notifications = (
+    (await dbreq(
+      `SELECT notifications FROM users WHERE email = '${email}'`
+    )) as any
+  )[0].notifications.new;
+
+  const filtered_new_notifications = new_notifications.filter(
+    (nid: number) => nid !== id
+  );
+
+  const REQ1 = `UPDATE users SET notifications = JSON_SET(notifications, '$.new', JSON_ARRAY(${filtered_new_notifications.join(
+    ", "
+  )})) WHERE email = '${email}';`;
+
+  console.log("REQ1: ", REQ1);
+
+  const REQ2 = `UPDATE users SET notifications = JSON_SET(notifications, '$.read', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.read'), '$', ${id})) WHERE email = '${email}';`;
+
+  return await dbreq(REQ1), await dbreq(REQ2);
+}
+
 export async function newNotificationByEmails(
   title: string,
   message: string,
@@ -290,7 +325,7 @@ export async function newNotificationByEmails(
     '["' + valid_receiving_emails.join('", "') + '"]'
   }');`;
   const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
-  const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_ARRAY_APPEND(users.notifications, '$', CAST(@notification_id AS JSON));`;
+  const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_SET(users.notifications, '$.new', JSON_ARRAY_APPEND(JSON_EXTRACT(users.notifications, '$.new'), '$', CAST(@notification_id AS JSON)));`;
   const REQ4 = `SELECT * FROM notifications WHERE id = @notification_id;`;
 
   const MAINRRQ = [REQ1, REQ2, REQ3, REQ4];
@@ -367,6 +402,7 @@ export interface apireqType {
     | "getNotificationById"
     | "getUserNotificationsIds"
     | "getUserNotifications"
+    | "markAsRead"
     | "newNotificationByEmails"
     | "newNotificationByNames"
     | "checkPushAuth";
@@ -389,6 +425,7 @@ export const apioptions = [
   "getNotificationById",
   "getUserNotificationsIds",
   "getUserNotifications",
+  "markAsRead",
   "newNotificationByEmails",
   "newNotificationByNames",
   "checkPushAuth",
@@ -412,6 +449,7 @@ export const apireq = {
   getNotificationById: { req: getNotificationById, perm: ["student"] },
   getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["student"] },
   getUserNotifications: { req: getUserNotifications, perm: ["student"] },
+  markAsRead: { req: markAsRead, perm: ["student"] },
   newNotificationByEmails: { req: newNotificationByEmails, perm: ["admin"] },
   newNotificationByNames: { req: newNotificationByNames, perm: ["admin"] },
   checkPushAuth: { req: checkPushAuth, perm: ["student"] },
@@ -437,7 +475,10 @@ export const defaultApiReq = async (req: string, body: any) => {
   else if (req === "getUserNotificationsIds")
     return await getUserNotificationsIds();
   else if (req === "getUserNotifications") return await getUserNotifications();
-  else if (req === "newNotificationByEmails") {
+  else if (req === "markAsRead") {
+    const { id } = body;
+    return await markAsRead(id);
+  } else if (req === "newNotificationByEmails") {
     const { title, message, receiving_emails } = body;
     return await newNotificationByEmails(title, message, receiving_emails);
   } else if (req === "newNotificationByNames") {

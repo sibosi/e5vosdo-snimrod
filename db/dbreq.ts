@@ -20,6 +20,8 @@ export interface User {
   image: string;
   last_login: string;
   permissions: string[];
+  EJG_code: string;
+  food_menu: string;
 }
 
 export async function getUsers() {
@@ -133,7 +135,7 @@ export async function updateUser(user: User | undefined) {
 
   const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${
     user.name
-  }', ${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
+  }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
     user.name
   }', '[]', '[ { new: [], read: [], sent: []  } ]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
     user.email
@@ -317,6 +319,8 @@ export async function newNotificationByEmails(
 
   let valid_receiving_emails: string[] = [];
 
+  console.log("#5 receiving_emails", receiving_emails);
+
   if (!receiving_emails[0].includes("@")) {
     valid_receiving_emails = await getUsersEmailByPermission(
       receiving_emails[0]
@@ -373,16 +377,19 @@ export async function newNotificationByNames(
     receiving_emails.push(usersNameAndEmailDict[name] ?? name);
   });
 
-  await receiving_emails.map(async (email) => {
-    if (email.includes("@")) {
-      valid_receiving_emails.push(email);
-    } else {
-      valid_receiving_emails = [
-        ...valid_receiving_emails,
-        ...(await getUsersEmailByPermission(email)),
-      ];
-    }
-  });
+  await Promise.all(
+    receiving_emails.map(async (email) => {
+      if (email.includes("@")) {
+        valid_receiving_emails.push(email);
+      } else {
+        valid_receiving_emails = [
+          ...valid_receiving_emails,
+          ...(await getUsersEmailByPermission(email)),
+        ];
+        console.log("#4 valid_receiving_emails", valid_receiving_emails);
+      }
+    })
+  );
 
   return await newNotificationByEmails(title, message, valid_receiving_emails);
 }

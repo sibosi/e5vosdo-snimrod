@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import { Link } from "@nextui-org/react";
 
 type SectionProps = {

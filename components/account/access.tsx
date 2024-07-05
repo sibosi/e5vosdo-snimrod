@@ -1,9 +1,5 @@
-import { siteConfig } from "@/config/site";
-import { Button } from "@nextui-org/react";
-import Link from "next/link";
 import React from "react";
-import Login from "../LoginForm";
-import { Countdown } from "../countdown";
+import { Countdown } from "../home/countdown";
 
 const Access = ({ name }: { name: string | undefined }) => {
   return (

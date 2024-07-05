@@ -131,7 +131,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                 <ThemeSwitch />
               </NavbarContent>
               <NavbarContent justify="center">
-                {String(selfUser?.name)}
+                {String(selfUser?.nickname)}
               </NavbarContent>
               <NavbarContent justify="end">
                 <LogOut />

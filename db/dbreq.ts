@@ -14,6 +14,8 @@ webPush.setVapidDetails(
 
 export interface User {
   name: string;
+  username: string;
+  nickname: string;
   email: string;
   image: string;
   last_login: string;
@@ -129,7 +131,13 @@ export async function updateUser(user: User | undefined) {
 
   const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}', '[]', '[ { new: [], read: [], sent: []  } ]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${
+    user.name
+  }', ${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
+    user.name
+  }', '[]', '[ { new: [], read: [], sent: []  } ]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
+    user.email
+  }');`;
 
   return await dbreq(REQ1), await dbreq(REQ2);
 }

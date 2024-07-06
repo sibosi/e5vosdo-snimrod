@@ -1,10 +1,9 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
-import { badge, image } from "@nextui-org/theme";
 
-const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string; // Replace with your public VAPID key
-const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string; // Replace with your private VAPID key
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 
 webPush.setVapidDetails(
   "mailto:spam.sibosi@gmail.com", // Replace with your email
@@ -394,6 +393,18 @@ export async function newNotificationByNames(
   return await newNotificationByEmails(title, message, valid_receiving_emails);
 }
 
+export async function editMySettings({
+  settings,
+}: {
+  settings: { nickname: string; EJG_code: string; food_menu: string };
+}) {
+  const email = (await getAuth())?.email;
+
+  const REQ1 = `UPDATE users SET nickname = '${settings.nickname}', EJG_code = '${settings.EJG_code}', food_menu = '${settings.food_menu}' WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
 export interface apireqType {
   gate:
     | "getUsers"
@@ -416,7 +427,8 @@ export interface apireqType {
     | "markAsRead"
     | "newNotificationByEmails"
     | "newNotificationByNames"
-    | "checkPushAuth";
+    | "checkPushAuth"
+    | "editMySettings";
 }
 export const apioptions = [
   "getUsers",
@@ -440,6 +452,7 @@ export const apioptions = [
   "newNotificationByEmails",
   "newNotificationByNames",
   "checkPushAuth",
+  "editMySettings",
 ];
 
 export const apireq = {
@@ -464,6 +477,7 @@ export const apireq = {
   newNotificationByEmails: { req: newNotificationByEmails, perm: ["admin"] },
   newNotificationByNames: { req: newNotificationByNames, perm: ["admin"] },
   checkPushAuth: { req: checkPushAuth, perm: ["student"] },
+  editMySettings: { req: editMySettings, perm: ["student"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
@@ -498,5 +512,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "checkPushAuth") {
     const { auth } = body;
     return await checkPushAuth(auth);
+  } else if (req === "editMySettings") {
+    const { settings } = body;
+    return await editMySettings({ settings });
   } else return "No such request";
 };

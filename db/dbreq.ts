@@ -21,6 +21,7 @@ export interface User {
   permissions: string[];
   EJG_code: string;
   food_menu: string;
+  tickets: string[];
 }
 
 export async function getUsers() {
@@ -132,11 +133,11 @@ export async function updateUser(user: User | undefined) {
 
   const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`) SELECT '${
     user.name
   }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
     user.name
-  }', '[]', '[ { new: [], read: [], sent: []  } ]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
+  }', '["user"]', '{ "new": [], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
     user.email
   }');`;
 
@@ -393,14 +394,40 @@ export async function newNotificationByNames(
   return await newNotificationByEmails(title, message, valid_receiving_emails);
 }
 
+export async function addTicket(email: string, ticket: string) {
+  const REQ1 = `UPDATE users SET tickets = JSON_ARRAY_APPEND(tickets, '$', '${ticket}') WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
+export async function removeTicket(ticket: string) {
+  const email = (await getAuth())?.email;
+  const REQ1 = `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', '${ticket}'))) WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
 export async function editMySettings({
   settings,
 }: {
   settings: { nickname: string; EJG_code: string; food_menu: string };
 }) {
-  const email = (await getAuth())?.email;
+  const user = await getAuth();
+  if (!user) return "No user";
+  const email = user?.email;
 
-  const REQ1 = `UPDATE users SET nickname = '${settings.nickname}', EJG_code = '${settings.EJG_code}', food_menu = '${settings.food_menu}' WHERE email = '${email}';`;
+  const valid_EJG_code = user.tickets.includes("EJG_code_edit")
+    ? settings.EJG_code
+    : user.EJG_code;
+
+  if (
+    user.tickets.includes("EJG_code_edit") &&
+    user.EJG_code != settings.EJG_code
+  ) {
+    await removeTicket("EJG_code_edit");
+  }
+
+  const REQ1 = `UPDATE users SET nickname = '${settings.nickname}', EJG_code = '${valid_EJG_code}', food_menu = '${settings.food_menu}' WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
 }
@@ -471,9 +498,9 @@ export const apireq = {
   addUserPermission: { req: addUserPermission, perm: ["admin"] },
   removeUserPermissions: { req: removeUserPermissions, perm: ["admin"] },
   getNotificationById: { req: getNotificationById, perm: ["student"] },
-  getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["student"] },
-  getUserNotifications: { req: getUserNotifications, perm: ["student"] },
-  markAsRead: { req: markAsRead, perm: ["student"] },
+  getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["user"] },
+  getUserNotifications: { req: getUserNotifications, perm: ["user"] },
+  markAsRead: { req: markAsRead, perm: ["user"] },
   newNotificationByEmails: { req: newNotificationByEmails, perm: ["admin"] },
   newNotificationByNames: { req: newNotificationByNames, perm: ["admin"] },
   checkPushAuth: { req: checkPushAuth, perm: ["student"] },

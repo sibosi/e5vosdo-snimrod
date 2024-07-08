@@ -1,12 +1,22 @@
 "use client";
 import { User } from "@/db/dbreq";
-import { RadioGroup, Radio, Input, Link, Button } from "@nextui-org/react";
+import {
+  RadioGroup,
+  Radio,
+  Input,
+  Link,
+  Button,
+  ModalContent,
+  Modal,
+} from "@nextui-org/react";
 import React, { useState } from "react";
 
 const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [menu, setMenu] = useState<string>(selfUser.food_menu);
-  const [EJG_code, setEJG_code] = useState<string>(selfUser.EJG_code);
+  const [EJG_code, setEJG_code] = useState<string>(selfUser.EJG_code ?? "");
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
+
+  const [sureQuestion, setSureQuestion] = useState<boolean>(false);
 
   async function save() {
     const response = await fetch("/api/editMySettings", {
@@ -20,10 +30,10 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
     });
     if (response.status === 200) {
       alert("Sikeresen mentetted a beállításaidat!");
+      location.reload();
     } else {
       alert("Hiba történt a mentés során.");
     }
-    location.reload();
   }
 
   return (
@@ -69,7 +79,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
               <th className="font-semibold">EJG kód:</th>
               <th>
                 <Input
-                  color="primary"
+                  color={EJG_code.length == 13 ? "primary" : "danger"}
                   placeholder="EJG kód"
                   value={EJG_code}
                   onChange={(e) => setEJG_code(e.target.value.toUpperCase())}
@@ -96,11 +106,21 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
 
         <Button
           onClick={() => {
-            save();
+            EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();
           }}
           color="primary"
           // make the button to be on the right side
           className="float-right mt-2"
+          isDisabled={
+            EJG_code &&
+            EJG_code.length === 13 &&
+            nickname &&
+            (EJG_code !== selfUser.EJG_code ||
+              nickname !== selfUser.nickname ||
+              menu !== selfUser.food_menu)
+              ? false
+              : true
+          }
         >
           Mentés
         </Button>
@@ -109,6 +129,46 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         Amennyiben problémád adódik a fiókoddal kapcsolatban, vedd fel a
         kapcsolatot a fejlesztővel!
       </p>
+
+      <Modal
+        placement="center"
+        isOpen={sureQuestion}
+        onClose={() => setSureQuestion(false)}
+        className="mx-5"
+      >
+        <ModalContent className="p-4 text-foreground">
+          <h3 className="text-lg font-bold">EJG kód módosítása</h3>
+          <p className="text-foreground-600">
+            Adatvégelmi okokból csak az EJG kódoddal tudjuk beazonosítani
+            személyedet. A kód befolyásolhatja az oldalon megjelenő tartalmat,
+            illetve kulcsfontosságú szerepe van az E5vös Napok alatt. Figyelem,
+            a kódodat később nem módosíthatod!
+          </p>
+          <div className="text-center py-4">
+            <p>Biztosan helyesen adtad-e meg a kódod?</p>
+            <p className="text-2xl font-extrabold">{EJG_code}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 pt-2">
+            <Button
+              color="danger"
+              onClick={() => {
+                setSureQuestion(false);
+              }}
+            >
+              Mégse
+            </Button>
+            <Button
+              color="success"
+              onClick={() => {
+                setSureQuestion(false);
+                save();
+              }}
+            >
+              Igen
+            </Button>
+          </div>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

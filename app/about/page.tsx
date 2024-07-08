@@ -13,6 +13,7 @@ import NewNotification from "@/components/account/notification";
 import {
   DeleteServiceWorker,
   NewServiceWorker,
+  ReinstallServiceWorker,
 } from "@/components/PWA/managesw";
 import { ButtonGroup } from "@nextui-org/react";
 
@@ -48,6 +49,7 @@ const AboutPage = async () => {
         <ButtonGroup>
           <DeleteServiceWorker />
           <NewServiceWorker />
+          <ReinstallServiceWorker />
         </ButtonGroup>
       </div>
       <div>{"Adminok: " + admins.join(", ")}</div>

@@ -25,7 +25,11 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        settings: { food_menu: menu, EJG_code: EJG_code, nickname: nickname },
+        settings: {
+          food_menu: menu == "?" ? null : menu,
+          EJG_code: EJG_code,
+          nickname: nickname,
+        },
       }),
     });
     if (response.status === 200) {
@@ -139,10 +143,10 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         <ModalContent className="p-4 text-foreground">
           <h3 className="text-lg font-bold">EJG kód módosítása</h3>
           <p className="text-foreground-600">
-            Adatvégelmi okokból csak az EJG kódoddal tudjuk beazonosítani
-            személyedet. A kód befolyásolhatja az oldalon megjelenő tartalmat,
-            illetve kulcsfontosságú szerepe van az E5vös Napok alatt. Figyelem,
-            a kódodat később nem módosíthatod!
+            Adatvédelmi okokból csak EJG kódoddal tudunk beazonosítani. A kód
+            befolyásolhatja az oldalon megjelenő tartalmat, illetve
+            kulcsfontosságú szerepe van az E5vös Napok alatt. Figyelem, a
+            kódodat később nem módosíthatod!
           </p>
           <div className="text-center py-4">
             <p>Biztosan helyesen adtad-e meg a kódod?</p>

@@ -1,5 +1,4 @@
 "use client";
-import { checkPushAuth } from "@/db/dbreq";
 import { useEffect } from "react";
 
 const publicVapidKey =
@@ -30,6 +29,7 @@ async function subscribeUser() {
       } else {
         console.log("Existing subscription found");
         subscription = existingSubscription;
+        console.log("Existing subscription:", subscription);
         const response = await fetch("/api/subscribe", {
           method: "POST",
           body: JSON.stringify((subscription as any).keys.auth || ""),

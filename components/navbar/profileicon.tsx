@@ -6,12 +6,14 @@ import {
   Badge,
   Link,
   Modal,
+  ModalBody,
   ModalContent,
+  ModalHeader,
   Navbar,
   NavbarContent,
 } from "@nextui-org/react";
 import Login from "../LoginForm";
-import LogOut from "../LogOut";
+import { LogoutIcon } from "../LogOut";
 import { User } from "@/db/dbreq";
 import { ThemeSwitch } from "../theme-switch";
 
@@ -76,13 +78,40 @@ async function markAsRead(id: number) {
   }
 }
 
+interface Notifications {
+  new: {
+    id: number;
+    title: string;
+    message: string;
+    time: string;
+    sender_email: string;
+    receiving_emails: string[];
+  }[];
+  read: {
+    id: number;
+    title: string;
+    message: string;
+    time: string;
+    sender_email: string;
+    receiving_emails: string[];
+  }[];
+  sent: {
+    id: number;
+    title: string;
+    message: string;
+    time: string;
+    sender_email: string;
+    receiving_emails: string[];
+  }[];
+}
+
 export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
   const [showButtons, setShowButtons] = useState(false);
   const [showModal, setShowModal] = useState(-1);
 
   const [notificationsIds, setNotificationsIds] = useState<number[]>([]);
   // {new: [id, id], read: [id, id], sent: [id, id]}
-  const [notifications, setNotifications] = useState<any>(undefined);
+  const [notifications, setNotifications] = useState<Notifications>();
   // {new: [{id, title, message, time}, {id, title, message, time}], read: [{id, title, message, time}]}
 
   useEffect(() => {
@@ -152,7 +181,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                 {String(selfUser?.nickname)}
               </NavbarContent>
               <NavbarContent justify="end">
-                <LogOut />
+                <LogoutIcon />
               </NavbarContent>
             </>
           ) : (
@@ -160,7 +189,6 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
           )}
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">
-          {console.log(notifications)}
           {selfUser && notifications ? (
             notifications.new.map((item: any) => (
               <div key={item.id}>
@@ -198,6 +226,10 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                   onClose={() => setShowModal(-1)}
                   className="overflow-auto"
                 >
+                  <ModalHeader>
+                    Szia
+                    {item.sender_email + " üzenetet küldött"}
+                  </ModalHeader>
                   <ModalContent className="max-h-[95vh] overflow-auto p-10">
                     <div className="flex flex-col gap-2">
                       <h3 className="font-bold text-foreground">
@@ -213,7 +245,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
             <></>
           )}
           {selfUser && notifications ? (
-            notifications.read.map((item: any) => (
+            notifications.read.map((item) => (
               <div key={item.id}>
                 <div
                   key={"Notification" + String(item.id)}
@@ -242,15 +274,22 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                   key={"NotModal" + String(item.id)}
                   isOpen={showModal === item.id}
                   onClose={() => setShowModal(-1)}
-                  className="overflow-auto"
+                  className="overflow-auto mx-5"
+                  placement="center"
                 >
-                  <ModalContent className="max-h-[95vh] overflow-auto p-10">
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-bold text-foreground">
-                        {item.title}
-                      </h3>
-                      <p className="text-foreground-600">{item.message}</p>
-                    </div>
+                  <ModalContent className="text-foreground">
+                    <ModalHeader>
+                      {item.sender_email.split("@")[0].split(".").join(" ") +
+                        " üzenetet küldött"}
+                    </ModalHeader>
+                    <ModalBody className="max-h-[95vh] overflow-auto pb-5">
+                      <div className="flex flex-col gap-2">
+                        <h3 className="font-bold text-foreground">
+                          {item.title}
+                        </h3>
+                        <p className="text-foreground-600">{item.message}</p>
+                      </div>
+                    </ModalBody>
                   </ModalContent>
                 </Modal>
               </div>

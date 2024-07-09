@@ -427,7 +427,13 @@ export async function editMySettings({
     await removeTicket("EJG_code_edit");
   }
 
-  const REQ1 = `UPDATE users SET nickname = '${settings.nickname}', EJG_code = '${valid_EJG_code}', food_menu = '${settings.food_menu}' WHERE email = '${email}';`;
+  const REQ1 = `UPDATE users SET nickname = '${
+    settings.nickname
+  }', EJG_code = '${valid_EJG_code}', food_menu = ${
+    settings.food_menu == null ? null : "'" + settings.food_menu + "'"
+  } WHERE email = '${email}';`;
+
+  console.log("#1 REQ1", REQ1);
 
   return await dbreq(REQ1);
 }

@@ -63,7 +63,13 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus={siteConfig.pageSections["menza"]}
         >
-          <Menu />
+          <Menu
+            menu={
+              selfUser?.food_menu == "A" || selfUser?.food_menu == "B"
+                ? selfUser?.food_menu
+                : undefined
+            }
+          />
         </Section>
       )}
 

@@ -433,8 +433,6 @@ export async function editMySettings({
     settings.food_menu == null ? null : "'" + settings.food_menu + "'"
   } WHERE email = '${email}';`;
 
-  console.log("#1 REQ1", REQ1);
-
   return await dbreq(REQ1);
 }
 

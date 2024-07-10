@@ -182,7 +182,18 @@ export async function getNotificationById(id: number) {
   const response = (await dbreq(
     `SELECT * FROM notifications WHERE id = ${id}`
   )) as any[];
-  return response[0];
+  const notification: {
+    id: number;
+    title: string;
+    message: string;
+    time: string;
+    sender_email: string;
+    receiving_emails: string[];
+    sender_name: string;
+  } = response[0];
+  // Add the sender's name to the notification
+
+  return notification;
 }
 
 export async function getUserNotificationsIds() {

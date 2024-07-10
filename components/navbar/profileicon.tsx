@@ -59,7 +59,9 @@ async function fetchNotifications(
   setNotificationsIds(notificationsIds);
   const response = await fetch("/api/getUserNotifications");
   const data: JSON = await response.json();
-  console.log(data);
+  (data as any).new.sort((a: any, b: any) => b.id - a.id);
+  (data as any).read.sort((a: any, b: any) => b.id - a.id);
+  (data as any).sent.sort((a: any, b: any) => b.id - a.id);
   setNotifications(data);
 }
 
@@ -78,31 +80,19 @@ async function markAsRead(id: number) {
   }
 }
 
+interface Notification {
+  id: number;
+  title: string;
+  message: string;
+  time: string;
+  sender_email: string;
+  receiving_emails: string[];
+}
+
 interface Notifications {
-  new: {
-    id: number;
-    title: string;
-    message: string;
-    time: string;
-    sender_email: string;
-    receiving_emails: string[];
-  }[];
-  read: {
-    id: number;
-    title: string;
-    message: string;
-    time: string;
-    sender_email: string;
-    receiving_emails: string[];
-  }[];
-  sent: {
-    id: number;
-    title: string;
-    message: string;
-    time: string;
-    sender_email: string;
-    receiving_emails: string[];
-  }[];
+  new: Notification[];
+  read: Notification[];
+  sent: Notification[];
 }
 
 export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
@@ -113,6 +103,15 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
   // {new: [id, id], read: [id, id], sent: [id, id]}
   const [notifications, setNotifications] = useState<Notifications>();
   // {new: [{id, title, message, time}, {id, title, message, time}], read: [{id, title, message, time}]}
+
+  const [allUsersNameByEmail, setAllUsersNameByEmail] = useState<any>({});
+
+  useEffect(() => {
+    if (!selfUser) return;
+    fetch("/api/getAllUsersNameByEmail")
+      .then((response) => response.json())
+      .then((data) => setAllUsersNameByEmail(data));
+  }, [selfUser]);
 
   useEffect(() => {
     if (!selfUser) return;
@@ -228,7 +227,8 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                 >
                   <ModalHeader>
                     Szia
-                    {item.sender_email + " üzenetet küldött"}
+                    {(allUsersNameByEmail[item.sender_email] ??
+                      item.sender_email) + " üzenetet küldött"}
                   </ModalHeader>
                   <ModalContent className="max-h-[95vh] overflow-auto p-10">
                     <div className="flex flex-col gap-2">
@@ -279,8 +279,8 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                 >
                   <ModalContent className="text-foreground">
                     <ModalHeader>
-                      {item.sender_email.split("@")[0].split(".").join(" ") +
-                        " üzenetet küldött"}
+                      {(allUsersNameByEmail[item.sender_email] ??
+                        item.sender_email) + " üzenetet küldött"}
                     </ModalHeader>
                     <ModalBody className="max-h-[95vh] overflow-auto pb-5">
                       <div className="flex flex-col gap-2">

@@ -44,6 +44,15 @@ export async function getUser(email: string | undefined) {
   )[0];
 }
 
+export async function getAllUsersNameByEmail() {
+  const response = await dbreq(`SELECT * FROM users;`);
+  let users: { [key: string]: string } = {};
+  (response as unknown as []).map((user: User) => {
+    users[user.email] = user.name;
+  });
+  return users;
+}
+
 export async function getAuth(email?: string | undefined) {
   if (!email) {
     const session = await auth();
@@ -189,10 +198,7 @@ export async function getNotificationById(id: number) {
     time: string;
     sender_email: string;
     receiving_emails: string[];
-    sender_name: string;
   } = response[0];
-  // Add the sender's name to the notification
-
   return notification;
 }
 
@@ -452,6 +458,7 @@ export interface apireqType {
     | "getUsers"
     | "getUsersName"
     | "getUser"
+    | "getAllUsersNameByEmail"
     | "getAuth"
     | "hasPermission"
     | "getUsersEmail"
@@ -476,6 +483,7 @@ export const apioptions = [
   "getUsers",
   "getUsersName",
   "getUser",
+  "getAllUsersNameByEmail",
   "getAuth",
   "hasPermission",
   "getUsersEmail",
@@ -501,6 +509,7 @@ export const apireq = {
   getUsers: { req: getUsers, perm: ["admin", "tester"] },
   getUsersName: { req: getUsersName, perm: ["student"] },
   getUser: { req: getUser, perm: [] },
+  getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },
   getAuth: { req: getAuth, perm: [] },
   hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
@@ -524,6 +533,8 @@ export const apireq = {
 
 export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getUsers") return await getUsers();
+  else if (req === "getAllUsersNameByEmail")
+    return await getAllUsersNameByEmail();
   else if (req === "getUsersName") return await getUsersName();
   else if (req === "getEvents") return await getEvents();
   else if (req === "getStudentUsers") return await getStudentUsers();

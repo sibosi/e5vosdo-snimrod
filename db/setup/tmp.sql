@@ -173,3 +173,32 @@ WHERE email = 'simon.nimrod.zalan@e5vos.hu';
 SELECT *
 FROM users
 WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Create nickname column
+ALTER TABLE users
+ADD COLUMN nickname VARCHAR(255) NOT NULL;
+--@block
+-- Set nickname to names first part
+UPDATE users
+SET nickname = SUBSTRING_INDEX(name, ' ', 1);
+--@block
+-- Add tickets column
+ALTER TABLE users
+ADD COLUMN tickets JSON NOT NULL;
+--@block
+-- Add tickets to the user
+UPDATE users
+SET tickets = '["EJG_code_edit", "EJG_code_edit"]'
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Delete Nimrod user
+DELETE FROM users
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Append "user" permissions to every user
+UPDATE users
+SET permissions = JSON_ARRAY_APPEND(
+        permissions,
+        '$',
+        'user'
+    );

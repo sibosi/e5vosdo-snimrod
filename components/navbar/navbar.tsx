@@ -15,7 +15,6 @@ import { link as linkStyles } from "@nextui-org/theme";
 import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, InstagramIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";

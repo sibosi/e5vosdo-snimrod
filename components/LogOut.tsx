@@ -7,7 +7,7 @@ interface LogoutProps {
   size?: "sm" | "md" | "lg";
 }
 
-const Logout = ({ className, size }: LogoutProps) => {
+export const LogoutButton = ({ className, size }: LogoutProps) => {
   return (
     <form action={doLogout} className="max-w-min">
       <Button
@@ -24,4 +24,25 @@ const Logout = ({ className, size }: LogoutProps) => {
   );
 };
 
-export default Logout;
+export const LogoutIcon = () => {
+  return (
+    <form action={doLogout} className="max-w-min h-5">
+      <button
+        title="Kijelentkezés"
+        type="submit"
+        className="p-0 bg-transparent border-none max-w-min max-h-min"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="currentColor"
+          className="bi bi-door-open-fill fill-foreground-500 hover:fill-foreground-600"
+          viewBox="0 0 16 16"
+        >
+          <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1" />
+        </svg>
+      </button>
+    </form>
+  );
+};

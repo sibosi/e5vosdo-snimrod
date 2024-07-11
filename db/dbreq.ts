@@ -30,11 +30,7 @@ export async function getUsers() {
 
 export async function getUsersName() {
   const response = await dbreq(`SELECT name FROM users;`);
-  let names: string[] = [];
-  (response as unknown as []).map((user: { name: string }) =>
-    names.push(user.name)
-  );
-  return names;
+  return (response as unknown as { name: string }[]).map((user) => user.name);
 }
 
 export async function getUser(email: string | undefined) {
@@ -45,7 +41,7 @@ export async function getUser(email: string | undefined) {
 }
 
 export async function getAllUsersNameByEmail() {
-  const response = await dbreq(`SELECT * FROM users;`);
+  const response = await dbreq(`SELECT name, email FROM users;`);
   let users: { [key: string]: string } = {};
   (response as unknown as []).map((user: User) => {
     users[user.email] = user.name;
@@ -214,27 +210,37 @@ export async function getUserNotificationsIds() {
 
 export async function getUserNotifications() {
   const email = (await getAuth())?.email;
-  const response = (
-    (await dbreq(
-      `SELECT notifications FROM users WHERE email = '${email}'`
-    )) as any
-  )[0].notifications;
+  if (!email) return;
 
-  let notifications: { new: any[]; read: any[]; sent: any[] } = {
-    new: [],
-    read: [],
-    sent: [],
+  const notifications: any = await dbreq(
+    `SELECT notifications FROM users WHERE email = '${email}'`
+  );
+
+  const {
+    new: newNotifs,
+    read: readNotifs,
+    sent: sentNotifs,
+  } = notifications[0].notifications;
+
+  const getNotifications = async (ids: number[]) => {
+    if (!ids.length) return [];
+    return await dbreq(
+      `SELECT * FROM notifications WHERE id IN (${ids.join(",")})`
+    );
   };
-  for (let i = 0; i < response.new.length; i++) {
-    notifications.new.push(await getNotificationById(response.new[i]));
-  }
-  for (let i = 0; i < response.read.length; i++) {
-    notifications.read.push(await getNotificationById(response.read[i]));
-  }
-  for (let i = 0; i < response.sent.length; i++) {
-    notifications.sent.push(await getNotificationById(response.sent[i]));
-  }
-  return notifications;
+
+  const [newNotifications, readNotifications, sentNotifications] =
+    await Promise.all([
+      getNotifications(newNotifs),
+      getNotifications(readNotifs),
+      getNotifications(sentNotifs),
+    ]);
+
+  return {
+    new: newNotifications,
+    read: readNotifications,
+    sent: sentNotifications,
+  };
 }
 
 export async function addServiceWorker(serviceWorker: any) {

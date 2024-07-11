@@ -69,6 +69,7 @@ const ListUsers = ({
               width={72}
               height={72}
               className="rounded-full"
+              loading="lazy"
             />
             {user.service_workers.length != 0 && <span>🔔</span>}
           </div>

@@ -1,35 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Avatar,
-  Badge,
-  Link,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Navbar,
-  NavbarContent,
-} from "@nextui-org/react";
+import { Avatar, Badge, Link, Navbar, NavbarContent } from "@nextui-org/react";
 import Login from "@/components/LoginForm";
 import { LogoutIcon } from "@/components/LogOut";
 import { User } from "@/db/dbreq";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Notification } from "./profilebox/notification";
-
-const Bell = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    fill="currentColor"
-    className="bi bi-bell-fill"
-    viewBox="0 0 16 16"
-  >
-    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
-  </svg>
-);
 
 const Account = () => {
   return (
@@ -55,11 +32,6 @@ async function fetchNotifications(
   const responseIds: NotificationsIds = await (
     await fetch("/api/getUserNotificationsIds")
   ).json();
-  console.log(
-    notificationsIds.new.toString() == responseIds.new.toString(),
-    notificationsIds.new.toString(),
-    responseIds.new.toString()
-  );
   if (notificationsIds.new.toString() == responseIds.new.toString()) {
     return;
   }
@@ -71,22 +43,6 @@ async function fetchNotifications(
   (data as any).sent.sort((a: any, b: any) => b.id - a.id);
   setNotifications(data);
 }
-
-async function markAsRead(id: number) {
-  const response = await fetch("/api/markAsRead", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      id: id,
-    }),
-  });
-  if (response.status == 200) {
-    return;
-  }
-}
-
 interface Notification {
   id: number;
   title: string;
@@ -95,13 +51,11 @@ interface Notification {
   sender_email: string;
   receiving_emails: string[];
 }
-
 interface Notifications {
   new: Notification[];
   read: Notification[];
   sent: Notification[];
 }
-
 interface NotificationsIds {
   new: number[];
   read: number[];
@@ -110,16 +64,18 @@ interface NotificationsIds {
 
 export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
   const [showButtons, setShowButtons] = useState(false);
-  const [showModal, setShowModal] = useState(-1);
 
   const [notificationsIds, setNotificationsIds] = useState<NotificationsIds>({
     new: [-1],
     read: [-1],
     sent: [-1],
   });
-  // {new: [id, id], read: [id, id], sent: [id, id]}
-  const [notifications, setNotifications] = useState<Notifications>();
-  // {new: [{id, title, message, time}, {id, title, message, time}], read: [{id, title, message, time}]}
+
+  const [notifications, setNotifications] = useState<Notifications>({
+    new: [],
+    read: [],
+    sent: [],
+  });
 
   const [allUsersNameByEmail, setAllUsersNameByEmail] = useState<any>({});
 
@@ -203,15 +159,37 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">
           {selfUser && notifications ? (
+            notifications.sent.map((item: any) => (
+              <Notification
+                key={item.id}
+                notification={item}
+                type={"sent"}
+                allUsersNameByEmail={allUsersNameByEmail}
+              />
+            ))
+          ) : (
+            <></>
+          )}
+          {selfUser && notifications ? (
             notifications.new.map((item: any) => (
-              <Notification key={item.id} notification={item} type={"new"} />
+              <Notification
+                key={item.id}
+                notification={item}
+                type={"new"}
+                allUsersNameByEmail={allUsersNameByEmail}
+              />
             ))
           ) : (
             <></>
           )}
           {selfUser && notifications ? (
             notifications.read.map((item) => (
-              <Notification key={item.id} notification={item} type={"read"} />
+              <Notification
+                key={item.id}
+                notification={item}
+                type={"read"}
+                allUsersNameByEmail={allUsersNameByEmail}
+              />
             ))
           ) : (
             <></>

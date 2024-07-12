@@ -358,8 +358,10 @@ export async function newNotificationByEmails(
   const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
   const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_SET(users.notifications, '$.new', JSON_ARRAY_APPEND(JSON_EXTRACT(users.notifications, '$.new'), '$', CAST(@notification_id AS JSON)));`;
   const REQ4 = `SELECT * FROM notifications WHERE id = @notification_id;`;
+  // Add the notification to the sender's sent notifications
+  const REQ5 = `UPDATE users SET notifications = JSON_SET(notifications, '$.sent', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.sent'), '$', CAST(@notification_id AS JSON))) WHERE email = '${sender_email}';`;
 
-  const MAINRRQ = [REQ1, REQ2, REQ3, REQ4];
+  const MAINRRQ = [REQ1, REQ2, REQ3, REQ4, REQ5];
 
   const response = await multipledbreq(MAINRRQ);
 

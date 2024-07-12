@@ -118,7 +118,11 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
     sent: [-1],
   });
   // {new: [id, id], read: [id, id], sent: [id, id]}
-  const [notifications, setNotifications] = useState<Notifications>();
+  const [notifications, setNotifications] = useState<Notifications>({
+    new: [],
+    read: [],
+    sent: [],
+  });
   // {new: [{id, title, message, time}, {id, title, message, time}], read: [{id, title, message, time}]}
 
   const [allUsersNameByEmail, setAllUsersNameByEmail] = useState<any>({});

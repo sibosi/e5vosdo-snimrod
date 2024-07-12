@@ -208,14 +208,24 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
         <div className="max-h-72 overflow-auto scrollbar-default">
           {selfUser && notifications ? (
             notifications.new.map((item: any) => (
-              <Notification key={item.id} notification={item} type={"new"} />
+              <Notification
+                key={item.id}
+                notification={item}
+                type={"new"}
+                allUsersNameByEmail={allUsersNameByEmail}
+              />
             ))
           ) : (
             <></>
           )}
           {selfUser && notifications ? (
             notifications.read.map((item) => (
-              <Notification key={item.id} notification={item} type={"read"} />
+              <Notification
+                key={item.id}
+                notification={item}
+                type={"read"}
+                allUsersNameByEmail={allUsersNameByEmail}
+              />
             ))
           ) : (
             <></>

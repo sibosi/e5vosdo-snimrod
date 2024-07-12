@@ -43,12 +43,13 @@ interface Notification {
 export const Notification = ({
   notification,
   type,
+  allUsersNameByEmail,
 }: {
   notification: Notification;
   type: "new" | "read" | "sent";
+  allUsersNameByEmail: { [key: string]: string };
 }) => {
   const [showModal, setShowModal] = useState(-1);
-  const [allUsersNameByEmail, setAllUsersNameByEmail] = useState<any>({});
 
   return (
     <div key={notification.id}>
@@ -65,20 +66,32 @@ export const Notification = ({
         >
           {Bell}
         </div>
-        <div className="text-left truncate">
+        <div className="text-left truncate w-full">
           <h3 className="flex font-bold gap-1">
             <p className="truncate">{notification.title}</p>
-            <p>&middot;</p>
-            <p className="text-foreground-600 text-sm my-auto">
-              {new Date(notification.time).toLocaleString("hu-HU", {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })}
-            </p>
           </h3>
           <span className="text-sm break-words text-foreground-600">
             {notification.message}
           </span>
+        </div>
+        <div className="text-sm break-words text-foreground-600 text-end">
+          <p>
+            {allUsersNameByEmail[notification.sender_email]
+              .split(" ")
+              .reverse()[0] +
+              " " +
+              allUsersNameByEmail[notification.sender_email].split(" ")[0] ??
+              // First name and last name only
+              notification.sender_email}
+          </p>
+          <p>
+            {new Date(notification.time)
+              .toLocaleString("hu-HU", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })
+              .substring(6)}
+          </p>
         </div>
       </div>
       <Modal

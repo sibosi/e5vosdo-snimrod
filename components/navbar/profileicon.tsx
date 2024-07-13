@@ -37,10 +37,13 @@ async function fetchNotifications(
   }
   setNotificationsIds(responseIds);
   const response = await (await fetch("/api/getUserNotifications")).json();
-  const data: JSON = response;
+  const data: any = response;
   (data as any).new.sort((a: any, b: any) => b.id - a.id);
   (data as any).read.sort((a: any, b: any) => b.id - a.id);
   (data as any).sent.sort((a: any, b: any) => b.id - a.id);
+  // Add new and sent notifications list to one
+
+  data.newAndSent = data.new.concat(data.sent);
   setNotifications(data);
 }
 interface Notification {
@@ -55,6 +58,7 @@ interface Notifications {
   new: Notification[];
   read: Notification[];
   sent: Notification[];
+  newAndSent: Notification[];
 }
 interface NotificationsIds {
   new: number[];
@@ -75,6 +79,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
     new: [],
     read: [],
     sent: [],
+    newAndSent: [],
   });
 
   const [allUsersNameByEmail, setAllUsersNameByEmail] = useState<any>({});
@@ -159,23 +164,11 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">
           {selfUser && notifications ? (
-            notifications.sent.map((item: any) => (
+            notifications.newAndSent.map((item: any) => (
               <Notification
                 key={item.id}
                 notification={item}
-                type={"sent"}
-                allUsersNameByEmail={allUsersNameByEmail}
-              />
-            ))
-          ) : (
-            <></>
-          )}
-          {selfUser && notifications ? (
-            notifications.new.map((item: any) => (
-              <Notification
-                key={item.id}
-                notification={item}
-                type={"new"}
+                type={item.id in notifications.new ? "new" : "sent"}
                 allUsersNameByEmail={allUsersNameByEmail}
               />
             ))

@@ -102,7 +102,7 @@ const fetchSoccerData = async () => {
       image2: `/flags/${teams[1]?.toLowerCase().replace(/\s+/g, "")}.png`,
       status:
         time === "Finished" ? "Finished" : time === "" ? "Upcoming" : "Live",
-      time: time,
+      time: time == "Time" ? "Félidő" : time,
       startTime: time === "" ? firstDetail.split(" ").reverse()[0] : startTime,
     };
 

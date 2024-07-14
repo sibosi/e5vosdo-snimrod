@@ -202,3 +202,6 @@ SET permissions = JSON_ARRAY_APPEND(
         '$',
         'user'
     );
+--@block
+SELECT *
+FROM matches;

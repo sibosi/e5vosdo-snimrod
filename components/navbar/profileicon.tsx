@@ -32,18 +32,20 @@ async function fetchNotifications(
   const responseIds: NotificationsIds = await (
     await fetch("/api/getUserNotificationsIds")
   ).json();
+  responseIds.newAndSent = responseIds.new.concat(responseIds.sent);
+  responseIds.newAndSent.sort((a: any, b: any) => b - a);
   if (notificationsIds.new.toString() == responseIds.new.toString()) {
     return;
   }
   setNotificationsIds(responseIds);
   const response = await (await fetch("/api/getUserNotifications")).json();
   const data: any = response;
-  (data as any).new.sort((a: any, b: any) => b.id - a.id);
-  (data as any).read.sort((a: any, b: any) => b.id - a.id);
-  (data as any).sent.sort((a: any, b: any) => b.id - a.id);
-  // Add new and sent notifications list to one
+  data.new.sort((a: any, b: any) => b.id - a.id);
+  data.read.sort((a: any, b: any) => b.id - a.id);
+  data.sent.sort((a: any, b: any) => b.id - a.id);
 
   data.newAndSent = data.new.concat(data.sent);
+  data.newAndSent.sort((a: any, b: any) => b.id - a.id);
   setNotifications(data);
 }
 interface Notification {
@@ -64,6 +66,7 @@ interface NotificationsIds {
   new: number[];
   read: number[];
   sent: number[];
+  newAndSent: number[];
 }
 
 export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
@@ -73,6 +76,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
     new: [-1],
     read: [-1],
     sent: [-1],
+    newAndSent: [-1, -1],
   });
 
   const [notifications, setNotifications] = useState<Notifications>({
@@ -164,11 +168,17 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">
           {selfUser && notifications ? (
-            notifications.newAndSent.map((item: any) => (
+            notifications.newAndSent.map((item: Notification, index) => (
               <Notification
                 key={item.id}
                 notification={item}
-                type={item.id in notifications.new ? "new" : "sent"}
+                type={
+                  notificationsIds.sent.includes(item.id)
+                    ? notificationsIds.newAndSent.indexOf(item.id) == index
+                      ? "sent"
+                      : "new"
+                    : "new"
+                }
                 allUsersNameByEmail={allUsersNameByEmail}
               />
             ))

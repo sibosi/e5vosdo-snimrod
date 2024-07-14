@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
+import { image } from "@nextui-org/theme";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -336,7 +337,8 @@ export async function markAsRead(id: number) {
 export async function newNotificationByEmails(
   title: string,
   message: string,
-  receiving_emails: string[]
+  receiving_emails: string[],
+  payload: string = ""
 ) {
   const sender_email = (await getAuth())?.email;
 
@@ -366,16 +368,20 @@ export async function newNotificationByEmails(
   const response = await multipledbreq(MAINRRQ);
 
   valid_receiving_emails.map(async (email) => {
-    await newPush(
-      email,
-      JSON.stringify({
-        title: sender_email + " üzenetet küldött",
-        message: title,
-        body: title,
-        icon: "favicon.ico",
-        badge: "favicon-16x16.ico",
-      })
-    );
+    if (payload !== "") {
+      await newPush(email, payload);
+    } else {
+      await newPush(
+        email,
+        JSON.stringify({
+          title: sender_email + " üzenetet küldött",
+          message: title,
+          body: title,
+          icon: "favicon.ico",
+          badge: "favicon-16x16.ico",
+        })
+      );
+    }
   });
 
   return { data: "success" };
@@ -457,6 +463,120 @@ export async function editMySettings({
   }', EJG_code = '${valid_EJG_code}', food_menu = ${
     settings.food_menu == null ? null : "'" + settings.food_menu + "'"
   } WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
+export async function getPageSettings() {
+  return (
+    (await dbreq(`SELECT * FROM settings WHERE name = "now";`)) as any
+  )[0];
+}
+
+export async function getMatch(id: number) {
+  return ((await dbreq(`SELECT * FROM matches WHERE id = ${id};`)) as any)[0];
+}
+
+export async function getComingMatch() {
+  const matchId = (await getPageSettings()).livescore;
+  return await getMatch(matchId);
+}
+
+export async function updateMatch(id: number, match: any) {
+  const sendNotification = true;
+  const REQ1 = `UPDATE matches SET team1 = '${match.team1}', team2 = '${
+    match.team2
+  }', team_short1 = '${match.teamShort1}', team_short2 = '${
+    match.teamShort2
+  }', score1 = ${match.score1}, score2 = ${match.score2}, status = '${
+    match.status
+  }', time = "${match.time}", start_time = '${match.startTime}', end_time = '${
+    match.endTime || match.startTime
+  }' WHERE id = ${id};`;
+
+  if (sendNotification) {
+    console.log("Sending notification");
+    const oldMatch = await getMatch(id);
+    const notificationPermission = "tester";
+    if (match.status === "Finished" && oldMatch.status !== "Finished") {
+      console.log("Sending notification - Game finished");
+      const title = `${match.teamShort1} - ${match.teamShort2}`;
+      const message = `A meccsnek vége. Az eredmény: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const receiving_emails = await getUsersEmailByPermission(
+        notificationPermission
+      );
+      receiving_emails.map(async (email) => {
+        await newPush(
+          email,
+          JSON.stringify({
+            title: title,
+            body: message,
+            icon: "soccer-ball.png",
+            badge: "soccer-ball.png",
+          })
+        );
+      });
+      console.log("Notification sent - Game finished");
+    } else if (match.status === "Live" && oldMatch.status !== "Live") {
+      console.log("Sending notification - Game started");
+      const title = `${match.teamShort1} - ${match.teamShort2}`;
+      const message = `A meccs elkezdődött! ${match.team1} vs ${match.team2}`;
+      const receiving_emails = await getUsersEmailByPermission(
+        notificationPermission
+      );
+      receiving_emails.map(async (email) => {
+        await newPush(
+          email,
+          JSON.stringify({
+            title: title,
+            body: message,
+            icon: "soccer-ball.png",
+            badge: "soccer-ball.png",
+          })
+        );
+      });
+      console.log("Notification sent - Game started");
+    } else if (match.score1 !== oldMatch.score1) {
+      console.log("Sending notification - Goal");
+      const title = `Gól! | ${match.teamShort1} - ${match.teamShort2}`;
+      const message = `${match.team1} gólt lőtt! Az aktuális állás: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const receiving_emails = await getUsersEmailByPermission(
+        notificationPermission
+      );
+      receiving_emails.map(async (email) => {
+        await newPush(
+          email,
+          JSON.stringify({
+            title: title,
+            body: message,
+            icon: match.image1,
+            badge: "soccer-ball.png",
+          })
+        );
+      });
+      console.log("Notification sent - Goal");
+    } else if (match.score2 !== oldMatch.score2) {
+      console.log("Sending notification - Goal");
+      const title = `Gól! | ${match.teamShort1} - ${match.teamShort2}`;
+      const message = `${match.team2} gólt lőtt! Az aktuális állás: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const receiving_emails = await getUsersEmailByPermission(
+        notificationPermission
+      );
+
+      receiving_emails.map(async (email) => {
+        await newPush(
+          email,
+          JSON.stringify({
+            title: title,
+            body: message,
+            icon: match.image2,
+            badge: "soccer-ball.png",
+          })
+        );
+      });
+      console.log("Notification sent - Goal");
+    }
+  }
 
   return await dbreq(REQ1);
 }

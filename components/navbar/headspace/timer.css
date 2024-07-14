@@ -1,0 +1,44 @@
+@keyframes moving-line {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-moving-line {
+  animation: moving-line 1s linear infinite;
+}
+
+@keyframes grow-line-x {
+  0%,
+  20%,
+  100% {
+    transform: scaleX(0);
+  }
+  50% {
+    transform: scaleX(1);
+  }
+}
+
+.animate-grow-line-x {
+  animation: grow-line-x 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes grow-line-y {
+  0%,
+  20%,
+  100% {
+    transform: scaleY(0);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-grow-line-y {
+  animation: grow-line-y 3s ease-in-out infinite;
+  transform-origin: center;
+}

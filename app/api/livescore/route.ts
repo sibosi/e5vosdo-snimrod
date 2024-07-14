@@ -2,14 +2,14 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
-import { getPageSettings } from "@/db/dbreq";
+import { getComingMatch, getPageSettings, updateMatch } from "@/db/dbreq";
 
 const cache = new NodeCache();
 
 const oldFetchSoccerData = async () => {
   try {
     // Replace this URL with the actual URL you are scraping
-    const url = (await getPageSettings()).livescore;
+    const url = (await getComingMatch()) as string;
     const { data: html } = await axios.get(url);
 
     const $ = cheerio.load(html);
@@ -55,7 +55,7 @@ const oldFetchSoccerData = async () => {
 const fetchSoccerData = async () => {
   try {
     // Replace this URL with the actual URL you are scraping
-    const url = (await getPageSettings()).livescore;
+    const url = ((await getComingMatch()) as any).url;
     const { data: html } = await axios.get(url);
 
     const $ = cheerio.load(html);
@@ -120,9 +120,10 @@ export async function GET(req: NextRequest, res: NextResponse) {
     console.log("Using cached data...");
     return NextResponse.json(cachedData);
   }
-  const soccerData = await fetchSoccerData();
+  const soccerData: any = await fetchSoccerData();
   cache.set("soccerData", soccerData, 20); // In seconds
   console.log("Fetched new data...");
+  updateMatch(soccerData.id, soccerData);
   return NextResponse.json(soccerData);
 }
 

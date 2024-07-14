@@ -54,3 +54,28 @@ CREATE TABLE IF NOT EXISTS push_auths (
     id INT AUTO_INCREMENT PRIMARY KEY,
     auth VARCHAR(255) NOT NULL
 );
+-- Add the settings table
+-- First delete the old settings table
+--@block
+DROP TABLE IF EXISTS settings;
+CREATE TABLE IF NOT EXISTS settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    headspace boolean NOT NULL,
+    livescore VARCHAR(255) NOT NULL
+);
+-- Add settings
+INSERT INTO settings (name, headspace, livescore)
+VALUES ("default", 0, 0);
+INSERT INTO settings (name, headspace, livescore)
+VALUES (
+        'soccer',
+        1,
+        "https://www.livescore.cz/match/2uFzpGje"
+    );
+INSERT INTO settings (name, headspace, livescore)
+VALUES (
+        'now',
+        1,
+        "https://www.livescore.cz/match/IFsEWU3F/"
+    );

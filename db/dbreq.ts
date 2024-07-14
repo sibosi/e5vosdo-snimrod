@@ -461,6 +461,12 @@ export async function editMySettings({
   return await dbreq(REQ1);
 }
 
+export async function getPageSettings() {
+  return (
+    (await dbreq(`SELECT * FROM settings WHERE name = "now";`)) as any
+  )[0];
+}
+
 export interface apireqType {
   gate:
     | "getUsers"

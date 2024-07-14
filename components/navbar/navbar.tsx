@@ -83,7 +83,9 @@ export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
         <></>
       )}
 
-      <NavbarContent className="pl-2 md:pl-0 gap-2" justify="end">
+      <NavbarContent justify="end" />
+
+      <NavbarContent className="fixed right-0 gap-2 pr-6" justify="end">
         <NavbarItem>
           <Link
             isExternal

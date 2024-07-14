@@ -92,7 +92,7 @@ const LiveScore = () => {
             )}
             {matches[0].status === "Live" && (
               // A moving green line between the minutes and the seconds
-              <div className="">
+              <div className="w-full">
                 <div className="w-full h-1 overflow-hidden">
                   <div className="h-full bg-green-500 animate-grow-line-x"></div>
                 </div>

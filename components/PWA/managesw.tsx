@@ -1,8 +1,11 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import React from "react";
+import React, { useState } from "react";
 
 export const ReinstallServiceWorker = () => {
+  const [isServiceWorkerRegistered, setIsServiceWorkerRegistered] =
+    useState(false);
+
   const deleteServiceWorker = async () => {
     if ("serviceWorker" in navigator) {
       await navigator.serviceWorker
@@ -44,6 +47,7 @@ export const ReinstallServiceWorker = () => {
             },
           });
           console.log("Subscribe response:", response);
+          setIsServiceWorkerRegistered(true);
         })
         .catch((error) => {
           console.error("Service worker registration failed:", error);
@@ -53,8 +57,28 @@ export const ReinstallServiceWorker = () => {
     }
   };
 
+  const checkServiceWorker = async () => {
+    if ("serviceWorker" in navigator) {
+      await navigator.serviceWorker.getRegistrations().then((registrations) => {
+        if (registrations.length === 0) {
+          console.log("Service worker not registered");
+          setIsServiceWorkerRegistered(false);
+          registerServiceWorker();
+        } else {
+          console.log("Service worker already registered");
+          setIsServiceWorkerRegistered(true);
+        }
+      });
+    } else {
+      console.log("Service workers are not supported in this browser");
+    }
+  };
+
+  checkServiceWorker();
+
   return (
     <Button
+      color={isServiceWorkerRegistered ? "success" : "danger"}
       onClick={async () => {
         await deleteServiceWorker();
         await registerServiceWorker();

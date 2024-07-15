@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `EJG_code` varchar(255) UNIQUE,
     `class` varchar(255),
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `last_login` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `last_login` varchar(255) NOT NULL,
+    DEFAULT CURRENT_TIMESTAMP,
     `permissions` JSON NOT NULL,
     `food_menu` CHAR(1),
     `coming_year` INT,
@@ -46,10 +47,11 @@ CREATE TABLE IF NOT EXISTS notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
-    time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    time VARCHAR(255) NOT NULL,
     sender_email VARCHAR(255) NOT NULL,
     receiving_emails JSON NOT NULL
 );
+--@block
 CREATE TABLE IF NOT EXISTS push_auths (
     id INT AUTO_INCREMENT PRIMARY KEY,
     auth VARCHAR(255) NOT NULL

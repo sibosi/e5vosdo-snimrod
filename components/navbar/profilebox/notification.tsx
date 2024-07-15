@@ -102,12 +102,14 @@ export const Notification = ({
               notification.sender_email}
           </p>
           <p>
-            {new Date(notification.time)
-              .toLocaleString("hu-HU", {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })
-              .substring(6)}
+            {String(
+              new Date(notification.time)
+                .toLocaleString("hu-HU", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })
+                .substring(6)
+            )}
           </p>
         </div>
       </div>

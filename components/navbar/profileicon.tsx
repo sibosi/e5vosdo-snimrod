@@ -170,7 +170,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
           {selfUser && notifications ? (
             notifications.newAndSent.map((item: Notification, index) => (
               <Notification
-                key={item.id}
+                key={"NewOrSentNot" + String(index)}
                 notification={item}
                 type={
                   notificationsIds.sent.includes(item.id)
@@ -186,9 +186,9 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
             <></>
           )}
           {selfUser && notifications ? (
-            notifications.read.map((item) => (
+            notifications.read.map((item, index) => (
               <Notification
-                key={item.id}
+                key={"ReadNot" + String(index)}
                 notification={item}
                 type={"read"}
                 allUsersNameByEmail={allUsersNameByEmail}

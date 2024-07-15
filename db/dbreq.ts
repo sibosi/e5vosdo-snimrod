@@ -137,7 +137,13 @@ export async function getAdminUsersEmail() {
 export async function updateUser(user: User | undefined) {
   if (!user) return;
 
-  const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
+  const REQ1 = `UPDATE \`users\` SET \`username\` = '${
+    user.name
+  }', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${
+    user.image
+  }', \`last_login\` = '${new Date().toJSON()}' WHERE \`email\` = '${
+    user.email
+  }';`;
 
   const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`) SELECT '${
     user.name
@@ -354,9 +360,9 @@ export async function newNotificationByEmails(
     valid_receiving_emails = receiving_emails;
   }
 
-  const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails) VALUES ('${title}', '${message}', '${sender_email}', '${
+  const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails, time) VALUES ('${title}', '${message}', '${sender_email}', '${
     '["' + valid_receiving_emails.join('", "') + '"]'
-  }');`;
+  }', '${new Date().toJSON()}');`;
   const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
   const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_SET(users.notifications, '$.new', JSON_ARRAY_APPEND(JSON_EXTRACT(users.notifications, '$.new'), '$', CAST(@notification_id AS JSON)));`;
   const REQ4 = `SELECT * FROM notifications WHERE id = @notification_id;`;

@@ -1,15 +1,18 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-export const DeleteServiceWorker = () => {
-  const deleteServiceWorker = () => {
+export const ReinstallServiceWorker = () => {
+  const [isServiceWorkerRegistered, setIsServiceWorkerRegistered] =
+    useState(false);
+
+  const deleteServiceWorker = async () => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
+      await navigator.serviceWorker
         .getRegistrations()
-        .then((registrations) => {
+        .then(async (registrations) => {
           for (let registration of registrations) {
-            registration.unregister().then((boolean) => {
+            await registration.unregister().then((boolean) => {
               if (boolean) {
                 console.log("Service worker unregistered");
               } else {
@@ -17,6 +20,7 @@ export const DeleteServiceWorker = () => {
               }
             });
           }
+          location.reload();
         })
         .catch((error) => {
           console.error("Error getting service worker registrations:", error);
@@ -26,10 +30,6 @@ export const DeleteServiceWorker = () => {
     }
   };
 
-  return <Button onClick={deleteServiceWorker}>SW törlése</Button>;
-};
-
-export const NewServiceWorker = () => {
   const registerServiceWorker = async () => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
@@ -47,6 +47,7 @@ export const NewServiceWorker = () => {
             },
           });
           console.log("Subscribe response:", response);
+          setIsServiceWorkerRegistered(true);
         })
         .catch((error) => {
           console.error("Service worker registration failed:", error);
@@ -56,5 +57,38 @@ export const NewServiceWorker = () => {
     }
   };
 
-  return <Button onClick={registerServiceWorker}>Új SW</Button>;
+  const checkServiceWorker = async () => {
+    if ("serviceWorker" in navigator) {
+      await navigator.serviceWorker.getRegistrations().then((registrations) => {
+        if (registrations.length === 0) {
+          console.log("Service worker not registered");
+          setIsServiceWorkerRegistered(false);
+          registerServiceWorker();
+        } else {
+          console.log("Service worker already registered");
+          setIsServiceWorkerRegistered(true);
+        }
+      });
+    } else {
+      console.log("Service workers are not supported in this browser");
+    }
+  };
+
+  useEffect(() => {
+    checkServiceWorker();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <Button
+      color={isServiceWorkerRegistered ? "success" : "danger"}
+      onClick={async () => {
+        await deleteServiceWorker();
+        await registerServiceWorker();
+        location.reload();
+      }}
+    >
+      SW újratelepítése
+    </Button>
+  );
 };

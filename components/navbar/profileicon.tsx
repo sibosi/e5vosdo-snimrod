@@ -1,81 +1,105 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Avatar,
-  Badge,
-  Modal,
-  ModalContent,
-  Navbar,
-  NavbarContent,
-} from "@nextui-org/react";
-import Login from "../LoginForm";
-import LogOut from "../LogOut";
+import { Avatar, Badge, Link, Navbar, NavbarContent } from "@nextui-org/react";
+import Login from "@/components/LoginForm";
+import { LogoutIcon } from "@/components/LogOut";
 import { User } from "@/db/dbreq";
-import { ThemeSwitch } from "../theme-switch";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { Notification } from "./profilebox/notification";
 
-const Bell = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    fill="currentColor"
-    className="bi bi-bell-fill"
-    viewBox="0 0 16 16"
-  >
-    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901" />
-  </svg>
-);
+const Account = () => {
+  return (
+    <Link href="/me">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        className="bi bi-person-fill fill-foreground-500 hover:fill-foreground-600"
+        viewBox="0 0 16 16"
+      >
+        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+      </svg>
+    </Link>
+  );
+};
 
 async function fetchNotifications(
-  notificationsIds: number[],
-  setNotificationsIds: (data: number[]) => void,
+  notificationsIds: NotificationsIds,
+  setNotificationsIds: (data: NotificationsIds) => void,
   setNotifications: (data: any) => void
 ) {
-  if (
-    notificationsIds == ((await fetch("/api/getUserNotificationsIds")) as any)
-  ) {
+  const responseIds: NotificationsIds = await (
+    await fetch("/api/getUserNotificationsIds")
+  ).json();
+  responseIds.newAndSent = responseIds.new.concat(responseIds.sent);
+  responseIds.newAndSent.sort((a: any, b: any) => b - a);
+  if (notificationsIds.new.toString() == responseIds.new.toString()) {
     return;
   }
-  setNotificationsIds(notificationsIds);
-  const response = await fetch("/api/getUserNotifications");
-  const data: JSON = await response.json();
-  console.log(data);
+  setNotificationsIds(responseIds);
+  const response = await (await fetch("/api/getUserNotifications")).json();
+  const data: any = response;
+  data.new.sort((a: any, b: any) => b.id - a.id);
+  data.read.sort((a: any, b: any) => b.id - a.id);
+  data.sent.sort((a: any, b: any) => b.id - a.id);
+
+  data.newAndSent = data.new.concat(data.sent);
+  data.newAndSent.sort((a: any, b: any) => b.id - a.id);
   setNotifications(data);
 }
-
-async function markAsRead(id: number) {
-  const response = await fetch("/api/markAsRead", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      id: id,
-    }),
-  });
-  if (response.status == 200) {
-    return;
-  }
+interface Notification {
+  id: number;
+  title: string;
+  message: string;
+  time: string;
+  sender_email: string;
+  receiving_emails: string[];
+}
+interface Notifications {
+  new: Notification[];
+  read: Notification[];
+  sent: Notification[];
+  newAndSent: Notification[];
+}
+interface NotificationsIds {
+  new: number[];
+  read: number[];
+  sent: number[];
+  newAndSent: number[];
 }
 
 export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
   const [showButtons, setShowButtons] = useState(false);
-  const [showModal, setShowModal] = useState(-1);
 
-  const [notificationsIds, setNotificationsIds] = useState<number[]>([]);
-  // {new: [id, id], read: [id, id], sent: [id, id]}
-  const [notifications, setNotifications] = useState<any>(undefined);
-  // {new: [{id, title, message, time}, {id, title, message, time}], read: [{id, title, message, time}]}
+  const [notificationsIds, setNotificationsIds] = useState<NotificationsIds>({
+    new: [-1],
+    read: [-1],
+    sent: [-1],
+    newAndSent: [-1, -1],
+  });
 
-  useEffect(() => {
-    if (!selfUser) return;
-    fetchNotifications(notificationsIds, setNotificationsIds, setNotifications);
-  }, [notificationsIds, selfUser]);
+  const [notifications, setNotifications] = useState<Notifications>({
+    new: [],
+    read: [],
+    sent: [],
+    newAndSent: [],
+  });
+
+  const [allUsersNameByEmail, setAllUsersNameByEmail] = useState<any>({});
 
   const handleIconClick = () => {
     setShowButtons(!showButtons);
   };
+
+  useEffect(() => {
+    if (!selfUser) return;
+    fetchNotifications(notificationsIds, setNotificationsIds, setNotifications);
+    fetch("/api/getAllUsersNameByEmail")
+      .then((response) => response.json())
+      .then((data) => setAllUsersNameByEmail(data));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selfUser]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -129,12 +153,13 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
             <>
               <NavbarContent justify="start">
                 <ThemeSwitch />
+                <Account />
               </NavbarContent>
               <NavbarContent justify="center">
-                {String(selfUser?.name)}
+                {String(selfUser?.nickname)}
               </NavbarContent>
               <NavbarContent justify="end">
-                <LogOut />
+                <LogoutIcon />
               </NavbarContent>
             </>
           ) : (
@@ -142,101 +167,38 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
           )}
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">
-          {console.log(notifications)}
           {selfUser && notifications ? (
-            notifications.new.map((item: any) => (
-              <div key={item.id}>
-                <div
-                  key={"Notification" + String(item.id)}
-                  className="flex my-3 gap-2"
-                  onClick={() => {
-                    setShowModal(item.id);
-                    markAsRead(item.id);
-                  }}
-                >
-                  <div className="block w-5 h-5 m-1 my-auto text-danger-500">
-                    {Bell}
-                  </div>
-                  <div className="text-left truncate">
-                    <h3 className="flex font-bold gap-1">
-                      <p className="truncate">{item.title}</p>
-                      <p>&middot;</p>
-                      <p className="text-foreground-600 text-sm my-auto">
-                        {new Date(item.time).toLocaleString("hu-HU", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </p>
-                    </h3>
-                    <span className="text-sm break-words text-foreground-600">
-                      {item.message}
-                    </span>
-                  </div>
-                </div>
-                <Modal
-                  size="md"
-                  key={"NotModal" + String(item.id)}
-                  isOpen={showModal === item.id}
-                  onClose={() => setShowModal(-1)}
-                  className="overflow-auto"
-                >
-                  <ModalContent className="max-h-[95vh] overflow-auto p-10">
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-bold text-foreground">
-                        {item.title}
-                      </h3>
-                      <p className="text-foreground-600">{item.message}</p>
-                    </div>
-                  </ModalContent>
-                </Modal>
-              </div>
+            notifications.newAndSent.map((item: Notification, index) => (
+              <Notification
+                key={"NewOrSentNot" + String(index)}
+                notification={item}
+                type={
+                  notificationsIds.sent.includes(item.id)
+                    ? notificationsIds.newAndSent.indexOf(item.id) == index
+                      ? "sent"
+                      : "new"
+                    : "new"
+                }
+                allUsersNameByEmail={allUsersNameByEmail}
+              />
             ))
           ) : (
             <></>
           )}
           {selfUser && notifications ? (
-            notifications.read.map((item: any) => (
-              <div key={item.id}>
-                <div
-                  key={"Notification" + String(item.id)}
-                  className="flex my-3 gap-2"
-                  onClick={() => setShowModal(item.id)}
-                >
-                  <div className="block w-5 h-5 m-1 my-auto">{Bell}</div>
-                  <div className="text-left truncate">
-                    <h3 className="flex font-bold gap-1">
-                      <p className="truncate">{item.title}</p>
-                      <p>&middot;</p>
-                      <p className="text-foreground-600 text-sm my-auto">
-                        {new Date(item.time).toLocaleString("hu-HU", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
-                      </p>
-                    </h3>
-                    <span className="text-sm break-words text-foreground-600">
-                      {item.message}
-                    </span>
-                  </div>
-                </div>
-                <Modal
-                  size="md"
-                  key={"NotModal" + String(item.id)}
-                  isOpen={showModal === item.id}
-                  onClose={() => setShowModal(-1)}
-                  className="overflow-auto"
-                >
-                  <ModalContent className="max-h-[95vh] overflow-auto p-10">
-                    <div className="flex flex-col gap-2">
-                      <h3 className="font-bold text-foreground">
-                        {item.title}
-                      </h3>
-                      <p className="text-foreground-600">{item.message}</p>
-                    </div>
-                  </ModalContent>
-                </Modal>
-              </div>
+            notifications.read.map((item, index) => (
+              <Notification
+                key={"ReadNot" + String(index)}
+                notification={item}
+                type={"read"}
+                allUsersNameByEmail={allUsersNameByEmail}
+              />
             ))
+          ) : (
+            <></>
+          )}
+          {selfUser && !notifications ? (
+            <div className="py-2">Értesítések betöltése...</div>
           ) : (
             <></>
           )}

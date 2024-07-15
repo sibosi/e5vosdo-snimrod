@@ -20,25 +20,24 @@ WHERE `username` = 'JohnDoe';
 INSERT INTO `users` (`username`, `email`, `image`)
 SELECT 'JohnDoe',
     'johndoes@example.com',
-    'profile.jpg'
+    '/apa.jpg'
 WHERE NOT EXISTS (
         SELECT *
         FROM `users`
-        WHERE `username` = 'JohnDoe'
+        WHERE `username` = ' JohnDoe '
     );
 --@block
--- Update the Joe's name and image if his email is in the database
+-- Update the Joe' s name and image if his email is in the database
 UPDATE `users`
-SET `username
-    ` = 'JaneDoe',
-    `image` = 'jane.jpg'
-WHERE `email` = 'joe@joe.com';
+SET `username` = 'JaneDoe',
+    `image` = '/apa.jpg'
+WHERE `email` = 'johndoes@example.com';
 --@block
 -- Add last login date
 ALTER TABLE `users`
 ADD `last_login` timestamp;
 --@block
--- Add Joe's last login date to now
+-- Add Joe' s last login date to now
 UPDATE `users`
 SET `last_login` = NOW()
-WHERE `email` = '
+WHERE `email` = '';

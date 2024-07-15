@@ -1,0 +1,5 @@
+This file contains the valid tickets for this project. The tickets will be deleted after they are used.
+
+Tickets:
+
+'EJG_code_edit': Allows the user to change the EJG code for user accounts.

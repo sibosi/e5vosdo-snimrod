@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Image from "next/image";
-import LogOut from "@/components/LogOut";
+import { LogoutButton } from "@/components/LogOut";
 import {
   apireq,
   getAdminUsersEmail,
@@ -10,11 +10,7 @@ import {
 } from "@/db/dbreq";
 import ListUsers from "@/components/account/listusers";
 import NewNotification from "@/components/account/notification";
-import {
-  DeleteServiceWorker,
-  NewServiceWorker,
-} from "@/components/PWA/managesw";
-import { ButtonGroup } from "@nextui-org/react";
+import { ReinstallServiceWorker } from "@/components/PWA/managesw";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -44,11 +40,9 @@ const AboutPage = async () => {
         )}
       </div>
       <div className="inline-flex gap-2">
-        <LogOut size="md" />
-        <ButtonGroup>
-          <DeleteServiceWorker />
-          <NewServiceWorker />
-        </ButtonGroup>
+        <LogoutButton />
+
+        <ReinstallServiceWorker />
       </div>
       <div>{"Adminok: " + admins.join(", ")}</div>
       <br />

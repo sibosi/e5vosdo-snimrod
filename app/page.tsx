@@ -6,13 +6,9 @@ import { button as buttonStyles } from "@nextui-org/theme";
 import clsx from "clsx";
 import { QuickTeachers } from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
-import { Countdown } from "@/components/countdown";
-import { Section } from "@/components/section";
+import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
-import { PageWarning } from "@/components/pagewarning";
-import { Alert } from "@/components/alert";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
-import { Vakacio } from "@/components/vakacio";
 import { getAuth } from "@/db/dbreq";
 
 export default async function Home() {
@@ -20,13 +16,12 @@ export default async function Home() {
   return (
     <div>
       <div className="text-center pb-14 text-foreground">
-        <PageWarning />
-        {selfUser?.name ? (
+        {selfUser ? (
           <>
             <h1 className="inline text-5xl font-semibold lg:text-5xl">
               Helló{" "}
               <p className="inline from-[#39b2f8] to-[#2747fc] bg-clip-text text-transparent bg-gradient-to-l">
-                {selfUser.name.split(" ")[0]}
+                {selfUser.nickname}
               </p>
               !
             </h1>
@@ -68,7 +63,13 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus={siteConfig.pageSections["menza"]}
         >
-          <Menu />
+          <Menu
+            menu={
+              selfUser?.food_menu == "A" || selfUser?.food_menu == "B"
+                ? selfUser?.food_menu
+                : undefined
+            }
+          />
         </Section>
       )}
 

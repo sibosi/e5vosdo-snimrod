@@ -17,7 +17,7 @@ function padTo2Digits(num: number) {
   return num.toString().padStart(2, "0");
 }
 
-export const Menu = () => {
+export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
   const tableData = mindenkorimenu;
   const now = new Date();
   const date: any = [
@@ -31,68 +31,73 @@ export const Menu = () => {
       <p className="font-medium pb-1 text-sm">{date}</p>
 
       <div className="gap-2 grid grid-cols-2 md:grid-cols-1 max-w-max overflow-hidden">
-        <div className="overflow-auto md:flex" key={0.031}>
-          <Button disabled key={"Amenu1"} color="primary" variant="solid">
-            🍴 A menü:
-          </Button>
-          {tableData[date] && tableData[date].A ? (
-            tableData[date].A.map((fogas: string, rowIndex: number) =>
-              fogas ? (
-                <div
-                  key={rowIndex + 0.01}
-                  className="py-1 px-0 md:py-0 md:px-1"
-                >
-                  <Button
-                    key={rowIndex + 0.011}
-                    disabled
-                    color="primary"
-                    variant="flat"
-                    className="border-1 border-blue-700"
-                  >
-                    {fogas}
-                  </Button>
-                </div>
-              ) : (
-                <div key={rowIndex + 0.04} />
-              )
-            )
-          ) : (
-            <Button disabled key={"Amenu2"} color="default" variant="solid">
-              <p>Nincs információ</p>
+        {menu != "B" && (
+          <div className="overflow-auto md:flex" key={0.031}>
+            <Button disabled key={"Amenu1"} color="primary" variant="solid">
+              🍴 A menü:
             </Button>
-          )}
-        </div>
-        <div className="overflow-auto md:flex" key={0.032}>
-          <Button disabled key={"Bmenu1"} color="secondary" variant="solid">
-            🍴 B menü:
-          </Button>
-          {tableData[date] && tableData[date].A ? (
-            tableData[date].B.map((fogas: string, rowIndex: number) =>
-              fogas ? (
-                <div
-                  key={rowIndex + 0.02}
-                  className="py-1 px-0 md:py-0 md:px-1"
-                >
-                  <Button
-                    key={rowIndex + 0.021}
-                    disabled
-                    color="secondary"
-                    variant="flat"
-                    className="border-1 border-purple-800"
+            {tableData[date] && tableData[date].A ? (
+              tableData[date].A.map((fogas: string, rowIndex: number) =>
+                fogas ? (
+                  <div
+                    key={rowIndex + 0.01}
+                    className="py-1 px-0 md:py-0 md:px-1"
                   >
-                    {fogas}
-                  </Button>
-                </div>
-              ) : (
-                <div key={rowIndex + 0.041} />
+                    <Button
+                      key={rowIndex + 0.011}
+                      disabled
+                      color="primary"
+                      variant="flat"
+                      className="border-1 border-blue-700"
+                    >
+                      {fogas}
+                    </Button>
+                  </div>
+                ) : (
+                  <div key={rowIndex + 0.04} />
+                )
               )
-            )
-          ) : (
-            <Button disabled key={"Bmenu2"} color="default" variant="solid">
-              <p>Nincs információ</p>
+            ) : (
+              <Button disabled key={"Amenu2"} color="default" variant="solid">
+                <p>Nincs információ</p>
+              </Button>
+            )}
+          </div>
+        )}
+
+        {menu != "A" && (
+          <div className="overflow-auto md:flex" key={0.032}>
+            <Button disabled key={"Bmenu1"} color="secondary" variant="solid">
+              🍴 B menü:
             </Button>
-          )}
-        </div>
+            {tableData[date] && tableData[date].A ? (
+              tableData[date].B.map((fogas: string, rowIndex: number) =>
+                fogas ? (
+                  <div
+                    key={rowIndex + 0.02}
+                    className="py-1 px-0 md:py-0 md:px-1"
+                  >
+                    <Button
+                      key={rowIndex + 0.021}
+                      disabled
+                      color="secondary"
+                      variant="flat"
+                      className="border-1 border-purple-800"
+                    >
+                      {fogas}
+                    </Button>
+                  </div>
+                ) : (
+                  <div key={rowIndex + 0.041} />
+                )
+              )
+            ) : (
+              <Button disabled key={"Bmenu2"} color="default" variant="solid">
+                <p>Nincs információ</p>
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

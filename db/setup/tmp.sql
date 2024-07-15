@@ -173,3 +173,72 @@ WHERE email = 'simon.nimrod.zalan@e5vos.hu';
 SELECT *
 FROM users
 WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Create nickname column
+ALTER TABLE users
+ADD COLUMN nickname VARCHAR(255) NOT NULL;
+--@block
+-- Set nickname to names first part
+UPDATE users
+SET nickname = SUBSTRING_INDEX(name, ' ', 1);
+--@block
+-- Add tickets column
+ALTER TABLE users
+ADD COLUMN tickets JSON NOT NULL;
+--@block
+-- Add tickets to the user
+UPDATE users
+SET tickets = '["EJG_code_edit", "EJG_code_edit"]'
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Delete Nimrod user
+DELETE FROM users
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- Append "user" permissions to every user
+UPDATE users
+SET permissions = JSON_ARRAY_APPEND(
+        permissions,
+        '$',
+        'user'
+    );
+--@block
+SELECT *
+FROM matches;
+--@block
+-- Reset notifications
+DROP TABLE notifications;
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    time VARCHAR(255) NOT NULL,
+    sender_email VARCHAR(255) NOT NULL,
+    receiving_emails JSON NOT NULL
+);
+INSERT INTO notifications (
+        title,
+        message,
+        sender_email,
+        receiving_emails,
+        time
+    )
+VALUES (
+        'Gratuláció!',
+        'Sikeresen regisztráltál az E5VOS rendszerébe! Jó szórakozást! Üdvözlettel: Nimród, az E5VOS DÖ oldal rendszergazdája.',
+        'simon.nimrod.zalan@e5vos.hu',
+        '[]',
+        '2024/09/01 00:00 '
+    );
+SET @notification_id = LAST_INSERT_ID();
+UPDATE users
+SET notifications = '{ "new": [1], "read": [], "sent": []  }';
+--@block
+SELECT *
+FROM notifications;
+SELECT *
+FROM users;
+--@block
+-- Reset last_login column to STRING
+ALTER TABLE users
+MODIFY COLUMN last_login VARCHAR(255) NOT NULL;

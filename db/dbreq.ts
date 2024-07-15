@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
-import { badge, image } from "@nextui-org/theme";
+import { image } from "@nextui-org/theme";
 
-const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string; // Replace with your public VAPID key
-const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string; // Replace with your private VAPID key
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 
 webPush.setVapidDetails(
   "mailto:spam.sibosi@gmail.com", // Replace with your email
@@ -14,10 +14,15 @@ webPush.setVapidDetails(
 
 export interface User {
   name: string;
+  username: string;
+  nickname: string;
   email: string;
   image: string;
   last_login: string;
   permissions: string[];
+  EJG_code: string;
+  food_menu: string;
+  tickets: string[];
 }
 
 export async function getUsers() {
@@ -26,11 +31,7 @@ export async function getUsers() {
 
 export async function getUsersName() {
   const response = await dbreq(`SELECT name FROM users;`);
-  let names: string[] = [];
-  (response as unknown as []).map((user: { name: string }) =>
-    names.push(user.name)
-  );
-  return names;
+  return (response as unknown as { name: string }[]).map((user) => user.name);
 }
 
 export async function getUser(email: string | undefined) {
@@ -38,6 +39,15 @@ export async function getUser(email: string | undefined) {
   return (
     (await dbreq(`SELECT * FROM \`users\` WHERE email = '${email}'`)) as User[]
   )[0];
+}
+
+export async function getAllUsersNameByEmail() {
+  const response = await dbreq(`SELECT name, email FROM users;`);
+  let users: { [key: string]: string } = {};
+  (response as unknown as []).map((user: User) => {
+    users[user.email] = user.name;
+  });
+  return users;
 }
 
 export async function getAuth(email?: string | undefined) {
@@ -127,9 +137,21 @@ export async function getAdminUsersEmail() {
 export async function updateUser(user: User | undefined) {
   if (!user) return;
 
-  const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
+  const REQ1 = `UPDATE \`users\` SET \`username\` = '${
+    user.name
+  }', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${
+    user.image
+  }', \`last_login\` = '${new Date().toJSON()}' WHERE \`email\` = '${
+    user.email
+  }';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`) SELECT '${user.name}', '${user.email}', '${user.image}', '${user.name}', '[]', '[ { new: [], read: [], sent: []  } ]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${user.email}');`;
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`) SELECT '${
+    user.name
+  }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
+    user.name
+  }', '["user"]', '{ "new": [], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
+    user.email
+  }');`;
 
   return await dbreq(REQ1), await dbreq(REQ2);
 }
@@ -172,7 +194,15 @@ export async function getNotificationById(id: number) {
   const response = (await dbreq(
     `SELECT * FROM notifications WHERE id = ${id}`
   )) as any[];
-  return response[0];
+  const notification: {
+    id: number;
+    title: string;
+    message: string;
+    time: string;
+    sender_email: string;
+    receiving_emails: string[];
+  } = response[0];
+  return notification;
 }
 
 export async function getUserNotificationsIds() {
@@ -187,27 +217,37 @@ export async function getUserNotificationsIds() {
 
 export async function getUserNotifications() {
   const email = (await getAuth())?.email;
-  const response = (
-    (await dbreq(
-      `SELECT notifications FROM users WHERE email = '${email}'`
-    )) as any
-  )[0].notifications;
+  if (!email) return;
 
-  let notifications: { new: any[]; read: any[]; sent: any[] } = {
-    new: [],
-    read: [],
-    sent: [],
+  const notifications: any = await dbreq(
+    `SELECT notifications FROM users WHERE email = '${email}'`
+  );
+
+  const {
+    new: newNotifs,
+    read: readNotifs,
+    sent: sentNotifs,
+  } = notifications[0].notifications;
+
+  const getNotifications = async (ids: number[]) => {
+    if (!ids.length) return [];
+    return await dbreq(
+      `SELECT * FROM notifications WHERE id IN (${ids.join(",")})`
+    );
   };
-  for (let i = 0; i < response.new.length; i++) {
-    notifications.new.push(await getNotificationById(response.new[i]));
-  }
-  for (let i = 0; i < response.read.length; i++) {
-    notifications.read.push(await getNotificationById(response.read[i]));
-  }
-  for (let i = 0; i < response.sent.length; i++) {
-    notifications.sent.push(await getNotificationById(response.sent[i]));
-  }
-  return notifications;
+
+  const [newNotifications, readNotifications, sentNotifications] =
+    await Promise.all([
+      getNotifications(newNotifs),
+      getNotifications(readNotifs),
+      getNotifications(sentNotifs),
+    ]);
+
+  return {
+    new: newNotifications,
+    read: readNotifications,
+    sent: sentNotifications,
+  };
 }
 
 export async function addServiceWorker(serviceWorker: any) {
@@ -303,11 +343,14 @@ export async function markAsRead(id: number) {
 export async function newNotificationByEmails(
   title: string,
   message: string,
-  receiving_emails: string[]
+  receiving_emails: string[],
+  payload: string = ""
 ) {
   const sender_email = (await getAuth())?.email;
 
   let valid_receiving_emails: string[] = [];
+
+  console.log("#5 receiving_emails", receiving_emails);
 
   if (!receiving_emails[0].includes("@")) {
     valid_receiving_emails = await getUsersEmailByPermission(
@@ -317,28 +360,34 @@ export async function newNotificationByEmails(
     valid_receiving_emails = receiving_emails;
   }
 
-  const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails) VALUES ('${title}', '${message}', '${sender_email}', '${
+  const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails, time) VALUES ('${title}', '${message}', '${sender_email}', '${
     '["' + valid_receiving_emails.join('", "') + '"]'
-  }');`;
+  }', '${new Date().toJSON()}');`;
   const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
   const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_SET(users.notifications, '$.new', JSON_ARRAY_APPEND(JSON_EXTRACT(users.notifications, '$.new'), '$', CAST(@notification_id AS JSON)));`;
   const REQ4 = `SELECT * FROM notifications WHERE id = @notification_id;`;
+  // Add the notification to the sender's sent notifications
+  const REQ5 = `UPDATE users SET notifications = JSON_SET(notifications, '$.sent', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.sent'), '$', CAST(@notification_id AS JSON))) WHERE email = '${sender_email}';`;
 
-  const MAINRRQ = [REQ1, REQ2, REQ3, REQ4];
+  const MAINRRQ = [REQ1, REQ2, REQ3, REQ4, REQ5];
 
   const response = await multipledbreq(MAINRRQ);
 
   valid_receiving_emails.map(async (email) => {
-    await newPush(
-      email,
-      JSON.stringify({
-        title: sender_email + " üzenetet küldött",
-        message: title,
-        body: title,
-        icon: "favicon.ico",
-        badge: "favicon-16x16.ico",
-      })
-    );
+    if (payload !== "") {
+      await newPush(email, payload);
+    } else {
+      await newPush(
+        email,
+        JSON.stringify({
+          title: sender_email + " üzenetet küldött",
+          message: title,
+          body: title,
+          icon: "favicon.ico",
+          badge: "favicon-16x16.ico",
+        })
+      );
+    }
   });
 
   return { data: "success" };
@@ -365,18 +414,177 @@ export async function newNotificationByNames(
     receiving_emails.push(usersNameAndEmailDict[name] ?? name);
   });
 
-  await receiving_emails.map(async (email) => {
-    if (email.includes("@")) {
-      valid_receiving_emails.push(email);
-    } else {
-      valid_receiving_emails = [
-        ...valid_receiving_emails,
-        ...(await getUsersEmailByPermission(email)),
-      ];
-    }
-  });
+  await Promise.all(
+    receiving_emails.map(async (email) => {
+      if (email.includes("@")) {
+        valid_receiving_emails.push(email);
+      } else {
+        valid_receiving_emails = [
+          ...valid_receiving_emails,
+          ...(await getUsersEmailByPermission(email)),
+        ];
+        console.log("#4 valid_receiving_emails", valid_receiving_emails);
+      }
+    })
+  );
 
   return await newNotificationByEmails(title, message, valid_receiving_emails);
+}
+
+export async function addTicket(email: string, ticket: string) {
+  const REQ1 = `UPDATE users SET tickets = JSON_ARRAY_APPEND(tickets, '$', '${ticket}') WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
+export async function removeTicket(ticket: string) {
+  const email = (await getAuth())?.email;
+  const REQ1 = `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', '${ticket}'))) WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
+export async function editMySettings({
+  settings,
+}: {
+  settings: { nickname: string; EJG_code: string; food_menu: string };
+}) {
+  const user = await getAuth();
+  if (!user) return "No user";
+  const email = user?.email;
+
+  const valid_EJG_code = user.tickets.includes("EJG_code_edit")
+    ? settings.EJG_code
+    : user.EJG_code;
+
+  if (
+    user.tickets.includes("EJG_code_edit") &&
+    user.EJG_code != settings.EJG_code
+  ) {
+    await removeTicket("EJG_code_edit");
+  }
+
+  const REQ1 = `UPDATE users SET nickname = '${
+    settings.nickname
+  }', EJG_code = '${valid_EJG_code}', food_menu = ${
+    settings.food_menu == null ? null : "'" + settings.food_menu + "'"
+  } WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
+export async function getPageSettings() {
+  return (
+    (await dbreq(`SELECT * FROM settings WHERE name = "now";`)) as any
+  )[0];
+}
+
+export async function getMatch(id: number) {
+  return ((await dbreq(`SELECT * FROM matches WHERE id = ${id};`)) as any)[0];
+}
+
+export async function getComingMatch() {
+  const matchId = (await getPageSettings()).livescore;
+  return await getMatch(matchId);
+}
+
+export async function updateMatch(id: number, match: any) {
+  const sendNotification = true;
+  const REQ1 = `UPDATE matches SET team1 = '${match.team1}', team2 = '${
+    match.team2
+  }', team_short1 = '${match.teamShort1}', team_short2 = '${
+    match.teamShort2
+  }', score1 = ${match.score1}, score2 = ${match.score2}, status = '${
+    match.status
+  }', time = "${match.time}", start_time = '${match.startTime}', end_time = '${
+    match.endTime || match.startTime
+  }' WHERE id = ${id};`;
+
+  if (sendNotification) {
+    console.log("Sending notification");
+    const oldMatch = await getMatch(id);
+    const notificationPermission = "tester";
+    if (match.status === "Finished" && oldMatch.status !== "Finished") {
+      console.log("Sending notification - Game finished");
+      const title = `${match.teamShort1} - ${match.teamShort2}`;
+      const message = `A meccsnek vége. Az eredmény: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const receiving_emails = await getUsersEmailByPermission(
+        notificationPermission
+      );
+      receiving_emails.map(async (email) => {
+        await newPush(
+          email,
+          JSON.stringify({
+            title: title,
+            body: message,
+            icon: "soccer-ball.png",
+            badge: "soccer-ball.png",
+          })
+        );
+      });
+      console.log("Notification sent - Game finished");
+    } else if (match.status === "Live" && oldMatch.status !== "Live") {
+      console.log("Sending notification - Game started");
+      const title = `${match.teamShort1} - ${match.teamShort2}`;
+      const message = `A meccs elkezdődött! ${match.team1} vs ${match.team2}`;
+      const receiving_emails = await getUsersEmailByPermission(
+        notificationPermission
+      );
+      receiving_emails.map(async (email) => {
+        await newPush(
+          email,
+          JSON.stringify({
+            title: title,
+            body: message,
+            icon: "soccer-ball.png",
+            badge: "soccer-ball.png",
+          })
+        );
+      });
+      console.log("Notification sent - Game started");
+    } else if (match.score1 !== oldMatch.score1) {
+      console.log("Sending notification - Goal");
+      const title = `Gól! | ${match.teamShort1} - ${match.teamShort2}`;
+      const message = `${match.team1} gólt lőtt! Az aktuális állás: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const receiving_emails = await getUsersEmailByPermission(
+        notificationPermission
+      );
+      receiving_emails.map(async (email) => {
+        await newPush(
+          email,
+          JSON.stringify({
+            title: title,
+            body: message,
+            icon: match.image1,
+            badge: "soccer-ball.png",
+          })
+        );
+      });
+      console.log("Notification sent - Goal");
+    } else if (match.score2 !== oldMatch.score2) {
+      console.log("Sending notification - Goal");
+      const title = `Gól! | ${match.teamShort1} - ${match.teamShort2}`;
+      const message = `${match.team2} gólt lőtt! Az aktuális állás: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const receiving_emails = await getUsersEmailByPermission(
+        notificationPermission
+      );
+
+      receiving_emails.map(async (email) => {
+        await newPush(
+          email,
+          JSON.stringify({
+            title: title,
+            body: message,
+            icon: match.image2,
+            badge: "soccer-ball.png",
+          })
+        );
+      });
+      console.log("Notification sent - Goal");
+    }
+  }
+
+  return await dbreq(REQ1);
 }
 
 export interface apireqType {
@@ -384,6 +592,7 @@ export interface apireqType {
     | "getUsers"
     | "getUsersName"
     | "getUser"
+    | "getAllUsersNameByEmail"
     | "getAuth"
     | "hasPermission"
     | "getUsersEmail"
@@ -401,12 +610,14 @@ export interface apireqType {
     | "markAsRead"
     | "newNotificationByEmails"
     | "newNotificationByNames"
-    | "checkPushAuth";
+    | "checkPushAuth"
+    | "editMySettings";
 }
 export const apioptions = [
   "getUsers",
   "getUsersName",
   "getUser",
+  "getAllUsersNameByEmail",
   "getAuth",
   "hasPermission",
   "getUsersEmail",
@@ -425,12 +636,14 @@ export const apioptions = [
   "newNotificationByEmails",
   "newNotificationByNames",
   "checkPushAuth",
+  "editMySettings",
 ];
 
 export const apireq = {
   getUsers: { req: getUsers, perm: ["admin", "tester"] },
   getUsersName: { req: getUsersName, perm: ["student"] },
   getUser: { req: getUser, perm: [] },
+  getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },
   getAuth: { req: getAuth, perm: [] },
   hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
@@ -443,16 +656,19 @@ export const apireq = {
   addUserPermission: { req: addUserPermission, perm: ["admin"] },
   removeUserPermissions: { req: removeUserPermissions, perm: ["admin"] },
   getNotificationById: { req: getNotificationById, perm: ["student"] },
-  getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["student"] },
-  getUserNotifications: { req: getUserNotifications, perm: ["student"] },
-  markAsRead: { req: markAsRead, perm: ["student"] },
+  getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["user"] },
+  getUserNotifications: { req: getUserNotifications, perm: ["user"] },
+  markAsRead: { req: markAsRead, perm: ["user"] },
   newNotificationByEmails: { req: newNotificationByEmails, perm: ["admin"] },
   newNotificationByNames: { req: newNotificationByNames, perm: ["admin"] },
   checkPushAuth: { req: checkPushAuth, perm: ["student"] },
+  editMySettings: { req: editMySettings, perm: ["student"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getUsers") return await getUsers();
+  else if (req === "getAllUsersNameByEmail")
+    return await getAllUsersNameByEmail();
   else if (req === "getUsersName") return await getUsersName();
   else if (req === "getEvents") return await getEvents();
   else if (req === "getStudentUsers") return await getStudentUsers();
@@ -483,5 +699,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "checkPushAuth") {
     const { auth } = body;
     return await checkPushAuth(auth);
+  } else if (req === "editMySettings") {
+    const { settings } = body;
+    return await editMySettings({ settings });
   } else return "No such request";
 };

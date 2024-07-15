@@ -69,12 +69,18 @@ const ListUsers = ({
               width={72}
               height={72}
               className="rounded-full"
+              loading="lazy"
             />
             {user.service_workers.length != 0 && <span>🔔</span>}
           </div>
           <h1 className="text-foreground">{user.username}</h1>
           <p>{user.email}</p>
-          <p>{String(user.last_login)}</p>
+          <p>
+            {new Date(user.last_login).toLocaleString("hu-HU", {
+              dateStyle: "long",
+              timeStyle: "long",
+            })}
+          </p>
           <p>Permissions: {(user.permissions ?? []).join(" ")}</p>
           <div className="flex gap-2">
             {["student", "admin", "tester"].map((permission) =>

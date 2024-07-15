@@ -137,7 +137,13 @@ export async function getAdminUsersEmail() {
 export async function updateUser(user: User | undefined) {
   if (!user) return;
 
-  const REQ1 = `UPDATE \`users\` SET \`username\` = '${user.name}', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${user.image}', \`last_login\` = NOW() WHERE \`email\` = '${user.email}';`;
+  const REQ1 = `UPDATE \`users\` SET \`username\` = '${
+    user.name
+  }', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${
+    user.image
+  }', \`last_login\` = '${new Date().toJSON()}' WHERE \`email\` = '${
+    user.email
+  }';`;
 
   const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`) SELECT '${
     user.name

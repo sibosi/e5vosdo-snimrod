@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export const ReinstallServiceWorker = () => {
   const [isServiceWorkerRegistered, setIsServiceWorkerRegistered] =
@@ -74,7 +74,10 @@ export const ReinstallServiceWorker = () => {
     }
   };
 
-  checkServiceWorker();
+  useEffect(() => {
+    checkServiceWorker();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Button

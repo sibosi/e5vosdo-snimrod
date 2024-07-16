@@ -32,7 +32,7 @@ async function subscribeUser() {
         console.log("Existing subscription:", subscription);
         const response = await fetch("/api/subscribe", {
           method: "POST",
-          body: JSON.stringify((subscription as any).keys.auth || ""),
+          body: JSON.stringify((subscription as any).endpoint || ""),
           headers: {
             "Content-Type": "application/json",
           },

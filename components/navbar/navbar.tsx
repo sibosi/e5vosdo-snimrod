@@ -3,7 +3,6 @@ import {
   Navbar as NextUINavbar,
   NavbarContent,
   NavbarMenu,
-  NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
@@ -20,6 +19,9 @@ import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
 import { User } from "@/db/dbreq";
+import LiveScore from "./headspace/livescore";
+
+const isActiveHeadSpace = true;
 
 export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
   const searchInput = (
@@ -51,7 +53,7 @@ export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
             <Logo />
             <p className="font-bold text-foreground block- p-2 hidden">E5</p>
           </NextLink>
-          <GetApp />
+          <GetApp size={isActiveHeadSpace ? "small" : "medium"} />
         </NavbarBrand>
         <ul className="hidden md:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
@@ -71,20 +73,30 @@ export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
         </ul>
       </NavbarContent>
 
-      <NavbarContent
-        className="basis-1 md:basis-full pl-4 md:pl-0 gap-2"
-        justify="end"
-      >
+      <NavbarContent justify="start" />
+
+      {isActiveHeadSpace ? (
+        <NavbarContent justify="center" className="md:hidden">
+          <LiveScore />
+        </NavbarContent>
+      ) : (
+        <></>
+      )}
+
+      <NavbarContent justify="end" />
+
+      <NavbarContent className="fixed right-0 gap-2 pr-6" justify="end">
         <NavbarItem>
           <Link
             isExternal
             href={siteConfig.links.instagram}
             aria-label="Instagram"
+            className={"pr-2 " + isActiveHeadSpace ? "hidden" : ""}
           >
             <InstagramIcon className="text-default-500" />
           </Link>
         </NavbarItem>
-        <NavbarItem className="flex items-center pl-2">
+        <NavbarItem className="flex items-center">
           <ProfileIcon selfUser={selfUser} />
         </NavbarItem>
       </NavbarContent>

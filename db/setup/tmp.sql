@@ -202,3 +202,43 @@ SET permissions = JSON_ARRAY_APPEND(
         '$',
         'user'
     );
+--@block
+SELECT *
+FROM matches;
+--@block
+-- Reset notifications
+DROP TABLE notifications;
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    time VARCHAR(255) NOT NULL,
+    sender_email VARCHAR(255) NOT NULL,
+    receiving_emails JSON NOT NULL
+);
+INSERT INTO notifications (
+        title,
+        message,
+        sender_email,
+        receiving_emails,
+        time
+    )
+VALUES (
+        'Gratuláció!',
+        'Sikeresen regisztráltál az E5VOS rendszerébe! Jó szórakozást! Üdvözlettel: Nimród, az E5VOS DÖ oldal rendszergazdája.',
+        'simon.nimrod.zalan@e5vos.hu',
+        '[]',
+        '2024/09/01 00:00 '
+    );
+SET @notification_id = LAST_INSERT_ID();
+UPDATE users
+SET notifications = '{ "new": [1], "read": [], "sent": []  }';
+--@block
+SELECT *
+FROM notifications;
+SELECT *
+FROM users;
+--@block
+-- Reset last_login column to STRING
+ALTER TABLE users
+MODIFY COLUMN last_login VARCHAR(255) NOT NULL;

@@ -32,7 +32,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   console.log("Subscription added:", subscriptionObj);
 
   const payload = JSON.stringify({
-    title: "Írj Nimródnak: a #2 működik",
+    title: "Az eszköz sikeresen azonosítva!",
     message: "Sikeres azonosítás!",
   });
 

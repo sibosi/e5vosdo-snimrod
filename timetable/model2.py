@@ -79,10 +79,33 @@ LESSON_DICT = {
 not_in_lesson_dict = []
 table = []
 
+step2_exceptions = [{
+    'EJG_class': '11.F',
+    'day': 'K',
+    'lesson_index' : 4,
+    'subject': 'magyar',
+    'teacher': 'Eszes Valéria'
+},
+{
+    'EJG_class': '11.F',
+    'day': 'CS',
+    'lesson_index' : 2,
+    'subject': 'magyar',
+    'teacher': 'Eszes Valéria'
+}]
+
+def is_in_exceptions(EJG_class, day, lesson_index, subject, teacher):
+    for exception in step2_exceptions:
+        if exception['EJG_class'] == EJG_class and exception['day'] == day and exception['lesson_index'] == lesson_index and exception['subject'] == subject and exception['teacher'] == teacher:
+            return True
+    return False
+
 class Lesson():
     def __init__(self, EJG_class_options: list, day: str, start_time: str, room=None, teacher=None, subject=None, group=None):
 
         valid_EJG_class_options = []
+        if EJG_class_options == []: self.EJG_classes = []
+        else: self.EJG_classes = [EJG_class_options[0]]
 
         # Több osztály lehetséges
         # egy osztály:  10.C
@@ -125,7 +148,7 @@ class Lesson():
             # Egyéb, nem osztály
             else: valid_EJG_class_options.append(EJG_class_option)
         if valid_EJG_class_options == []: valid_EJG_class_options = ['']
-        self.EJG_classes = valid_EJG_class_options
+        self.EJG_classes.append(valid_EJG_class_options)
 
         self.day = day
         self.start_time = start_time
@@ -261,7 +284,60 @@ def step1():
                         Lesson(EJG_class_options, day, ['07:15', '08:15', '09:15', '10:15', '11:15', '12:25', '13:35', '14:30', '15:25', '16:20'][lesson_block_index], room=room, subject=real_subject[0], group=real_subject[1])
 
 
+# A TANÁRI ÓRAREND TÁBLÁZAT FELDOLGOZÁSA
+def fit_teachers_to_lessons():
+    df = pd.read_excel(TEACHER_TABLE_PATH)
+    print("A TANÁRI ÓRAREND TÁBLÁZAT FELDOLGOZÁSA")
+    for row_index, row in df.iterrows():
+        if row_index > 0:
+            # Az aktuális tanár, akinek az órarendjét feldolgozzuk
+            teacher = row.iloc[0]
+            for day_index, day in enumerate(['H', 'K', 'SZ', 'CS', 'P']):
+                for lesson_block_index in range(0, 8):
+                    # A tanár összes celláját feldolgozzuk, naponként
+                    lesson_block = str(row.iloc[day_index * 8 + lesson_block_index + 1 + 6])
+                    if lesson_block in ['nan', ' ', 'H', '']: continue
+                    if teacher == 'Sándor István': continue
+                    subject = lesson_block.split('\n')[-1]
+                    if subject in ['nan', '', ' ', '  ']: continue
 
+                    # Az órarendben a tantárgyak végén szerepelhet a csoport száma, pl. 'a1'
+                    group = None
+                    if subject[-1].isdigit():
+                        group = int(subject[-1])
+                        subject = subject[:-1]
+
+                    if subject in LESSON_DICT.keys():
+                        subject = LESSON_DICT[subject]
+                    
+                    real_subject = (subject, group)
+
+
+                    EJG_class = lesson_block.split('\n')[0]
+                    lessons = get_lessons({
+                        'EJG_class': EJG_class,
+                        'day': day,
+                        'start_time': ['07:15', '08:15', '09:15', '10:15', '11:15', '12:25', '13:35', '14:30'][lesson_block_index],
+                        'subject': real_subject[0],
+                        'group': real_subject[1],
+                    })
+                    if len(lessons) != 1: 
+                        if is_in_exceptions(EJG_class, day, lesson_block_index, real_subject[0], teacher):
+                            continue
+                        else:
+                            step2_exceptions.append({
+                                'EJG_class': EJG_class,
+                                'day': day,
+                                'lesson_index' : lesson_block_index,
+                                'subject': real_subject[0],
+                                'teacher': teacher
+                            })
+
+                            # raise ValueError(f'Invalid lesson count: {len(lessons)}\n{lessons}\n{teacher} {EJG_class} {day} {lesson_block_index} {real_subject[0]} {real_subject[1]}')
+                    else:
+                        lesson = lessons[0]
+                        lesson.teacher = teacher
+                    
 
 
 # AZ OSZTÁLYÓRAREND TÁBLÁZAT FELDOLGOZÁSA
@@ -331,12 +407,24 @@ def find_lessons():
         for lesson in lessons:
             print(lesson)
 
-# print_table()
+def print_exceptions():
+    for exception in step2_exceptions:
+        print(exception)
+
+no_teacher_lessons = get_lessons({'teacher': None})
 
 step1()
+fit_teachers_to_lessons()
 
 EXPECTED_LESSON_COUNT = 5 * 8 * 29
-print('Várható órák száma:', EXPECTED_LESSON_COUNT)
+print('\nVárható órák száma:', EXPECTED_LESSON_COUNT)
 print('Órák száma', len(table))
+print('Tanár - óra nem található', len(step2_exceptions))
+print('Tanár nélküli órák:', len(no_teacher_lessons))
+print('\nSuccess', round((len(table) - len(step2_exceptions)) / len(table) * 100, 4), '%\n')
 
-find_lessons()
+
+
+# print_table()
+
+# find_lessons()

@@ -1,7 +1,9 @@
 'use strict'
 
 self.addEventListener('push', function (event) {
-    const data = JSON.parse(event.data.text())
+    let data = JSON.parse(event.data.text())
+    const icon = data.icon ?? '/favicon.ico'
+    data.icon = icon
     event.waitUntil(
         registration.showNotification(data.title, data)
     )

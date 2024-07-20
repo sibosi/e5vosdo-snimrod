@@ -171,7 +171,7 @@ class Lesson():
         self.end_time = f"{hour}:{minute}"
     
     def __str__(self):
-        return f"Class: {self.EJG_classes}, Day: {self.day}, Start: {self.start_time}, Subject: {self.subject}   Room: {self.room}   Teacher: {self.teacher}  Group: {self.group}"
+        return f"Class: {self.EJG_classes}, {self.day} {self.start_time}, Subject: {self.subject}/{self.group} Room: {self.room} Teacher: {self.teacher}"
     
 def get_str_list(list: list) -> str:
     response = ''
@@ -179,7 +179,7 @@ def get_str_list(list: list) -> str:
         response += f"\n{item}, "
     return response[:-2]
 
-def get_lessons(attributes: dict, auto_find=False) -> Lesson | None:
+def get_lessons(attributes: dict, auto_find=False, specific_group=True) -> list[Lesson] | None:
     keys = list(attributes.keys())
 
     lessons = table
@@ -189,8 +189,14 @@ def get_lessons(attributes: dict, auto_find=False) -> Lesson | None:
         for lesson in lessons:
             lesson: Lesson
             if key == 'EJG_class':
-                if value in lesson.EJG_classes:
-                    response.append(lesson)
+                if specific_group:
+                    if value in lesson.EJG_classes:
+                        response.append(lesson)
+                else:
+                    if len(lesson.EJG_classes) >= 2:
+                        if value in lesson.EJG_classes[1]:
+                            response.append(lesson)
+                    
             elif key == 'day':
                 if lesson.day == value:
                     response.append(lesson)
@@ -261,7 +267,7 @@ def step1():
                 for lesson_block_index in range(0, 10):
                     # A terem összes celláját feldolgozzuk, naponként
                     lesson_block = str(row.iloc[day_index * 10 + lesson_block_index + 1])
-                    if lesson_block in ['nan', ' ']: continue
+                    if lesson_block in ['nan', '', ' ']: continue
                     subject_options = lesson_block.split('\n')[-1]
 
                     # Az órarendben a több tantárgy is szerepelhet egy cellában, pl. 'fiz/ké/bi'
@@ -286,6 +292,7 @@ def step1():
 
 # A TANÁRI ÓRAREND TÁBLÁZAT FELDOLGOZÁSA
 def fit_teachers_to_lessons():
+    teacher_block_counter = 0
     df = pd.read_excel(TEACHER_TABLE_PATH)
     print("A TANÁRI ÓRAREND TÁBLÁZAT FELDOLGOZÁSA")
     for row_index, row in df.iterrows():
@@ -321,6 +328,7 @@ def fit_teachers_to_lessons():
                         'subject': real_subject[0],
                         'group': real_subject[1],
                     })
+                    teacher_block_counter += 1
                     if len(lessons) != 1: 
                         if is_in_exceptions(EJG_class, day, lesson_block_index, real_subject[0], teacher):
                             continue
@@ -330,13 +338,16 @@ def fit_teachers_to_lessons():
                                 'day': day,
                                 'lesson_index' : lesson_block_index,
                                 'subject': real_subject[0],
-                                'teacher': teacher
+                                'teacher': teacher,
+                                'group': real_subject[1]
                             })
 
                             # raise ValueError(f'Invalid lesson count: {len(lessons)}\n{lessons}\n{teacher} {EJG_class} {day} {lesson_block_index} {real_subject[0]} {real_subject[1]}')
                     else:
                         lesson = lessons[0]
                         lesson.teacher = teacher
+    
+    return teacher_block_counter
                     
 
 
@@ -384,9 +395,12 @@ def fit_classes_to_lessons():
                             Lesson(actual_class, ['H', 'K', 'SZ', 'CS', 'P'][day], ['07:15', '08:15', '09:15', '10:15', '11:15', '12:25', '13:35', '14:30'][i], subject=subject, group=index, room=room)
 
 
-def print_table():
+def print_table(step=len(table), table=table):
+    i = 0
     for lesson in table:
+        if i % step == 0: input('Hit enter to continue' + '\n' * 4 + str(i) + '/' + str(len(table)))
         print(lesson)
+        i += 1
 
 def find_lessons():
     txt = ''
@@ -411,20 +425,43 @@ def print_exceptions():
     for exception in step2_exceptions:
         print(exception)
 
-no_teacher_lessons = get_lessons({'teacher': None})
+def export_table():
+    # Export table in JSON
+    import json
+    with open('timetable.json', 'w') as f:
+        json.dump([vars(lesson) for lesson in table], f)
+
 
 step1()
-fit_teachers_to_lessons()
+teacher_block_counter = fit_teachers_to_lessons()
+
+no_teacher_lessons = get_lessons({'teacher': None})
 
 EXPECTED_LESSON_COUNT = 5 * 8 * 29
 print('\nVárható órák száma:', EXPECTED_LESSON_COUNT)
 print('Órák száma', len(table))
 print('Tanár - óra nem található', len(step2_exceptions))
 print('Tanár nélküli órák:', len(no_teacher_lessons))
-print('\nSuccess', round((len(table) - len(step2_exceptions)) / len(table) * 100, 4), '%\n')
+print('\nFake success', round((len(table) - len(step2_exceptions)) / len(table) * 100, 4), '%\n')
+print('Real success', round((len(table) - len(no_teacher_lessons)) / len(table) * 100, 4), '%\n')
 
 
-
-# print_table()
+print('Tanár blokkok száma:', teacher_block_counter)
 
 # find_lessons()
+
+print(get_str_list(get_lessons({
+    'EJG_class': '9.C',
+    'day': 'H',
+    'start_time': '13:35',
+    'subject': 'angol',
+    'group': 4
+}, specific_group=False)))
+
+
+# print_table(10, no_teacher_lessons)
+
+# print_table(10, step2_exceptions)
+
+export_table()
+

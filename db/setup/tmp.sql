@@ -242,3 +242,6 @@ FROM users;
 -- Reset last_login column to STRING
 ALTER TABLE users
 MODIFY COLUMN last_login VARCHAR(255) NOT NULL;
+--@block
+SELECT *
+FROM timetable;

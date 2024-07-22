@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS `users` (
     `name` varchar(255) NOT NULL,
     `username` varchar(255) NOT NULL,
@@ -7,7 +8,6 @@ CREATE TABLE IF NOT EXISTS `users` (
     `class` varchar(255),
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `last_login` varchar(255) NOT NULL,
-    DEFAULT CURRENT_TIMESTAMP,
     `permissions` JSON NOT NULL,
     `food_menu` CHAR(1),
     `coming_year` INT,
@@ -32,6 +32,7 @@ SET NEW.coming_year = SUBSTRING(NEW.EJG_code, 1, 4);
 SET NEW.class_character = SUBSTRING(NEW.EJG_code, 5, 1);
 SET NEW.order_number = SUBSTRING(NEW.EJG_code, 6, 2);
 END;
+DROP TABLE IF EXISTS events;
 CREATE TABLE IF NOT EXISTS events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -43,6 +44,7 @@ CREATE TABLE IF NOT EXISTS events (
     tags JSON
 );
 -- Add notifications table
+DROP TABLE IF EXISTS notifications;
 CREATE TABLE IF NOT EXISTS notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -51,14 +53,13 @@ CREATE TABLE IF NOT EXISTS notifications (
     sender_email VARCHAR(255) NOT NULL,
     receiving_emails JSON NOT NULL
 );
---@block
+DROP TABLE IF EXISTS push_auths;
 CREATE TABLE IF NOT EXISTS push_auths (
     id INT AUTO_INCREMENT PRIMARY KEY,
     auth VARCHAR(255) NOT NULL
 );
 -- Add the settings table
 -- First delete the old settings table
---@block
 DROP TABLE IF EXISTS settings;
 CREATE TABLE IF NOT EXISTS settings (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -72,8 +73,7 @@ VALUES ("default", 0, 0);
 INSERT INTO settings (name, headspace, livescore)
 VALUES ('soccer', 1, 1);
 INSERT INTO settings (name, headspace, livescore)
-VALUES ('now', 1, 1);
---@block
+VALUES ('now', 0, 0);
 -- Add the matches table
 DROP TABLE IF EXISTS matches;
 CREATE TABLE IF NOT EXISTS matches (

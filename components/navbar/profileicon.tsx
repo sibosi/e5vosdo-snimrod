@@ -29,9 +29,11 @@ async function fetchNotifications(
   setNotificationsIds: (data: NotificationsIds) => void,
   setNotifications: (data: any) => void
 ) {
-  const responseIds: NotificationsIds = await (
-    await fetch("/api/getUserNotificationsIds")
-  ).json();
+  const resp = await fetch("/api/getUserNotificationsIds");
+
+  if (resp.status != 200) return;
+
+  const responseIds: NotificationsIds = await resp.json();
   responseIds.newAndSent = responseIds.new.concat(responseIds.sent);
   responseIds.newAndSent.sort((a: any, b: any) => b - a);
   if (notificationsIds.new.toString() == responseIds.new.toString()) {

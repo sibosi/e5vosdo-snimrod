@@ -21,9 +21,13 @@ import GetApp from "../PWA/getApp";
 import { User } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
 
-const isActiveHeadSpace = true;
-
-export const Navbar = ({ selfUser }: { selfUser: User | undefined }) => {
+export const Navbar = ({
+  selfUser,
+  isActiveHeadSpace,
+}: {
+  selfUser: User | undefined;
+  isActiveHeadSpace: boolean;
+}) => {
   const searchInput = (
     <Input
       aria-label="Search"

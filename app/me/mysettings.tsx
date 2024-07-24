@@ -8,6 +8,7 @@ import {
   Button,
   ModalContent,
   Modal,
+  ButtonGroup,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 
@@ -15,6 +16,8 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [menu, setMenu] = useState<string>(selfUser.food_menu);
   const [EJG_code, setEJG_code] = useState<string>(selfUser.EJG_code ?? "");
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
+
+  const [classGroup, setClassGroup] = useState<0 | 1 | 2>(0);
 
   const [sureQuestion, setSureQuestion] = useState<boolean>(false);
 
@@ -103,6 +106,37 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                   <Radio value="A">{'"A" menü'}</Radio>
                   <Radio value="B">{'"B" menü'}</Radio>
                 </RadioGroup>
+              </th>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Órarend beállítások</h2>
+        <table className="table gap-y-2">
+          <tbody>
+            <tr>
+              <th className="font-semibold">Alapértelmezett csoport</th>
+              <th>
+                <ButtonGroup>
+                  <Button
+                    color={classGroup === 0 ? "success" : undefined}
+                    onClick={() => setClassGroup(0)}
+                  >
+                    Nincs csoport
+                  </Button>
+                  <Button
+                    color={classGroup === 1 ? "success" : undefined}
+                    onClick={() => setClassGroup(1)}
+                  >
+                    1-es csoport
+                  </Button>
+                  <Button
+                    color={classGroup === 2 ? "success" : undefined}
+                    onClick={() => setClassGroup(2)}
+                  >
+                    2-es csoport
+                  </Button>
+                </ButtonGroup>
               </th>
             </tr>
           </tbody>

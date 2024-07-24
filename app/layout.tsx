@@ -12,7 +12,13 @@ import Access from "@/components/account/access";
 import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
-import { getAuth, getStudentUsersEmail, updateUser, User } from "@/db/dbreq";
+import {
+  getAuth,
+  getPageSettings,
+  getStudentUsersEmail,
+  updateUser,
+  User,
+} from "@/db/dbreq";
 import dynamic from "next/dynamic";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
@@ -48,6 +54,8 @@ export default async function RootLayout({
   session?.user ? await updateUser(session?.user as User) : null;
   const users = await getStudentUsersEmail();
   const selfUser = await getAuth(session?.user?.email ?? undefined);
+
+  const pageSettings = await getPageSettings();
 
   return (
     <html lang="hu" suppressHydrationWarning className="bg-background">
@@ -115,7 +123,10 @@ export default async function RootLayout({
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className={clsx("relative flex flex-col h-screen")}>
-            <Navbar selfUser={selfUser} />
+            <Navbar
+              selfUser={selfUser}
+              isActiveHeadSpace={pageSettings.headspace}
+            />
             {session &&
             session.user &&
             session.user.email &&

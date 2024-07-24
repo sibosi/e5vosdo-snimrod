@@ -245,3 +245,10 @@ MODIFY COLUMN last_login VARCHAR(255) NOT NULL;
 --@block
 SELECT *
 FROM timetable;
+--@block
+-- Add col hidden_lessons to users
+ALTER TABLE users
+ADD COLUMN hidden_lessons JSON NOT NULL;
+--@block
+UPDATE users
+SET hidden_lessons = '[]'

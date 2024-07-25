@@ -20,7 +20,9 @@ Example timetable.json:
 
 export async function exportTimetable() {
   // Drop the table if it exists
+  console.log("Dropping table if exists...");
   await dbreq("DROP TABLE IF EXISTS timetable");
+  console.log("Creating table...");
   // Create the table if it doesn't exist
   await dbreq(`CREATE TABLE IF NOT EXISTS timetable (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,7 +70,10 @@ export async function exportTimetable() {
     }
   }
 
-  return await multipledbreq(Q);
+  console.log("Executing queries...");
+  const resp = await multipledbreq(Q);
+  console.log("Done!");
+  return resp;
 }
 
 export async function getTimetable() {

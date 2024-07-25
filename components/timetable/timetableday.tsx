@@ -271,7 +271,8 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             <DropdownItem key="Péntek">Péntek</DropdownItem>
           </DropdownMenu>
         </Dropdown>
-
+      </div>
+      <div className="flex gap-4">
         <Dropdown>
           <DropdownTrigger>
             <Button variant="bordered" className="w-full">
@@ -435,8 +436,6 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                     ? ""
                                     : lesson.group_name}{" "}
                                 </div>
-                                {"ID: "}
-                                {lesson.id}
                               </Cell>
                             ) : (
                               <></>

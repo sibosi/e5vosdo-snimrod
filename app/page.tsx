@@ -38,7 +38,7 @@ export default async function Home() {
         )}
       </div>
 
-      <TimetableDay selfUser={selfUser} />
+      {selfUser ? <TimetableDay selfUser={selfUser} /> : <></>}
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section

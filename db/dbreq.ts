@@ -25,7 +25,10 @@ export interface User {
   class_character: string;
   order_number: number;
   tickets: string[];
+  hidden_lessons: number[];
 }
+
+export type UserType = User;
 
 export async function getUsers() {
   return await dbreq(`SELECT * FROM \`users\``);
@@ -147,11 +150,11 @@ export async function updateUser(user: User | undefined) {
     user.email
   }';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`) SELECT '${
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`, \`hidden_lessons\`) SELECT '${
     user.name
   }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
     user.name
-  }', '${new Date().toJSON()}', '["user"]', '{ "new": [], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
+  }', '${new Date().toJSON()}', '["user"]', '{ "new": [], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
     user.email
   }');`;
 
@@ -500,6 +503,15 @@ export async function getMyClassTimetable(EJG_class: string) {
   return response;
 }
 
+export async function setHiddenLessons(lessonsId: number[]) {
+  const email = (await getAuth())?.email;
+  const REQ1 = `UPDATE users SET hidden_lessons = '${JSON.stringify(
+    lessonsId
+  )}' WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
 export async function getMatch(id: number) {
   return ((await dbreq(`SELECT * FROM matches WHERE id = ${id};`)) as any)[0];
 }
@@ -633,7 +645,8 @@ export interface apireqType {
     | "newNotificationByNames"
     | "checkPushAuth"
     | "editMySettings"
-    | "getMyClassTimetable";
+    | "getMyClassTimetable"
+    | "setHiddenLessons";
 }
 export const apioptions = [
   "getUsers",
@@ -660,6 +673,7 @@ export const apioptions = [
   "checkPushAuth",
   "editMySettings",
   "getMyClassTimetable",
+  "setHiddenLessons",
 ];
 
 export const apireq = {
@@ -687,6 +701,7 @@ export const apireq = {
   checkPushAuth: { req: checkPushAuth, perm: ["student"] },
   editMySettings: { req: editMySettings, perm: ["student"] },
   getMyClassTimetable: { req: getMyClassTimetable, perm: ["student"] },
+  setHiddenLessons: { req: setHiddenLessons, perm: ["student"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
@@ -729,5 +744,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "getMyClassTimetable") {
     const { EJG_class } = body;
     return await getMyClassTimetable(EJG_class);
+  } else if (req === "setHiddenLessons") {
+    const { lessonsId } = body;
+    return await setHiddenLessons(lessonsId);
   } else return "No such request";
 };

@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import teacherDataByName from "@/public/storage/teacherDataByNames.json";
 import getUserClass from "@/public/getUserClass";
 import Image from "next/image";
+import { UserType } from "@/db/dbreq";
 // import { User } from "@/db/dbreq";
 const teacherByName = teacherDataByName as any;
 
@@ -143,6 +144,27 @@ const fetchTimetable = async (
   setTimetableDay(timetableDay);
 };
 
+const hideLessons = (
+  lessons: LessonOption[],
+  lessonBlockIndexes: number[],
+  hiddenLessons: number[],
+  setHiddenLessons: (arg: number[]) => void
+) => {
+  const hideLessonsList = lessons
+    .map((lesson) => lesson?.id ?? -1)
+    .concat(hiddenLessons.filter((item) => !lessonBlockIndexes.includes(item)));
+  setHiddenLessons(hideLessonsList);
+  fetch("/api/setHiddenLessons", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      lessonsId: hideLessonsList,
+    }),
+  });
+};
+
 const Cell = ({
   children,
   className,
@@ -165,13 +187,18 @@ const Cell = ({
   );
 };
 
-const TimetableDay = ({ selfUser }: { selfUser: any }) => {
+const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   const [EJG_class, setEJG_class] = useState(getUserClass(selfUser));
   const [timetable, setTimetable] = useState<Lesson[]>([]);
   const [timetableDay, setTimetableDay] = useState<TimetableDay>();
   const [selectedLesson, setSelectedLesson] = useState<LessonOption>();
 
+  const [hiddenLessons, setHiddenLessons] = useState<number[]>(
+    selfUser.hidden_lessons ?? []
+  );
+
   const [weekDuration, setWeekDuration] = useState<WeekDuration>();
+  const [hide, setHide] = useState<"none" | "selected" | "edit">("selected");
 
   const [selectedDayKeys, setSelectedDayKeys] = React.useState<any>(
     new Set([
@@ -215,7 +242,7 @@ const TimetableDay = ({ selfUser }: { selfUser: any }) => {
   }, [timetableDay]);
 
   return (
-    <div>
+    <div className="text-foreground">
       <div className="flex gap-4">
         <Input
           placeholder="Osztály"
@@ -266,10 +293,40 @@ const TimetableDay = ({ selfUser }: { selfUser: any }) => {
             <DropdownItem key="2-es csoport">2-es csoport</DropdownItem>
           </DropdownMenu>
         </Dropdown>
+
+        <Button
+          onClick={() => {
+            hide == "selected"
+              ? setHide("none")
+              : hide == "none"
+              ? setHide("edit")
+              : setHide("selected");
+          }}
+        >
+          {hide == "selected"
+            ? "Saját órák"
+            : hide === "edit"
+            ? "Módosítás"
+            : "Összes óra"}
+        </Button>
+        <Button
+          onClick={() => {
+            hideLessons([], [], [], setHiddenLessons);
+          }}
+        >
+          Visszaállítás
+        </Button>
       </div>
 
       {timetableDay ? (
         <div>
+          {hide === "edit" && (
+            <p>
+              Itt állíthatod, mely órák ne jelenjenek meg az órarendedben. Ha
+              egy sorban több órát látsz, kattints a sajátodra, hogy a többit
+              elrejthessük.
+            </p>
+          )}
           <div className="grid grid-cols-1">
             {
               <div>
@@ -323,14 +380,43 @@ const TimetableDay = ({ selfUser }: { selfUser: any }) => {
                               >
                                 Szünet
                               </Cell>
-                            ) : lessonBlock.length != 2 ||
-                              lesson.group_name == classGroupValue ||
-                              lesson.group_name === "null" ||
-                              classGroupValue == 0 ? (
+                            ) : (!hiddenLessons.includes(lesson.id) ||
+                                hide != "selected") &&
+                              (lessonBlock.length != 2 ||
+                                hide != "selected" ||
+                                lesson.group_name == classGroupValue ||
+                                lesson.group_name === "null" ||
+                                classGroupValue == 0) ? (
                               <Cell
                                 key={"Lesson" + lessonIndex}
-                                className="bg-primary-100 border-primary-400 border-2"
-                                onClick={() => setSelectedLesson(lesson)}
+                                className={
+                                  hiddenLessons.includes(lesson.id)
+                                    ? "bg-default-100 border-default-400 border-2"
+                                    : "bg-primary-100 border-primary-400 border-2"
+                                }
+                                onClick={() =>
+                                  hide == "edit"
+                                    ? !hiddenLessons.includes(lesson.id)
+                                      ? hideLessons(
+                                          lessonBlock.filter(
+                                            (item) => item !== lesson && item
+                                          ),
+                                          lessonBlock.map(
+                                            (item) => item?.id ?? -1
+                                          ),
+                                          hiddenLessons,
+                                          setHiddenLessons
+                                        )
+                                      : hideLessons(
+                                          [],
+                                          lessonBlock.map(
+                                            (item) => item?.id ?? -1
+                                          ),
+                                          hiddenLessons,
+                                          setHiddenLessons
+                                        )
+                                    : setSelectedLesson(lesson)
+                                }
                               >
                                 <User
                                   as="button"
@@ -349,6 +435,8 @@ const TimetableDay = ({ selfUser }: { selfUser: any }) => {
                                     ? ""
                                     : lesson.group_name}{" "}
                                 </div>
+                                {"ID: "}
+                                {lesson.id}
                               </Cell>
                             ) : (
                               <></>

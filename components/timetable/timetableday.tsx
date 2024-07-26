@@ -13,7 +13,6 @@ import {
 import React, { useEffect, useState } from "react";
 import teacherDataByName from "@/public/storage/teacherDataByNames.json";
 import getUserClass from "@/public/getUserClass";
-import Image from "next/image";
 import { UserType } from "@/db/dbreq";
 // import { User } from "@/db/dbreq";
 const teacherByName = teacherDataByName as any;

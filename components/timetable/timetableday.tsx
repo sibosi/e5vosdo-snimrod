@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import teacherDataByName from "@/public/storage/teacherDataByNames.json";
 import getUserClass from "@/public/getUserClass";
 import { UserType } from "@/db/dbreq";
+import { Alert } from "../home/alert";
 // import { User } from "@/db/dbreq";
 const teacherByName = teacherDataByName as any;
 
@@ -242,7 +243,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
 
   return (
     <div className="text-foreground">
-      <div className="flex gap-4">
+      <div className="flex gap-4 mb-2">
         <Input
           placeholder="Osztály"
           value={EJG_class}
@@ -271,7 +272,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
           </DropdownMenu>
         </Dropdown>
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 mb-2">
         <Dropdown>
           <DropdownTrigger>
             <Button variant="bordered" className="w-full">
@@ -320,12 +321,20 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
 
       {timetableDay ? (
         <div>
-          {hide === "edit" && (
-            <p>
+          {hide === "edit" ? (
+            <Alert className="text-sm">
               Itt állíthatod, mely órák ne jelenjenek meg az órarendedben. Ha
               egy sorban több órát látsz, kattints a sajátodra, hogy a többit
               elrejthessük.
-            </p>
+            </Alert>
+          ) : (
+            hiddenLessons.length == 0 && (
+              <Alert className="text-sm">
+                A jelenlegi beállítások alapján az osztályod összes órája
+                látható az órarendben. Ha szeretnél egyes órákat elrejteni,
+                válaszd a &quot;Módosítás&quot; opciót.
+              </Alert>
+            )
           )}
           <div className="grid grid-cols-1">
             {
@@ -365,13 +374,6 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                               : "")
                           }
                         >
-                          {lessonBlock.length > 1 ? (
-                            <Cell className="max-w-[40px] bg-warning grid">
-                              <div className="m-auto">{lessonBlock.length}</div>
-                            </Cell>
-                          ) : (
-                            <></>
-                          )}
                           {lessonBlock.map((lesson, lessonIndex) =>
                             lesson === null ? (
                               <Cell
@@ -425,7 +427,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                     isBordered: true,
                                     src: teacherByName[lesson.teacher]?.Photo,
                                   }}
-                                  className="transition-transform p-2"
+                                  className="transition-transform px-2"
                                   description={lesson.room}
                                   name={lesson.teacher}
                                 />

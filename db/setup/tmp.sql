@@ -251,4 +251,21 @@ ALTER TABLE users
 ADD COLUMN hidden_lessons JSON NOT NULL;
 --@block
 UPDATE users
-SET hidden_lessons = '[]'
+SET hidden_lessons = '[]';
+--@block
+SELECT *
+FROM settings;
+--@block
+UPDATE settings
+SET headspace = 0
+WHERE name = 'now';
+UPDATE settings
+SET livescore = 0
+WHERE name = 'now';
+--@block
+SELECT *
+FROM users;
+--@block
+-- Add default group column to users
+ALTER TABLE users
+ADD COLUMN default_group INT;

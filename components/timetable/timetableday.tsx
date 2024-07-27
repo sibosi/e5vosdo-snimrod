@@ -144,6 +144,18 @@ const fetchTimetable = async (
   setTimetableDay(timetableDay);
 };
 
+const editDefaultGroup = async (group: number) => {
+  fetch("/api/editDefaultGroup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      group: group,
+    }),
+  });
+};
+
 const hideLessons = (
   lessons: LessonOption[],
   lessonBlockIndexes: number[],
@@ -223,7 +235,13 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   );
 
   const [selectedClassGroupKeys, setSelectedClassGroupKeys] = React.useState(
-    new Set(["Nincs csoport"])
+    new Set(
+      (
+        ["Nincs csoport", "1-es csoport", "2-es csoport"][
+          selfUser.default_group ?? 0
+        ] ?? "Nincs csoport"
+      ).split(", ")
+    )
   );
   const classGroupValue = React.useMemo(
     () =>
@@ -240,6 +258,10 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   useEffect(() => {
     if (timetableDay) countWeekDuration(timetableDay, setWeekDuration);
   }, [timetableDay]);
+
+  useEffect(() => {
+    editDefaultGroup(classGroupValue);
+  }, [classGroupValue]);
 
   return (
     <div className="text-foreground">
@@ -367,6 +389,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                           </p>
                         </div>
                         <div
+                          key={"LessonBlockInside" + lessonBlockIndex}
                           className={
                             "w-full flex gap-2 " +
                             (lessonBlock.length > 1
@@ -378,7 +401,12 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                             lesson === null ? (
                               <Cell
                                 className="bg-default-100 border-default-400 border-2"
-                                key={"Lesson" + lessonIndex}
+                                key={
+                                  "Block" +
+                                  lessonBlockIndex +
+                                  "Lesson" +
+                                  lessonIndex
+                                }
                               >
                                 Szünet
                               </Cell>
@@ -390,7 +418,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                 lesson.group_name === "null" ||
                                 classGroupValue == 0) ? (
                               <Cell
-                                key={"Lesson" + lessonIndex}
+                                key={"Lesson" + lesson.id}
                                 className={
                                   hiddenLessons.includes(lesson.id)
                                     ? "bg-default-100 border-default-400 border-2"
@@ -438,9 +466,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                     : lesson.group_name}{" "}
                                 </div>
                               </Cell>
-                            ) : (
-                              <></>
-                            )
+                            ) : null
                           )}
                         </div>
                       </div>

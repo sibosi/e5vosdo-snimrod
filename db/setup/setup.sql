@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `service_workers` JSON NOT NULL,
     `nickname` VARCHAR(255) NOT NULL,
     `tickets` JSON NOT NULL,
-    `hidden_lessons` JSON NOT NULL
+    `hidden_lessons` JSON NOT NULL,
+    `default_group` INT
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 -- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE

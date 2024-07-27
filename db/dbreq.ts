@@ -26,6 +26,7 @@ export interface User {
   order_number: number;
   tickets: string[];
   hidden_lessons: number[];
+  default_group: number | null;
 }
 
 export type UserType = User;
@@ -512,6 +513,13 @@ export async function setHiddenLessons(lessonsId: number[]) {
   return await dbreq(REQ1);
 }
 
+export async function editDefaultGroup(group: number | null) {
+  const email = (await getAuth())?.email;
+  const REQ1 = `UPDATE users SET default_group = ${group} WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
 export async function getMatch(id: number) {
   return ((await dbreq(`SELECT * FROM matches WHERE id = ${id};`)) as any)[0];
 }
@@ -646,7 +654,8 @@ export interface apireqType {
     | "checkPushAuth"
     | "editMySettings"
     | "getMyClassTimetable"
-    | "setHiddenLessons";
+    | "setHiddenLessons"
+    | "editDefaultGroup";
 }
 export const apioptions = [
   "getUsers",
@@ -674,6 +683,7 @@ export const apioptions = [
   "editMySettings",
   "getMyClassTimetable",
   "setHiddenLessons",
+  "editDefaultGroup",
 ];
 
 export const apireq = {
@@ -702,6 +712,7 @@ export const apireq = {
   editMySettings: { req: editMySettings, perm: ["student"] },
   getMyClassTimetable: { req: getMyClassTimetable, perm: ["student"] },
   setHiddenLessons: { req: setHiddenLessons, perm: ["student"] },
+  editDefaultGroup: { req: editDefaultGroup, perm: ["student"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
@@ -747,5 +758,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "setHiddenLessons") {
     const { lessonsId } = body;
     return await setHiddenLessons(lessonsId);
+  } else if (req === "editDefaultGroup") {
+    const { group } = body;
+    return await editDefaultGroup(group);
   } else return "No such request";
 };

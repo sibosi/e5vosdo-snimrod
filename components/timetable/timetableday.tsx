@@ -15,7 +15,6 @@ import teacherDataByName from "@/public/storage/teacherDataByNames.json";
 import getUserClass from "@/public/getUserClass";
 import { UserType } from "@/db/dbreq";
 import { Alert } from "../home/alert";
-// import { User } from "@/db/dbreq";
 const teacherByName = teacherDataByName as any;
 
 interface Lesson {

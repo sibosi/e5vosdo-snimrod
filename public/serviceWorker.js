@@ -2,6 +2,10 @@
 
 self.addEventListener('push', function (event) {
     const data = JSON.parse(event.data.text())
+    // If there is not an icon, use the default icon
+    if (!data.icon) {
+        data.icon = '/favico.ico'
+    }
     event.waitUntil(
         registration.showNotification(data.title, data)
     )

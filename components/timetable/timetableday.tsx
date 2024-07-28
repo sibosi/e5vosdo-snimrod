@@ -214,8 +214,8 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   const [selectedDayKeys, setSelectedDayKeys] = React.useState<any>(
     new Set([
       [
-        ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Hétfő", "Hétfő"][
-          new Date().getDay() - 1
+        ["Hétfő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Hétfő"][
+          new Date().getDay()
         ],
       ] ?? "Hétfő",
     ])
@@ -360,116 +360,120 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
           <div className="grid grid-cols-1">
             {
               <div>
-                {timetableDay[dayOfWeek].map(
-                  (lessonBlock, lessonBlockIndex) =>
-                    weekDuration &&
-                    weekDuration[dayOfWeek][0] <= lessonBlockIndex &&
-                    lessonBlockIndex <= weekDuration[dayOfWeek][1] && (
-                      <div
-                        key={"LessonBlock" + lessonBlockIndex}
-                        className="w-full flex"
-                      >
-                        <div className="min-w-fit h-14 px-2 my-1 rounded-xl grid grid-cols-1 bg-default max-w-[24px] w-6 mr-4 text-center">
-                          <p>{lessonBlockIndex + ". óra"}</p>
-                          <p className="text-sm">
-                            {
-                              [
-                                "07:15",
-                                "08:15",
-                                "09:15",
-                                "10:15",
-                                "11:15",
-                                "12:25",
-                                "13:35",
-                                "14:30",
-                                "15:25",
-                              ][lessonBlockIndex]
-                            }
-                          </p>
-                        </div>
+                {timetableDay[dayOfWeek] ? (
+                  timetableDay[dayOfWeek].map(
+                    (lessonBlock, lessonBlockIndex) =>
+                      weekDuration &&
+                      weekDuration[dayOfWeek][0] <= lessonBlockIndex &&
+                      lessonBlockIndex <= weekDuration[dayOfWeek][1] && (
                         <div
-                          key={"LessonBlockInside" + lessonBlockIndex}
-                          className={
-                            "w-full flex gap-2 " +
-                            (lessonBlock.length > 1
-                              ? "inline-flex overflow-x-scroll scrollbar-hide "
-                              : "")
-                          }
+                          key={"LessonBlock" + lessonBlockIndex}
+                          className="w-full flex"
                         >
-                          {lessonBlock.map((lesson, lessonIndex) =>
-                            lesson === null ? (
-                              <Cell
-                                className="bg-default-100 border-default-400 border-2"
-                                key={
-                                  "Block" +
-                                  lessonBlockIndex +
-                                  "Lesson" +
-                                  lessonIndex
-                                }
-                              >
-                                Szünet
-                              </Cell>
-                            ) : (!hiddenLessons.includes(lesson.id) ||
-                                hide != "selected") &&
-                              (lessonBlock.length != 2 ||
-                                hide != "selected" ||
-                                lesson.group_name == classGroupValue ||
-                                lesson.group_name === "null" ||
-                                classGroupValue == 0) ? (
-                              <Cell
-                                key={"Lesson" + lesson.id}
-                                className={
-                                  hiddenLessons.includes(lesson.id)
-                                    ? "bg-default-100 border-default-400 border-2"
-                                    : "bg-primary-100 border-primary-400 border-2"
-                                }
-                                onClick={() =>
-                                  hide == "edit"
-                                    ? !hiddenLessons.includes(lesson.id)
-                                      ? hideLessons(
-                                          lessonBlock.filter(
-                                            (item) => item !== lesson && item
-                                          ),
-                                          lessonBlock.map(
-                                            (item) => item?.id ?? -1
-                                          ),
-                                          hiddenLessons,
-                                          setHiddenLessons
-                                        )
-                                      : hideLessons(
-                                          [],
-                                          lessonBlock.map(
-                                            (item) => item?.id ?? -1
-                                          ),
-                                          hiddenLessons,
-                                          setHiddenLessons
-                                        )
-                                    : setSelectedLesson(lesson)
-                                }
-                              >
-                                <User
-                                  as="button"
-                                  type="button"
-                                  avatarProps={{
-                                    isBordered: true,
-                                    src: teacherByName[lesson.teacher]?.Photo,
-                                  }}
-                                  className="transition-transform px-2"
-                                  description={lesson.room}
-                                  name={lesson.teacher}
-                                />
-                                <div className="m-auto">
-                                  {lesson.subject}{" "}
-                                  {lesson.group_name == "null"
-                                    ? ""
-                                    : lesson.group_name}{" "}
-                                </div>
-                              </Cell>
-                            ) : null
-                          )}
+                          <div className="min-w-fit h-14 px-2 my-1 rounded-xl grid grid-cols-1 bg-default max-w-[24px] w-6 mr-4 text-center">
+                            <p>{lessonBlockIndex + ". óra"}</p>
+                            <p className="text-sm">
+                              {
+                                [
+                                  "07:15",
+                                  "08:15",
+                                  "09:15",
+                                  "10:15",
+                                  "11:15",
+                                  "12:25",
+                                  "13:35",
+                                  "14:30",
+                                  "15:25",
+                                ][lessonBlockIndex]
+                              }
+                            </p>
+                          </div>
+                          <div
+                            key={"LessonBlockInside" + lessonBlockIndex}
+                            className={
+                              "w-full flex gap-2 " +
+                              (lessonBlock.length > 1
+                                ? "inline-flex overflow-x-scroll scrollbar-hide "
+                                : "")
+                            }
+                          >
+                            {lessonBlock.map((lesson, lessonIndex) =>
+                              lesson === null ? (
+                                <Cell
+                                  className="bg-default-100 border-default-400 border-2"
+                                  key={
+                                    "Block" +
+                                    lessonBlockIndex +
+                                    "Lesson" +
+                                    lessonIndex
+                                  }
+                                >
+                                  Szünet
+                                </Cell>
+                              ) : (!hiddenLessons.includes(lesson.id) ||
+                                  hide != "selected") &&
+                                (lessonBlock.length != 2 ||
+                                  hide != "selected" ||
+                                  lesson.group_name == classGroupValue ||
+                                  lesson.group_name === "null" ||
+                                  classGroupValue == 0) ? (
+                                <Cell
+                                  key={"Lesson" + lesson.id}
+                                  className={
+                                    hiddenLessons.includes(lesson.id)
+                                      ? "bg-default-100 border-default-400 border-2"
+                                      : "bg-primary-100 border-primary-400 border-2"
+                                  }
+                                  onClick={() =>
+                                    hide == "edit"
+                                      ? !hiddenLessons.includes(lesson.id)
+                                        ? hideLessons(
+                                            lessonBlock.filter(
+                                              (item) => item !== lesson && item
+                                            ),
+                                            lessonBlock.map(
+                                              (item) => item?.id ?? -1
+                                            ),
+                                            hiddenLessons,
+                                            setHiddenLessons
+                                          )
+                                        : hideLessons(
+                                            [],
+                                            lessonBlock.map(
+                                              (item) => item?.id ?? -1
+                                            ),
+                                            hiddenLessons,
+                                            setHiddenLessons
+                                          )
+                                      : setSelectedLesson(lesson)
+                                  }
+                                >
+                                  <User
+                                    as="button"
+                                    type="button"
+                                    avatarProps={{
+                                      isBordered: true,
+                                      src: teacherByName[lesson.teacher]?.Photo,
+                                    }}
+                                    className="transition-transform px-2"
+                                    description={lesson.room}
+                                    name={lesson.teacher}
+                                  />
+                                  <div className="m-auto">
+                                    {lesson.subject}{" "}
+                                    {lesson.group_name == "null"
+                                      ? ""
+                                      : lesson.group_name}{" "}
+                                  </div>
+                                </Cell>
+                              ) : null
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )
+                      )
+                  )
+                ) : (
+                  <p>Nincs órád ezen a napon</p>
                 )}
               </div>
             }

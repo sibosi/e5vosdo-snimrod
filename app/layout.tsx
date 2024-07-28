@@ -20,6 +20,7 @@ import {
   User,
 } from "@/db/dbreq";
 import dynamic from "next/dynamic";
+import Cookie from "@/components/cookie";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });
@@ -127,6 +128,7 @@ export default async function RootLayout({
               selfUser={selfUser}
               isActiveHeadSpace={pageSettings.headspace}
             />
+            <Cookie />
             {session &&
             session.user &&
             session.user.email &&

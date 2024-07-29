@@ -6,6 +6,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Input,
+  Link,
   Modal,
   ModalContent,
   User,
@@ -176,6 +177,22 @@ const hideLessons = (
   });
 };
 
+const FilterIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    className="bi bi-sliders"
+    viewBox="0 0 16 16"
+  >
+    <path
+      fill-rule="evenodd"
+      d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"
+    />
+  </svg>
+);
+
 const Cell = ({
   children,
   className,
@@ -203,6 +220,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   const [timetable, setTimetable] = useState<Lesson[]>([]);
   const [timetableDay, setTimetableDay] = useState<TimetableDay>();
   const [selectedLesson, setSelectedLesson] = useState<LessonOption>();
+  const [showSettings, setShowSettings] = useState(false);
 
   const [hiddenLessons, setHiddenLessons] = useState<number[]>(
     selfUser.hidden_lessons ?? []
@@ -251,7 +269,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   );
 
   useEffect(() => {
-    fetchTimetable(EJG_class, setTimetable, setTimetableDay);
+    EJG_class && fetchTimetable(EJG_class, setTimetable, setTimetableDay);
   }, [EJG_class]);
 
   useEffect(() => {
@@ -263,82 +281,112 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   }, [classGroupValue]);
 
   return (
-    <div className="text-foreground">
-      <div className="flex gap-4 mb-2">
-        <Input
-          placeholder="Osztály"
-          value={EJG_class}
-          onValueChange={(value: string) => setEJG_class(value.toUpperCase())}
-          color="primary"
-        />
-        <Dropdown>
-          <DropdownTrigger>
-            <Button variant="bordered" className="capitalize">
-              {selectedDayValue}
+    <div className="text-foreground transition-all duration-300">
+      {EJG_class ? (
+        <>
+          <div className="flex gap-4 mb-2">
+            <Input
+              placeholder="Osztály"
+              value={EJG_class}
+              onValueChange={(value: string) =>
+                setEJG_class(value.toUpperCase())
+              }
+              color="primary"
+            />
+            <Dropdown>
+              <DropdownTrigger>
+                <Button variant="bordered" className="capitalize">
+                  {selectedDayValue}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Single selection example"
+                variant="flat"
+                disallowEmptySelection
+                selectionMode="single"
+                selectedKeys={selectedDayKeys}
+                onSelectionChange={(keys: any) =>
+                  setSelectedDayKeys(new Set(keys))
+                }
+              >
+                <DropdownItem key="Hétfő">Hétfő</DropdownItem>
+                <DropdownItem key="Kedd">Kedd</DropdownItem>
+                <DropdownItem key="Szerda">Szerda</DropdownItem>
+                <DropdownItem key="Csütörtök">Csütörtök</DropdownItem>
+                <DropdownItem key="Péntek">Péntek</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <Button
+              color={showSettings ? "success" : "default"}
+              onClick={() => setShowSettings(!showSettings)}
+            >
+              <FilterIcon />
             </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            aria-label="Single selection example"
-            variant="flat"
-            disallowEmptySelection
-            selectionMode="single"
-            selectedKeys={selectedDayKeys}
-            onSelectionChange={(keys: any) => setSelectedDayKeys(new Set(keys))}
+          </div>
+          <div
+            className={`flex gap-4 mb-2 transition-all duration-1000 ease-in-out overflow-hidden h-auto ${
+              showSettings ? "h-auto p-2 pl-4" : "max-h-0 p-0"
+            }`}
           >
-            <DropdownItem key="Hétfő">Hétfő</DropdownItem>
-            <DropdownItem key="Kedd">Kedd</DropdownItem>
-            <DropdownItem key="Szerda">Szerda</DropdownItem>
-            <DropdownItem key="Csütörtök">Csütörtök</DropdownItem>
-            <DropdownItem key="Péntek">Péntek</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </div>
-      <div className="flex gap-4 mb-2">
-        <Dropdown>
-          <DropdownTrigger>
-            <Button variant="bordered" className="w-full">
-              {selectedClassGroupKeys}
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            aria-label="Single selection example"
-            variant="flat"
-            disallowEmptySelection
-            selectionMode="single"
-            selectedKeys={selectedClassGroupKeys}
-            onSelectionChange={(keys: any) =>
-              setSelectedClassGroupKeys(new Set(keys))
-            }
-          >
-            <DropdownItem key="Nincs csoport">Nincs csoport</DropdownItem>
-            <DropdownItem key="1-es csoport">1-es csoport</DropdownItem>
-            <DropdownItem key="2-es csoport">2-es csoport</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button variant="bordered" className="w-full">
+                  {selectedClassGroupKeys}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Single selection example"
+                variant="flat"
+                disallowEmptySelection
+                selectionMode="single"
+                selectedKeys={selectedClassGroupKeys}
+                onSelectionChange={(keys: any) =>
+                  setSelectedClassGroupKeys(new Set(keys))
+                }
+              >
+                <DropdownItem key="Nincs csoport">Nincs csoport</DropdownItem>
+                <DropdownItem key="1-es csoport">1-es csoport</DropdownItem>
+                <DropdownItem key="2-es csoport">2-es csoport</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
 
-        <Button
-          onClick={() => {
-            hide == "selected"
-              ? setHide("none")
-              : hide == "none"
-              ? setHide("edit")
-              : setHide("selected");
-          }}
-        >
-          {hide == "selected"
-            ? "Saját órák"
-            : hide === "edit"
-            ? "Módosítás"
-            : "Összes óra"}
-        </Button>
-        <Button
-          onClick={() => {
-            hideLessons([], [], [], setHiddenLessons);
-          }}
-        >
-          Visszaállítás
-        </Button>
-      </div>
+            <Button
+              onClick={() => {
+                hide == "selected"
+                  ? setHide("none")
+                  : hide == "none"
+                  ? setHide("edit")
+                  : setHide("selected");
+              }}
+            >
+              {hide == "selected"
+                ? "Saját órák"
+                : hide === "edit"
+                ? "Módosítás"
+                : "Összes óra"}
+            </Button>
+            <Button
+              onClick={() => {
+                hideLessons([], [], [], setHiddenLessons);
+              }}
+            >
+              Visszaállítás
+            </Button>
+          </div>
+        </>
+      ) : EJG_class === null ? (
+        <Cell className="bg-warning-400 text-black">
+          <p>
+            Kérlek add meg az osztályodat{" "}
+            <Link href="/me" className="font-bold">
+              a profilodban
+            </Link>
+            , hogy megjeleníthessük az órarendedet.
+          </p>
+        </Cell>
+      ) : (
+        <p>Osztály betöltése...</p>
+      )}
 
       {timetableDay ? (
         <div>
@@ -370,7 +418,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                           key={"LessonBlock" + lessonBlockIndex}
                           className="w-full flex"
                         >
-                          <div className="min-w-fit h-14 px-2 my-1 rounded-xl grid grid-cols-1 bg-default max-w-[24px] w-6 mr-4 text-center">
+                          <div className="h-14 my-1 rounded-xl grid grid-cols-1 bg-default w-[70px] mr-4 text-center">
                             <p>{lessonBlockIndex + ". óra"}</p>
                             <p className="text-sm">
                               {
@@ -541,7 +589,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
           </Modal>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p>Az órarend betöltése...</p>
       )}
     </div>
   );

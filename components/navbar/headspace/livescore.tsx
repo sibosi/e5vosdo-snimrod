@@ -58,7 +58,7 @@ const LiveScore = () => {
   }, []);
 
   return (
-    <div className="max-w-fit mx-auto flex bg-success-50 rounded-badge mt-3 gap-2 px-6 text-center items-center text-xs font-semibold text-foreground">
+    <div className="max-w-fit mx-auto flex bg-success-50 rounded-badge mt-1 gap-2 px-6 text-center items-center text-xs font-semibold text-foreground">
       {matches[0].id != -1 ? (
         <>
           <div className="flex flex-col items-center justify-center text-xs overflow-hidden w-14">

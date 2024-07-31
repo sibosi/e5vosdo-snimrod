@@ -1,15 +1,14 @@
 import { redirect } from "next/navigation";
-import {
-  apireq,
-  getAdminUsersEmail,
-  getAuth,
-  getUsers,
-  hasPermission,
-} from "@/db/dbreq";
+import { getAuth } from "@/db/dbreq";
+import TimetableWeek from "@/components/timetable/timetableweek";
+import TimetableDay from "@/components/timetable/timetableday";
+// import { exportTimetable } from "@/timetable/export";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) redirect("/");
+
+  // const timetable = await exportTimetable();
 
   return (
     <>
@@ -17,7 +16,8 @@ const AboutPage = async () => {
         🚧 Dev 🚧
       </h1>
       <div>
-        <h2>LiveScore endpoint result</h2>
+        <TimetableWeek />
+        <TimetableDay selfUser={selfUser} />
       </div>
     </>
   );

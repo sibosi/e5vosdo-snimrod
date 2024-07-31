@@ -10,6 +10,7 @@ import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { getAuth } from "@/db/dbreq";
+import TimetableDay from "@/components/timetable/timetableday";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -36,6 +37,8 @@ export default async function Home() {
           </h1>
         )}
       </div>
+
+      {selfUser ? <TimetableDay selfUser={selfUser} /> : <></>}
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section

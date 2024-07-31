@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
-import { image } from "@nextui-org/theme";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -22,8 +21,15 @@ export interface User {
   permissions: string[];
   EJG_code: string;
   food_menu: string;
+  coming_year: number;
+  class_character: string;
+  order_number: number;
   tickets: string[];
+  hidden_lessons: number[];
+  default_group: number | null;
 }
+
+export type UserType = User;
 
 export async function getUsers() {
   return await dbreq(`SELECT * FROM \`users\``);
@@ -145,11 +151,11 @@ export async function updateUser(user: User | undefined) {
     user.email
   }';`;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`) SELECT '${
+  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`, \`hidden_lessons\`) SELECT '${
     user.name
   }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
     user.name
-  }', '["user"]', '{ "new": [], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
+  }', '${new Date().toJSON()}', '["user"]', '{ "new": [], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
     user.email
   }');`;
 
@@ -479,6 +485,41 @@ export async function getPageSettings() {
   )[0];
 }
 
+export async function getMyClassTimetable(EJG_class: string) {
+  interface Lesson {
+    id: number;
+    day: string;
+    start_time: string;
+    end_time: string;
+    room: string;
+    EJG_classes: string[];
+    group_name: number | null;
+    teacher: string;
+    subject: string;
+  }
+
+  const response = (await dbreq(
+    `SELECT * FROM timetable WHERE JSON_CONTAINS(JSON_EXTRACT(EJG_classes, '$[1]'), '"${EJG_class}"', '$')`
+  )) as Lesson[];
+  return response;
+}
+
+export async function setHiddenLessons(lessonsId: number[]) {
+  const email = (await getAuth())?.email;
+  const REQ1 = `UPDATE users SET hidden_lessons = '${JSON.stringify(
+    lessonsId
+  )}' WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
+export async function editDefaultGroup(group: number | null) {
+  const email = (await getAuth())?.email;
+  const REQ1 = `UPDATE users SET default_group = ${group} WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
 export async function getMatch(id: number) {
   return ((await dbreq(`SELECT * FROM matches WHERE id = ${id};`)) as any)[0];
 }
@@ -611,7 +652,10 @@ export interface apireqType {
     | "newNotificationByEmails"
     | "newNotificationByNames"
     | "checkPushAuth"
-    | "editMySettings";
+    | "editMySettings"
+    | "getMyClassTimetable"
+    | "setHiddenLessons"
+    | "editDefaultGroup";
 }
 export const apioptions = [
   "getUsers",
@@ -637,6 +681,9 @@ export const apioptions = [
   "newNotificationByNames",
   "checkPushAuth",
   "editMySettings",
+  "getMyClassTimetable",
+  "setHiddenLessons",
+  "editDefaultGroup",
 ];
 
 export const apireq = {
@@ -663,6 +710,9 @@ export const apireq = {
   newNotificationByNames: { req: newNotificationByNames, perm: ["admin"] },
   checkPushAuth: { req: checkPushAuth, perm: ["student"] },
   editMySettings: { req: editMySettings, perm: ["student"] },
+  getMyClassTimetable: { req: getMyClassTimetable, perm: ["student"] },
+  setHiddenLessons: { req: setHiddenLessons, perm: ["student"] },
+  editDefaultGroup: { req: editDefaultGroup, perm: ["student"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
@@ -702,5 +752,14 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "editMySettings") {
     const { settings } = body;
     return await editMySettings({ settings });
+  } else if (req === "getMyClassTimetable") {
+    const { EJG_class } = body;
+    return await getMyClassTimetable(EJG_class);
+  } else if (req === "setHiddenLessons") {
+    const { lessonsId } = body;
+    return await setHiddenLessons(lessonsId);
+  } else if (req === "editDefaultGroup") {
+    const { group } = body;
+    return await editDefaultGroup(group);
   } else return "No such request";
 };

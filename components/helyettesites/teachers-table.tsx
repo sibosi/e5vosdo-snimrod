@@ -21,6 +21,9 @@ export const TeacherTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("/api"); // Adjust path if needed
+      if (res.status != 200) {
+        return;
+      }
       const data = await res.json();
       setTableData(
         data.filter((_: any, index: any) =>

@@ -1,11 +1,9 @@
 'use strict'
 
 self.addEventListener('push', function (event) {
-    const data = JSON.parse(event.data.text())
-    // If there is not an icon, use the default icon
-    if (!data.icon) {
-        data.icon = '/favico.ico'
-    }
+    let data = JSON.parse(event.data.text())
+    const icon = data.icon ?? '/favicon.ico'
+    data.icon = icon
     event.waitUntil(
         registration.showNotification(data.title, data)
     )

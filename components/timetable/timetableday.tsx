@@ -156,6 +156,21 @@ const editDefaultGroup = async (group: number) => {
   });
 };
 
+const toShortRoom = (room: string) => {
+  // Földrajz szaktanterem földszint 10.
+  const roomNumberDot = room.split(" ")[room.split(" ").length - 1];
+  const roomNumber = roomNumberDot.split(".")[0];
+
+  // if roomNumber is a number
+  if (!isNaN(parseInt(roomNumber))) {
+    return roomNumberDot[roomNumberDot.length - 1] === "."
+      ? roomNumber + ". terem"
+      : roomNumber;
+  } else {
+    return room;
+  }
+};
+
 const hideLessons = (
   lessons: LessonOption[],
   lessonBlockIndexes: number[],
@@ -210,7 +225,7 @@ const Cell = ({
       }
       onClick={onClick}
     >
-      <div className="max-w-fit m-auto flex">{children}</div>
+      <div className="max-w-fit flex">{children}</div>
     </div>
   );
 };
@@ -291,7 +306,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
               onValueChange={(value: string) =>
                 setEJG_class(value.toUpperCase())
               }
-              color="primary"
+              color="default"
             />
             <Dropdown>
               <DropdownTrigger>
@@ -503,9 +518,24 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                       isBordered: true,
                                       src: teacherByName[lesson.teacher]?.Photo,
                                     }}
-                                    className="transition-transform px-2"
-                                    description={lesson.room}
-                                    name={lesson.teacher}
+                                    className="transition-transform px-2 w-52 justify-start"
+                                    description={
+                                      <p className="text-foreground">
+                                        {toShortRoom(lesson.room)}
+                                      </p>
+                                    }
+                                    name={
+                                      lesson.teacher != "null" ? (
+                                        <span className="break-words w-5 h-5">
+                                          {lesson.teacher.substring(0, 20) +
+                                            (lesson.teacher.length > 20
+                                              ? "..."
+                                              : "")}
+                                        </span>
+                                      ) : (
+                                        "Tanár"
+                                      )
+                                    }
                                   />
                                   <div className="m-auto">
                                     {lesson.subject}{" "}

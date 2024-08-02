@@ -250,7 +250,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
         ["Hétfő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Hétfő"][
           new Date().getDay()
         ],
-      ] ?? "Hétfő",
+      ],
     ])
   );
   const selectedDayValue = React.useMemo(
@@ -301,6 +301,14 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
         <>
           <div className="flex gap-4 mb-2">
             <Input
+              classNames={{
+                label: "text-black/50 dark:text-white/90",
+                input: [
+                  "bg-transparent",
+                  "text-black/90 dark:text-white/90",
+                  "placeholder:text-default-700/50 dark:placeholder:text-white/60",
+                ],
+              }}
               placeholder="Osztály"
               value={EJG_class}
               onValueChange={(value: string) =>

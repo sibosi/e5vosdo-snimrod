@@ -86,7 +86,6 @@ const countWeekDuration = (
 
 const fetchTimetable = async (
   EJG_class: string,
-  setTimetable: (arg0: Lesson[]) => void,
   setTimetableDay: (arg: TimetableDay) => void
 ) => {
   const resp = await fetch("/api/getMyClassTimetable", {
@@ -140,7 +139,6 @@ const fetchTimetable = async (
     });
   });
 
-  setTimetable(lessons);
   setTimetableDay(timetableDay);
 };
 
@@ -232,7 +230,6 @@ const Cell = ({
 
 const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   const [EJG_class, setEJG_class] = useState(getUserClass(selfUser));
-  const [timetable, setTimetable] = useState<Lesson[]>([]);
   const [timetableDay, setTimetableDay] = useState<TimetableDay>();
   const [selectedLesson, setSelectedLesson] = useState<LessonOption>();
   const [showSettings, setShowSettings] = useState(false);
@@ -284,7 +281,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   );
 
   useEffect(() => {
-    EJG_class && fetchTimetable(EJG_class, setTimetable, setTimetableDay);
+    EJG_class && fetchTimetable(EJG_class, setTimetableDay);
   }, [EJG_class]);
 
   useEffect(() => {
@@ -297,25 +294,9 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
 
   return (
     <div className="text-foreground transition-all duration-300">
-      {EJG_class ? (
+      {EJG_class !== null ? (
         <>
           <div className="flex gap-4 mb-2">
-            <Input
-              classNames={{
-                label: "text-black/50 dark:text-white/90",
-                input: [
-                  "bg-transparent",
-                  "text-black/90 dark:text-white/90",
-                  "placeholder:text-default-700/50 dark:placeholder:text-white/60",
-                ],
-              }}
-              placeholder="Osztály"
-              value={EJG_class}
-              onValueChange={(value: string) =>
-                setEJG_class(value.toUpperCase())
-              }
-              color="default"
-            />
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" className="capitalize">
@@ -339,6 +320,27 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                 <DropdownItem key="Péntek">Péntek</DropdownItem>
               </DropdownMenu>
             </Dropdown>
+            <Input
+              className="mx-auto max-w-[120px]"
+              classNames={{
+                input: [
+                  "bg-transparent",
+                  "text-xl",
+                  "text-center",
+                  "font-bold",
+                ],
+                innerWrapper: "bg-transparent",
+                inputWrapper: ["bg-transparent", "hover:bg-transparent"],
+              }}
+              placeholder="Osztály"
+              // variant="underlined"
+              value={EJG_class}
+              onValueChange={(value: string) =>
+                setEJG_class(value.toUpperCase().substring(0, 5))
+              }
+              color="default"
+            />
+
             <Button
               color={showSettings ? "success" : "default"}
               onClick={() => setShowSettings(!showSettings)}

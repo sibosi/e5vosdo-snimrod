@@ -8,7 +8,7 @@ import {
   getUsers,
   hasPermission,
 } from "@/db/dbreq";
-import ListUsers from "@/components/account/listusers";
+import ManageUsers from "@/components/account/manageusers";
 import NewNotification from "@/components/account/notification";
 import { ReinstallServiceWorker } from "@/components/PWA/managesw";
 
@@ -48,11 +48,7 @@ const AboutPage = async () => {
       <br />
       <br />
       {(await hasPermission(selfUser.email, "getUsers")) ? (
-        <ListUsers
-          admins={admins}
-          selfUser={selfUser}
-          initialUsers={await getUsers()}
-        />
+        <ManageUsers selfUser={selfUser} initialUsers={await getUsers()} />
       ) : (
         <></>
       )}

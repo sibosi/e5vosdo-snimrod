@@ -86,7 +86,6 @@ const countWeekDuration = (
 
 const fetchTimetable = async (
   EJG_class: string,
-  setTimetable: (arg0: Lesson[]) => void,
   setTimetableDay: (arg: TimetableDay) => void
 ) => {
   const resp = await fetch("/api/getMyClassTimetable", {
@@ -140,7 +139,6 @@ const fetchTimetable = async (
     });
   });
 
-  setTimetable(lessons);
   setTimetableDay(timetableDay);
 };
 
@@ -154,6 +152,21 @@ const editDefaultGroup = async (group: number) => {
       group: group,
     }),
   });
+};
+
+const toShortRoom = (room: string) => {
+  // Földrajz szaktanterem földszint 10.
+  const roomNumberDot = room.split(" ")[room.split(" ").length - 1];
+  const roomNumber = roomNumberDot.split(".")[0];
+
+  // if roomNumber is a number
+  if (!isNaN(parseInt(roomNumber))) {
+    return roomNumberDot[roomNumberDot.length - 1] === "."
+      ? roomNumber + ". terem"
+      : roomNumber;
+  } else {
+    return room;
+  }
 };
 
 const hideLessons = (
@@ -210,14 +223,13 @@ const Cell = ({
       }
       onClick={onClick}
     >
-      <div className="max-w-fit m-auto flex">{children}</div>
+      <div className="max-w-fit flex">{children}</div>
     </div>
   );
 };
 
 const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   const [EJG_class, setEJG_class] = useState(getUserClass(selfUser));
-  const [timetable, setTimetable] = useState<Lesson[]>([]);
   const [timetableDay, setTimetableDay] = useState<TimetableDay>();
   const [selectedLesson, setSelectedLesson] = useState<LessonOption>();
   const [showSettings, setShowSettings] = useState(false);
@@ -235,7 +247,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
         ["Hétfő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Hétfő"][
           new Date().getDay()
         ],
-      ] ?? "Hétfő",
+      ],
     ])
   );
   const selectedDayValue = React.useMemo(
@@ -269,7 +281,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   );
 
   useEffect(() => {
-    EJG_class && fetchTimetable(EJG_class, setTimetable, setTimetableDay);
+    EJG_class && fetchTimetable(EJG_class, setTimetableDay);
   }, [EJG_class]);
 
   useEffect(() => {
@@ -282,17 +294,9 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
 
   return (
     <div className="text-foreground transition-all duration-300">
-      {EJG_class ? (
+      {EJG_class !== null ? (
         <>
           <div className="flex gap-4 mb-2">
-            <Input
-              placeholder="Osztály"
-              value={EJG_class}
-              onValueChange={(value: string) =>
-                setEJG_class(value.toUpperCase())
-              }
-              color="primary"
-            />
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" className="capitalize">
@@ -316,6 +320,27 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                 <DropdownItem key="Péntek">Péntek</DropdownItem>
               </DropdownMenu>
             </Dropdown>
+            <Input
+              className="mx-auto max-w-[120px]"
+              classNames={{
+                input: [
+                  "bg-transparent",
+                  "text-xl",
+                  "text-center",
+                  "font-bold",
+                ],
+                innerWrapper: "bg-transparent",
+                inputWrapper: ["bg-transparent", "hover:bg-transparent"],
+              }}
+              placeholder="Osztály"
+              // variant="underlined"
+              value={EJG_class}
+              onValueChange={(value: string) =>
+                setEJG_class(value.toUpperCase().substring(0, 5))
+              }
+              color="default"
+            />
+
             <Button
               color={showSettings ? "success" : "default"}
               onClick={() => setShowSettings(!showSettings)}
@@ -503,9 +528,24 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                       isBordered: true,
                                       src: teacherByName[lesson.teacher]?.Photo,
                                     }}
-                                    className="transition-transform px-2"
-                                    description={lesson.room}
-                                    name={lesson.teacher}
+                                    className="transition-transform px-2 w-52 justify-start"
+                                    description={
+                                      <p className="text-foreground">
+                                        {toShortRoom(lesson.room)}
+                                      </p>
+                                    }
+                                    name={
+                                      lesson.teacher != "null" ? (
+                                        <span className="break-words w-5 h-5">
+                                          {lesson.teacher.substring(0, 20) +
+                                            (lesson.teacher.length > 20
+                                              ? "..."
+                                              : "")}
+                                        </span>
+                                      ) : (
+                                        "Tanár"
+                                      )
+                                    }
                                   />
                                   <div className="m-auto">
                                     {lesson.subject}{" "}

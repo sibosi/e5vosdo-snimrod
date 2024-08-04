@@ -27,6 +27,7 @@ export interface User {
   tickets: string[];
   hidden_lessons: number[];
   default_group: number | null;
+  service_workers: any[];
 }
 
 export type UserType = User;
@@ -450,6 +451,12 @@ export async function removeTicket(ticket: string) {
   return await dbreq(REQ1);
 }
 
+export async function deleteTicket(email: string, ticket: string) {
+  const REQ1 = `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', '${ticket}'))) WHERE email = '${email}';`;
+
+  return await dbreq(REQ1);
+}
+
 export async function editMySettings({
   settings,
 }: {
@@ -655,7 +662,9 @@ export interface apireqType {
     | "editMySettings"
     | "getMyClassTimetable"
     | "setHiddenLessons"
-    | "editDefaultGroup";
+    | "editDefaultGroup"
+    | "addTicket"
+    | "deleteTicket";
 }
 export const apioptions = [
   "getUsers",
@@ -684,6 +693,8 @@ export const apioptions = [
   "getMyClassTimetable",
   "setHiddenLessons",
   "editDefaultGroup",
+  "addTicket",
+  "deleteTicket",
 ];
 
 export const apireq = {
@@ -713,6 +724,8 @@ export const apireq = {
   getMyClassTimetable: { req: getMyClassTimetable, perm: ["student"] },
   setHiddenLessons: { req: setHiddenLessons, perm: ["student"] },
   editDefaultGroup: { req: editDefaultGroup, perm: ["student"] },
+  addTicket: { req: addTicket, perm: ["admin"] },
+  deleteTicket: { req: deleteTicket, perm: ["admin"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
@@ -761,5 +774,11 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "editDefaultGroup") {
     const { group } = body;
     return await editDefaultGroup(group);
+  } else if (req === "addTicket") {
+    const { email, ticket } = body;
+    return await addTicket(email, ticket);
+  } else if (req === "deleteTicket") {
+    const { email, ticket } = body;
+    return await deleteTicket(email, ticket);
   } else return "No such request";
 };

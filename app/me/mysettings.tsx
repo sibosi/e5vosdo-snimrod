@@ -111,37 +111,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </tbody>
         </table>
 
-        <h2>Órarend beállítások</h2>
-        <table className="table gap-y-2">
-          <tbody>
-            <tr>
-              <th className="font-semibold">Alapértelmezett csoport</th>
-              <th>
-                <ButtonGroup>
-                  <Button
-                    color={classGroup === 0 ? "success" : undefined}
-                    onClick={() => setClassGroup(0)}
-                  >
-                    Nincs csoport
-                  </Button>
-                  <Button
-                    color={classGroup === 1 ? "success" : undefined}
-                    onClick={() => setClassGroup(1)}
-                  >
-                    1-es csoport
-                  </Button>
-                  <Button
-                    color={classGroup === 2 ? "success" : undefined}
-                    onClick={() => setClassGroup(2)}
-                  >
-                    2-es csoport
-                  </Button>
-                </ButtonGroup>
-              </th>
-            </tr>
-          </tbody>
-        </table>
-
         <Button
           onClick={() => {
             EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();

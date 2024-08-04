@@ -1,22 +1,30 @@
 "use client";
 import { Button, Modal, ModalContent } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const checkCookie = () => {
-  if (document.cookie.indexOf("cookieAccepted=true") === -1) {
-    return false;
+  if (typeof document !== "undefined") {
+    return document.cookie.indexOf("cookieAccepted=true") !== -1;
   }
-  return true;
+  return false;
 };
 
 const Cookie = () => {
-  const [cookieAccepted, setCookieAccepted] = React.useState(checkCookie());
-  const [showCookie, setShowCookie] = React.useState(!cookieAccepted);
+  const [cookieAccepted, setCookieAccepted] = useState(false);
+  const [showCookie, setShowCookie] = useState(false);
+
+  useEffect(() => {
+    const isCookieAccepted = checkCookie();
+    setCookieAccepted(isCookieAccepted);
+    setShowCookie(!isCookieAccepted);
+  }, []);
 
   const acceptCookie = () => {
-    document.cookie = "cookieAccepted=true; max-age=31536000";
-    setCookieAccepted(true);
-    setShowCookie(false);
+    if (typeof document !== "undefined") {
+      document.cookie = "cookieAccepted=true; max-age=31536000";
+      setCookieAccepted(true);
+      setShowCookie(false);
+    }
   };
 
   if (!showCookie) {

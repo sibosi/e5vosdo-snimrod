@@ -352,7 +352,7 @@ const ManageUsers = ({
               <Button
                 onClick={() => setSelectedUser(null)}
                 color="primary"
-                className="flex mt-2 right-0 justify-end justify-self-end ml-auto"
+                className="flex mt-2 ml-auto"
               >
                 Rendben
               </Button>

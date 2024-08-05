@@ -66,15 +66,33 @@ const pages = {
     ),
     label: "About",
   },
+  me: {
+    route: "/me",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="currentColor"
+        className="bi bi-person-fill"
+        viewBox="0 0 16 16"
+      >
+        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+      </svg>
+    ),
+    label: "Me",
+  },
 };
 
-const tabs = [pages.home, pages.events, pages.clubs, pages.about];
+const tabs = [pages.home, pages.events, pages.clubs, pages.me];
 
 export const PageNav = () => {
   return (
     <div className="fixed bottom-0 items-center z-50 w-[90%] h-14 md:hidden ">
       <div className="rounded-lg border-gray-500 border-1 h-12 myglass">
-        <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+        <div
+          className={`grid h-full max-w-lg grid-cols-${tabs.length} mx-auto font-medium`}
+        >
           {tabs.map((page, index) => (
             <Link
               key={index}

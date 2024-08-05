@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
-import { getAuth } from "@/db/dbreq";
+import { getAuth, hasPermission } from "@/db/dbreq";
 import { Avatar } from "@nextui-org/react";
 import MySettings from "./mysettings";
+import ToManageButton from "./toManage";
+import { has } from "cheerio/lib/api/traversing";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -22,6 +24,19 @@ const AboutPage = async () => {
         </p>
         !
       </h1>
+      {(await hasPermission(selfUser.email, "getUsers")) ? (
+        <div className="my-5">
+          <div className="bg-gradient-to-r from-[#39b2f8] to-[#2747fc] mx-1 rounded-2xl p-2">
+            <h2 className="text-2xl font-semibold text-foreground">
+              Adminoknak és tesztelőknek
+            </h2>
+            <ToManageButton className="my-2" />
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+
       <MySettings selfUser={selfUser} />
     </>
   );

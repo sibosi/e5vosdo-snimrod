@@ -4,6 +4,7 @@ import { Avatar } from "@nextui-org/react";
 import MySettings from "./mysettings";
 import ToManageButton from "./toManage";
 import { has } from "cheerio/lib/api/traversing";
+import IDCard from "./IDCard";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -24,6 +25,7 @@ const AboutPage = async () => {
         </p>
         !
       </h1>
+
       {(await hasPermission(selfUser.email, "getUsers")) ? (
         <div className="my-5">
           <div className="bg-gradient-to-r from-[#39b2f8] to-[#2747fc] mx-1 rounded-2xl p-2">
@@ -36,6 +38,8 @@ const AboutPage = async () => {
       ) : (
         <></>
       )}
+
+      <IDCard EJG_code={selfUser.EJG_code} />
 
       <MySettings selfUser={selfUser} />
     </>

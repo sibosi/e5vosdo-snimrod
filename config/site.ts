@@ -37,8 +37,8 @@ export const siteConfig = {
       href: "/clubs",
     },
     {
-      label: "Rólunk",
-      href: "/about",
+      label: "Profilom",
+      href: "/me",
     },
   ],
   //navMenuItems: [],

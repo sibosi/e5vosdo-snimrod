@@ -151,6 +151,10 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </tbody>
         </table>
 
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-bold">Értesítési preferenciák</h3>
+        </div>
+
         <Button
           onClick={() => {
             EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();

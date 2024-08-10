@@ -1,6 +1,12 @@
 "use client";
-import { Button } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import {
+  Button,
+  ButtonGroup,
+  Modal,
+  ModalContent,
+  ModalHeader,
+} from "@nextui-org/react";
+import React, { use, useEffect, useState } from "react";
 
 export const ReinstallServiceWorker = () => {
   const [isServiceWorkerRegistered, setIsServiceWorkerRegistered] =
@@ -79,16 +85,56 @@ export const ReinstallServiceWorker = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [showSWDetails, setShowSWDetails] = useState(false);
+  const [subscription, setSubscription] = useState<any>();
+
+  const fun = async () => {
+    const registration = await navigator.serviceWorker.ready;
+    console.log("Service Worker is registered");
+    const existingSubscription =
+      await registration.pushManager.getSubscription();
+    setSubscription(existingSubscription);
+  };
+
+  useEffect(() => {
+    fun();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <Button
-      color={isServiceWorkerRegistered ? "success" : "danger"}
-      onClick={async () => {
-        await deleteServiceWorker();
-        await registerServiceWorker();
-        location.reload();
-      }}
-    >
-      SW újratelepítése
-    </Button>
+    <div className="max-w-full">
+      <div>
+        <ButtonGroup>
+          <Button
+            color={isServiceWorkerRegistered ? "success" : "danger"}
+            onClick={async () => {
+              await deleteServiceWorker();
+              await registerServiceWorker();
+              location.reload();
+            }}
+          >
+            SW újratelepítése
+          </Button>
+          <Button onClick={() => setShowSWDetails(!showSWDetails)}>
+            SW részletek
+          </Button>
+        </ButtonGroup>
+      </div>
+
+      <Modal isOpen={showSWDetails} onClose={() => setShowSWDetails(false)}>
+        <ModalContent className="p-4">
+          <ModalHeader>Service Worker részletek</ModalHeader>
+          <p>{JSON.stringify(subscription)}</p>
+
+          <Button
+            onClick={() => {
+              navigator.clipboard.writeText(JSON.stringify(subscription));
+            }}
+          >
+            Másolás
+          </Button>
+        </ModalContent>
+      </Modal>
+    </div>
   );
 };

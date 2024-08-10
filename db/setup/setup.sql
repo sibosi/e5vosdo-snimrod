@@ -55,6 +55,20 @@ CREATE TABLE IF NOT EXISTS notifications (
     sender_email VARCHAR(255) NOT NULL,
     receiving_emails JSON NOT NULL
 );
+INSERT INTO notifications (
+        title,
+        message,
+        time,
+        sender_email,
+        receiving_emails
+    )
+VALUES (
+        'Gratuláció!',
+        'Sikeresen regisztráltál az E5VOS rendszerébe! Jó szórakozást! Üdvözlettel: Nimród, az E5VOS DÖ oldal rendszergazdája.',
+        '2024/09/01 12:00:00Z',
+        'simon.nimrod.zalan@e5vos.hu',
+        '[]'
+    );
 DROP TABLE IF EXISTS push_auths;
 CREATE TABLE IF NOT EXISTS push_auths (
     id INT AUTO_INCREMENT PRIMARY KEY,

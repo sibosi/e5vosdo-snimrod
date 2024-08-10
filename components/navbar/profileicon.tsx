@@ -7,6 +7,8 @@ import { LogoutIcon } from "@/components/LogOut";
 import { User } from "@/db/dbreq";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Notification } from "./profilebox/notification";
+import InstallAppNotif from "./profilebox/installAppNotif";
+import UpdateSWNotif from "./profilebox/updateSWNotif";
 
 const Account = () => {
   return (
@@ -169,6 +171,8 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
           )}
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">
+          <UpdateSWNotif />
+          <InstallAppNotif />
           {selfUser && notifications ? (
             notifications.newAndSent.map((item: Notification, index) => (
               <Notification

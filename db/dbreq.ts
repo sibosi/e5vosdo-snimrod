@@ -6,7 +6,7 @@ const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 
 webPush.setVapidDetails(
-  "mailto:spam.sibosi@gmail.com", // Replace with your email
+  "mailto:spam.sibosi@gmail.com",
   publicVapidKey,
   privateVapidKey
 );
@@ -156,7 +156,7 @@ export async function updateUser(user: User | undefined) {
     user.name
   }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
     user.name
-  }', '${new Date().toJSON()}', '["user"]', '{ "new": [], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
+  }', '${new Date().toJSON()}', '["user"]', '{ "new": [1], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
     user.email
   }');`;
 
@@ -713,7 +713,7 @@ export const apireq = {
   updateUser: { req: updateUser, perm: ["admin"] },
   addUserPermission: { req: addUserPermission, perm: ["admin"] },
   removeUserPermissions: { req: removeUserPermissions, perm: ["admin"] },
-  getNotificationById: { req: getNotificationById, perm: ["student"] },
+  getNotificationById: { req: getNotificationById, perm: ["user"] },
   getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["user"] },
   getUserNotifications: { req: getUserNotifications, perm: ["user"] },
   markAsRead: { req: markAsRead, perm: ["user"] },

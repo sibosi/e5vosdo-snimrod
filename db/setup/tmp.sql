@@ -21,7 +21,7 @@ FROM users;
 --@block
 -- Add user permissions to nimrod user
 UPDATE users
-SET permissions = '["student", "admin"]'
+SET permissions = '["user", "student", "admin"]'
 WHERE email = 'simon.nimrod.zalan@e5vos.hu';
 --@block
 -- Append permissions to nimrod user

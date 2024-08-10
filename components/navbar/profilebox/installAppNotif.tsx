@@ -100,7 +100,7 @@ const InstallAppNotif = () => {
           title="App telepítése"
           body="Kattints ide az alkalmazás telepítéséhez!"
           onClick={handleInstallClick}
-          className="rounded-2xl bg-primary-100 text-primary-700"
+          className="rounded-2xl bg-primary-100 text-primary-700 px-1"
         />
       ) : (
         isIOSDevice && (
@@ -109,7 +109,7 @@ const InstallAppNotif = () => {
             title="App telepítése"
             body="Kattints ide az alkalmazás telepítéséhez!"
             onClick={() => setModalOpen(true)}
-            className="rounded-2xl bg-primary-100 text-primary-700"
+            className="rounded-2xl bg-primary-100 text-primary-700 px-1"
           />
         )
       )}

@@ -2,6 +2,9 @@
 SELECT *
 FROM users;
 --@block
+SELECT *
+FROM logs;
+--@block
 -- Delete all tables
 DROP TABLE users;
 --@block

@@ -138,3 +138,12 @@ VALUES (
         "2021-10-24 20:00:00",
         "2021-10-24 22:00:00"
     );
+-- Add logs table
+DROP TABLE IF EXISTS logs;
+CREATE TABLE IF NOT EXISTS logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    time VARCHAR(255) NOT NULL,
+    user VARCHAR(255) NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    message TEXT
+);

@@ -98,7 +98,7 @@ const UpdateSWNotif = () => {
 
   return (
     <>
-      {isServiceWorkerRegistered ? (
+      {!isServiceWorkerRegistered ? (
         <NotificationBox
           icon={SyncIcon}
           title="Eszköz szinkronizálása"

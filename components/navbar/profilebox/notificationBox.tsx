@@ -19,7 +19,7 @@ export const NotificationBox = ({
   className?: string;
 }) => {
   return (
-    <div className={className}>
+    <div className={"px-1 rounded-2xl " + className}>
       <div className="flex my-3 gap-2" onClick={onClick}>
         <div className={"block w-5 h-5 m-1 my-auto " + (className ?? "")}>
           {icon}

@@ -6,7 +6,7 @@ import {
   ModalContent,
   ModalHeader,
 } from "@nextui-org/react";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export const ReinstallServiceWorker = () => {
   const [isServiceWorkerRegistered, setIsServiceWorkerRegistered] =
@@ -88,16 +88,14 @@ export const ReinstallServiceWorker = () => {
   const [showSWDetails, setShowSWDetails] = useState(false);
   const [subscription, setSubscription] = useState<any>();
 
-  const fun = async () => {
-    const registration = await navigator.serviceWorker.ready;
-    console.log("Service Worker is registered");
-    const existingSubscription =
-      await registration.pushManager.getSubscription();
-    setSubscription(existingSubscription);
-  };
-
   useEffect(() => {
-    fun();
+    (async () => {
+      const registration = await navigator.serviceWorker.ready;
+      console.log("Service Worker is registered");
+      const existingSubscription =
+        await registration.pushManager.getSubscription();
+      setSubscription(existingSubscription);
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

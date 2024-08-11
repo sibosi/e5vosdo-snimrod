@@ -34,87 +34,70 @@ const usePWAInstallPrompt = () => {
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
   return deferredPrompt;
 };
 
-const showIosInstallModal = () => {
-  // detect if the device is on iOS
-  const isIos = () => {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    return /iphone|ipad|ipod/.test(userAgent);
-  };
+export const isIOSDevice = () => {
+  return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+};
 
-  // check if the device is in standalone mode
-  const isInStandaloneMode = () => {
-    return (
+export const hasPWA = () => {
+  if (isIOSDevice()) {
+    // Check if the device is in standalone mode on iOS
+    // check if the device is in standalone mode
+    const isInStandaloneMode =
       "standalone" in (window as any).navigator &&
-      (window as any).navigator.standalone
-    );
-  };
+      (window as any).navigator.standalone;
 
-  return isIos() && !isInStandaloneMode();
+    return !isInStandaloneMode;
+  } else {
+    // Check if the app is in standalone mode on Android or other platforms
+    return !window.matchMedia("(display-mode: standalone)").matches;
+  }
 };
 
 const InstallAppNotif = () => {
   const deferredPrompt = usePWAInstallPrompt();
   const [isVisible, setIsVisible] = useState(false);
-
-  // iOS
-  const [isIOSDevice, setIsIOSDevice] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const isIOS = isIOSDevice();
+  const hasPwa = hasPWA();
 
   useEffect(() => {
-    if (deferredPrompt) {
+    if (deferredPrompt || hasPwa) {
       setIsVisible(true);
     }
-
-    if (showIosInstallModal()) {
-      setIsIOSDevice(true);
-    }
-  }, [deferredPrompt]);
+  }, [deferredPrompt, hasPwa]);
 
   const handleInstallClick = async () => {
-    if (isIOSDevice) {
+    if (isIOS) {
       setModalOpen(true);
     } else if (deferredPrompt) {
       deferredPrompt.prompt();
-      const { outcome } = await (deferredPrompt as any).userChoice;
-      if (outcome === "accepted") {
-        console.log("PWA installed");
-      } else {
-        console.log("PWA installation dismissed");
-      }
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(
+        outcome === "accepted" ? "PWA installed" : "PWA installation dismissed"
+      );
       setIsVisible(false);
     }
   };
 
   return (
     <>
-      {isVisible ? (
+      {isVisible && (
         <NotificationBox
           icon={InstallIcon}
           title="App telepítése"
           body="Kattints ide az alkalmazás telepítéséhez!"
           onClick={handleInstallClick}
-          className="rounded-2xl bg-primary-100 text-primary-700 px-1"
+          className="bg-primary-100 text-primary-700"
         />
-      ) : (
-        isIOSDevice && (
-          <NotificationBox
-            icon={InstallIcon}
-            title="App telepítése"
-            body="Kattints ide az alkalmazás telepítéséhez!"
-            onClick={() => setModalOpen(true)}
-            className="rounded-2xl bg-primary-100 text-primary-700 px-1"
-          />
-        )
       )}
 
-      {isIOSDevice && (
+      {isIOS && (
         <Modal
           closeButton
           aria-labelledby="modal-title"

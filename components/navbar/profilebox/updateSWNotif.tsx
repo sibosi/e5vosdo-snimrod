@@ -19,7 +19,27 @@ const SyncIcon = (
   </svg>
 );
 
-const UpdateSWNotif = () => {
+const checkServiceWorker = async () => {
+  if ("serviceWorker" in navigator) {
+    await navigator.serviceWorker.getRegistrations().then((registrations) => {
+      if (registrations.length === 0) {
+        console.log("Service worker not registered");
+        return false;
+      } else {
+        console.log("Service worker already registered");
+        return true;
+      }
+    });
+  } else {
+    console.log("Service workers are not supported in this browser");
+    return false;
+  }
+  return false;
+};
+
+export const UpdateSWcheck = checkServiceWorker;
+
+export const UpdateSWNotif = () => {
   const [isServiceWorkerRegistered, setIsServiceWorkerRegistered] =
     useState(false);
 
@@ -74,25 +94,15 @@ const UpdateSWNotif = () => {
     }
   };
 
-  const checkServiceWorker = async () => {
-    if ("serviceWorker" in navigator) {
-      await navigator.serviceWorker.getRegistrations().then((registrations) => {
-        if (registrations.length === 0) {
-          console.log("Service worker not registered");
-          setIsServiceWorkerRegistered(false);
-          registerServiceWorker();
-        } else {
-          console.log("Service worker already registered");
-          setIsServiceWorkerRegistered(true);
-        }
-      });
-    } else {
-      console.log("Service workers are not supported in this browser");
-    }
-  };
-
   useEffect(() => {
-    checkServiceWorker();
+    (async () => {
+      if (await checkServiceWorker()) {
+        setIsServiceWorkerRegistered(true);
+      } else {
+        setIsServiceWorkerRegistered(false);
+        registerServiceWorker();
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -108,7 +118,7 @@ const UpdateSWNotif = () => {
             await registerServiceWorker();
             location.reload();
           }}
-          className="rounded-2xl bg-success-100 text-success-700 px-1"
+          className="bg-success-100 text-success-700"
         />
       ) : null}
     </>

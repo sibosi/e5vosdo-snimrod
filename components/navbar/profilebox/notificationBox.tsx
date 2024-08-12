@@ -23,7 +23,7 @@ export const NotificationBox = ({
     | "secondary"
     | "success"
     | "warning"
-    | "error"
+    | "danger"
     | "foreground";
 }) => {
   const colorStyle = color
@@ -32,7 +32,7 @@ export const NotificationBox = ({
         secondary: "bg-secondary-100 text-secondary-700",
         success: "bg-success-100 text-success-700",
         warning: "bg-warning-100 text-warning-700",
-        error: "bg-error-100 text-error-700",
+        danger: "bg-danger-100 text-danger-700",
         foreground: "bg-foreground-100 text-foreground-700",
       }[color]
     : "";

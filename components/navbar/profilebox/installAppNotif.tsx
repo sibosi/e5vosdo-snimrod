@@ -40,39 +40,35 @@ const usePWAInstallPrompt = () => {
   return deferredPrompt;
 };
 
-export const isIOSDevice = () => {
-  if (typeof window === "undefined") return false;
-  return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-};
-
-export const hasPWA = () => {
-  if (typeof window === "undefined") return false;
-  if (isIOSDevice()) {
-    // Check if the device is in standalone mode on iOS
-    // check if the device is in standalone mode
-    const isInStandaloneMode =
-      "standalone" in (window as any).navigator &&
-      (window as any).navigator.standalone;
-
-    return !isInStandaloneMode;
-  } else {
-    // Check if the app is in standalone mode on Android or other platforms
-    return !window.matchMedia("(display-mode: standalone)").matches;
-  }
-};
-
 const InstallAppNotif = () => {
   const deferredPrompt = usePWAInstallPrompt();
   const [isVisible, setIsVisible] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const isIOS = isIOSDevice();
-  const hasPwa = hasPWA();
+  const [isIOS, setIsIOS] = useState(false);
+  const [hasPWA, setHasPWA] = useState(false);
 
   useEffect(() => {
-    if (deferredPrompt || hasPwa) {
+    setIsIOS(/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase()));
+
+    if (isIOS) {
+      // Check if the device is in standalone mode on iOS
+      // check if the device is in standalone mode
+      const isInStandaloneMode =
+        "standalone" in (window as any).navigator &&
+        (window as any).navigator.standalone;
+
+      setHasPWA(!isInStandaloneMode);
+    } else {
+      // Check if the app is in standalone mode on Android or other platforms
+      setHasPWA(!window.matchMedia("(display-mode: standalone)").matches);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (deferredPrompt || hasPWA) {
       setIsVisible(true);
     }
-  }, [deferredPrompt, hasPwa]);
+  }, [deferredPrompt, hasPWA]);
 
   const handleInstallClick = async () => {
     if (isIOS) {

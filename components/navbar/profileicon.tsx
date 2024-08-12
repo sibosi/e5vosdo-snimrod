@@ -9,6 +9,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { Notification } from "./profilebox/notification";
 import InstallAppNotif from "./profilebox/installAppNotif";
 import UpdateSWNotif from "./profilebox/updateSWNotif";
+import EnablePushNotif from "./profilebox/enablePushNotif";
 
 const Account = () => {
   return (
@@ -204,6 +205,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
         <div className="max-h-72 overflow-auto scrollbar-default">
           <UpdateSWNotif />
           <InstallAppNotif />
+          <EnablePushNotif />
           {selfUser && notifications ? (
             notifications.newAndSent.map((item: Notification, index) =>
               notificationsIds.sent.includes(item.id) &&
@@ -246,7 +248,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
             <></>
           )}
           {selfUser && notifications && hideSentAndRead ? (
-            <div className="py-2">Értesítések elrejtve</div>
+            <div className="py-2">Csak az új értesítések jelennek meg</div>
           ) : (
             <></>
           )}

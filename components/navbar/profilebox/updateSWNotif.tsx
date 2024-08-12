@@ -118,7 +118,7 @@ export const UpdateSWNotif = () => {
             await registerServiceWorker();
             location.reload();
           }}
-          className="bg-success-100 text-success-700"
+          color="success"
         />
       ) : null}
     </>

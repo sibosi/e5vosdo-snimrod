@@ -289,7 +289,8 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   }, [timetableDay]);
 
   useEffect(() => {
-    editDefaultGroup(classGroupValue);
+    showSettings ? editDefaultGroup(classGroupValue) : null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classGroupValue]);
 
   return (

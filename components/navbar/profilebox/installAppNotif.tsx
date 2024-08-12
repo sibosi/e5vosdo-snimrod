@@ -46,6 +46,7 @@ export const isIOSDevice = () => {
 };
 
 export const hasPWA = () => {
+  if (typeof window === "undefined") return false;
   if (isIOSDevice()) {
     // Check if the device is in standalone mode on iOS
     // check if the device is in standalone mode

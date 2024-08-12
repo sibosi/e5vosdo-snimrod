@@ -39,8 +39,9 @@ const SkipMessenger: React.FC = () => {
           <ModalContent className="text-center p-5">
             <ModalHeader>Átirányítás...</ModalHeader>
             <p>
-              Az oldal megtekintéséhez használja a Google Chrome böngészőt vagy
-              a Safari-t (iOS).
+              A Messenger beépített böngészője nem támogatott. Az oldal
+              megtekintéséhez használja a Google Chrome böngészőt vagy a
+              Safari-t (iOS).
             </p>
             <p className="tegt-xl text-primary font-bold">info.e5vosdo.hu</p>
             <Button

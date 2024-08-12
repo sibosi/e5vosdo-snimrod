@@ -1,5 +1,6 @@
 "use client";
 import { Button, Modal, ModalContent, ModalHeader } from "@nextui-org/react";
+import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const SkipMessenger: React.FC = () => {
@@ -18,20 +19,6 @@ const SkipMessenger: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (isMessengerBrowser) {
-      // Átirányítás Chrome-ba, vagy Safari-ra (iOS)
-      const chromeUrl = `googlechrome://navigate?url=${window.location.href}`;
-      const safariUrl = `https://info.e5vosdo.hu/`;
-
-      window.location.href = chromeUrl;
-
-      setTimeout(() => {
-        // window.location.href = safariUrl;
-      }, 50000); // 500ms várakozás után átirányítás Safari-ra, ha a Chrome nem található
-    }
-  }, [isMessengerBrowser]);
-
   return (
     <>
       {isMessengerBrowser ? (
@@ -47,6 +34,7 @@ const SkipMessenger: React.FC = () => {
             <Button
               onClick={() => {
                 navigator.clipboard.writeText("info.e5vosdo.hu");
+                redirect(window.location.href);
               }}
             >
               Cím másolása

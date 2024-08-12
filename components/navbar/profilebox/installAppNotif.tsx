@@ -41,6 +41,7 @@ const usePWAInstallPrompt = () => {
 };
 
 export const isIOSDevice = () => {
+  if (typeof window === "undefined") return false;
   return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
 };
 
@@ -93,7 +94,7 @@ const InstallAppNotif = () => {
           title="App telepítése"
           body="Kattints ide az alkalmazás telepítéséhez!"
           onClick={handleInstallClick}
-          className="bg-primary-100 text-primary-700"
+          color="primary"
         />
       )}
 

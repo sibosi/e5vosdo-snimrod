@@ -10,7 +10,7 @@ const LogsPage = async () => {
   if (!selfUser) redirect("/");
   if (!selfUser.permissions.includes("admin")) redirect("/");
 
-  const logs = await getLogs(100);
+  const logs = await getLogs(50000);
 
   return (
     <>

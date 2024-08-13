@@ -60,8 +60,9 @@ const InstallAppNotif = () => {
       setHasPWA(!isInStandaloneMode);
     } else {
       // Check if the app is in standalone mode on Android or other platforms
-      setHasPWA(!window.matchMedia("(display-mode: standalone)").matches);
+      setHasPWA(deferredPrompt ? true : false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

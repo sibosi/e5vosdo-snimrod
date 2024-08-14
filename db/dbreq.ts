@@ -1,12 +1,13 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
+import { add } from "cheerio/lib/api/traversing";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 
 webPush.setVapidDetails(
-  "mailto:spam.sibosi@gmail.com", // Replace with your email
+  "mailto:spam.sibosi@gmail.com",
   publicVapidKey,
   privateVapidKey
 );
@@ -32,6 +33,31 @@ export interface User {
 
 export type UserType = User;
 
+export interface Log {
+  id?: number;
+  time: string;
+  user: string;
+  action: string;
+  message: string;
+}
+
+export async function addLog(action: string, message?: string) {
+  const email = (await getAuth())?.email;
+  return await dbreq(
+    `INSERT INTO logs (time, user, action, message) VALUES ('${new Date().toJSON()}', '${email}', '${action}', '${
+      message ?? ""
+    }');`
+  );
+}
+
+export async function getLogs(max: number = 10) {
+  addLog("getLogs");
+  if (!(await getAuth())?.permissions.includes("admin")) return;
+  return (await dbreq(
+    `SELECT * FROM logs ORDER BY id DESC LIMIT ${max};`
+  )) as Log[];
+}
+
 export async function getUsers() {
   return await dbreq(`SELECT * FROM \`users\``);
 }
@@ -43,6 +69,7 @@ export async function getUsersName() {
 
 export async function getUser(email: string | undefined) {
   if (!email) return;
+  // addLog("getUser", email);
   return (
     (await dbreq(`SELECT * FROM \`users\` WHERE email = '${email}'`)) as User[]
   )[0];
@@ -144,6 +171,8 @@ export async function getAdminUsersEmail() {
 export async function updateUser(user: User | undefined) {
   if (!user) return;
 
+  addLog("updateUser", user.email);
+
   const REQ1 = `UPDATE \`users\` SET \`username\` = '${
     user.name
   }', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${
@@ -156,7 +185,7 @@ export async function updateUser(user: User | undefined) {
     user.name
   }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
     user.name
-  }', '${new Date().toJSON()}', '["user"]', '{ "new": [], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
+  }', '${new Date().toJSON()}', '["user"]', '{ "new": [1], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
     user.email
   }');`;
 
@@ -168,6 +197,8 @@ export async function addUserPermission(
   permission: string
 ) {
   if (!email) return "no email";
+
+  addLog("addUserPermission", email + " " + permission);
 
   if (((await getUser(email)) as any).permissions.includes(permission))
     return "The user already has this permission";
@@ -182,6 +213,8 @@ export async function removeUserPermissions(
   permission: string
 ) {
   if (!email) return;
+
+  addLog("removeUserPermissions", email + " " + permission);
 
   const REQ2 = `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', '${permission}'))) WHERE email = '${email}';`;
 
@@ -312,6 +345,7 @@ export async function addPushAuth(auth: string) {
 }
 
 export async function newPush(email: string, payload: any) {
+  addLog("newPush", email + " " + JSON.stringify(payload));
   const service_workers = await getServiceWorkersByEmail(email);
   service_workers.map(async (sw: any) => {
     try {
@@ -439,12 +473,14 @@ export async function newNotificationByNames(
 }
 
 export async function addTicket(email: string, ticket: string) {
+  addLog("addTicket", email + " " + ticket);
   const REQ1 = `UPDATE users SET tickets = JSON_ARRAY_APPEND(tickets, '$', '${ticket}') WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
 }
 
 export async function removeTicket(ticket: string) {
+  addLog("removeTicket", ticket);
   const email = (await getAuth())?.email;
   const REQ1 = `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', '${ticket}'))) WHERE email = '${email}';`;
 
@@ -452,6 +488,7 @@ export async function removeTicket(ticket: string) {
 }
 
 export async function deleteTicket(email: string, ticket: string) {
+  addLog("deleteTicket", email + " " + ticket);
   const REQ1 = `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', '${ticket}'))) WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
@@ -465,6 +502,8 @@ export async function editMySettings({
   const user = await getAuth();
   if (!user) return "No user";
   const email = user?.email;
+
+  addLog("editMySettings");
 
   const valid_EJG_code = user.tickets.includes("EJG_code_edit")
     ? settings.EJG_code
@@ -713,7 +752,7 @@ export const apireq = {
   updateUser: { req: updateUser, perm: ["admin"] },
   addUserPermission: { req: addUserPermission, perm: ["admin"] },
   removeUserPermissions: { req: removeUserPermissions, perm: ["admin"] },
-  getNotificationById: { req: getNotificationById, perm: ["student"] },
+  getNotificationById: { req: getNotificationById, perm: ["user"] },
   getUserNotificationsIds: { req: getUserNotificationsIds, perm: ["user"] },
   getUserNotifications: { req: getUserNotifications, perm: ["user"] },
   markAsRead: { req: markAsRead, perm: ["user"] },

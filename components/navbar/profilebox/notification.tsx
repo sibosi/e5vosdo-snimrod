@@ -94,12 +94,13 @@ export const Notification = ({
         <div className="text-sm break-words text-foreground-600 text-end">
           <p>
             {allUsersNameByEmail[notification.sender_email]
-              .split(" ")
-              .reverse()[0] +
-              " " +
-              allUsersNameByEmail[notification.sender_email].split(" ")[0] ??
-              // First name and last name only
-              notification.sender_email}
+              ? allUsersNameByEmail[notification.sender_email]
+                  .split(" ")
+                  .reverse()[0] +
+                " " +
+                allUsersNameByEmail[notification.sender_email].split(" ")[0]
+              : // First name and last name only
+                notification.sender_email}
           </p>
           <p>
             {String(

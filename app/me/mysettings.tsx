@@ -16,10 +16,20 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [menu, setMenu] = useState<string>(selfUser.food_menu);
   const [EJG_code, setEJG_code] = useState<string>(selfUser.EJG_code ?? "");
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
-
-  const [classGroup, setClassGroup] = useState<0 | 1 | 2>(0);
+  const [nicknameError, setNicknameError] = useState<string>("");
+  const [EJG_codeError, setEJG_codeError] = useState<string>("");
 
   const [sureQuestion, setSureQuestion] = useState<boolean>(false);
+
+  const isAlphabetic = (username: string): boolean => {
+    const regex = /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/;
+    return regex.test(username);
+  };
+
+  const isValidEJGCode = (code: string): boolean => {
+    const regex = /^[A-Z0-9]+$/;
+    return regex.test(code);
+  };
 
   async function save() {
     const response = await fetch("/api/editMySettings", {
@@ -60,12 +70,30 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
               <th className="font-semibold">Felhasználónév:</th>
               <th>
                 <Input
-                  color="primary"
+                  color={nicknameError ? "danger" : "primary"}
                   placeholder="Felhasználónév"
                   value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNickname(value.substring(0, 10));
+                    if (!isAlphabetic(value)) {
+                      setNicknameError(
+                        "A felhasználónév csak betűket tartalmazhat."
+                      );
+                    } else {
+                      setNicknameError("");
+                    }
+                    if (value.length < 3) {
+                      setNicknameError(
+                        "A felhasználónévnek legalább 3 karakter hosszúnak kell lennie."
+                      );
+                    }
+                  }}
                   size="md"
                 />
+                {nicknameError && (
+                  <p className="text-danger-600">{nicknameError}</p>
+                )}
               </th>
             </tr>
             <tr>
@@ -89,9 +117,21 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                   color={EJG_code.length == 13 ? "primary" : "danger"}
                   placeholder="EJG kód"
                   value={EJG_code}
-                  onChange={(e) => setEJG_code(e.target.value.toUpperCase())}
+                  onChange={(e) => {
+                    setEJG_code(e.target.value.toUpperCase());
+                    if (!isValidEJGCode(e.target.value.toUpperCase())) {
+                      setEJG_codeError(
+                        "Az EJG kód csak betűket és számokat tartalmazhat."
+                      );
+                    } else {
+                      setEJG_codeError("");
+                    }
+                  }}
                   isDisabled={!selfUser.tickets.includes("EJG_code_edit")}
                 />
+                {EJG_codeError && (
+                  <p className="text-danger-600">{EJG_codeError}</p>
+                )}
               </th>
             </tr>
             <tr>
@@ -111,6 +151,10 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </tbody>
         </table>
 
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-bold">Értesítési preferenciák</h3>
+        </div>
+
         <Button
           onClick={() => {
             EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();
@@ -124,7 +168,8 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             nickname &&
             (EJG_code !== selfUser.EJG_code ||
               nickname !== selfUser.nickname ||
-              menu !== selfUser.food_menu)
+              menu !== selfUser.food_menu) &&
+            !nicknameError // Hozzáadva a hibaellenőrzés
               ? false
               : true
           }

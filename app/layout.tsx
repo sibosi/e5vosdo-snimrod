@@ -21,6 +21,7 @@ import {
 } from "@/db/dbreq";
 import dynamic from "next/dynamic";
 import Cookie from "@/components/cookie";
+import SkipMessenger from "./skipMessenger";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });
@@ -129,6 +130,7 @@ export default async function RootLayout({
               isActiveHeadSpace={pageSettings.headspace}
             />
             <Cookie />
+            <SkipMessenger />
             {session &&
             session.user &&
             session.user.email &&

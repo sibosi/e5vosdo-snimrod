@@ -1,4 +1,4 @@
-import { groupsConfig } from "@/config/groups";
+import { clubsConfig } from "@/config/groups";
 import PopupCards from "@/components/popupcards";
 
 export default function ClubsPage() {
@@ -8,7 +8,7 @@ export default function ClubsPage() {
         Klubok és szakkörök
       </h1>
 
-      <PopupCards cards={groupsConfig.clubs} />
+      <PopupCards cards={clubsConfig} />
     </>
   );
 }

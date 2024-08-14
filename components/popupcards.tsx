@@ -10,6 +10,15 @@ import {
   Button,
 } from "@nextui-org/react";
 import React, { useState } from "react";
+import { Link } from "@/config/groups";
+import {
+  EmailIcon,
+  FacebookIcon,
+  GithubIcon,
+  InstagramIcon,
+  LinkIcon,
+  PhoneIcon,
+} from "./icons";
 
 type CardProps = {
   title: string;
@@ -18,6 +27,17 @@ type CardProps = {
   description: string;
   popup?: boolean;
   children?: React.ReactNode;
+  links?: Link[];
+};
+
+const iconSize = 20; // Icon size in pixels
+const LinkTypeIcons = {
+  github: <GithubIcon size={iconSize} />,
+  instagram: <InstagramIcon size={iconSize} />,
+  facebook: <FacebookIcon size={iconSize} />,
+  email: <EmailIcon size={iconSize} />,
+  phone: <PhoneIcon size={iconSize} />,
+  website: <LinkIcon size={iconSize} />,
 };
 
 const PopupCards = ({
@@ -28,6 +48,8 @@ const PopupCards = ({
   buttonSize?: "sm" | "md" | "lg";
 }) => {
   const [showingCard, setShowingCard] = useState<CardProps | null>(null);
+  const [openedLink, setOpenedLink] = useState<Link | null>(null);
+
   const size = "5xl";
   return (
     <>
@@ -35,7 +57,7 @@ const PopupCards = ({
         {cards.map((card, index) => (
           <div
             key={"CardList" + index}
-            className="card myglass w-40 sm:w-60 mb-2 h-auto text-foreground"
+            className="card bg-foreground-50 border-1 border-foreground-100 w-40 sm:w-60 mb-2 h-auto text-foreground"
           >
             {typeof card.image === "string" && (
               <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
@@ -50,12 +72,66 @@ const PopupCards = ({
               </figure>
             )}
 
-            <div className="card-body flex p-6">
-              <h2 className="card-title text-clip overflow-hidden">
+            <div className="card-body flex p-2">
+              <h2 className="card-title text-center mx-auto text-clip overflow-hidden">
                 {card.title}
               </h2>
-              <p>{card.description}</p>
+              {card.description !== "" && <p>card.description</p>}
               {card.children}
+
+              {card.links && card.links.length > 0 && (
+                <div className="transition-all duration-300">
+                  <div
+                    className={`grid grid-cols-${card.links.length} gap-2 text-small text-center mx-1 mt-1`}
+                  >
+                    {card.links.map((link, index) => (
+                      <div
+                        key={"CardLink" + index}
+                        onClick={() =>
+                          openedLink === link
+                            ? setOpenedLink(null)
+                            : setOpenedLink(link)
+                        }
+                        className={
+                          "rounded-t-lg text-center justify-center self-center py-1 " +
+                          (openedLink === link ? "bg-primary-100" : "")
+                        }
+                      >
+                        <p className="m-auto max-w-fit">
+                          {Object.keys(LinkTypeIcons).includes(
+                            String(link.type)
+                          )
+                            ? LinkTypeIcons[
+                                link.type as keyof typeof LinkTypeIcons
+                              ]
+                            : link.title}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {openedLink !== null ? (
+                    <div
+                      className={
+                        "transition-all duration-300 bg-primary-100 rounded-lg text-center overflow-hidden " +
+                        (card.links.includes(openedLink)
+                          ? "h-auto p-1"
+                          : "h-0 p-0")
+                      }
+                      onClick={() =>
+                        openedLink.type === "phone"
+                          ? window.open(`tel:${openedLink.value}`, "_blank")
+                          : openedLink.type === "email"
+                          ? window.open(`mailto:${openedLink.value}`, "_blank")
+                          : window.open(openedLink.value, "_blank")
+                      }
+                    >
+                      {openedLink.title}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+
               <div className="card-actions justify-end">
                 <div className="flex flex-wrap gap-3">
                   {typeof card.details === "string" ? (

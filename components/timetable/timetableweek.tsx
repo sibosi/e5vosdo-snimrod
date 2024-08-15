@@ -25,7 +25,7 @@ type LessonDay = [
   LessonOption[],
   LessonOption[],
   LessonOption[],
-  LessonOption[]
+  LessonOption[],
 ];
 
 type TimetableWeak = [LessonDay, LessonDay, LessonDay, LessonDay, LessonDay];
@@ -34,7 +34,7 @@ type TimetableWeak = [LessonDay, LessonDay, LessonDay, LessonDay, LessonDay];
 const fetchTimetable = async (
   EJG_class: string,
   setTimetable: (arg0: Lesson[]) => void,
-  setTimetableWeak: (arg: TimetableWeak) => void
+  setTimetableWeak: (arg: TimetableWeak) => void,
 ) => {
   const resp = await fetch("/api/getMyClassTimetable", {
     method: "POST",
@@ -152,12 +152,12 @@ const TimetableWeek = () => {
                     className={
                       "w-full " +
                       (lessonBlock.length > 1
-                        ? "inline-flex overflow-x-scroll scrollbar-hide "
+                        ? "inline-flex overflow-x-scroll scrollbar-hide"
                         : "")
                     }
                   >
                     {lessonBlock.length > 1 ? (
-                      <div className="min-w-[40px] rounded-xl bg-warning grid">
+                      <div className="grid min-w-[40px] rounded-xl bg-warning">
                         <div className="m-auto">{lessonBlock.length}</div>
                       </div>
                     ) : (
@@ -174,7 +174,7 @@ const TimetableWeek = () => {
                         >
                           {lesson.subject} {lesson.group_name}
                         </Button>
-                      )
+                      ),
                     )}
                   </div>
                 ))}

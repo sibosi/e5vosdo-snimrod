@@ -137,6 +137,7 @@ const PopupCards = ({
                         (link, index) =>
                           link.type == openedLink?.type && (
                             <p
+                              key={"CardLink" + index}
                               className="m-auto my-1 max-w-fit cursor-pointer rounded-lg bg-primary-200 p-1"
                               onClick={() =>
                                 openedLink.type === "phone"

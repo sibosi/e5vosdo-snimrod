@@ -16,7 +16,7 @@ const BarcodeGenerator = ({ value }: { value: string }) => {
   }, [value]);
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex items-center justify-center">
       <canvas ref={barcodeRef} />
     </div>
   );

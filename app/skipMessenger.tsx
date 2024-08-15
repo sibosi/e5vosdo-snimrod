@@ -23,14 +23,14 @@ const SkipMessenger: React.FC = () => {
     <>
       {isMessengerBrowser ? (
         <Modal isOpen={isMessengerBrowser}>
-          <ModalContent className="text-center p-5">
+          <ModalContent className="p-5 text-center">
             <ModalHeader>Átirányítás...</ModalHeader>
             <p>
               A Messenger beépített böngészője nem támogatott. Az oldal
               megtekintéséhez használja a Google Chrome böngészőt vagy a
               Safari-t (iOS).
             </p>
-            <p className="tegt-xl text-primary font-bold">info.e5vosdo.hu</p>
+            <p className="tegt-xl font-bold text-primary">info.e5vosdo.hu</p>
             <Button
               onClick={() => {
                 navigator.clipboard.writeText("info.e5vosdo.hu");

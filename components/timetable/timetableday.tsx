@@ -41,7 +41,7 @@ type LessonDay = [
   LessonOption[],
   LessonOption[],
   LessonOption[],
-  LessonOption[]
+  LessonOption[],
 ];
 
 type TimetableDay = [LessonDay, LessonDay, LessonDay, LessonDay, LessonDay];
@@ -53,12 +53,12 @@ type WeekDuration = [
   DayDuration,
   DayDuration,
   DayDuration,
-  DayDuration
+  DayDuration,
 ];
 
 const countWeekDuration = (
   timetableDay: TimetableDay,
-  setWeekDuration: (arg0: WeekDuration) => void
+  setWeekDuration: (arg0: WeekDuration) => void,
 ) => {
   let weekDuration = [
     [0, 0],
@@ -86,7 +86,7 @@ const countWeekDuration = (
 
 const fetchTimetable = async (
   EJG_class: string,
-  setTimetableDay: (arg: TimetableDay) => void
+  setTimetableDay: (arg: TimetableDay) => void,
 ) => {
   const resp = await fetch("/api/getMyClassTimetable", {
     method: "POST",
@@ -173,7 +173,7 @@ const hideLessons = (
   lessons: LessonOption[],
   lessonBlockIndexes: number[],
   hiddenLessons: number[],
-  setHiddenLessons: (arg: number[]) => void
+  setHiddenLessons: (arg: number[]) => void,
 ) => {
   const hideLessonsList = lessons
     .map((lesson) => lesson?.id ?? -1)
@@ -218,12 +218,12 @@ const Cell = ({
   return (
     <div
       className={
-        "min-w-fit w-full h-14 px-4 my-1 rounded-xl grid grid-cols-1 " +
+        "my-1 grid h-14 w-full min-w-fit grid-cols-1 rounded-xl px-4 " +
         className
       }
       onClick={onClick}
     >
-      <div className="max-w-fit flex">{children}</div>
+      <div className="flex max-w-fit">{children}</div>
     </div>
   );
 };
@@ -235,7 +235,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   const [showSettings, setShowSettings] = useState(false);
 
   const [hiddenLessons, setHiddenLessons] = useState<number[]>(
-    selfUser.hidden_lessons ?? []
+    selfUser.hidden_lessons ?? [],
   );
 
   const [weekDuration, setWeekDuration] = useState<WeekDuration>();
@@ -248,19 +248,19 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
           new Date().getDay()
         ],
       ],
-    ])
+    ]),
   );
   const selectedDayValue = React.useMemo(
     () => Array.from(selectedDayKeys).join(", ").replaceAll("_", " "),
-    [selectedDayKeys]
+    [selectedDayKeys],
   );
 
   const dayOfWeek = React.useMemo(
     () =>
       ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"].indexOf(
-        selectedDayValue
+        selectedDayValue,
       ),
-    [selectedDayValue]
+    [selectedDayValue],
   );
 
   const [selectedClassGroupKeys, setSelectedClassGroupKeys] = React.useState(
@@ -269,15 +269,15 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
         ["Nincs csoport", "1-es csoport", "2-es csoport"][
           selfUser.default_group ?? 0
         ] ?? "Nincs csoport"
-      ).split(", ")
-    )
+      ).split(", "),
+    ),
   );
   const classGroupValue = React.useMemo(
     () =>
       ["Nincs csoport", "1-es csoport", "2-es csoport"].indexOf(
-        Array.from(selectedClassGroupKeys)[0]
+        Array.from(selectedClassGroupKeys)[0],
       ),
-    [selectedClassGroupKeys]
+    [selectedClassGroupKeys],
   );
 
   useEffect(() => {
@@ -297,7 +297,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
     <div className="text-foreground transition-all duration-300">
       {EJG_class !== null ? (
         <>
-          <div className="flex gap-4 mb-2">
+          <div className="mb-2 flex gap-4">
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" className="capitalize">
@@ -350,7 +350,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             </Button>
           </div>
           <div
-            className={`flex gap-4 mb-2 transition-all duration-1000 ease-in-out overflow-hidden h-auto ${
+            className={`mb-2 flex h-auto gap-4 overflow-hidden transition-all duration-1000 ease-in-out ${
               showSettings ? "h-auto p-2 pl-4" : "max-h-0 p-0"
             }`}
           >
@@ -381,15 +381,15 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                 hide == "selected"
                   ? setHide("none")
                   : hide == "none"
-                  ? setHide("edit")
-                  : setHide("selected");
+                    ? setHide("edit")
+                    : setHide("selected");
               }}
             >
               {hide == "selected"
                 ? "Saját órák"
                 : hide === "edit"
-                ? "Módosítás"
-                : "Összes óra"}
+                  ? "Módosítás"
+                  : "Összes óra"}
             </Button>
             <Button
               onClick={() => {
@@ -442,9 +442,9 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                       lessonBlockIndex <= weekDuration[dayOfWeek][1] && (
                         <div
                           key={"LessonBlock" + lessonBlockIndex}
-                          className="w-full flex"
+                          className="flex w-full"
                         >
-                          <div className="h-14 my-1 rounded-xl grid grid-cols-1 bg-default w-[70px] mr-4 text-center">
+                          <div className="my-1 mr-4 grid h-14 w-[70px] grid-cols-1 rounded-xl bg-default text-center">
                             <p>{lessonBlockIndex + ". óra"}</p>
                             <p className="text-sm">
                               {
@@ -465,16 +465,16 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                           <div
                             key={"LessonBlockInside" + lessonBlockIndex}
                             className={
-                              "w-full flex gap-2 " +
+                              "flex w-full gap-2 " +
                               (lessonBlock.length > 1
-                                ? "inline-flex overflow-x-scroll scrollbar-hide "
+                                ? "inline-flex overflow-x-scroll scrollbar-hide"
                                 : "")
                             }
                           >
                             {lessonBlock.map((lesson, lessonIndex) =>
                               lesson === null ? (
                                 <Cell
-                                  className="bg-default-100 border-default-400 border-2"
+                                  className="border-2 border-default-400 bg-default-100"
                                   key={
                                     "Block" +
                                     lessonBlockIndex +
@@ -495,29 +495,29 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                   key={"Lesson" + lesson.id}
                                   className={
                                     hiddenLessons.includes(lesson.id)
-                                      ? "bg-default-100 border-default-400 border-2"
-                                      : "bg-primary-100 border-primary-400 border-2"
+                                      ? "border-2 border-default-400 bg-default-100"
+                                      : "border-2 border-primary-400 bg-primary-100"
                                   }
                                   onClick={() =>
                                     hide == "edit"
                                       ? !hiddenLessons.includes(lesson.id)
                                         ? hideLessons(
                                             lessonBlock.filter(
-                                              (item) => item !== lesson && item
+                                              (item) => item !== lesson && item,
                                             ),
                                             lessonBlock.map(
-                                              (item) => item?.id ?? -1
+                                              (item) => item?.id ?? -1,
                                             ),
                                             hiddenLessons,
-                                            setHiddenLessons
+                                            setHiddenLessons,
                                           )
                                         : hideLessons(
                                             [],
                                             lessonBlock.map(
-                                              (item) => item?.id ?? -1
+                                              (item) => item?.id ?? -1,
                                             ),
                                             hiddenLessons,
-                                            setHiddenLessons
+                                            setHiddenLessons,
                                           )
                                       : setSelectedLesson(lesson)
                                   }
@@ -529,7 +529,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                       isBordered: true,
                                       src: teacherByName[lesson.teacher]?.Photo,
                                     }}
-                                    className="transition-transform px-2 w-52 justify-start"
+                                    className="w-52 justify-start px-2 transition-transform"
                                     description={
                                       <p className="text-foreground">
                                         {toShortRoom(lesson.room)}
@@ -537,7 +537,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                     }
                                     name={
                                       lesson.teacher != "null" ? (
-                                        <span className="break-words w-5 h-5">
+                                        <span className="h-5 w-5 break-words">
                                           {lesson.teacher.substring(0, 20) +
                                             (lesson.teacher.length > 20
                                               ? "..."
@@ -555,11 +555,11 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                       : lesson.group_name}{" "}
                                   </div>
                                 </Cell>
-                              ) : null
+                              ) : null,
                             )}
                           </div>
                         </div>
-                      )
+                      ),
                   )
                 ) : (
                   <p>Nincs órád ezen a napon</p>
@@ -583,7 +583,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                     src: teacherByName[selectedLesson?.teacher ?? ""]?.Photo,
                     className: "w-20 h-20",
                   }}
-                  className="transition-transform p-2"
+                  className="p-2 transition-transform"
                   name
                 />
                 <div className="my-auto">

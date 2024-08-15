@@ -78,7 +78,7 @@ const InstallAppNotif = () => {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       console.log(
-        outcome === "accepted" ? "PWA installed" : "PWA installation dismissed"
+        outcome === "accepted" ? "PWA installed" : "PWA installation dismissed",
       );
       setIsVisible(false);
     }

@@ -55,7 +55,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
 
   return (
     <>
-      <div className="bg-default-100 mx-auto px-5 pt-5 pb-16 rounded-2xl gap-3 max-w-xl">
+      <div className="mx-auto max-w-xl gap-3 rounded-2xl bg-default-100 px-5 pb-16 pt-5">
         <p className="pb-2">
           Itt állíthatod a profilodat, és nézheted az oldalra vonatkozó
           beállításaidat.
@@ -78,14 +78,14 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                     setNickname(value.substring(0, 10));
                     if (!isAlphabetic(value)) {
                       setNicknameError(
-                        "A felhasználónév csak betűket tartalmazhat."
+                        "A felhasználónév csak betűket tartalmazhat.",
                       );
                     } else {
                       setNicknameError("");
                     }
                     if (value.length < 3) {
                       setNicknameError(
-                        "A felhasználónévnek legalább 3 karakter hosszúnak kell lennie."
+                        "A felhasználónévnek legalább 3 karakter hosszúnak kell lennie.",
                       );
                     }
                   }}
@@ -121,7 +121,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                     setEJG_code(e.target.value.toUpperCase());
                     if (!isValidEJGCode(e.target.value.toUpperCase())) {
                       setEJG_codeError(
-                        "Az EJG kód csak betűket és számokat tartalmazhat."
+                        "Az EJG kód csak betűket és számokat tartalmazhat.",
                       );
                     } else {
                       setEJG_codeError("");
@@ -151,7 +151,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </tbody>
         </table>
 
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold">Értesítési preferenciák</h3>
         </div>
 
@@ -177,7 +177,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           Mentés
         </Button>
       </div>
-      <p className="text-xs text-foreground-300 mx-auto px-5 max-w-xl">
+      <p className="mx-auto max-w-xl px-5 text-xs text-foreground-300">
         Amennyiben problémád adódik a fiókoddal kapcsolatban, vedd fel a
         kapcsolatot a fejlesztővel!
       </p>
@@ -196,7 +196,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             kulcsfontosságú szerepe van az E5vös Napok alatt. Figyelem, a
             kódodat később nem módosíthatod!
           </p>
-          <div className="text-center py-4">
+          <div className="py-4 text-center">
             <p>Biztosan helyesen adtad-e meg a kódod?</p>
             <p className="text-2xl font-extrabold">{EJG_code}</p>
           </div>

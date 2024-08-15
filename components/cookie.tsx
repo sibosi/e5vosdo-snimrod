@@ -36,7 +36,7 @@ const Cookie = () => {
       isOpen={showCookie}
       title="Cookie Policy"
       placement="bottom"
-      className="m-16 fixed"
+      className="fixed m-16"
       shouldBlockScroll={false}
       backdrop="transparent"
     >

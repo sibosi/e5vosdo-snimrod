@@ -12,7 +12,7 @@ const AboutPage = async () => {
 
   return (
     <>
-      <h1 className="pb-8 text-4xl lg:text-5xl font-semibold text-foreground text-center">
+      <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
         🚧 Dev 🚧
       </h1>
       <div>

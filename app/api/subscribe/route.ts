@@ -8,7 +8,7 @@ const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 webPush.setVapidDetails(
   "mailto:spam.sibosi@gmail.com",
   publicVapidKey,
-  privateVapidKey
+  privateVapidKey,
 );
 
 export async function POST(req: NextRequest, res: NextResponse) {

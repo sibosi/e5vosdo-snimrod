@@ -43,7 +43,7 @@ export const ReinstallServiceWorker = () => {
         .then(async (registration) => {
           console.log(
             "Service worker registered with scope:",
-            registration.scope
+            registration.scope,
           );
           const response = await fetch("/api/subscribe", {
             method: "POST",

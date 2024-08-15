@@ -19,7 +19,7 @@ export const Section = ({
   className,
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(
-    defaultStatus == "closed" ? false : true
+    defaultStatus == "closed" ? false : true,
   );
 
   const toggleDropdown = () => {
@@ -36,7 +36,7 @@ export const Section = ({
         } ` + className
       }
     >
-      <h1 className="text-2xl font-medium py-1" onClick={toggleDropdown}>
+      <h1 className="py-1 text-2xl font-medium" onClick={toggleDropdown}>
         {dropdownable && (
           <Link onClick={toggleDropdown}>
             <svg
@@ -45,7 +45,7 @@ export const Section = ({
               strokeWidth="0"
               viewBox="0 0 20 20"
               aria-hidden="true"
-              className={`h-6 w-6 shrink-0 inline ${
+              className={`inline h-6 w-6 shrink-0 ${
                 isOpen ? `rotate-0` : `rotate-180 fill-gray-400`
               }`}
               data-testid="flowbite-accordion-arrow"

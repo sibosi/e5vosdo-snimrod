@@ -27,14 +27,14 @@ export const QuickTeachers = () => {
   return (
     <Skeleton
       isLoaded={isLoaded}
-      className="rounded-lg h-auto w-auto text-foreground"
+      className="h-auto w-auto rounded-lg text-foreground"
     >
       <React.Fragment>
         {error && <p>Error fetching data</p>}
         {!isLoaded && !error && <p>Loading...</p>}
         {isLoaded && tableData && tableData.length ? (
           tableData.map((teacher: rowType, rowIndex: number) => (
-            <Dropdown key={rowIndex} className="block md:">
+            <Dropdown key={rowIndex} className="md: block">
               <DropdownTrigger>
                 <User
                   as="button"
@@ -43,7 +43,7 @@ export const QuickTeachers = () => {
                     isBordered: true,
                     src: teacher[1],
                   }}
-                  className="transition-transform p-2"
+                  className="p-2 transition-transform"
                   description={teacher[2]}
                   name={teacher[0]}
                 />

@@ -37,13 +37,13 @@ export const PopupCard = ({
 
   return (
     <>
-      <div className="card myglass w-40 sm:w-60 mb-2 h-auto text-foreground">
+      <div className="myglass card mb-2 h-auto w-40 text-foreground sm:w-60">
         {typeof image === "string" && (
-          <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
+          <figure className="relative h-unit-40 w-40 sm:h-unit-60 sm:w-60">
             <Image
               fill={true}
               sizes="100vw"
-              className="object-contain h-auto rounded-md"
+              className="h-auto rounded-md object-contain"
               src={image} // Ensure image is always a string here
               alt="image"
               priority={true}
@@ -52,7 +52,7 @@ export const PopupCard = ({
         )}
 
         <div className="card-body flex p-6">
-          <h2 className="card-title text-clip overflow-hidden">{title}</h2>
+          <h2 className="card-title overflow-hidden text-clip">{title}</h2>
           <p>{description}</p>
           {children}
           <div className="card-actions justify-end">

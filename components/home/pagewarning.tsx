@@ -3,10 +3,10 @@ import Link from "next/link";
 
 export const PageWarning = () => {
   return (
-    <div className="text-sm w-auto bg-amber-300 rounded-lg py-2 px-3 border-3 border-amber-400 max-w-xs  text-center mx-auto mb-3 text-black">
+    <div className="mx-auto mb-3 w-auto max-w-xs rounded-lg border-3 border-amber-400 bg-amber-300 px-3 py-2 text-center text-sm text-black">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="stroke-current shrink-0 h-6 w-6 inline"
+        className="inline h-6 w-6 shrink-0 stroke-current"
         fill="none"
         viewBox="0 0 24 24"
       >

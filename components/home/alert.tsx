@@ -9,13 +9,13 @@ export const Alert = ({ children, className }: Alert) => {
   return (
     <div
       className={
-        "text-sm bg-amber-300 rounded-lg py-2 px-3 border-3 border-amber-400 mb-3 text-black w-fit " +
+        "mb-3 w-fit rounded-lg border-3 border-amber-400 bg-amber-300 px-3 py-2 text-sm text-black " +
         className
       }
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6 inline"
+        className="inline h-6 w-6"
         viewBox="0 0 24 24"
         fill="none"
       >

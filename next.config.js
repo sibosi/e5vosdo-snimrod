@@ -11,21 +11,22 @@ if (true) {
 const withPWAInit = require("next-pwa");
 const isDev = process.env.NODE_ENV !== "production";
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const withPWA = withPWAInit({
-  dest: 'public',
+  dest: "public",
   disable: isDev,
-
 
   exclude: [
     // add buildExcludes here
     ({ asset, compilation }) => {
       if (
         asset.name.startsWith("server/") ||
-        asset.name.match(/^((app-|^)build-manifest\.json|react-loadable-manifest\.json)$/)
+        asset.name.match(
+          /^((app-|^)build-manifest\.json|react-loadable-manifest\.json)$/,
+        )
       ) {
         return true;
       }
@@ -33,7 +34,7 @@ const withPWA = withPWAInit({
         return true;
       }
       return false;
-    }
+    },
   ],
 });
 
@@ -42,11 +43,11 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
       },
     ],
   },
-}
+};
 
-module.exports = withBundleAnalyzer(withPWA(nextConfig))
+module.exports = withBundleAnalyzer(withPWA(nextConfig));

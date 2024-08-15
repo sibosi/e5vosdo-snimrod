@@ -53,19 +53,19 @@ export async function exportTimetable() {
 
     if (typeof EJG_classes === "string" || EJG_classes.length == 1) {
       Q.push(
-        `INSERT INTO timetable (day, start_time, end_time, room, EJG_classes, group_name, teacher, subject)VALUES ("${day}", "${start_time}", "${end_time}", "${room}", '["${EJG_classes}"]', "${group}", "${teacher}", "${subject}")`
+        `INSERT INTO timetable (day, start_time, end_time, room, EJG_classes, group_name, teacher, subject)VALUES ("${day}", "${start_time}", "${end_time}", "${room}", '["${EJG_classes}"]', "${group}", "${teacher}", "${subject}")`,
       );
     } else if (typeof EJG_classes[1] === "string") {
       Q.push(
         `INSERT INTO timetable (day, start_time, end_time, room, EJG_classes, group_name, teacher, subject)VALUES ("${day}", "${start_time}", "${end_time}", "${room}", '["${
           EJG_classes[0] + '", ["' + EJG_classes[1]
-        }"]]', "${group}", "${teacher}", "${subject}")`
+        }"]]', "${group}", "${teacher}", "${subject}")`,
       );
     } else if (typeof EJG_classes[1] != "string") {
       Q.push(
         `INSERT INTO timetable (day, start_time, end_time, room, EJG_classes, group_name, teacher, subject)VALUES ("${day}", "${start_time}", "${end_time}", "${room}", '["${
           EJG_classes[0] + '", ["' + EJG_classes[1].join('", "')
-        }"]]', "${group}", "${teacher}", "${subject}")`
+        }"]]', "${group}", "${teacher}", "${subject}")`,
       );
     }
   }
@@ -147,7 +147,7 @@ def get_lessons(attributes: dict, auto_find=False, specific_group=True) -> list[
 export async function getLessons(
   attributes: { [key: string]: string },
   auto_find = false,
-  specific_group = true
+  specific_group = true,
 ) {
   const keys = Object.keys(attributes);
 

@@ -9,11 +9,11 @@ dayjs.extend(isBetween);
 const filterLogsBetweenDates = (
   logs: Log[],
   start: Dayjs,
-  end: Dayjs
+  end: Dayjs,
 ): Log[] => {
   return logs.filter(
     (log) =>
-      log.action === "updateUser" && dayjs(log.time).isBetween(start, end)
+      log.action === "updateUser" && dayjs(log.time).isBetween(start, end),
   );
 };
 
@@ -22,7 +22,7 @@ const groupLogsByInterval = (
   logs: Log[],
   start: Dayjs,
   end: Dayjs,
-  uniqueUser: boolean
+  uniqueUser: boolean,
 ): { labels: string[]; data: number[] } => {
   const duration = end.diff(start, "minute");
   const interval = duration <= 60 ? 1 : Math.ceil(duration / 60); // Ha kevesebb mint 60 perc, akkor percenként, különben óránként
@@ -37,7 +37,7 @@ const groupLogsByInterval = (
     labels.push(current.format("HH:mm"));
 
     let logsInInterval = logs.filter((log) =>
-      dayjs(log.time).isBetween(current, next, null, "[)")
+      dayjs(log.time).isBetween(current, next, null, "[)"),
     );
 
     if (uniqueUser) {
@@ -77,7 +77,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const LineChart = ({ labels, data }: { labels: string[]; data: number[] }) => {
@@ -109,29 +109,29 @@ export const LineChartLoginBetween = ({ logs }: { logs: Log[] }) => {
     filteredLogs,
     startDate,
     endDate,
-    uniqueUser
+    uniqueUser,
   );
 
   return (
     <div>
-      <div className="flex mb-4">
+      <div className="mb-4 flex">
         <Input
           type="datetime-local"
           value={startDate.format("YYYY-MM-DDTHH:mm")}
           onChange={(e) => setStartDate(dayjs(e.target.value))}
-          className="mr-4 p-2 border rounded"
+          className="mr-4 rounded border p-2"
         />
 
         <Input
           type="datetime-local"
           value={endDate.format("YYYY-MM-DDTHH:mm")}
           onChange={(e) => setEndDate(dayjs(e.target.value))}
-          className="p-2 border rounded"
+          className="rounded border p-2"
         />
       </div>
       <button
         onClick={() => setUniqueUser(!uniqueUser)}
-        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+        className="mb-4 rounded bg-blue-500 px-4 py-2 text-white"
       >
         {uniqueUser
           ? "Összes bejelentkezés mutatása"

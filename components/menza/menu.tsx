@@ -18,16 +18,16 @@ function padTo2Digits(num: number) {
 const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
   return (
     <div
-      className="xs:flex gap-2 bg-foreground-200 rounded-md p-4 max-xs:text-center"
+      className="gap-2 rounded-md bg-foreground-200 p-4 max-xs:text-center xs:flex"
       key={0.031}
     >
       <div
         className={
-          "rounded-xl w-10 h-10 grid grid-cols-1 mb-2 mx-auto " +
+          "mx-auto mb-2 grid h-10 w-10 grid-cols-1 rounded-xl " +
           (menu == "A" ? "bg-primary" : "bg-secondary")
         }
       >
-        <div className="max-w-fit max-h-fit m-auto text-lg font-bold text-white">
+        <div className="m-auto max-h-fit max-w-fit text-lg font-bold text-white">
           {menu}
         </div>
       </div>
@@ -46,7 +46,7 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
               </div>
             ) : (
               <div key={rowIndex + 0.04} />
-            )
+            ),
           )
         ) : (
           <Button disabled key={"Amenu2"} color="default" variant="solid">
@@ -69,8 +69,8 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
 
   return (
     <div className="text-foreground">
-      <p className="font-medium pb-1 text-sm">{date}</p>
-      <div className="gap-2 grid grid-cols-2 max-w-max overflow-hidden bg-foreground-100 rounded-xl p-2">
+      <p className="pb-1 text-sm font-medium">{date}</p>
+      <div className="grid max-w-max grid-cols-2 gap-2 overflow-hidden rounded-xl bg-foreground-100 p-2">
         {menu != "B" && (
           <MenuCard
             menu="A"

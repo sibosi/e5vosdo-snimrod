@@ -26,11 +26,11 @@ export const LogoutButton = ({ className, size }: LogoutProps) => {
 
 export const LogoutIcon = () => {
   return (
-    <form action={doLogout} className="max-w-min h-5">
+    <form action={doLogout} className="h-5 max-w-min">
       <button
         title="Kijelentkezés"
         type="submit"
-        className="p-0 bg-transparent border-none max-w-min max-h-min"
+        className="max-h-min max-w-min border-none bg-transparent p-0"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -58,10 +58,10 @@ const LiveScore = () => {
   }, []);
 
   return (
-    <div className="max-w-fit mx-auto flex bg-success-50 rounded-badge mt-1 gap-2 px-6 text-center items-center text-xs font-semibold text-foreground">
+    <div className="mx-auto mt-1 flex max-w-fit items-center gap-2 rounded-badge bg-success-50 px-6 text-center text-xs font-semibold text-foreground">
       {matches[0].id != -1 ? (
         <>
-          <div className="flex flex-col items-center justify-center text-xs overflow-hidden w-14">
+          <div className="flex w-14 flex-col items-center justify-center overflow-hidden text-xs">
             {matches[0].id != -1 && !image1Error && (
               <Image
                 src={matches[0].image1}
@@ -93,15 +93,15 @@ const LiveScore = () => {
             {matches[0].status === "Live" && (
               // A moving green line between the minutes and the seconds
               <div className="w-full">
-                <div className="w-full h-1 overflow-hidden">
-                  <div className="h-full bg-green-500 animate-grow-line-x"></div>
+                <div className="h-1 w-full overflow-hidden">
+                  <div className="animate-grow-line-x h-full bg-green-500"></div>
                 </div>
 
                 <p className="text-xs font-semibold">{matches[0].time}</p>
               </div>
             )}
           </div>
-          <div className="flex flex-col items-center justify-center text-xs overflow-hidden w-14">
+          <div className="flex w-14 flex-col items-center justify-center overflow-hidden text-xs">
             {matches[0].id != -1 && !image2Error && (
               <Image
                 src={matches[0].image2}

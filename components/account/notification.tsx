@@ -37,7 +37,7 @@ const NewNotification = () => {
   async function sendNotification(
     setTitle: (data: string) => void,
     setMessage: (data: string) => void,
-    setAddressee: (data: string[]) => void
+    setAddressee: (data: string[]) => void,
   ) {
     const response = await fetch("/api/newNotificationByNames", {
       method: "POST",
@@ -59,11 +59,11 @@ const NewNotification = () => {
   }
 
   return (
-    <div className="rounded-3xl bg-primary-50 my-4 p-6 text-foreground">
+    <div className="my-4 rounded-3xl bg-primary-50 p-6 text-foreground">
       <h2 className="text-2xl font-semibold">
         Új értesítés &middot; csak adminoknak
       </h2>
-      <div className="flex w-full flex-wrap md:flex-nowrap md:mb-0 gap-4 py-2 grid-cols-3">
+      <div className="flex w-full grid-cols-3 flex-wrap gap-4 py-2 md:mb-0 md:flex-nowrap">
         <Input
           size="md"
           type="text"
@@ -95,14 +95,14 @@ const NewNotification = () => {
           }
         />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-5">
+      <div className="mb-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {notificationAddressees.map((name, index) => (
           <Button
             key={index}
             color="success"
             onClick={() =>
               setNotificationAddressees(
-                notificationAddressees.filter((item) => item !== name)
+                notificationAddressees.filter((item) => item !== name),
               )
             }
           >
@@ -138,7 +138,7 @@ const NewNotification = () => {
             >
               {name}
             </Button>
-          )
+          ),
         )}
       </div>
       <Button
@@ -152,7 +152,7 @@ const NewNotification = () => {
           sendNotification(
             setNotificationTitle,
             setNotificationMessage,
-            setNotificationAddressees
+            setNotificationAddressees,
           )
         }
       >

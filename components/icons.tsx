@@ -7,7 +7,7 @@ export const Logo: React.FC<IconSvgProps> = ({
   height,
   ...props
 }) => (
-  <svg id="svg" className="dark:fill-white object-contain w-10 h-10">
+  <svg id="svg" className="h-10 w-10 object-contain dark:fill-white">
     <path
       id="path0"
       //fill="currentColor"

@@ -28,7 +28,7 @@ const IDCard = ({ EJG_code }: { EJG_code: string }) => {
         isOpen={showQr || showBarcode}
         onClose={handleGenerate}
         size="sm"
-        className="overflow-auto mx-5"
+        className="mx-5 overflow-auto"
         placement="center"
       >
         <ModalContent>

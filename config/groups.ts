@@ -155,7 +155,7 @@ export const clubsConfig: Group[] = [
     title: "Sakk - klub",
     details:
       "Szeretsz sakkozni, de nincs kivel? Szeretnéd fejleszteni a sakk tudásod? Szeretnéd kipróbálni, fejleszteni játékod vagy taktikád? Akkor a legjobb helyen jársz! Itt elsajátíthatsz mindent a sakkozás alapjairól és egy CM-rel (Candidate Master) is találkozhatsz akár oktatóként, akár diákként. Már három oktatónk is van, és a résztvevők száma is egyre nő. Ha szeretnél egy vidám környezetben sakkozni barátaiddal és osztálytársaiddal jelentkezz a Sakk - klubba és mehet a parti.",
-    image: "/groups/sakk.png",
+    image: "/groups/sakk.jpg",
     description: "",
     links: [
       {

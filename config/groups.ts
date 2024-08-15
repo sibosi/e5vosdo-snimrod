@@ -1,7 +1,14 @@
 export type GroupsConfig = Group[];
 
 export interface Link {
-  type: "facebook" | "instagram" | "website" | "email" | "phone";
+  type:
+    | "facebook"
+    | "instagram"
+    | "website"
+    | "email"
+    | "phone"
+    | "classroom"
+    | "youtube";
   title: string;
   value: string;
 }
@@ -45,6 +52,11 @@ export const clubsConfig: Group[] = [
         title: "BIMUN Website",
         value: "https://www.bimun.hu/",
         type: "website",
+      },
+      {
+        title: "BIMUN Email",
+        value: "bimun@bimun.hu",
+        type: "email",
       },
     ],
   },
@@ -102,7 +114,23 @@ export const clubsConfig: Group[] = [
       "Elege van abból, hogy tehetetlen, mikor mindenki haldoklik maga körül? Esetleg Ön tervez elhalálozni? Azonnal, rutinosan használható tudást szeretne? Stresszhelyzetben is helyesen végezné el az Esmarch-féle műfogást? Naprakész, könnyen alkalmazható tudást szerezhet most velünk. Ha kedve úgy tartja, életeket menthet, ha nem, külön kívánságra speciális kínzási módszereket tanulhat.\n\nKomolyra fordítva a szót, nálunk megtanulhatsz csapatban dolgozni, részt vehetsz magas színvonalú versenyeken és egyéb rendezvényeken a Vöröskereszt szervezésében. Természettudományos érdeklődésűeknek különösen ajánjuk a részvételt, hisz az itt elhangzottak legnagyobb részben biológiára és a józan eszünkre támaszkodnak. Ha még nem is annyira hoz lázba a termtud, az itt átadott tudással a mindennapokban magabiztosnak érezheted magad elsősegélynyújtó képességeidben. Mindezekhez az elméleti és gyakorlati tudást, melyet akár jogosítvány megszerzésénél is hasznosíthatsz, családias légkörben egy befogadó és jófej közösség részeként szerezheted meg.\n\nCsatlakozz Te is az Elsősegélynyújtó Diákkörhöz!",
     image: "/groups/elsosegely.jpg",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Elsősegélynyújtó Diákkör Instagram",
+        value: "https://www.instagram.com/firstaid_ejg/",
+        type: "instagram",
+      },
+      {
+        title: "Pulay Johanna",
+        value: "pulay.johanna.reka@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "Kompolti Áron",
+        value: "kompolti.aron@e5vos.hu",
+        type: "email",
+      },
+    ],
   },
   {
     title: "Kéktúra-szakkör",
@@ -179,7 +207,18 @@ export const clubsConfig: Group[] = [
       "Szeretsz társasozni? Új játékokat szeretnél megismerni? Gyere el a havi rendszerességű TársasDélutánra, garantált a jó társaság, jó játékok!",
     image: "/groups/tarsastar.jpg",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "TársasTár email",
+        value: "tarsaskonyvtar@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "Classroom csoport",
+        value: "https://classroom.google.com/c/NDM5NTQ2NTg4NTc4?cjc=egly4eh",
+        type: "classroom",
+      },
+    ],
   },
   {
     title: "Technikusi Szervezet",
@@ -187,6 +226,22 @@ export const clubsConfig: Group[] = [
       "Mi vagyunk a Technikusi Szervezet. Ott vagyunk mindenhol: évnyitó, évzáró, KMT, könnyűzenei, jazz koncert, M15, karácsony. Hangosítunk, fényezünk, videózunk, technikát gyártunk, rendezvényt szervezünk, újító technikai megoldásokkal állunk elő.",
     image: "/groups/technikusi.png",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Technikusi Szervezet Instagram",
+        value: "https://www.instagram.com/e5vos.technikusi.szervezet/",
+        type: "instagram",
+      },
+      {
+        title: "Technikusi Szervezet email",
+        value: "tsz@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "Gőz Barnabás",
+        value: "goz.barnabas@e5vos.hu",
+        type: "email",
+      },
+    ],
   },
 ];

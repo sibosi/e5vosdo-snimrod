@@ -12,6 +12,7 @@ import {
 import React, { useState } from "react";
 import { Link } from "@/config/groups";
 import {
+  ClassroomIcon,
   EmailIcon,
   FacebookIcon,
   GithubIcon,
@@ -38,6 +39,17 @@ const LinkTypeIcons = {
   email: <EmailIcon size={iconSize} />,
   phone: <PhoneIcon size={iconSize} />,
   website: <LinkIcon size={iconSize} />,
+  classroom: <ClassroomIcon size={iconSize} />,
+};
+
+const navigateToLink = (value: Link) => {
+  if (value.type === "phone") {
+    window.open(`tel:${value.value}`, "_blank");
+  } else if (value.type === "email") {
+    window.open(`mailto:${value.value}`, "_blank");
+  } else {
+    window.open(value.value, "_blank");
+  }
 };
 
 const PopupCards = ({
@@ -80,7 +92,7 @@ const PopupCards = ({
               {card.children}
 
               {card.links && card.links.length > 0 && (
-                <div className="transition-all duration-300">
+                <div>
                   <div
                     className={`mx-1 mt-1 flex gap-2 text-center text-small`}
                   >
@@ -102,7 +114,7 @@ const PopupCards = ({
                                 : card.links?.filter(
                                       (l) => l.type === link.type,
                                     ).length === 1
-                                  ? window.open(link.value, "_blank")
+                                  ? navigateToLink(link)
                                   : setOpenedLink(link);
                             }}
                             className={
@@ -110,7 +122,7 @@ const PopupCards = ({
                               (openedLink === link ? "bg-primary-100" : "")
                             }
                           >
-                            <p className="m-auto max-w-fit">
+                            <p className="m-auto max-w-fit cursor-pointer">
                               {Object.keys(LinkTypeIcons).includes(
                                 String(link.type),
                               )
@@ -124,11 +136,11 @@ const PopupCards = ({
                     )}
                   </div>
 
-                  {openedLink !== null ? (
+                  {
                     <div
                       className={
                         "overflow-hidden rounded-lg bg-primary-100 text-center text-sm transition-all duration-300 " +
-                        (card.links.includes(openedLink)
+                        (openedLink && card.links.includes(openedLink)
                           ? "h-auto p-1"
                           : "h-0 p-0")
                       }
@@ -139,26 +151,14 @@ const PopupCards = ({
                             <p
                               key={"CardLink" + index}
                               className="m-auto my-1 max-w-fit cursor-pointer rounded-lg bg-primary-200 p-1"
-                              onClick={() =>
-                                openedLink.type === "phone"
-                                  ? window.open(
-                                      `tel:${openedLink.value}`,
-                                      "_blank",
-                                    )
-                                  : openedLink.type === "email"
-                                    ? window.open(
-                                        `mailto:${openedLink.value}`,
-                                        "_blank",
-                                      )
-                                    : window.open(openedLink.value, "_blank")
-                              }
+                              onClick={() => navigateToLink(link)}
                             >
                               {link.title}
                             </p>
                           ),
                       )}
                     </div>
-                  ) : null}
+                  }
                 </div>
               )}
 

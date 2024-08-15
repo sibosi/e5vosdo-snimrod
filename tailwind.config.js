@@ -10,7 +10,11 @@ module.exports = {
   ],
   theme: {
     extend: {},
-  },
+    screens: {
+      xs: "475px",
+      ...require("tailwindcss/defaultConfig").theme.screens,
+    },
+  }, // Add your tailwind config here
   darkMode: "class",
   plugins: [nextui(), require("daisyui")],
   daisyui: {

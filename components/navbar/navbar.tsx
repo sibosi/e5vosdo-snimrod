@@ -24,9 +24,11 @@ import LiveScore from "./headspace/livescore";
 export const Navbar = ({
   selfUser,
   isActiveHeadSpace,
+  className,
 }: {
   selfUser: User | undefined;
   isActiveHeadSpace: boolean;
+  className?: string;
 }) => {
   const searchInput = (
     <Input
@@ -50,7 +52,7 @@ export const Navbar = ({
   );
 
   return (
-    <NextUINavbar maxWidth="xl" position="sticky">
+    <NextUINavbar maxWidth="xl" position="sticky" className={className}>
       <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">

@@ -53,18 +53,18 @@ const PopupCards = ({
   const size = "5xl";
   return (
     <>
-      <div className="text-left gap-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 border-b-8 border-transparent justify-items-center">
+      <div className="grid grid-cols-2 justify-items-center gap-2 border-b-8 border-transparent text-left md:grid-cols-3 lg:grid-cols-4">
         {cards.map((card, index) => (
           <div
             key={"CardList" + index}
-            className="card bg-foreground-50 border-1 border-foreground-100 w-40 sm:w-60 mb-2 h-auto text-foreground"
+            className="card mb-2 h-auto w-40 border-1 border-foreground-100 bg-foreground-50 text-foreground sm:w-60"
           >
             {typeof card.image === "string" && (
-              <figure className="relative w-40 sm:w-60 h-unit-40 sm:h-unit-60">
+              <figure className="relative h-unit-40 w-40 sm:h-unit-60 sm:w-60">
                 <Image
                   fill={true}
                   sizes="100vw"
-                  className="object-contain h-auto rounded-md"
+                  className="h-auto rounded-md object-contain"
                   src={card.image} // Ensure image is always a string here
                   alt="image"
                   priority={true}
@@ -73,7 +73,7 @@ const PopupCards = ({
             )}
 
             <div className="card-body flex p-2">
-              <h2 className="card-title text-center mx-auto text-clip overflow-hidden">
+              <h2 className="card-title mx-auto overflow-hidden text-clip text-center">
                 {card.title}
               </h2>
               {card.description !== "" && <p>card.description</p>}
@@ -82,51 +82,80 @@ const PopupCards = ({
               {card.links && card.links.length > 0 && (
                 <div className="transition-all duration-300">
                   <div
-                    className={`grid grid-cols-${card.links.length} gap-2 text-small text-center mx-1 mt-1`}
+                    className={`mx-1 mt-1 flex gap-2 text-center text-small`}
                   >
-                    {card.links.map((link, index) => (
-                      <div
-                        key={"CardLink" + index}
-                        onClick={() =>
-                          openedLink === link
-                            ? setOpenedLink(null)
-                            : setOpenedLink(link)
-                        }
-                        className={
-                          "rounded-t-lg text-center justify-center self-center py-1 " +
-                          (openedLink === link ? "bg-primary-100" : "")
-                        }
-                      >
-                        <p className="m-auto max-w-fit">
-                          {Object.keys(LinkTypeIcons).includes(
-                            String(link.type)
-                          )
-                            ? LinkTypeIcons[
-                                link.type as keyof typeof LinkTypeIcons
-                              ]
-                            : link.title}
-                        </p>
-                      </div>
-                    ))}
+                    {card.links.map(
+                      (link, index) =>
+                        // If there is multiple links with the same type show only once the icon
+                        card.links &&
+                        (card.links?.filter((l) => l.type === link.type)
+                          .length === 1 ||
+                          card.links[index] ===
+                            card.links?.filter(
+                              (l) => l.type === link.type,
+                            )[0]) && (
+                          <div
+                            key={"CardLink" + index}
+                            onClick={() => {
+                              openedLink === link
+                                ? setOpenedLink(null)
+                                : card.links?.filter(
+                                      (l) => l.type === link.type,
+                                    ).length === 1
+                                  ? window.open(link.value, "_blank")
+                                  : setOpenedLink(link);
+                            }}
+                            className={
+                              "w-full justify-center self-center rounded-t-lg py-1 text-center " +
+                              (openedLink === link ? "bg-primary-100" : "")
+                            }
+                          >
+                            <p className="m-auto max-w-fit">
+                              {Object.keys(LinkTypeIcons).includes(
+                                String(link.type),
+                              )
+                                ? LinkTypeIcons[
+                                    link.type as keyof typeof LinkTypeIcons
+                                  ]
+                                : link.title}
+                            </p>
+                          </div>
+                        ),
+                    )}
                   </div>
 
                   {openedLink !== null ? (
                     <div
                       className={
-                        "transition-all duration-300 bg-primary-100 rounded-lg text-center overflow-hidden " +
+                        "overflow-hidden rounded-lg bg-primary-100 text-center text-sm transition-all duration-300 " +
                         (card.links.includes(openedLink)
                           ? "h-auto p-1"
                           : "h-0 p-0")
                       }
-                      onClick={() =>
-                        openedLink.type === "phone"
-                          ? window.open(`tel:${openedLink.value}`, "_blank")
-                          : openedLink.type === "email"
-                          ? window.open(`mailto:${openedLink.value}`, "_blank")
-                          : window.open(openedLink.value, "_blank")
-                      }
                     >
-                      {openedLink.title}
+                      {card.links.map(
+                        (link, index) =>
+                          link.type == openedLink?.type && (
+                            <p
+                              className="m-auto my-1 max-w-fit cursor-pointer rounded-lg bg-primary-200 p-1"
+                              onClick={() =>
+                                openedLink.type === "phone"
+                                  ? window.open(
+                                      `tel:${openedLink.value}`,
+                                      "_blank",
+                                    )
+                                  : openedLink.type === "email"
+                                    ? window.open(
+                                        `mailto:${openedLink.value}`,
+                                        "_blank",
+                                      )
+                                    : window.open(openedLink.value, "_blank")
+                              }
+                            >
+                              {link.title}
+                            </p>
+                          ),
+                      )}
                     </div>
                   ) : null}
                 </div>
@@ -158,24 +187,24 @@ const PopupCards = ({
           onClose={() => setShowingCard(null)}
         >
           <ModalContent className="max-h-[95vh] overflow-auto">
-            <ModalHeader className="flex flex-col gap-1 text-xl text-foreground font-semibold">
+            <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-foreground">
               {showingCard.title}
             </ModalHeader>
             <ModalBody>
               <div className="overflow-auto sm:flex">
-                <div className="relative w-auto p-14 sm:w-56 sm:p-28 justify-center sm:justify-normal">
+                <div className="relative w-auto justify-center p-14 sm:w-56 sm:justify-normal sm:p-28">
                   {typeof showingCard.image === "string" && (
                     <Image
                       fill={true}
-                      className="object-contain max-h-fit rounded-md"
+                      className="max-h-fit rounded-md object-contain"
                       src={showingCard.image}
                       alt="image"
                       priority={true}
                     />
                   )}
                 </div>
-                <div className="overflow-auto fill-overlay md:max-h-[100%] text-left text-foreground px-6 py-6">
-                  <p className="text-md whitespace-pre-line pb-4 overflow-auto">
+                <div className="overflow-auto fill-overlay px-6 py-6 text-left text-foreground md:max-h-[100%]">
+                  <p className="text-md overflow-auto whitespace-pre-line pb-4">
                     {showingCard.details}
                   </p>
                 </div>

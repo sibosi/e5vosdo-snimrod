@@ -138,7 +138,18 @@ export const clubsConfig: Group[] = [
       "Célunk, hogy eötvösös éveink során az Országos Kéktúra 1172,5 km hosszú útvonalát egy lelkes csapattal bejárjuk. Havonta általában 1 alkalom kerül megrendezésre, ezek változóan egynaposak vagy ottalvósak. Mindenképp ajánljuk szakkörünket, ha szereted az erdőt járni vagy csak kedvet érzel magadban ahhoz, hogy kiszakadj a szürke hétköznapokból, s eltölts egy napot egy vidám csapattal!",
     image: "/groups/kektura.jpg",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Kéktúra-szakkör Facebook",
+        value: "https://www.facebook.com/groups/ejgkektura/",
+        type: "instagram",
+      },
+      {
+        title: "Kéktúra-szakkör Instagram",
+        value: "https://www.instagram.com/tehen_kek",
+        type: "instagram",
+      },
+    ],
   },
   {
     title: "Eötvös Kosárlabdacsapat",

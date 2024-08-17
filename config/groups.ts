@@ -98,7 +98,13 @@ export const clubsConfig: Group[] = [
       "A suliújság keretein belül igyekszünk betekintést nyújtani egy újság működésébe. A diákok részt vehetnek szövegek alkotásában, azok illusztrálásában vagy tördelőként a meglévő anyagok végső kinézetét tudják megtervezni. A tanév során workshopokat is tartunk, ahol játékokkal és különböző feladatokkal szeretnénk elősegíteni az ihletszerzést és a többiekkel való ismerkedést. Minden elkészült lapunk megjelenik nyomtatásban, hogy teljessé váljon az élmény. :)",
     image: "/groups/diak.jpg",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Eötvös Diák Instagram",
+        value: "https://www.instagram.com/e5vosdiak/",
+        type: "instagram",
+      },
+    ],
   },
   {
     title: "Eötvös Alkotó Műhely",

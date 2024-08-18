@@ -213,7 +213,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Színjátszó",
     details:
-      "Színt játszunk. Szeretjük az összes színt, a kéket, a pirosat, a zöldet, de még a khakit, meg a bézst is. Komolyra fordítva a szót igyekszünk minden évben rendezni egy darabot -ami tavaj meg is valósult!!-, és rengeteget játszunk. Minden péntek délután sokszínű gyakorlatokkal, és ikonikus játékokkal készülünk a darabra.",
+      "Színt játszunk. Szeretjük az összes színt, a kéket, a pirosat, a zöldet, de még a khakit, meg a bézst is. Komolyra fordítva a szót, igyekszünk minden évben rendezni egy darabot -idén akár kettőt is?!-, és rengeteget játszunk. Minden péntek délután sokszínű gyakorlatokkal, és ikonikus játékokkal készülünk a darabra.",
     image: "/groups/szinjatszo.png",
     description: "",
     links: [],

@@ -171,7 +171,33 @@ export const clubsConfig: Group[] = [
       "Idén is lesz Eötvös Média! Mi dokumentáljuk az összes programot az Eötvösben. Ott vagyunk minden fontos eseményen, fotózunk, videózunk, megörökítjük az iskola legmeghatározóbb emlékeit. Gyere, csatlakozz hozzánk!",
     image: "/groups/media.jpg",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Eötvös Média Facebook",
+        value: "https://www.facebook.com/eotvosmedia",
+        type: "facebook",
+      },
+      {
+        title: "Eötvös Média Instagram",
+        value: "https://www.instagram.com/eotvosmedia",
+        type: "instagram",
+      },
+      {
+        title: "Eötvös Média email",
+        value: "mediabrigad@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "Eötvös Média Levelezőlista",
+        value: "https://listmonk.e5vosmedia.hu/subscription/form",
+        type: "email",
+      },
+      {
+        title: "Eötvös Média Weboldal",
+        value: "https://e5vosmedia.hu",
+        type: "website",
+      }
+    ],
   },
   {
     title: "MUN-Club",
@@ -216,7 +242,13 @@ export const clubsConfig: Group[] = [
       "Színt játszunk. Szeretjük az összes színt, a kéket, a pirosat, a zöldet, de még a khakit, meg a bézst is. Komolyra fordítva a szót, igyekszünk minden évben rendezni egy darabot -idén akár kettőt is?!-, és rengeteget játszunk. Minden péntek délután sokszínű gyakorlatokkal, és ikonikus játékokkal készülünk a darabra.",
     image: "/groups/szinjatszo.png",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Színjátszó YouTube",
+        value: "https://youtube.com/@szinjatszosdoku2492",
+        type: "youtube",
+      }
+    ],
   },
   {
     title: "TársasTár",

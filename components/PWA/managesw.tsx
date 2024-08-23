@@ -6,9 +6,55 @@ import {
   ModalContent,
   ModalHeader,
 } from "@nextui-org/react";
+import { color } from "framer-motion";
 import React, { useEffect, useState } from "react";
 
-export const ReinstallServiceWorker = () => {
+export const ServiceWorkerDetails = () => {
+  const [showSWDetails, setShowSWDetails] = useState(false);
+  const [subscription, setSubscription] = useState<any>();
+
+  useEffect(() => {
+    (async () => {
+      const registration = await navigator.serviceWorker.ready;
+      console.log("Service Worker is registered");
+      const existingSubscription =
+        await registration.pushManager.getSubscription();
+      setSubscription(existingSubscription);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <Modal isOpen={showSWDetails} onClose={() => setShowSWDetails(false)}>
+      <ModalContent className="p-4">
+        <ModalHeader>Service Worker részletek</ModalHeader>
+        <p>{JSON.stringify(subscription)}</p>
+
+        <Button
+          onClick={() => {
+            navigator.clipboard.writeText(JSON.stringify(subscription));
+          }}
+        >
+          Másolás
+        </Button>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+export const ReinstallServiceWorker = ({
+  color,
+  children,
+}: {
+  color?:
+    | "default"
+    | "primary"
+    | "success"
+    | "warning"
+    | "danger"
+    | "secondary";
+  children?: string;
+}) => {
   const [isServiceWorkerRegistered, setIsServiceWorkerRegistered] =
     useState(false);
 
@@ -85,54 +131,25 @@ export const ReinstallServiceWorker = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [showSWDetails, setShowSWDetails] = useState(false);
-  const [subscription, setSubscription] = useState<any>();
-
-  useEffect(() => {
-    (async () => {
-      const registration = await navigator.serviceWorker.ready;
-      console.log("Service Worker is registered");
-      const existingSubscription =
-        await registration.pushManager.getSubscription();
-      setSubscription(existingSubscription);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <div className="max-w-full">
-      <div>
-        <ButtonGroup>
-          <Button
-            color={isServiceWorkerRegistered ? "success" : "danger"}
-            onClick={async () => {
-              await deleteServiceWorker();
-              await registerServiceWorker();
-              location.reload();
-            }}
-          >
-            SW újratelepítése
-          </Button>
-          <Button onClick={() => setShowSWDetails(!showSWDetails)}>
-            SW részletek
-          </Button>
-        </ButtonGroup>
-      </div>
+    <Button
+      color={color ?? (isServiceWorkerRegistered ? "success" : "danger")}
+      onClick={async () => {
+        await deleteServiceWorker();
+        await registerServiceWorker();
+        location.reload();
+      }}
+    >
+      {children ?? "SW újratelepítése"}
+    </Button>
+  );
+};
 
-      <Modal isOpen={showSWDetails} onClose={() => setShowSWDetails(false)}>
-        <ModalContent className="p-4">
-          <ModalHeader>Service Worker részletek</ModalHeader>
-          <p>{JSON.stringify(subscription)}</p>
-
-          <Button
-            onClick={() => {
-              navigator.clipboard.writeText(JSON.stringify(subscription));
-            }}
-          >
-            Másolás
-          </Button>
-        </ModalContent>
-      </Modal>
-    </div>
+export const ManageSW = () => {
+  return (
+    <>
+      <ReinstallServiceWorker />
+      <ServiceWorkerDetails />
+    </>
   );
 };

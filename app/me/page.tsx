@@ -3,8 +3,10 @@ import { getAuth, hasPermission } from "@/db/dbreq";
 import { Avatar } from "@nextui-org/react";
 import MySettings from "./mysettings";
 import ToManageButton from "./toManage";
-import { has } from "cheerio/lib/api/traversing";
 import IDCard from "./IDCard";
+import VersionTable from "./versionTable";
+import VersionManager from "@/components/PWA/versionManager";
+import CacheManager from "@/components/PWA/cacheManager";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -38,6 +40,12 @@ const AboutPage = async () => {
       ) : (
         <></>
       )}
+
+      <VersionManager />
+
+      <CacheManager />
+
+      <VersionTable />
 
       <IDCard EJG_code={selfUser.EJG_code} />
 

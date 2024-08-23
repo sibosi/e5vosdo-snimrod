@@ -10,7 +10,7 @@ import {
 } from "@/db/dbreq";
 import ManageUsers from "@/components/account/manageusers";
 import NewNotification from "@/components/account/notification";
-import { ReinstallServiceWorker } from "@/components/PWA/managesw";
+import { ManageSW } from "@/components/PWA/managesw";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -42,7 +42,7 @@ const AboutPage = async () => {
       <div className="inline-flex gap-2">
         <LogoutButton />
 
-        <ReinstallServiceWorker />
+        <ManageSW />
       </div>
       <div>{"Adminok: " + admins.join(", ")}</div>
       <br />

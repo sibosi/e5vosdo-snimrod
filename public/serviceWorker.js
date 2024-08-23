@@ -27,39 +27,7 @@ self.addEventListener("notificationclick", function (event) {
   );
 });
 
-const CACHE_NAME = 'cache ' + Date.now();
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        '/',
-        '/clubs',
-
-        '/favicon.ico',
-        '/bimun.jpg',
-        '/debate.png',
-        '/diak.jpg',
-        '/eam.png',
-        '/elsosegely.jpg',
-        '/kektura.jpg',
-        '/kosar.jpg',
-        '/media.jpg',
-        '/munclub.png',
-        '/nekunkx.png',
-        '/sakk.jpg',
-        '/suliradio.png',
-        '/szinjatszo.png',
-        '/tarsastar.png',
-        '/technikusi.png',
-        '/techteam.jpg',
-        '/zoldbiz.png',
-
-        // További statikus erőforrások hozzáadása itt
-      ]);
-    })
-  );
-});
+const CACHE_NAME = 'simple-cache'
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
@@ -75,15 +43,115 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+self.addEventListener('install', (event) => {
+  // Save version to localStorage
+  fetch('/api/manifest').then((response) => {
+    return response.json();
+  }).then((manifest) => {
+    localStorage.setItem('sw_version', manifest.version);
+  });
+});
+
+const DISALLOWED_URLS = [
+  '/api',
+  '/me',
+  '/manifest.json'
+]
+
+const DISALLOWED_URL_BEGINNINGS = [
+  '/api',
+]
+
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  if (url.pathname.startsWith('/_next/image')) {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        // Ha a kép már cache-elve van, visszaadjuk a cache-ből
+        if (response) {
+          return response;
+        }
+
+        // Ha nincs cache-elve, letöltjük és elmentjük a cache-be
+        return fetch(event.request).then((networkResponse) => {
+          return caches.open('dynamic-images-cache').then((cache) => {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
+        }).catch((error) => {
+          console.error('Failed to fetch and cache image:', error);
+          throw error;
+        });
+      })
+    );
+  }
+
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request).then((networkResponse) => {
-        return caches.open('my-app-cache').then((cache) => {
+
+        const shouldDisallow = DISALLOWED_URLS.some((disallowedUrl) => {
+          return event.request.url.includes(disallowedUrl);
+        });
+
+        const shouldDisallowBeginning = DISALLOWED_URL_BEGINNINGS.some((disallowedUrlBeginning) => {
+          return event.request.url.startsWith(disallowedUrlBeginning);
+        })
+
+        if (shouldDisallow || shouldDisallowBeginning) {
+          return networkResponse;
+        }
+
+        return caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, networkResponse.clone());
           return networkResponse;
         });
-      });
+      })
     })
   );
+});
+
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'reCache') {
+    // Update the cache
+
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        // 1. Store cache URLs
+        return cache.keys().then((requests) => {
+          const urlsToReCache = requests.map(request => request.url);
+
+          // 2. Delete old cache
+          return caches.delete(CACHE_NAME).then(() => {
+            return caches.open(CACHE_NAME).then((newCache) => {
+
+              // 3. Re-cache URLs
+              return Promise.all(
+                urlsToReCache.map((url) => {
+                  return fetch(url).then((response) => {
+                    if (response.ok) {
+                      return newCache.put(url, response);
+                    }
+                    console.warn(`Fetching ${url} failed during re-cache.`);
+                  }).catch((error) => {
+                    console.error(`Error fetching ${url} during re-cache:`, error);
+                  });
+                })
+              );
+            });
+          });
+        });
+      })
+    );
+
+    fetch('/manifest.json').then((response) => {
+      return response.json();
+    }).then((manifest) => {
+      localStorage.setItem('version', manifest.version);
+    });
+  }
 });

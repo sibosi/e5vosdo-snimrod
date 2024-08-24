@@ -22,6 +22,7 @@ import {
 import dynamic from "next/dynamic";
 import Cookie from "@/components/cookie";
 import SkipMessenger from "./skipMessenger";
+import OGURL from "./ogurl";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });
@@ -52,6 +53,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  OGURL();
   const session = await auth();
   session?.user ? await updateUser(session?.user as User) : null;
   const users = await getStudentUsersEmail();
@@ -129,8 +131,10 @@ export default async function RootLayout({
               selfUser={selfUser}
               isActiveHeadSpace={pageSettings.headspace}
             />
+
             <Cookie />
             <SkipMessenger />
+
             {session &&
             session.user &&
             session.user.email &&

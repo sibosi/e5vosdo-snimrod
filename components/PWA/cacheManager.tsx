@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 // A cache-ekhez való hozzáférés és kezelés funkciói
 const CacheManager = () => {
   const [cacheList, setCacheList] = useState<string[]>([]);
-  const [cacheContent, setCacheContent] = useState([]);
-  const [selectedCache, setSelectedCache] = useState(null);
+  const [cacheContent, setCacheContent] = useState<any>([]);
+  const [selectedCache, setSelectedCache] = useState<any>(null);
 
   // Cache-ek betöltése
   useEffect(() => {
@@ -17,7 +17,7 @@ const CacheManager = () => {
   }, []);
 
   // Cache tartalmának betöltése
-  const loadCacheContent = async (cacheName) => {
+  const loadCacheContent = async (cacheName: string) => {
     const cache = await caches.open(cacheName);
     const requests = await cache.keys();
     setSelectedCache(cacheName);
@@ -25,7 +25,7 @@ const CacheManager = () => {
   };
 
   // Cache törlése
-  const deleteCache = async (cacheName) => {
+  const deleteCache = async (cacheName: string) => {
     await caches.delete(cacheName);
     setCacheList(cacheList.filter((name) => name !== cacheName));
     setCacheContent([]);
@@ -33,7 +33,7 @@ const CacheManager = () => {
   };
 
   // Cache elem eltávolítása
-  const deleteCacheItem = async (cacheName, request) => {
+  const deleteCacheItem = async (cacheName: any, request: any) => {
     const cache = await caches.open(cacheName);
     await cache.delete(request);
     loadCacheContent(cacheName); // Frissítés a cache tartalom betöltésével
@@ -60,7 +60,7 @@ const CacheManager = () => {
         <div>
           <h3>Cache Content for: {selectedCache}</h3>
           <ul>
-            {cacheContent.map((request) => (
+            {cacheContent.map((request: any) => (
               <li key={request.url}>
                 {request.url}{" "}
                 <button onClick={() => deleteCacheItem(selectedCache, request)}>

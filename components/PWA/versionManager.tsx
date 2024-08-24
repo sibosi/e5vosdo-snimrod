@@ -7,7 +7,6 @@ import {
   checkSWupdate,
   updateVersion,
 } from "./version";
-import { ReinstallServiceWorker } from "./managesw";
 
 const VersionManager = () => {
   const [needUpdate, setNeedUpdate] = useState<CheckResult>();
@@ -41,11 +40,6 @@ const VersionManager = () => {
       >
         App frissítés
       </Button>
-      <ReinstallServiceWorker
-        color={needSWUpdate?.updateRequired ? "danger" : "default"}
-      >
-        SW frissítés
-      </ReinstallServiceWorker>
     </div>
   );
 };

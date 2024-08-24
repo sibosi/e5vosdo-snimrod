@@ -1,5 +1,6 @@
 "use client";
 import manifest from "@/public/manifest.json";
+import { reinstallServiceWorker } from "./managesw";
 
 export interface CheckResult {
   updateRequired: boolean;
@@ -76,7 +77,7 @@ export const checkSWupdate = async (): Promise<CheckResult> => {
     };
 
   const requiredSWversion: string = manifest.required_sw_version;
-  const currentVersion = localStorage.getItem("sw_version");
+  const currentVersion = localStorage.getItem("version");
 
   if (!currentVersion)
     return {
@@ -104,6 +105,8 @@ export const updateVersion = async () => {
 
   localStorage.setItem("version", latestVersion);
   console.log("App updated to version", latestVersion);
+
+  if ((await checkSWupdate()).updateRequired) reinstallServiceWorker();
 
   return latestVersion;
 };

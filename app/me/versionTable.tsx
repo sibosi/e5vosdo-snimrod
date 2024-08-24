@@ -47,14 +47,6 @@ const VersionTable = () => {
                 </th>
               </tr>
               <tr>
-                <th className="font-semibold">SW verzió</th>
-                <th>
-                  {needSWUpdate.latestVersion
-                    ? needSWUpdate.currentVersion
-                    : "Nincs elérhető verzió"}
-                </th>
-              </tr>
-              <tr>
                 <th className="font-semibold">SW verzió-követelmény</th>
                 <th>
                   {needSWUpdate.latestVersion

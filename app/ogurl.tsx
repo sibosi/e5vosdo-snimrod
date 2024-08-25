@@ -7,7 +7,7 @@ export default function OGURL() {
   const router = useRouter();
 
   useEffect(() => {
-    const allowedDomains = ["info.e5vosdo.hu"];
+    const allowedDomains = ["info.e5vosdo.hu", "localhost"];
     const currentDomain = window.location.hostname;
 
     if (!allowedDomains.includes(currentDomain)) {

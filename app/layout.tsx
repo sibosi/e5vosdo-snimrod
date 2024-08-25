@@ -53,7 +53,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  OGURL();
   const session = await auth();
   session?.user ? await updateUser(session?.user as User) : null;
   const users = await getStudentUsersEmail();
@@ -123,6 +122,7 @@ export default async function RootLayout({
           gtag('config', 'G-P74RJ9THHS');
           `}
         </Script>
+        <OGURL />
         <ServiceWorker />
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>

@@ -42,7 +42,9 @@ const VersionTable = () => {
                       ? needUpdate.currentVersion
                       : "Nincs elérhető verzió"}
                   </span>
-                  {needUpdate.updateRequired && "→ " + needUpdate.latestVersion}
+                  {needUpdate.updateRequired
+                    ? "→ " + needUpdate.latestVersion
+                    : ""}
                 </th>
               </tr>
               <tr>

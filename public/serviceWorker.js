@@ -43,15 +43,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-self.addEventListener('install', (event) => {
-  // Save version to localStorage
-  fetch('/api/manifest').then((response) => {
-    return response.json();
-  }).then((manifest) => {
-    localStorage.setItem('sw_version', manifest.version);
-  });
-});
-
 const DISALLOWED_URLS = [
   '/api',
   '/me',

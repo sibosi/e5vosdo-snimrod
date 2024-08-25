@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { chechForUpdate, updateVersion } from "./version";
 
 function ServiceWorker() {
   useEffect(() => {
@@ -77,9 +78,21 @@ function ServiceWorker() {
       });
 
       console.log("Service Worker got all of the events.");
+
+      const interval = async () => {
+        chechForUpdate().then((newNeedUpdate) => {
+          if (newNeedUpdate.updateRequired) {
+            updateVersion().then(() => {
+              window.location.reload();
+            });
+          }
+        });
+      };
+
+      interval();
     }
   }, []);
-  return <> </>;
+  return <></>;
 }
 
 export default ServiceWorker;

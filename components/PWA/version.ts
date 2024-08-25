@@ -1,5 +1,5 @@
 "use client";
-import manifest from "@/public/manifest.json";
+import manifestFile from "@/public/manifest.json";
 import { reinstallServiceWorker } from "./managesw";
 
 export interface CheckResult {
@@ -10,6 +10,12 @@ export interface CheckResult {
   error?: boolean;
   errorMessage?: string;
 }
+
+export const getManifest = async () => {
+  return (await fetch("/api/manifest").then((res) =>
+    res.json().then((data) => data),
+  )) as typeof manifestFile;
+};
 
 export const chechForUpdate = async (): Promise<CheckResult> => {
   if (typeof window === "undefined")
@@ -23,7 +29,7 @@ export const chechForUpdate = async (): Promise<CheckResult> => {
 
   // The app version is stored in local storage
   const currentVersion = localStorage.getItem("version");
-  const latestVersion: string = manifest.version;
+  const latestVersion: string = (await getManifest()).version;
 
   if (!currentVersion)
     return {
@@ -76,7 +82,7 @@ export const checkSWupdate = async (): Promise<CheckResult> => {
       errorMessage: "Window is not defined",
     };
 
-  const requiredSWversion: string = manifest.required_sw_version;
+  const requiredSWversion: string = (await getManifest()).required_sw_version;
   const currentVersion = localStorage.getItem("version");
 
   if (!currentVersion)
@@ -101,7 +107,7 @@ export const updateVersion = async () => {
     return "Update failed: No service worker controller";
 
   navigator.serviceWorker.controller.postMessage({ action: "reCache" });
-  const latestVersion = manifest.version;
+  const latestVersion = (await getManifest()).version;
 
   localStorage.setItem("version", latestVersion);
   console.log("App updated to version", latestVersion);

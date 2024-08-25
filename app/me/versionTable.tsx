@@ -31,41 +31,40 @@ const VersionTable = () => {
           <table>
             <tbody>
               <tr>
-                <th className="font-semibold">Jelenlegi verzió</th>
+                <th className="font-semibold">App verzió</th>
                 <th>
-                  {needUpdate.currentVersion
-                    ? needUpdate.currentVersion
-                    : "Nincs elérhető verzió"}
+                  <span
+                    className={
+                      needUpdate.updateRequired ? "text-danger" : "text-success"
+                    }
+                  >
+                    {needUpdate.currentVersion
+                      ? needUpdate.currentVersion
+                      : "Nincs elérhető verzió"}
+                  </span>
+                  {needUpdate.updateRequired && "→ " + needUpdate.latestVersion}
                 </th>
               </tr>
               <tr>
-                <th className="font-semibold">Legújabb verzió</th>
+                <th className="font-semibold">Szinkronizációs követelmény</th>
                 <th>
-                  {needUpdate.latestVersion
-                    ? needUpdate.latestVersion
-                    : "Nincs elérhető verzió"}
+                  <span
+                    className={needSWUpdate.updateRequired ? "text-danger" : ""}
+                  >
+                    {needSWUpdate.latestVersion
+                      ? needSWUpdate.latestVersion
+                      : "Nincs elérhető verzió"}
+                  </span>
+
+                  <span className="text-danger">
+                    {"serviceWorker" in navigator
+                      ? ""
+                      : "Szinkronizálatlan app"}
+                  </span>
                 </th>
-              </tr>
-              <tr>
-                <th className="font-semibold">SW verzió-követelmény</th>
-                <th>
-                  {needSWUpdate.latestVersion
-                    ? needSWUpdate.latestVersion
-                    : "Nincs elérhető verzió"}
-                </th>
-              </tr>
-              <tr>
-                <th className="font-semibold">Kell frissítés?</th>
-                <th>{needUpdate.updateRequired ? "Igen" : "Nem"}</th>
-              </tr>
-              <tr>
-                <th className="font-semibold">Kell SW frissítés</th>
-                <th>{needSWUpdate.updateRequired ? "Igen" : "Nem"}</th>
               </tr>
             </tbody>
           </table>
-
-          {JSON.stringify(needUpdate)}
         </div>
       ) : null}
     </>

@@ -1,16 +1,10 @@
 "use client";
 import { Button } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
-import {
-  chechForUpdate,
-  CheckResult,
-  checkSWupdate,
-  updateVersion,
-} from "./version";
+import { chechForUpdate, CheckResult, updateVersion } from "./version";
 
 const VersionManager = () => {
   const [needUpdate, setNeedUpdate] = useState<CheckResult>();
-  const [needSWUpdate, setNeedSWUpdate] = useState<CheckResult>();
 
   useEffect(() => {
     const interval = async () => {
@@ -18,13 +12,7 @@ const VersionManager = () => {
       setNeedUpdate(newNeedUpdate);
     };
 
-    const intervalSW = async () => {
-      const newNeedSWUpdate = await checkSWupdate();
-      setNeedSWUpdate(newNeedSWUpdate);
-    };
-
     interval();
-    intervalSW();
   }, []);
 
   return (

@@ -141,7 +141,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
         setNotificationsIds,
         setNotifications,
       );
-    }, 8000); // in ms
+    }, 60 * 1000); // in ms
 
     return () => clearInterval(interval);
   }, [notificationsIds]);

@@ -1,11 +1,19 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function OGURL() {
-  if (typeof window === "undefined") return;
-  const allowedDomains = ["info.e5vosdo.hu"];
-  const currentDomain = window.location.hostname;
+  const router = useRouter();
 
-  if (!allowedDomains.includes(currentDomain)) {
-    redirect("https://info.e5vosdo.hu" + window.location.pathname);
-  }
+  useEffect(() => {
+    const allowedDomains = ["info.e5vosdo.hu"];
+    const currentDomain = window.location.hostname;
+
+    if (!allowedDomains.includes(currentDomain)) {
+      router.push("https://info.e5vosdo.hu" + window.location.pathname);
+    }
+  }, [router]);
+
+  return null;
 }

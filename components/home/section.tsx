@@ -9,6 +9,7 @@ type SectionProps = {
   dropdownable?: boolean;
   children: React.ReactNode;
   className?: string;
+  titleClassName?: string;
 };
 
 export const Section = ({
@@ -17,6 +18,7 @@ export const Section = ({
   dropdownable,
   children,
   className,
+  titleClassName,
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(
     defaultStatus == "closed" ? false : true,
@@ -61,8 +63,7 @@ export const Section = ({
             </svg>
           </Link>
         )}
-
-        {title}
+        <span className={titleClassName}>{title}</span>
       </h1>
       <div
         className={`transition-all duration-1000 ${

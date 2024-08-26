@@ -41,13 +41,7 @@ const AboutPage = async () => {
         <></>
       )}
 
-      <VersionManager />
-
-      <CacheManager />
-
-      <VersionTable />
-
-      <IDCard EJG_code={selfUser.EJG_code} />
+      <IDCard EJG_code={selfUser.EJG_code} codeType="barcode" center={true} />
 
       <MySettings selfUser={selfUser} />
     </>

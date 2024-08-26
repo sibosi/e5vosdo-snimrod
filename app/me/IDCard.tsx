@@ -11,18 +11,33 @@ import {
   ModalHeader,
 } from "@nextui-org/react";
 
-const IDCard = ({ EJG_code }: { EJG_code: string }) => {
+const IDCard = ({
+  EJG_code,
+  codeType,
+  center,
+}: {
+  EJG_code: string;
+  codeType?: "qr" | "barcode" | "both";
+  center?: boolean;
+}) => {
   const [showQr, setShowQr] = useState(false);
   const [showBarcode, setShowBarcode] = useState(false);
 
   const handleGenerate = () => {
-    setShowQr(!showQr);
-    setShowBarcode(!showBarcode);
+    if (codeType !== "barcode") setShowQr(!showQr);
+    if (codeType !== "qr") setShowBarcode(!showBarcode);
   };
 
   return (
-    <div className="p-4">
-      <Button onClick={handleGenerate}>QR kód és vonalkód megjelenítése</Button>
+    <div className={"flex max-w-min p-4 " + (center ? "mx-auto" : "")}>
+      <Button onClick={handleGenerate} className="w-full">
+        {codeType === "both"
+          ? "QR kód és vonalkód"
+          : codeType === "qr"
+            ? "QR kód"
+            : "Vonalkód"}{" "}
+        megjelenítése
+      </Button>
 
       <Modal
         isOpen={showQr || showBarcode}
@@ -32,9 +47,15 @@ const IDCard = ({ EJG_code }: { EJG_code: string }) => {
         placement="center"
       >
         <ModalContent>
-          <ModalHeader>QR kód és vonalkód</ModalHeader>
+          <ModalHeader>
+            {codeType === "both"
+              ? "QR kód és vonalkód"
+              : codeType === "qr"
+                ? "QR kód"
+                : "Vonalkód"}
+          </ModalHeader>
           <ModalBody>
-            <p>Itt láthatod a QR kódot és a vonalkódot is.</p>
+            <p>A kód az EJG azonosítód alapján készült.</p>
             {showQr && <QrCodeGenerator value={EJG_code} />}
             {showBarcode && <BarcodeGenerator value={EJG_code} />}
           </ModalBody>

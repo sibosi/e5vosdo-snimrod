@@ -11,6 +11,38 @@ import {
   ButtonGroup,
 } from "@nextui-org/react";
 import React, { useState } from "react";
+import VersionTable from "./versionTable";
+import { Section } from "@/components/home/section";
+import CacheManager from "@/components/PWA/cacheManager";
+import VersionManager from "@/components/PWA/versionManager";
+
+const SettingsSection = ({
+  title,
+  children,
+  titleClassName,
+  dropdownable = false,
+  defaultStatus = "opened",
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  titleClassName?: string;
+  dropdownable?: boolean;
+  defaultStatus?: "opened" | "closed";
+  className?: string;
+}) => {
+  return (
+    <Section
+      title={title}
+      defaultStatus={defaultStatus}
+      dropdownable={dropdownable}
+      titleClassName="text-lg font-bold text-forground"
+      className={"pt-0 " + className}
+    >
+      {children}
+    </Section>
+  );
+};
 
 const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [menu, setMenu] = useState<string>(selfUser.food_menu);
@@ -56,104 +88,134 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   return (
     <>
       <div className="mx-auto max-w-xl gap-3 rounded-2xl bg-default-100 px-5 pb-16 pt-5">
-        <p className="pb-2">
+        <p className="">
           Itt állíthatod a profilodat, és nézheted az oldalra vonatkozó
           beállításaidat.
         </p>
-        <table className="table gap-y-2">
-          <tbody>
-            <tr>
-              <th className="font-semibold">Név:</th>
-              <th>{selfUser.name}</th>
-            </tr>
-            <tr>
-              <th className="font-semibold">Felhasználónév:</th>
-              <th>
-                <Input
-                  color={nicknameError ? "danger" : "primary"}
-                  placeholder="Felhasználónév"
-                  value={nickname}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNickname(value.substring(0, 10));
-                    if (!isAlphabetic(value)) {
-                      setNicknameError(
-                        "A felhasználónév csak betűket tartalmazhat.",
-                      );
-                    } else {
-                      setNicknameError("");
-                    }
-                    if (value.length < 3) {
-                      setNicknameError(
-                        "A felhasználónévnek legalább 3 karakter hosszúnak kell lennie.",
-                      );
-                    }
-                  }}
-                  size="md"
-                />
-                {nicknameError && (
-                  <p className="text-danger-600">{nicknameError}</p>
-                )}
-              </th>
-            </tr>
-            <tr>
-              <th className="font-semibold">Profilkép beállítása:</th>
-              <th>
-                <Link
-                  href="https://myaccount.google.com/personal-info?hl=hu&utm_source=OGB&utm_medium=act"
-                  color="primary"
-                >
-                  Google fiók profilképének állítása
-                </Link>
-                <p className="text-sm">
-                  {"(A profilkép jelenleg csak így változtatható)"}
-                </p>
-              </th>
-            </tr>
-            <tr>
-              <th className="font-semibold">EJG kód:</th>
-              <th>
-                <Input
-                  color={EJG_code.length == 13 ? "primary" : "danger"}
-                  placeholder="EJG kód"
-                  value={EJG_code}
-                  onChange={(e) => {
-                    setEJG_code(e.target.value.toUpperCase());
-                    if (!isValidEJGCode(e.target.value.toUpperCase())) {
-                      setEJG_codeError(
-                        "Az EJG kód csak betűket és számokat tartalmazhat.",
-                      );
-                    } else {
-                      setEJG_codeError("");
-                    }
-                  }}
-                  isDisabled={!selfUser.tickets.includes("EJG_code_edit")}
-                />
-                {EJG_codeError && (
-                  <p className="text-danger-600">{EJG_codeError}</p>
-                )}
-              </th>
-            </tr>
-            <tr>
-              <th className="font-semibold">Menza menü:</th>
-              <th>
-                <RadioGroup
-                  value={!["A", "B"].includes(menu) ? "?" : menu}
-                  onChange={(e) => setMenu(e.target.value)}
-                  color="primary"
-                >
-                  <Radio value="?">{"Nincs megadva"}</Radio>
-                  <Radio value="A">{'"A" menü'}</Radio>
-                  <Radio value="B">{'"B" menü'}</Radio>
-                </RadioGroup>
-              </th>
-            </tr>
-          </tbody>
-        </table>
 
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold">Értesítési preferenciák</h3>
-        </div>
+        <SettingsSection title="">
+          <table className="table gap-y-2">
+            <tbody>
+              <tr>
+                <th className="font-semibold">Név:</th>
+                <th>{selfUser.name}</th>
+              </tr>
+              <tr>
+                <th className="font-semibold">Felhasználónév:</th>
+                <th>
+                  <Input
+                    color={nicknameError ? "danger" : "primary"}
+                    placeholder="Felhasználónév"
+                    value={nickname}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setNickname(value.substring(0, 10));
+                      if (!isAlphabetic(value)) {
+                        setNicknameError(
+                          "A felhasználónév csak betűket tartalmazhat.",
+                        );
+                      } else {
+                        setNicknameError("");
+                      }
+                      if (value.length < 3) {
+                        setNicknameError(
+                          "A felhasználónévnek legalább 3 karakter hosszúnak kell lennie.",
+                        );
+                      }
+                    }}
+                    size="md"
+                  />
+                  {nicknameError && (
+                    <p className="text-danger-600">{nicknameError}</p>
+                  )}
+                </th>
+              </tr>
+              <tr>
+                <th className="font-semibold">Profilkép beállítása:</th>
+                <th>
+                  <Link
+                    href="https://myaccount.google.com/personal-info?hl=hu&utm_source=OGB&utm_medium=act"
+                    color="primary"
+                  >
+                    Google fiók profilképének állítása
+                  </Link>
+                  <p className="text-sm">
+                    {"(A profilkép jelenleg csak így változtatható)"}
+                  </p>
+                </th>
+              </tr>
+              <tr>
+                <th className="font-semibold">EJG kód:</th>
+                <th>
+                  <Input
+                    color={EJG_code.length == 13 ? "primary" : "danger"}
+                    placeholder="EJG kód"
+                    value={EJG_code}
+                    onChange={(e) => {
+                      setEJG_code(e.target.value.toUpperCase());
+                      if (!isValidEJGCode(e.target.value.toUpperCase())) {
+                        setEJG_codeError(
+                          "Az EJG kód csak betűket és számokat tartalmazhat.",
+                        );
+                      } else {
+                        setEJG_codeError("");
+                      }
+                    }}
+                    isDisabled={!selfUser.tickets.includes("EJG_code_edit")}
+                  />
+                  {EJG_codeError && (
+                    <p className="text-danger-600">{EJG_codeError}</p>
+                  )}
+                </th>
+              </tr>
+              <tr>
+                <th className="font-semibold">Menza menü:</th>
+                <th>
+                  <RadioGroup
+                    value={!["A", "B"].includes(menu) ? "?" : menu}
+                    onChange={(e) => setMenu(e.target.value)}
+                    color="primary"
+                  >
+                    <Radio value="?">{"Nincs megadva"}</Radio>
+                    <Radio value="A">{'"A" menü'}</Radio>
+                    <Radio value="B">{'"B" menü'}</Radio>
+                  </RadioGroup>
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </SettingsSection>
+
+        <SettingsSection title="Értesítési preferenciák">
+          Hamarosan
+        </SettingsSection>
+
+        <SettingsSection
+          title="Haladó beállítások"
+          defaultStatus="closed"
+          dropdownable={true}
+        >
+          <VersionManager />
+
+          <VersionTable />
+
+          <Button
+            className="my-4"
+            color="warning"
+            onClick={() => {
+              caches.keys().then((keys) => {
+                keys.forEach((key) => {
+                  caches.delete(key);
+                });
+                alert("A gyorsítótár kiürítve.");
+              });
+            }}
+          >
+            Gyorsítótár kiürítése
+          </Button>
+
+          <CacheManager />
+        </SettingsSection>
 
         <Button
           onClick={() => {

@@ -5,6 +5,7 @@
 :root.light {
   /*
   HSL = Hue, Saturation, Lightness
+  50: X, 92%, 95%
   100: X, 92%, 90%
   200: X, 93%, 79%
   300: X, 92%, 69%
@@ -16,6 +17,7 @@
   900: X, 100%, 10%
 
   DARK MODE
+  50: X, 100%, 10%
   100: X, 100%, 19%
   200: X, 100%, 29%
   300: X, 100%, 38%
@@ -28,6 +30,7 @@
   */
   --color-primary-hue: 228; /* Hue érték (H) */
   --color-primary: hsl(var(--color-primary-hue), 100%, 47%);
+  --color-primary-50: hsl(var(--color-primary-hue), 92%, 95%);
   --color-primary-100: hsl(var(--color-primary-hue), 92%, 90%);
   --color-primary-200: hsl(var(--color-primary-hue), 93%, 79%);
   --color-primary-300: hsl(var(--color-primary-hue), 92%, 69%);
@@ -41,6 +44,7 @@
 
 :root.dark {
   --color-primary: hsl(var(--color-primary-hue), 92%, 58%);
+  --color-primary-50: hsl(var(--color-primary-hue), 100%, 10%);
   --color-primary-100: hsl(var(--color-primary-hue), 100%, 19%);
   --color-primary-200: hsl(var(--color-primary-hue), 100%, 29%);
   --color-primary-300: hsl(var(--color-primary-hue), 100%, 38%);

@@ -2,7 +2,7 @@
 import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
-const ColorPicker = () => {
+const ThemePicker = () => {
   const [primaryHue, setPrimaryHue] = useState(228);
 
   const updateColors = () => {
@@ -25,6 +25,7 @@ const ColorPicker = () => {
   }, []);
 
   const LIGHT_HSLS = [
+    [228, 92, 95],
     [228, 92, 90],
     [228, 93, 79],
     [228, 92, 69],
@@ -56,11 +57,11 @@ const ColorPicker = () => {
         </Button>
       </div>
 
-      <div className="bg-selfprimary-100 bg-selfprimary-200 bg-selfprimary-300 bg-selfprimary-400 bg-selfprimary-500 bg-selfprimary-600 bg-selfprimary-700 bg-selfprimary-800 bg-selfprimary-900" />
-      <div className="bg-primary-100 bg-primary-200 bg-primary-300 bg-primary-400 bg-primary-500 bg-primary-600 bg-primary-700 bg-primary-800 bg-primary-900" />
+      <div className="bg-selfprimary-50 bg-selfprimary-100 bg-selfprimary-200 bg-selfprimary-300 bg-selfprimary-400 bg-selfprimary-500 bg-selfprimary-600 bg-selfprimary-700 bg-selfprimary-800 bg-selfprimary-900" />
+      <div className="bg-primary-100 bg-primary-200 bg-primary-300 bg-primary-400 bg-primary-50 bg-primary-500 bg-primary-600 bg-primary-700 bg-primary-800 bg-primary-900" />
 
       <div className="flex">
-        {[100, 200, 300, 400, 500, 600, 700, 800, 900].map((num) => (
+        {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((num) => (
           <div
             key={num}
             className={`w-full p-2 text-center bg-selfprimary-${num}`}
@@ -70,7 +71,7 @@ const ColorPicker = () => {
         ))}
       </div>
       <div className="flex">
-        {[100, 200, 300, 400, 500, 600, 700, 800, 900].map((num, index) => (
+        {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((num, index) => (
           <div
             key={num}
             className="w-full p-2 text-center"
@@ -83,7 +84,7 @@ const ColorPicker = () => {
         ))}
       </div>
       <div className="flex">
-        {[100, 200, 300, 400, 500, 600, 700, 800, 900].map((num) => (
+        {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((num) => (
           <div key={num} className={`w-full p-2 text-center bg-primary-${num}`}>
             {num}
           </div>
@@ -93,4 +94,4 @@ const ColorPicker = () => {
   );
 };
 
-export default ColorPicker;
+export default ThemePicker;

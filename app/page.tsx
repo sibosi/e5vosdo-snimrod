@@ -22,7 +22,7 @@ export default async function Home() {
           <>
             <h1 className="inline text-5xl font-semibold lg:text-5xl">
               Helló{" "}
-              <p className="inline bg-gradient-to-l from-[#39b2f8] to-[#2747fc] bg-clip-text text-transparent">
+              <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
                 {selfUser.nickname}
               </p>
               !

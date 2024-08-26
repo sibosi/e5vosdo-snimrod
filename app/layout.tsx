@@ -126,10 +126,11 @@ export default async function RootLayout({
         <ServiceWorker />
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className={clsx("relative flex h-screen flex-col")}>
+          <div className="bg-selfprimary-50 relative flex h-screen flex-col">
             <Navbar
               selfUser={selfUser}
               isActiveHeadSpace={pageSettings.headspace}
+              className="bg-selfprimary-50"
             />
 
             <Cookie />
@@ -141,10 +142,10 @@ export default async function RootLayout({
             (users as string[]).includes(session.user.email) ? (
               <>
                 {console.log("New login from " + session.user.email)}
-                <main className="container mx-auto max-w-7xl flex-grow pl-3 pr-3 pt-4">
+                <main className="bg-selfprimary-50 container mx-auto max-w-7xl flex-grow pl-3 pr-3 pt-4">
                   {children}
                 </main>
-                <footer className="flex w-full items-center justify-center py-3">
+                <footer className="bg-selfprimary-50 flex w-full items-center justify-center py-3">
                   <Link
                     isExternal
                     className="flex items-center gap-1 pb-14 text-current"

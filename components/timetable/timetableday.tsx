@@ -496,7 +496,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                   className={
                                     hiddenLessons.includes(lesson.id)
                                       ? "border-2 border-default-400 bg-default-100"
-                                      : "border-2 border-primary-400 bg-primary-100"
+                                      : "border-2 border-selfprimary-400 bg-selfprimary-100"
                                   }
                                   onClick={() =>
                                     hide == "edit"
@@ -618,7 +618,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
 
               <div className="pt-2">
                 <Button
-                  color="primary"
+                  className="fill-selfprimary"
                   onClick={() => {
                     setSelectedLesson(undefined);
                   }}

@@ -119,7 +119,7 @@ const PopupCards = ({
                             }}
                             className={
                               "w-full justify-center self-center rounded-t-lg py-1 text-center " +
-                              (openedLink === link ? "bg-primary-100" : "")
+                              (openedLink === link ? "bg-selfprimary-100" : "")
                             }
                           >
                             <p className="m-auto max-w-fit cursor-pointer">
@@ -139,7 +139,7 @@ const PopupCards = ({
                   {
                     <div
                       className={
-                        "overflow-hidden rounded-lg bg-primary-100 text-center text-sm transition-all duration-300 " +
+                        "overflow-hidden rounded-lg bg-selfprimary-100 text-center text-sm transition-all duration-300 " +
                         (openedLink && card.links.includes(openedLink)
                           ? "h-auto p-1"
                           : "h-0 p-0")
@@ -150,7 +150,7 @@ const PopupCards = ({
                           link.type == openedLink?.type && (
                             <p
                               key={"CardLink" + index}
-                              className="m-auto my-1 max-w-fit cursor-pointer rounded-lg bg-primary-200 p-1"
+                              className="m-auto my-1 max-w-fit cursor-pointer rounded-lg bg-selfprimary-200 p-1"
                               onClick={() => navigateToLink(link)}
                             >
                               {link.title}
@@ -212,7 +212,10 @@ const PopupCards = ({
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button color="primary" onPress={() => setShowingCard(null)}>
+              <Button
+                className="fill-selfprimary"
+                onPress={() => setShowingCard(null)}
+              >
                 Ok
               </Button>
             </ModalFooter>

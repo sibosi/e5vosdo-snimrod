@@ -73,7 +73,7 @@ export const PopupButton = ({
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" onPress={onClose}>
+                <Button className="fill-selfprimary" onPress={onClose}>
                   Ok
                 </Button>
               </ModalFooter>

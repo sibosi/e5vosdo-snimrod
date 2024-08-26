@@ -96,18 +96,16 @@ const InstallPWAButton = ({ size }: { size?: "small" | "medium" }) => {
     <>
       {isVisible ? (
         <Chip
-          color="primary"
           onClick={handleInstallClick}
-          className={size == "small" ? "p-0" : ""}
+          className={"fill-selfprimary " + (size == "small" ? "p-0" : "")}
         >
           {size == "small" ? InstallIcon : "App letöltése"}
         </Chip>
       ) : (
         isIOSDevice && (
           <Chip
-            color="primary"
             onClick={() => setModalOpen(true)}
-            className={size == "small" ? "p-0" : ""}
+            className={"fill-selfprimary " + (size == "small" ? "p-0" : "")}
           >
             {size == "small" ? InstallIcon : "App letöltése"}
           </Chip>

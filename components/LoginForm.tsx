@@ -9,9 +9,8 @@ const Login = () => {
         type="submit"
         name="action"
         value="google"
-        color="primary"
         size="sm"
-        className="rounded-badge"
+        className="rounded-badge fill-selfprimary"
       >
         Bejelentkezés
       </Button>

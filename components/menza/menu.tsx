@@ -18,13 +18,13 @@ function padTo2Digits(num: number) {
 const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
   return (
     <div
-      className="gap-2 rounded-md bg-foreground-200 p-4 max-xs:text-center xs:flex"
+      className="max-xs:text-center xs:flex gap-2 rounded-md bg-foreground-200 p-4"
       key={0.031}
     >
       <div
         className={
           "mx-auto mb-2 grid h-10 w-10 grid-cols-1 rounded-xl " +
-          (menu == "A" ? "bg-primary" : "bg-secondary")
+          (menu == "A" ? "bg-selfprimary" : "bg-secondary")
         }
       >
         <div className="m-auto max-h-fit max-w-fit text-lg font-bold text-white">

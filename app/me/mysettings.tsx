@@ -135,7 +135,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 <th>
                   <Link
                     href="https://myaccount.google.com/personal-info?hl=hu&utm_source=OGB&utm_medium=act"
-                    color="primary"
+                    className="text-selfprimary"
                   >
                     Google fiók profilképének állítása
                   </Link>
@@ -221,9 +221,8 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           onClick={() => {
             EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();
           }}
-          color="primary"
           // make the button to be on the right side
-          className="float-right mt-2"
+          className="float-right mt-2 fill-selfprimary"
           isDisabled={
             EJG_code &&
             EJG_code.length === 13 &&

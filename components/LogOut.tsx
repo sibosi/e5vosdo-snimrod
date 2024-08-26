@@ -14,9 +14,8 @@ export const LogoutButton = ({ className, size }: LogoutProps) => {
         type="submit"
         name="action"
         value="google"
-        color="primary"
         size={size ? size : "sm"}
-        className={"rounded-badge " + className}
+        className={"rounded-badge fill-selfprimary " + className}
       >
         Kijelentkezés
       </Button>

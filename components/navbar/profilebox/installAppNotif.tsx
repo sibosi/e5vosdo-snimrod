@@ -92,7 +92,7 @@ const InstallAppNotif = () => {
           title="App telepítése"
           body="Kattints ide az alkalmazás telepítéséhez!"
           onClick={handleInstallClick}
-          color="primary"
+          color="selfprimary"
         />
       )}
 

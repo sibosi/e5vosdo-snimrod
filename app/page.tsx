@@ -90,10 +90,10 @@ export default async function Home() {
       )}
 
       <Section title="Keresel valamit?" className="max-w-xs">
-        <Link href={"/clubs"} color="primary" className="block">
+        <Link href={"/clubs"} className="block text-selfprimary">
           Klubok és szakkörök ➜
         </Link>
-        <Link href={"/events"} color="primary" className="block">
+        <Link href={"/events"} className="block text-selfprimary">
           Összes esemény ➜
         </Link>
       </Section>

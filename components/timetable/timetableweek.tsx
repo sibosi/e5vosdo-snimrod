@@ -169,8 +169,7 @@ const TimetableWeek = () => {
                       ) : (
                         <Button
                           key={"Lesson" + lessonIndex}
-                          color="primary"
-                          className="min-w-fit"
+                          className="min-w-fit fill-selfprimary"
                         >
                           {lesson.subject} {lesson.group_name}
                         </Button>

@@ -5,8 +5,7 @@ import React from "react";
 const ToManageButton = ({ className }: { className?: string }) => {
   return (
     <Button
-      color="primary"
-      className={className}
+      className={"fill-selfprimary " + className}
       onClick={() => {
         window.location.href = "/about";
       }}

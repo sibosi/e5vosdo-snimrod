@@ -13,7 +13,7 @@ export default function NotFound() {
             <p className="text-md m-0 font-normal">Elvesztünk?</p>
             <Link className="flex items-center gap-1 text-current" href="\">
               <span className="text-default-600">Vissza </span>
-              <p className="text-primary">haza!</p>
+              <p className="text-selfprimary">haza!</p>
             </Link>
             <br />
 

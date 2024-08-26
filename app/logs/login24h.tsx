@@ -94,8 +94,7 @@ export const LineChartLogin24 = ({ logs }: { logs: Log[] }) => {
     <div>
       <Button
         onClick={() => setUniquePerHour(!uniquePerHour)}
-        className="mb-4 px-4 py-2"
-        color="primary"
+        className="mb-4 fill-selfprimary px-4 py-2"
       >
         {uniquePerHour
           ? "Összes bejelentkezés mutatása"

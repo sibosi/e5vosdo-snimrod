@@ -152,7 +152,7 @@ export default async function RootLayout({
                     title="Nimród oldala"
                   >
                     <span className="text-default-600">Fejlesztette</span>
-                    <p className="text-primary">Simon Nimród</p>
+                    <p className="text-selfprimary">Simon Nimród</p>
                     <span className="text-default-600">10.C</span>
                   </Link>
                   <br />

@@ -40,8 +40,8 @@ export const RoomChanges = () => {
               onClick={() => setSelect(groupIndex)}
               className={`text-md rounded-xl ${
                 selectedGroupIndex == groupIndex
-                  ? "bg-primary-400"
-                  : "bg-primary-200"
+                  ? "bg-selfprimary-400"
+                  : "bg-selfprimary-200"
               } `}
             >
               {group[0]}

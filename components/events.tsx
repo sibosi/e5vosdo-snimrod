@@ -31,7 +31,7 @@ export const Events = () => {
   }, []);
 
   return (
-    <div className="text-left items-start grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-b-8 border-transparent pb-5">
+    <div className="grid grid-cols-1 items-start gap-2 border-b-8 border-transparent pb-5 text-left md:grid-cols-2 lg:grid-cols-3">
       {events.map(
         (event, index) =>
           (event.show_time != undefined
@@ -74,7 +74,7 @@ export const Events = () => {
                 </div>
               </SideCard>
             </div>
-          )
+          ),
       )}
       {!noneEvent ? <p>Nincs esemény</p> : <></>}
     </div>

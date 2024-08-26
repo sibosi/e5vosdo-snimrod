@@ -2,6 +2,13 @@
   "short_name": "E5 DÖ",
   "name": "Eötvös József Gimnázium Diákönkormányzat",
   "author": "Simon Nimród Zalán",
+  "description": "Az Eötvös József Gimnázium Diákönkormányzatának hivatalos weboldala.",
+  "lang": "hu",
+  "dir": "ltr",
+  "scope": "/",
+  "version": "0.0.2408.1.5",
+  "required_sw_version": "0.0.2408.1",
+
   "start_url": "/",
   "id": "/",
   "display": "standalone",
@@ -13,8 +20,10 @@
       "sizes": "256x256"
     },
     {
-      "src": "icon-144-144.png",
-      "sizes": "144x144"
+      "src": "android144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "monochrome"
     }
   ],
   "screenshots": [

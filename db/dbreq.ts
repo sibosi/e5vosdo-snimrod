@@ -9,7 +9,7 @@ const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 webPush.setVapidDetails(
   "mailto:spam.sibosi@gmail.com",
   publicVapidKey,
-  privateVapidKey
+  privateVapidKey,
 );
 
 export interface User {
@@ -46,7 +46,7 @@ export async function addLog(action: string, message?: string) {
   return await dbreq(
     `INSERT INTO logs (time, user, action, message) VALUES ('${new Date().toJSON()}', '${email}', '${action}', '${
       message ?? ""
-    }');`
+    }');`,
   );
 }
 
@@ -54,7 +54,7 @@ export async function getLogs(max: number = 10) {
   addLog("getLogs");
   if (!(await getAuth())?.permissions.includes("admin")) return;
   return (await dbreq(
-    `SELECT * FROM logs ORDER BY id DESC LIMIT ${max};`
+    `SELECT * FROM logs ORDER BY id DESC LIMIT ${max};`,
   )) as Log[];
 }
 
@@ -91,13 +91,13 @@ export async function getAuth(email?: string | undefined) {
     const authEmail = session.user.email;
 
     const response = (await dbreq(
-      `SELECT * FROM \`users\` WHERE email = '${authEmail}'`
+      `SELECT * FROM \`users\` WHERE email = '${authEmail}'`,
     )) as User[];
 
     return response[0];
   } else {
     const response = (await dbreq(
-      `SELECT * FROM \`users\` WHERE email = '${email}'`
+      `SELECT * FROM \`users\` WHERE email = '${email}'`,
     )) as User[];
 
     return response[0];
@@ -106,17 +106,17 @@ export async function getAuth(email?: string | undefined) {
 
 export async function hasPermission(
   email: string | undefined,
-  functionname: string
+  functionname: string,
 ) {
   if (!email) return false;
   const user = (await getUser(email)) as User;
   const userPermissionsSet = new Set(user.permissions);
   const functionPermissions = new Set(
-    apireq[functionname as apireqType["gate"]].perm
+    apireq[functionname as apireqType["gate"]].perm,
   );
 
   const response = Array.from(functionPermissions).some((item) =>
-    userPermissionsSet.has(item)
+    userPermissionsSet.has(item),
   );
   return response;
 }
@@ -125,7 +125,7 @@ export async function getUsersEmail() {
   const response = await dbreq(`SELECT email FROM users;`);
   let emails: string[] = [];
   (response as unknown as []).map((user: { email: string }) =>
-    emails.push(user.email)
+    emails.push(user.email),
   );
   return emails;
 }
@@ -136,34 +136,34 @@ export async function getEvents() {
 
 export async function getStudentUsers() {
   return await dbreq(
-    `SELECT * FROM users WHERE JSON_CONTAINS(permissions, '"student"', '$')`
+    `SELECT * FROM users WHERE JSON_CONTAINS(permissions, '"student"', '$')`,
   );
 }
 
 export async function getStudentUsersEmail() {
   const response = (await dbreq(
-    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"student"', '$')`
+    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"student"', '$')`,
   )) as Promise<Array<string>>;
   let emails: string[] = [];
   (response as unknown as []).map((user: { email: string }) =>
-    emails.push(user.email)
+    emails.push(user.email),
   );
   return emails;
 }
 
 export async function getAdminUsers() {
   return (await dbreq(
-    `SELECT * FROM users WHERE JSON_CONTAINS(permissions, '"admin"', '$')`
+    `SELECT * FROM users WHERE JSON_CONTAINS(permissions, '"admin"', '$')`,
   )) as Promise<Array<string>>;
 }
 
 export async function getAdminUsersEmail() {
   const response = (await dbreq(
-    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"admin"', '$')`
+    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"admin"', '$')`,
   )) as Promise<Array<string>>;
   let emails: string[] = [];
   (response as unknown as []).map((user: { email: string }) =>
-    emails.push(user.email)
+    emails.push(user.email),
   );
   return emails;
 }
@@ -194,7 +194,7 @@ export async function updateUser(user: User | undefined) {
 
 export async function addUserPermission(
   email: string | undefined,
-  permission: string
+  permission: string,
 ) {
   if (!email) return "no email";
 
@@ -210,7 +210,7 @@ export async function addUserPermission(
 
 export async function removeUserPermissions(
   email: string | undefined,
-  permission: string
+  permission: string,
 ) {
   if (!email) return;
 
@@ -223,7 +223,7 @@ export async function removeUserPermissions(
 
 export async function getUsersEmailByPermission(permission: string) {
   const response = (await dbreq(
-    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`
+    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`,
   )) as any;
   let emails: string[] = [];
   response.map((user: { email: string }) => emails.push(user.email));
@@ -232,7 +232,7 @@ export async function getUsersEmailByPermission(permission: string) {
 
 export async function getNotificationById(id: number) {
   const response = (await dbreq(
-    `SELECT * FROM notifications WHERE id = ${id}`
+    `SELECT * FROM notifications WHERE id = ${id}`,
   )) as any[];
   const notification: {
     id: number;
@@ -249,7 +249,7 @@ export async function getUserNotificationsIds() {
   const email = (await getAuth())?.email;
   const response = (
     (await dbreq(
-      `SELECT notifications FROM users WHERE email = '${email}'`
+      `SELECT notifications FROM users WHERE email = '${email}'`,
     )) as any
   )[0].notifications as number[];
   return response;
@@ -260,7 +260,7 @@ export async function getUserNotifications() {
   if (!email) return;
 
   const notifications: any = await dbreq(
-    `SELECT notifications FROM users WHERE email = '${email}'`
+    `SELECT notifications FROM users WHERE email = '${email}'`,
   );
 
   const {
@@ -272,7 +272,7 @@ export async function getUserNotifications() {
   const getNotifications = async (ids: number[]) => {
     if (!ids.length) return [];
     return await dbreq(
-      `SELECT * FROM notifications WHERE id IN (${ids.join(",")})`
+      `SELECT * FROM notifications WHERE id IN (${ids.join(",")})`,
     );
   };
 
@@ -300,16 +300,16 @@ export async function addServiceWorker(serviceWorker: any) {
 export async function removeServiceWorker(serviceWorker: any, email: string) {
   let users_service_workers = (
     (await dbreq(
-      `SELECT service_workers FROM users WHERE email = '${email}'`
+      `SELECT service_workers FROM users WHERE email = '${email}'`,
     )) as any
   )[0].service_workers;
 
   users_service_workers = users_service_workers.filter(
-    (sw: any) => sw.endpoint !== serviceWorker.endpoint
+    (sw: any) => sw.endpoint !== serviceWorker.endpoint,
   );
 
   const REQ1 = `UPDATE users SET service_workers = '${JSON.stringify(
-    users_service_workers
+    users_service_workers,
   )}' WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
@@ -317,11 +317,11 @@ export async function removeServiceWorker(serviceWorker: any, email: string) {
 
 export async function getServiceWorkersByPermission(permission: string) {
   const users_service_workers: { service_workers: [] }[] = (await dbreq(
-    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`
+    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`,
   )) as any;
   let service_workers: any[] = [];
   users_service_workers.map((user: { service_workers: [] }) =>
-    user.service_workers.map((sw: any) => service_workers.push(sw))
+    user.service_workers.map((sw: any) => service_workers.push(sw)),
   );
 
   return service_workers;
@@ -329,7 +329,7 @@ export async function getServiceWorkersByPermission(permission: string) {
 
 export async function getServiceWorkersByEmail(email: string) {
   const response = (await dbreq(
-    `SELECT service_workers FROM users WHERE email = '${email}'`
+    `SELECT service_workers FROM users WHERE email = '${email}'`,
   )) as any;
   return response[0].service_workers;
 }
@@ -364,16 +364,16 @@ export async function markAsRead(id: number) {
 
   const new_notifications = (
     (await dbreq(
-      `SELECT notifications FROM users WHERE email = '${email}'`
+      `SELECT notifications FROM users WHERE email = '${email}'`,
     )) as any
   )[0].notifications.new;
 
   const filtered_new_notifications = new_notifications.filter(
-    (nid: number) => nid !== id
+    (nid: number) => nid !== id,
   );
 
   const REQ1 = `UPDATE users SET notifications = JSON_SET(notifications, '$.new', JSON_ARRAY(${filtered_new_notifications.join(
-    ", "
+    ", ",
   )})) WHERE email = '${email}';`;
 
   const REQ2 = `UPDATE users SET notifications = JSON_SET(notifications, '$.read', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.read'), '$', ${id})) WHERE email = '${email}';`;
@@ -385,7 +385,7 @@ export async function newNotificationByEmails(
   title: string,
   message: string,
   receiving_emails: string[],
-  payload: string = ""
+  payload: string = "",
 ) {
   const sender_email = (await getAuth())?.email;
 
@@ -395,7 +395,7 @@ export async function newNotificationByEmails(
 
   if (!receiving_emails[0].includes("@")) {
     valid_receiving_emails = await getUsersEmailByPermission(
-      receiving_emails[0]
+      receiving_emails[0],
     );
   } else {
     valid_receiving_emails = receiving_emails;
@@ -426,7 +426,7 @@ export async function newNotificationByEmails(
           body: title,
           icon: "favicon.ico",
           badge: "favicon-16x16.ico",
-        })
+        }),
       );
     }
   });
@@ -437,7 +437,7 @@ export async function newNotificationByEmails(
 export async function newNotificationByNames(
   title: string,
   message: string,
-  receiving_names: string[]
+  receiving_names: string[],
 ) {
   const sender_email = (await getAuth())?.email;
   let receiving_emails: string[] = [];
@@ -466,7 +466,7 @@ export async function newNotificationByNames(
         ];
         console.log("#4 valid_receiving_emails", valid_receiving_emails);
       }
-    })
+    }),
   );
 
   return await newNotificationByEmails(title, message, valid_receiving_emails);
@@ -545,7 +545,7 @@ export async function getMyClassTimetable(EJG_class: string) {
   }
 
   const response = (await dbreq(
-    `SELECT * FROM timetable WHERE JSON_CONTAINS(JSON_EXTRACT(EJG_classes, '$[1]'), '"${EJG_class}"', '$')`
+    `SELECT * FROM timetable WHERE JSON_CONTAINS(JSON_EXTRACT(EJG_classes, '$[1]'), '"${EJG_class}"', '$')`,
   )) as Lesson[];
   return response;
 }
@@ -553,7 +553,7 @@ export async function getMyClassTimetable(EJG_class: string) {
 export async function setHiddenLessons(lessonsId: number[]) {
   const email = (await getAuth())?.email;
   const REQ1 = `UPDATE users SET hidden_lessons = '${JSON.stringify(
-    lessonsId
+    lessonsId,
   )}' WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
@@ -596,7 +596,7 @@ export async function updateMatch(id: number, match: any) {
       const title = `${match.teamShort1} - ${match.teamShort2}`;
       const message = `A meccsnek vége. Az eredmény: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
       const receiving_emails = await getUsersEmailByPermission(
-        notificationPermission
+        notificationPermission,
       );
       receiving_emails.map(async (email) => {
         await newPush(
@@ -606,7 +606,7 @@ export async function updateMatch(id: number, match: any) {
             body: message,
             icon: "soccer-ball.png",
             badge: "soccer-ball.png",
-          })
+          }),
         );
       });
       console.log("Notification sent - Game finished");
@@ -615,7 +615,7 @@ export async function updateMatch(id: number, match: any) {
       const title = `${match.teamShort1} - ${match.teamShort2}`;
       const message = `A meccs elkezdődött! ${match.team1} vs ${match.team2}`;
       const receiving_emails = await getUsersEmailByPermission(
-        notificationPermission
+        notificationPermission,
       );
       receiving_emails.map(async (email) => {
         await newPush(
@@ -625,7 +625,7 @@ export async function updateMatch(id: number, match: any) {
             body: message,
             icon: "soccer-ball.png",
             badge: "soccer-ball.png",
-          })
+          }),
         );
       });
       console.log("Notification sent - Game started");
@@ -634,7 +634,7 @@ export async function updateMatch(id: number, match: any) {
       const title = `Gól! | ${match.teamShort1} - ${match.teamShort2}`;
       const message = `${match.team1} gólt lőtt! Az aktuális állás: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
       const receiving_emails = await getUsersEmailByPermission(
-        notificationPermission
+        notificationPermission,
       );
       receiving_emails.map(async (email) => {
         await newPush(
@@ -644,7 +644,7 @@ export async function updateMatch(id: number, match: any) {
             body: message,
             icon: match.image1,
             badge: "soccer-ball.png",
-          })
+          }),
         );
       });
       console.log("Notification sent - Goal");
@@ -653,7 +653,7 @@ export async function updateMatch(id: number, match: any) {
       const title = `Gól! | ${match.teamShort1} - ${match.teamShort2}`;
       const message = `${match.team2} gólt lőtt! Az aktuális állás: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
       const receiving_emails = await getUsersEmailByPermission(
-        notificationPermission
+        notificationPermission,
       );
 
       receiving_emails.map(async (email) => {
@@ -664,7 +664,7 @@ export async function updateMatch(id: number, match: any) {
             body: message,
             icon: match.image2,
             badge: "soccer-ball.png",
-          })
+          }),
         );
       });
       console.log("Notification sent - Goal");

@@ -6,7 +6,7 @@ import { Button } from "@nextui-org/react";
 
 type QuickRoomchangesConfig = [
   string, // Date string
-  Array<[string, [Array<[number, string, string, string]>]]> // Array of tuples
+  Array<[string, [Array<[number, string, string, string]>]]>, // Array of tuples
 ][];
 
 const roomchangesConfig = oldRoomchangesConfig as QuickRoomchangesConfig;
@@ -31,7 +31,7 @@ export const RoomChanges = () => {
 
   return (
     <div className="text-foreground">
-      <div className="flex gap-2 py-2 overflow-auto scrollbar-hide">
+      <div className="flex gap-2 overflow-auto py-2 scrollbar-hide">
         {todayRoomchangesConfig &&
           todayRoomchangesConfig[1].map((group: any, groupIndex: any) => (
             <Button
@@ -48,13 +48,13 @@ export const RoomChanges = () => {
             </Button>
           ))}
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-w-full">
+      <div className="grid max-w-full grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {todayRoomchangesConfig &&
           todayRoomchangesConfig[1][selectedGroupIndex][1].map(
             (change: any, changeIndex: any) => (
               <p
                 key={changeIndex}
-                className="px-3 py-1 bg-default-300 rounded-xl min-w-fit"
+                className="min-w-fit rounded-xl bg-default-300 px-3 py-1"
               >
                 {change[0] +
                   ". óra " +
@@ -64,7 +64,7 @@ export const RoomChanges = () => {
                   " ➜ " +
                   change[2]}
               </p>
-            )
+            ),
           )}
       </div>
     </div>

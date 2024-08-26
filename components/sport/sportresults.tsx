@@ -34,12 +34,12 @@ export const Scoreboard = () => {
 
   return (
     <div className="pb-32">
-      <div className="text-center justify-center py-6 text-foreground">
+      <div className="justify-center py-6 text-center text-foreground">
         <h1 className="text-3xl font-bold">Foci</h1>
       </div>
-      <div className="scoreboard grid grid-cols-2 w-auto justify-items-center ">
+      <div className="scoreboard grid w-auto grid-cols-2 justify-items-center">
         <div
-          className="team w-40 md:w-52 h-20 text-foreground font-bold text-2xl text-center bg-red-600 rounded-lg pt-1"
+          className="team h-20 w-40 rounded-lg bg-red-600 pt-1 text-center text-2xl font-bold text-foreground md:w-52"
           style={{ backgroundColor: team1Color }}
         >
           <span className="team-name">{team1Name}</span>
@@ -47,7 +47,7 @@ export const Scoreboard = () => {
           <span className="team-score">{team1Score}</span>
         </div>
         <div
-          className="team w-40 md:w-52 h-20 text-foreground font-bold text-2xl text-center bg-cyan-500 rounded-lg pt-1"
+          className="team h-20 w-40 rounded-lg bg-cyan-500 pt-1 text-center text-2xl font-bold text-foreground md:w-52"
           style={{ backgroundColor: team2Color }}
         >
           <span className="team-name">{team2Name}</span>

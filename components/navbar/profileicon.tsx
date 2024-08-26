@@ -57,7 +57,7 @@ const showIcon = (
 async function fetchNotifications(
   notificationsIds: NotificationsIds,
   setNotificationsIds: (data: NotificationsIds) => void,
-  setNotifications: (data: any) => void
+  setNotifications: (data: any) => void,
 ) {
   const resp = await fetch("/api/getUserNotificationsIds");
 
@@ -139,9 +139,9 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
       fetchNotifications(
         notificationsIds,
         setNotificationsIds,
-        setNotifications
+        setNotifications,
       );
-    }, 8000); // in ms
+    }, 60 * 1000); // in ms
 
     return () => clearInterval(interval);
   }, [notificationsIds]);
@@ -152,7 +152,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
         {selfUser?.image && selfUser?.name ? (
           <Badge
             content={String(
-              notifications != undefined ? notifications.new.length : 0
+              notifications != undefined ? notifications.new.length : 0,
             )}
             shape="circle"
             color="danger"
@@ -168,18 +168,18 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
       </div>
       {showButtons && (
         <div
-          className="left-0 top-0 fixed w-full h-screen bg-transparent "
+          className="fixed left-0 top-0 h-screen w-full bg-transparent"
           onClick={handleIconClick}
         />
       )}
 
       <div
-        className={`fixed right-4 top-14 w-11/12 sm:w-96 p-3 backdrop-blur-md bg-default-100/90 rounded-2xl transition-all duration-400 overflow-hidden text-center text-foreground ${
+        className={`fixed right-4 top-14 w-11/12 overflow-hidden rounded-2xl bg-default-100/90 p-3 text-center text-foreground backdrop-blur-md transition-all duration-400 sm:w-96 ${
           !showButtons ? "h-0 py-0" : "h-auto"
         } `}
       >
         <Navbar
-          className="flex bg-foreground-200 py-2 rounded-3xl gap-2"
+          className="flex gap-2 rounded-3xl bg-foreground-200 py-2"
           height={"auto"}
         >
           {selfUser ? (
@@ -225,7 +225,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
                   }
                   allUsersNameByEmail={allUsersNameByEmail}
                 />
-              )
+              ),
             )
           ) : (
             <></>

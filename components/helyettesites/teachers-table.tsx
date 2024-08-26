@@ -27,8 +27,8 @@ export const TeacherTable = () => {
       const data = await res.json();
       setTableData(
         data.filter((_: any, index: any) =>
-          teachersConfig.showIndexes.includes(index)
-        )
+          teachersConfig.showIndexes.includes(index),
+        ),
       );
     };
 
@@ -36,10 +36,10 @@ export const TeacherTable = () => {
   }, []);
 
   return (
-    <div className="text-foreground max-w-max max-h-max">
+    <div className="max-h-max max-w-max text-foreground">
       <Table
         aria-label="Example table with dynamic content"
-        className="text-foreground max-w-max max-h-max"
+        className="max-h-max max-w-max text-foreground"
       >
         <TableHeader>
           {columns.map((column, colIndex) => (

@@ -34,7 +34,7 @@ export default function LogTable({ logs }: { logs: Log[] }) {
 
       return {
         items: logs.filter((log) =>
-          log.user.toLowerCase().includes(search.toLowerCase())
+          log.user.toLowerCase().includes(search.toLowerCase()),
         ),
       };
     },

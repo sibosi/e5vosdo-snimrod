@@ -10,7 +10,7 @@ import {
 } from "@/db/dbreq";
 import ManageUsers from "@/components/account/manageusers";
 import NewNotification from "@/components/account/notification";
-import { ReinstallServiceWorker } from "@/components/PWA/managesw";
+import { ManageSW } from "@/components/PWA/managesw";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -19,7 +19,7 @@ const AboutPage = async () => {
 
   return (
     <>
-      <h1 className="pb-8 text-4xl lg:text-5xl font-semibold text-foreground text-center">
+      <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
         🚧 About 🚧
       </h1>
       {(await hasPermission(selfUser.email, "getUsers")) ? (
@@ -42,7 +42,7 @@ const AboutPage = async () => {
       <div className="inline-flex gap-2">
         <LogoutButton />
 
-        <ReinstallServiceWorker />
+        <ManageSW />
       </div>
       <div>{"Adminok: " + admins.join(", ")}</div>
       <br />

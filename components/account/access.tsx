@@ -3,7 +3,7 @@ import { Countdown } from "../home/countdown";
 
 const Access = ({ name }: { name: string | undefined }) => {
   return (
-    <div className="text-center pb-14 text-foreground">
+    <div className="pb-14 text-center text-foreground">
       <main>
         <br />
         <br />
@@ -13,7 +13,7 @@ const Access = ({ name }: { name: string | undefined }) => {
           {typeof name === "string" ? (
             <h1 className="inline text-4xl font-semibold lg:text-5xl">
               Helló{" "}
-              <p className="inline from-[#f89c39] to-[#a74500] bg-clip-text text-transparent bg-gradient-to-l">
+              <p className="inline bg-gradient-to-l from-[#f89c39] to-[#a74500] bg-clip-text text-transparent">
                 {name.split(" ")[0]}
               </p>
               !
@@ -21,18 +21,18 @@ const Access = ({ name }: { name: string | undefined }) => {
           ) : (
             <h1 className="inline text-4xl font-semibold lg:text-5xl">
               Helló{" "}
-              <p className="inline from-[#f89c39] to-[#a74500] bg-clip-text text-transparent bg-gradient-to-l">
+              <p className="inline bg-gradient-to-l from-[#f89c39] to-[#a74500] bg-clip-text text-transparent">
                 Eötvös Népe
               </p>
               !
             </h1>
           )}
-          <div className="text-base font-semibold py-6">
+          <div className="py-6 text-base font-semibold">
             <p>Végre itt a nyár! Ilyenkor mi is pihenünk.</p>
             <p>Várunk vissza szeptemberben a legújabb funkciókkal!</p>
           </div>
 
-          <div className="max-w-fit mx-auto">
+          <div className="mx-auto max-w-fit">
             <Countdown date="2024/09/02 9:00" />
           </div>
         </>

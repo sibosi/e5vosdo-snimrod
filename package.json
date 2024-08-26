@@ -1,6 +1,6 @@
 {
   "name": "e5vos-do",
-  "version": "0.0.1",
+  "version": "0.0.2408",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -27,7 +27,7 @@
     "@types/react": "18.2.21",
     "@vercel/analytics": "^1.3.0",
     "autoprefixer": "^10.4.19",
-    "axios": "^1.7.2",
+    "axios": "^1.3.1",
     "chart.js": "^4.4.3",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.0.0",
@@ -61,6 +61,8 @@
     "@types/web-push": "^3.6.3",
     "cross-env": "^7.0.3",
     "daisyui": "^4.11.1",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.6",
     "typescript": "^5.5.2"
   }
 }

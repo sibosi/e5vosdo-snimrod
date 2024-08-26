@@ -88,8 +88,8 @@ const tabs = [pages.home, pages.events, pages.clubs, pages.me];
 
 export const PageNav = () => {
   return (
-    <div className="fixed bottom-0 items-center z-50 w-[90%] h-14 md:hidden ">
-      <div className="rounded-lg border-gray-500 border-1 h-12 myglass">
+    <div className="fixed bottom-0 z-50 h-14 w-[90%] items-center md:hidden">
+      <div className="myglass h-12 rounded-lg border-1 border-gray-500">
         <div
           className={`grid h-full max-w-lg grid-cols-${tabs.length} mx-auto font-medium`}
         >
@@ -97,9 +97,9 @@ export const PageNav = () => {
             <Link
               key={index}
               href={page.route}
-              className="inline-flex flex-col items-center justify-center px-5 group"
+              className="group inline-flex flex-col items-center justify-center px-5"
             >
-              <div className="text-foreground text-xl hover:text-sky-700">
+              <div className="text-xl text-foreground hover:text-sky-700">
                 {page.icon}
               </div>
             </Link>

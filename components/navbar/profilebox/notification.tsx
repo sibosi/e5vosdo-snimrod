@@ -68,30 +68,30 @@ export const Notification = ({
     <div key={notification.id}>
       <div
         key={"Notification" + String(notification.id)}
-        className="flex my-3 gap-2"
+        className="my-3 flex gap-2"
         onClick={() => setShowModal(notification.id)}
       >
         <div
           className={
-            "block w-5 h-5 m-1 my-auto " +
+            "m-1 my-auto block h-5 w-5 " +
             (type == "new"
               ? "text-danger-500"
               : type == "sent"
-              ? "text-primary-500"
-              : "")
+                ? "text-primary-500"
+                : "")
           }
         >
           {type == "sent" ? Sent : Bell}
         </div>
-        <div className="text-left truncate w-full">
-          <h3 className="flex font-bold gap-1">
+        <div className="w-full truncate text-left">
+          <h3 className="flex gap-1 font-bold">
             <p className="truncate">{notification.title}</p>
           </h3>
-          <span className="text-sm break-words text-foreground-600">
+          <span className="break-words text-sm text-foreground-600">
             {notification.message}
           </span>
         </div>
-        <div className="text-sm break-words text-foreground-600 text-end">
+        <div className="break-words text-end text-sm text-foreground-600">
           <p>
             {allUsersNameByEmail[notification.sender_email]
               ? allUsersNameByEmail[notification.sender_email]
@@ -109,7 +109,7 @@ export const Notification = ({
                   dateStyle: "medium",
                   timeStyle: "short",
                 })
-                .substring(6)
+                .substring(6),
             )}
           </p>
         </div>
@@ -124,7 +124,7 @@ export const Notification = ({
             markAsRead(notification.id);
           }
         }}
-        className="overflow-auto mx-5"
+        className="mx-5 overflow-auto"
         placement="center"
       >
         <ModalContent className="text-foreground">

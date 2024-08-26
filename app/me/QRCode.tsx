@@ -3,7 +3,7 @@ import QRCode from "qrcode.react";
 
 const QrCodeGenerator = ({ value }: { value: string }) => {
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex items-center justify-center">
       <QRCode value={value} size={256} />
     </div>
   );

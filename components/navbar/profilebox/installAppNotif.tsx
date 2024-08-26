@@ -60,8 +60,9 @@ const InstallAppNotif = () => {
       setHasPWA(!isInStandaloneMode);
     } else {
       // Check if the app is in standalone mode on Android or other platforms
-      setHasPWA(!window.matchMedia("(display-mode: standalone)").matches);
+      setHasPWA(deferredPrompt ? true : false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -77,7 +78,7 @@ const InstallAppNotif = () => {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       console.log(
-        outcome === "accepted" ? "PWA installed" : "PWA installation dismissed"
+        outcome === "accepted" ? "PWA installed" : "PWA installation dismissed",
       );
       setIsVisible(false);
     }

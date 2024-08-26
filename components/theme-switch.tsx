@@ -46,14 +46,14 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = () => {
 
   const toggleTheme = () => {
     setIsDarkMode((prevMode: string) =>
-      prevMode === "light" ? "dark" : prevMode === "dark" ? "system" : "light"
+      prevMode === "light" ? "dark" : prevMode === "dark" ? "system" : "light",
     );
   };
 
   return (
     <div
       onClick={toggleTheme}
-      className="transition-all duration-300 ease-in-out fill-foreground-500 hover:fill-foreground-600"
+      className="fill-foreground-500 transition-all duration-300 ease-in-out hover:fill-foreground-600"
     >
       {theme === "dark" ? (
         <MoonFilledIcon size={22} />

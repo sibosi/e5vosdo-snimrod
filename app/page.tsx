@@ -16,12 +16,12 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <div className="text-center pb-14 text-foreground">
+      <div className="pb-14 text-center text-foreground">
         {selfUser ? (
           <>
             <h1 className="inline text-5xl font-semibold lg:text-5xl">
               Helló{" "}
-              <p className="inline from-[#39b2f8] to-[#2747fc] bg-clip-text text-transparent bg-gradient-to-l">
+              <p className="inline bg-gradient-to-l from-[#39b2f8] to-[#2747fc] bg-clip-text text-transparent">
                 {selfUser.nickname}
               </p>
               !
@@ -30,7 +30,7 @@ export default async function Home() {
         ) : (
           <h1 className="inline text-4xl font-semibold lg:text-5xl">
             Valami&nbsp;
-            <p className="inline from-[#FF1CF7] to-[#b249f8] bg-clip-text text-transparent bg-gradient-to-l">
+            <p className="inline bg-gradient-to-l from-[#FF1CF7] to-[#b249f8] bg-clip-text text-transparent">
               jó&nbsp;
             </p>
             készül...
@@ -96,9 +96,9 @@ export default async function Home() {
       </Section>
 
       <div className="hero bg-[url('/opinion.png')]">
-        <div className="hero-overlay bgcolor "></div>
+        <div className="bgcolor hero-overlay"></div>
         <div className="hero-content text-center text-neutral-content">
-          <div className="max-w-md text-black rounded-lg p-4 backdrop-blur-sm bg-danger-foreground bg-opacity-70">
+          <div className="max-w-md rounded-lg bg-danger-foreground bg-opacity-70 p-4 text-black backdrop-blur-sm">
             <h1 className={clsx("mb-5 text-4xl font-bold")}>
               Helló Eötvös népe!
               <br />

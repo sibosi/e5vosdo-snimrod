@@ -38,24 +38,24 @@ export const NotificationBox = ({
     : "";
 
   return (
-    <div className={"px-1 rounded-2xl " + className + " " + colorStyle}>
-      <div className="flex my-3 gap-2" onClick={onClick}>
+    <div className={"rounded-2xl px-1 " + className + " " + colorStyle}>
+      <div className="my-3 flex gap-2" onClick={onClick}>
         <div
           className={
-            "block w-5 h-5 m-1 my-auto " + (className ?? "") + " " + colorStyle
+            "m-1 my-auto block h-5 w-5 " + (className ?? "") + " " + colorStyle
           }
         >
           {icon}
         </div>
-        <div className="text-left truncate w-full">
-          <h3 className="flex font-bold gap-1">
+        <div className="w-full truncate text-left">
+          <h3 className="flex gap-1 font-bold">
             <p className="truncate">{title}</p>
           </h3>
-          <span className="text-sm break-words text-foreground-600">
+          <span className="break-words text-sm text-foreground-600">
             {body}
           </span>
         </div>
-        <div className="text-sm break-words text-foreground-600 text-end">
+        <div className="break-words text-end text-sm text-foreground-600">
           <p>{sender}</p>
           <p>
             {time &&
@@ -65,7 +65,7 @@ export const NotificationBox = ({
                     dateStyle: "medium",
                     timeStyle: "short",
                   })
-                  .substring(6)
+                  .substring(6),
               )}
           </p>
         </div>

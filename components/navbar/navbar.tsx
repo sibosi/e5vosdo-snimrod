@@ -24,9 +24,11 @@ import LiveScore from "./headspace/livescore";
 export const Navbar = ({
   selfUser,
   isActiveHeadSpace,
+  className,
 }: {
   selfUser: User | undefined;
   isActiveHeadSpace: boolean;
+  className?: string;
 }) => {
   const searchInput = (
     <Input
@@ -43,29 +45,29 @@ export const Navbar = ({
       labelPlacement="outside"
       placeholder="Search..."
       startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+        <SearchIcon className="pointer-events-none flex-shrink-0 text-base text-default-400" />
       }
       type="search"
     />
   );
 
   return (
-    <NextUINavbar maxWidth="xl" position="sticky">
+    <NextUINavbar maxWidth="xl" position="sticky" className={className}>
       <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
-        <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-1" href="/">
+        <NavbarBrand as="li" className="max-w-fit gap-3">
+          <NextLink className="flex items-center justify-start gap-1" href="/">
             <Logo />
-            <p className="font-bold text-foreground block- p-2 hidden">E5</p>
+            <p className="block- hidden p-2 font-bold text-foreground">E5</p>
           </NextLink>
           <GetApp size={isActiveHeadSpace ? "small" : "medium"} />
         </NavbarBrand>
-        <ul className="hidden md:flex gap-4 justify-start ml-2">
+        <ul className="ml-2 hidden justify-start gap-4 md:flex">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium"
+                  "data-[active=true]:font-medium data-[active=true]:text-primary",
                 )}
                 color="foreground"
                 href={item.href}
@@ -115,9 +117,9 @@ export const Navbar = ({
                   index === 1
                     ? "primary"
                     : index === siteConfig.navItems.length - 2 ||
-                      index === siteConfig.navItems.length - 3
-                    ? "danger"
-                    : "foreground"
+                        index === siteConfig.navItems.length - 3
+                      ? "danger"
+                      : "foreground"
                 }
                 href={item.href}
                 size="lg"

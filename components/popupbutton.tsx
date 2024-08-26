@@ -49,24 +49,24 @@ export const PopupButton = ({
         <ModalContent className="max-h-[95vh] overflow-auto">
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-xl text-foreground font-semibold">
+              <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-foreground">
                 {title}
               </ModalHeader>
               <ModalBody>
                 <div className="overflow-auto sm:flex">
-                  <div className="relative w-auto p-14 sm:w-56 sm:p-28 justify-center sm:justify-normal">
+                  <div className="relative w-auto justify-center p-14 sm:w-56 sm:justify-normal sm:p-28">
                     {typeof image === "string" && (
                       <Image
                         fill={true}
-                        className="object-contain max-h-fit rounded-md"
+                        className="max-h-fit rounded-md object-contain"
                         src={image}
                         alt="image"
                         priority={true}
                       />
                     )}
                   </div>
-                  <div className="overflow-auto fill-overlay md:max-h-[100%] text-left text-foreground px-6 py-6">
-                    <p className="text-md whitespace-pre-line pb-4 overflow-auto">
+                  <div className="overflow-auto fill-overlay px-6 py-6 text-left text-foreground md:max-h-[100%]">
+                    <p className="text-md overflow-auto whitespace-pre-line pb-4">
                       {details}
                     </p>
                   </div>

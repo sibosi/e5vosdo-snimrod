@@ -8,7 +8,107 @@ import {
 } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 
-export const ReinstallServiceWorker = () => {
+export const ServiceWorkerDetails = () => {
+  const [showSWDetails, setShowSWDetails] = useState(false);
+  const [subscription, setSubscription] = useState<any>();
+
+  useEffect(() => {
+    (async () => {
+      const registration = await navigator.serviceWorker.ready;
+      console.log("Service Worker is registered");
+      const existingSubscription =
+        await registration.pushManager.getSubscription();
+      setSubscription(existingSubscription);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <Modal isOpen={showSWDetails} onClose={() => setShowSWDetails(false)}>
+      <ModalContent className="p-4">
+        <ModalHeader>Service Worker részletek</ModalHeader>
+        <p>{JSON.stringify(subscription)}</p>
+
+        <Button
+          onClick={() => {
+            navigator.clipboard.writeText(JSON.stringify(subscription));
+          }}
+        >
+          Másolás
+        </Button>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+export const reinstallServiceWorker = () => {
+  const deleteServiceWorker = async () => {
+    if ("serviceWorker" in navigator) {
+      await navigator.serviceWorker
+        .getRegistrations()
+        .then(async (registrations) => {
+          for (let registration of registrations) {
+            await registration.unregister().then((boolean) => {
+              if (boolean) {
+                console.log("Service worker unregistered");
+              } else {
+                console.log("Service worker could not be unregistered");
+              }
+            });
+          }
+          location.reload();
+        })
+        .catch((error) => {
+          console.error("Error getting service worker registrations:", error);
+        });
+    } else {
+      console.log("Service workers are not supported in this browser");
+    }
+  };
+
+  const registerServiceWorker = async () => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/serviceWorker.js")
+        .then(async (registration) => {
+          console.log(
+            "Service worker registered with scope:",
+            registration.scope,
+          );
+          const response = await fetch("/api/subscribe", {
+            method: "POST",
+            body: JSON.stringify(registration),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          console.log("Subscribe response:", response);
+        })
+        .catch((error) => {
+          console.error("Service worker registration failed:", error);
+        });
+    } else {
+      console.log("Service workers are not supported in this browser");
+    }
+  };
+
+  deleteServiceWorker();
+  registerServiceWorker();
+};
+
+export const ReinstallServiceWorker = ({
+  color,
+  children,
+}: {
+  color?:
+    | "default"
+    | "primary"
+    | "success"
+    | "warning"
+    | "danger"
+    | "secondary";
+  children?: string;
+}) => {
   const [isServiceWorkerRegistered, setIsServiceWorkerRegistered] =
     useState(false);
 
@@ -43,7 +143,7 @@ export const ReinstallServiceWorker = () => {
         .then(async (registration) => {
           console.log(
             "Service worker registered with scope:",
-            registration.scope
+            registration.scope,
           );
           const response = await fetch("/api/subscribe", {
             method: "POST",
@@ -85,54 +185,25 @@ export const ReinstallServiceWorker = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [showSWDetails, setShowSWDetails] = useState(false);
-  const [subscription, setSubscription] = useState<any>();
-
-  useEffect(() => {
-    (async () => {
-      const registration = await navigator.serviceWorker.ready;
-      console.log("Service Worker is registered");
-      const existingSubscription =
-        await registration.pushManager.getSubscription();
-      setSubscription(existingSubscription);
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <div className="max-w-full">
-      <div>
-        <ButtonGroup>
-          <Button
-            color={isServiceWorkerRegistered ? "success" : "danger"}
-            onClick={async () => {
-              await deleteServiceWorker();
-              await registerServiceWorker();
-              location.reload();
-            }}
-          >
-            SW újratelepítése
-          </Button>
-          <Button onClick={() => setShowSWDetails(!showSWDetails)}>
-            SW részletek
-          </Button>
-        </ButtonGroup>
-      </div>
+    <Button
+      color={color ?? (isServiceWorkerRegistered ? "success" : "danger")}
+      onClick={async () => {
+        await deleteServiceWorker();
+        await registerServiceWorker();
+        location.reload();
+      }}
+    >
+      {children ?? "SW újratelepítése"}
+    </Button>
+  );
+};
 
-      <Modal isOpen={showSWDetails} onClose={() => setShowSWDetails(false)}>
-        <ModalContent className="p-4">
-          <ModalHeader>Service Worker részletek</ModalHeader>
-          <p>{JSON.stringify(subscription)}</p>
-
-          <Button
-            onClick={() => {
-              navigator.clipboard.writeText(JSON.stringify(subscription));
-            }}
-          >
-            Másolás
-          </Button>
-        </ModalContent>
-      </Modal>
-    </div>
+export const ManageSW = () => {
+  return (
+    <ButtonGroup>
+      <ReinstallServiceWorker />
+      <ServiceWorkerDetails />
+    </ButtonGroup>
   );
 };

@@ -40,19 +40,19 @@ export const SideCard = ({
 
   return (
     <>
-      <div className="card image-full max-w-sm rounded-2xl overflow-hidden">
+      <div className="card image-full max-w-sm overflow-hidden rounded-2xl">
         {typeof image === "string" && (
           <figure>
             <Image
               fill
-              className="z-20 dark:opacity-50 opacity-100"
+              className="z-20 opacity-100 dark:opacity-50"
               src={image}
               alt="image"
               priority={true}
             />
           </figure>
         )}
-        <div className="card-body bg-neutral-200 bg-opacity-50 dark:bg-none dark:bg-opacity-0">
+        <div className="card-body bg-neutral-200 bg-opacity-50 dark:bg-opacity-0 dark:bg-none">
           <div className="flex">
             <h2 className="card-title w-full text-foreground">{title}</h2>
             <div>{OptionalButton(popup)}</div>

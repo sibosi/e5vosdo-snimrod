@@ -8,14 +8,14 @@ const getUserClass = (selfUser: User) => {
 
   const evfolyam =
     Math.floor(
-      (new Date().getTime() - new Date("2023/08/01").getTime()) / msInAYear
+      (new Date().getTime() - new Date("2023/08/01").getTime()) / msInAYear,
     ) +
     +(["A", "B"].includes(selfUser.class_character)
       ? 6
       : ["C", "D", "F"].includes(selfUser.class_character)
-      ? 9
-      : // Az Ny osztály
-        8);
+        ? 9
+        : // Az Ny osztály
+          8);
   const EJG_class =
     (["N", "Ny"].includes(selfUser.class_character) && evfolyam == 8
       ? 9

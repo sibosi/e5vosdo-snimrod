@@ -22,6 +22,7 @@ import {
 import dynamic from "next/dynamic";
 import Cookie from "@/components/cookie";
 import SkipMessenger from "./skipMessenger";
+import OGURL from "./ogurl";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });
@@ -105,7 +106,7 @@ export default async function RootLayout({
         className={clsx(
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
-          "light:bg-white"
+          "light:bg-white",
         )}
       >
         <Script
@@ -121,29 +122,32 @@ export default async function RootLayout({
           gtag('config', 'G-P74RJ9THHS');
           `}
         </Script>
+        <OGURL />
         <ServiceWorker />
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className={clsx("relative flex flex-col h-screen")}>
+          <div className={clsx("relative flex h-screen flex-col")}>
             <Navbar
               selfUser={selfUser}
               isActiveHeadSpace={pageSettings.headspace}
             />
+
             <Cookie />
             <SkipMessenger />
+
             {session &&
             session.user &&
             session.user.email &&
             (users as string[]).includes(session.user.email) ? (
               <>
                 {console.log("New login from " + session.user.email)}
-                <main className="container mx-auto max-w-7xl pt-4 pl-3 pr-3 flex-grow">
+                <main className="container mx-auto max-w-7xl flex-grow pl-3 pr-3 pt-4">
                   {children}
                 </main>
-                <footer className="w-full flex items-center justify-center py-3">
+                <footer className="flex w-full items-center justify-center py-3">
                   <Link
                     isExternal
-                    className="flex items-center gap-1 text-current pb-14"
+                    className="flex items-center gap-1 pb-14 text-current"
                     href={siteConfig.links.mypage}
                     title="Nimród oldala"
                   >

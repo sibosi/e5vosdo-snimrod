@@ -91,7 +91,7 @@ const ManageUsers = ({
     }
 
     const filteredUsers = initialUsers.filter((user: any) =>
-      user.username.toLowerCase().includes(searchName.toLowerCase())
+      user.username.toLowerCase().includes(searchName.toLowerCase()),
     );
     setUsers(sortUsers(filteredUsers));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,7 +101,7 @@ const ManageUsers = ({
     if (reloadUsers) await fetchUsers(setUsers);
 
     setSelectedUser(
-      users.find((user) => selectedUser?.email == user.email) ?? null
+      users.find((user) => selectedUser?.email == user.email) ?? null,
     );
     setReloadUsers(false);
   }
@@ -118,9 +118,9 @@ const ManageUsers = ({
         placeholder="Keresés név alapján"
         value={searchName}
         onChange={(e) => setSearchName(e.target.value)}
-        className="max-w-[200px] mb-2"
+        className="mb-2 max-w-[200px]"
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {users.slice(0, 12).map((user: UserType) => (
           <div key={user.email} className="rounded-3xl bg-primary-50 p-6">
             <div className="flex">
@@ -172,7 +172,7 @@ const ManageUsers = ({
                   >
                     {permission}
                   </Button>
-                )
+                ),
               )}
             </div>
           </div>
@@ -181,7 +181,7 @@ const ManageUsers = ({
       {users.length == 0 ? (
         <div className="text-foreground">Nincs találat</div>
       ) : users.length > 12 ? (
-        <div className="rounded-3xl bg-primary-50 p-6 text-center my-2">
+        <div className="my-2 rounded-3xl bg-primary-50 p-6 text-center">
           Túl sok találat ({users.length})
         </div>
       ) : (
@@ -197,7 +197,7 @@ const ManageUsers = ({
       >
         <ModalContent>
           <ModalHeader>{selectedUser?.username}</ModalHeader>
-          <div className="px-8 pb-8 md:flex gap-6">
+          <div className="gap-6 px-8 pb-8 md:flex">
             <div className="mb-4">
               <div>
                 <Image
@@ -238,7 +238,7 @@ const ManageUsers = ({
                       {
                         dateStyle: "long",
                         timeStyle: "long",
-                      }
+                      },
                     )}
                   </td>
                 </tr>
@@ -285,7 +285,7 @@ const ManageUsers = ({
               </table>
             </div>
             <div>
-              <div className="bg-primary-50 p-6 rounded-3xl">
+              <div className="rounded-3xl bg-primary-50 p-6">
                 <h3>Hozzáférés hozzáadása</h3>
                 <ButtonGroup>
                   <Input
@@ -317,7 +317,7 @@ const ManageUsers = ({
                 </div>
               </div>
 
-              <div className="bg-primary-50 p-6 rounded-3xl mt-6">
+              <div className="mt-6 rounded-3xl bg-primary-50 p-6">
                 <h3>Tickets</h3>
                 <ButtonGroup>
                   <Input
@@ -352,7 +352,7 @@ const ManageUsers = ({
               <Button
                 onClick={() => setSelectedUser(null)}
                 color="primary"
-                className="flex mt-2 ml-auto"
+                className="ml-auto mt-2 flex"
               >
                 Rendben
               </Button>

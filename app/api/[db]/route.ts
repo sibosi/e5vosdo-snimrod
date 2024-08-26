@@ -17,7 +17,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
   if (!selfUser) {
     return NextResponse.json(
       { error: "Please log in to use this API" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -25,7 +25,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
   if (apioptions.includes(gate) === false) {
     return NextResponse.json(
       { error: "Invalid API endpoint" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -45,7 +45,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
       {
         error: `You do not have permission to use this API\nYour permissions: ${user.name}`,
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -64,7 +64,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
     console.error("Error fetching events:", error);
     return NextResponse.json(
       { error: "Failed to fetch events" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

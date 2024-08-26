@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 // Szűrés egy adott órában történt bejelentkezésekre
 const filterLogsLastHour = (logs: Log[], hour: number): Log[] => {
   return logs.filter(
-    (log) => log.action === "updateUser" && dayjs(log.time).hour() === hour
+    (log) => log.action === "updateUser" && dayjs(log.time).hour() === hour,
   );
 };
 
@@ -16,15 +16,18 @@ const groupLogsByMinute = (logs: Log[], uniquePerMinute: boolean): number[] => {
 
   if (uniquePerMinute) {
     // Ha csak egyszer számoljuk felhasználónként percenként
-    const uniqueLogs = logs.reduce((acc, log) => {
-      const minute = dayjs(log.time).minute();
-      const key = `${log.user}-${minute}`;
-      if (!acc[key]) {
-        acc[key] = log;
-        minutes[minute]++;
-      }
-      return acc;
-    }, {} as Record<string, Log>);
+    const uniqueLogs = logs.reduce(
+      (acc, log) => {
+        const minute = dayjs(log.time).minute();
+        const key = `${log.user}-${minute}`;
+        if (!acc[key]) {
+          acc[key] = log;
+          minutes[minute]++;
+        }
+        return acc;
+      },
+      {} as Record<string, Log>,
+    );
   } else {
     // Minden bejelentkezést figyelembe veszünk
     logs.forEach((log) => {
@@ -56,7 +59,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const LineChart = ({ data }: { data: number[] }) => {

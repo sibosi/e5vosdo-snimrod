@@ -47,12 +47,12 @@ export const SportTable = () => {
 
   return (
     <div className="pb-12">
-      <div className="text-center justify-center py-6 text-foreground">
+      <div className="justify-center py-6 text-center text-foreground">
         <h1 className="text-3xl font-bold">Egyenes kiesés</h1>
       </div>
       <div className="grid grid-cols-1 justify-items-center">
         <div className="md:w-96">
-          <div className="scoreboard grid grid-cols-4 w-auto justify-items-center">
+          <div className="scoreboard grid w-auto grid-cols-4 justify-items-center">
             <div className="grid grid-cols-1">
               <Button color={player4Name11 ? "warning" : "default"}>
                 {player4Name11}
@@ -99,7 +99,7 @@ export const SportTable = () => {
             </div>
           </div>
 
-          <div className="scoreboard grid grid-cols-2 w-auto justify-items-center">
+          <div className="scoreboard grid w-auto grid-cols-2 justify-items-center">
             <Button color={player1Name1 ? "secondary" : "default"}>
               {player1Name1 ? player1Name1 : "Elődöntő"}
             </Button>
@@ -107,7 +107,7 @@ export const SportTable = () => {
               {player1Name2 ? player1Name2 : "Elődöntő"}
             </Button>
           </div>
-          <div className="scoreboard grid grid-cols-1 w-auto justify-items-center">
+          <div className="scoreboard grid w-auto grid-cols-1 justify-items-center">
             <Button color={player1Name0 ? "success" : "default"}>
               {player1Name0 ? player1Name0 : "Döntő"}
             </Button>

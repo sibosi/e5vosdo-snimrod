@@ -9,7 +9,22 @@ module.exports = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        selfprimary: {
+          DEFAULT: 'var(--color-primary)',
+          100: 'var(--color-primary-100)',
+          200: 'var(--color-primary-200)',
+          300: 'var(--color-primary-300)',
+          400: 'var(--color-primary-400)',
+          500: 'var(--color-primary-500)',
+          600: 'var(--color-primary-600)',
+          700: 'var(--color-primary-700)',
+          800: 'var(--color-primary-800)',
+          900: 'var(--color-primary-900)',
+        }
+      },
+    },
     screens: {
       xs: "475px",
       ...require("tailwindcss/defaultConfig").theme.screens,
@@ -17,6 +32,7 @@ module.exports = {
   }, // Add your tailwind config here
   darkMode: "class",
   plugins: [nextui(), require("daisyui")],
+  require: [("daisyui")],
   daisyui: {
     themes: false, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
     darkTheme: "dark", // name of one of the included themes for dark mode

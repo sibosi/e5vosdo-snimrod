@@ -40,7 +40,7 @@ export const Section = ({
     >
       <h1 className="py-1 text-2xl font-medium" onClick={toggleDropdown}>
         {dropdownable && (
-          <Link onClick={toggleDropdown}>
+          <Link onClick={toggleDropdown} className="text-selfprimary">
             <svg
               stroke="currentColor"
               fill="currentColor"

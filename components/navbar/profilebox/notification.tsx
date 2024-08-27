@@ -77,7 +77,7 @@ export const Notification = ({
             (type == "new"
               ? "text-danger-500"
               : type == "sent"
-                ? "text-selfprimary-500"
+                ? "text-primary-500"
                 : "")
           }
         >

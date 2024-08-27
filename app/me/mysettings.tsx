@@ -15,6 +15,12 @@ import VersionTable from "./versionTable";
 import { Section } from "@/components/home/section";
 import CacheManager from "@/components/PWA/cacheManager";
 import VersionManager from "@/components/PWA/versionManager";
+import {
+  ThemePickerPrimary,
+  ThemePickerSecondary,
+  ThemeTemplatePrimary,
+  ThemeTemplateSecondary,
+} from "@/components/themePicker";
 
 const SettingsSection = ({
   title,
@@ -191,6 +197,15 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         </SettingsSection>
 
         <SettingsSection
+          title="Megjelenés"
+          defaultStatus="closed"
+          dropdownable={true}
+        >
+          <ThemeTemplatePrimary />
+          <ThemeTemplateSecondary />
+        </SettingsSection>
+
+        <SettingsSection
           title="Haladó beállítások"
           defaultStatus="closed"
           dropdownable={true}
@@ -215,6 +230,15 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </Button>
 
           <CacheManager />
+
+          <SettingsSection
+            title="Paletta"
+            dropdownable={true}
+            defaultStatus="closed"
+          >
+            <ThemePickerPrimary />
+            <ThemePickerSecondary />
+          </SettingsSection>
         </SettingsSection>
 
         <Button

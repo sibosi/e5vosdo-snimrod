@@ -30,7 +30,7 @@ const AboutPage = async () => {
 
       {(await hasPermission(selfUser.email, "getUsers")) ? (
         <div className="my-5">
-          <div className="mx-1 rounded-2xl bg-secondary-100 bg-gradient-to-r p-3">
+          <div className="bg-selfsecondary-100 mx-1 rounded-2xl bg-gradient-to-r p-3">
             <h2 className="text-2xl font-semibold text-foreground">
               Adminoknak és tesztelőknek
             </h2>

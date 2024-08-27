@@ -2,27 +2,28 @@
 import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
-const ThemePicker = () => {
-  const [primaryHue, setPrimaryHue] = useState(228);
+export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
+  const defaultHue = color === "primary" ? 228 : 270;
+  const [colorHue, setColorHue] = useState(defaultHue);
 
   const updateColors = () => {
     document.documentElement.style.setProperty(
-      "--color-primary-hue",
-      String(primaryHue),
+      `--color-${color}-hue`,
+      String(colorHue),
     );
-    localStorage.setItem("primaryHue", String(primaryHue));
+    localStorage.setItem(`${color}Hue`, String(colorHue));
   };
 
   useEffect(() => {
-    const savedPrimaryHue = localStorage.getItem("primaryHue");
-    if (savedPrimaryHue) {
-      setPrimaryHue(Number(savedPrimaryHue));
+    const savedColorHue = localStorage.getItem(`${color}Hue`);
+    if (savedColorHue) {
+      setColorHue(Number(savedColorHue));
       document.documentElement.style.setProperty(
-        "--color-primary-hue",
-        savedPrimaryHue,
+        `--color-${color}-hue`,
+        savedColorHue,
       );
     }
-  }, []);
+  }, [color]);
 
   const LIGHT_HSLS = [
     [228, 92, 95],
@@ -38,33 +39,28 @@ const ThemePicker = () => {
   ];
 
   return (
-    <div className="mb-4 rounded-3xl bg-selfprimary-300 p-6">
-      <div>
+    <div className={`mb-4 rounded-3xl bg-self${color}-300 p-6`}>
+      <div className="mb-2 flex gap-2">
         <Input
           title="Primary Color"
           type="range"
           min={0}
           max={360}
-          onChange={(e) => setPrimaryHue(Number(e.target.value))}
+          onChange={(e) => setColorHue(Number(e.target.value))}
         />
         <Button
           onClick={updateColors}
-          // Show the current primary hue
-
-          style={{ backgroundColor: `hsl(${primaryHue}, 100%, 50%)` }}
+          style={{ backgroundColor: `hsl(${colorHue}, 100%, 50%)` }}
         >
           Apply Colors
         </Button>
       </div>
 
-      <div className="bg-selfprimary-50 bg-selfprimary-100 bg-selfprimary-200 bg-selfprimary-300 bg-selfprimary-400 bg-selfprimary-500 bg-selfprimary-600 bg-selfprimary-700 bg-selfprimary-800 bg-selfprimary-900" />
-      <div className="bg-primary-100 bg-primary-200 bg-primary-300 bg-primary-400 bg-primary-50 bg-primary-500 bg-primary-600 bg-primary-700 bg-primary-800 bg-primary-900" />
-
       <div className="flex">
         {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((num) => (
           <div
             key={num}
-            className={`w-full p-2 text-center bg-selfprimary-${num}`}
+            className={`w-full p-2 text-center bg-self${color}-${num}`}
           >
             {num}
           </div>
@@ -76,7 +72,7 @@ const ThemePicker = () => {
             key={num}
             className="w-full p-2 text-center"
             style={{
-              backgroundColor: `hsl(${primaryHue}, ${LIGHT_HSLS[index][1]}%, ${LIGHT_HSLS[index][2]}%)`,
+              backgroundColor: `hsl(${colorHue}, ${LIGHT_HSLS[index][1]}%, ${LIGHT_HSLS[index][2]}%)`,
             }}
           >
             {num}
@@ -85,7 +81,10 @@ const ThemePicker = () => {
       </div>
       <div className="flex">
         {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((num) => (
-          <div key={num} className={`w-full p-2 text-center bg-primary-${num}`}>
+          <div
+            key={num}
+            className={`w-full p-2 text-center bg-${color}-${num}`}
+          >
             {num}
           </div>
         ))}
@@ -94,4 +93,65 @@ const ThemePicker = () => {
   );
 };
 
-export default ThemePicker;
+export const ThemeTemplate = ({
+  color,
+}: {
+  color: "primary" | "secondary";
+}) => {
+  const colorHues = [...Array.from({ length: 24 }, (_, i) => i * 15)];
+  return (
+    <div className={`mb-4 rounded-3xl bg-self${color}-300 p-6`}>
+      <h1 className="text-2xl font-bold">
+        {color === "primary" ? "Primary" : "Secondary"} Color
+        <Button
+          color={color}
+          size="sm"
+          className="my-auto ml-2"
+          onClick={() => {
+            document.documentElement.style.setProperty(
+              `--color-${color}-hue`,
+              color === "primary" ? "212" : "270",
+            );
+          }}
+        >
+          Reset
+        </Button>
+      </h1>
+      <div className="flex flex-wrap">
+        {colorHues.map((hue) => (
+          <div
+            key={hue}
+            className="h-14 w-14 border-1"
+            style={{
+              backgroundColor: `hsl(${hue}, 100%, 50%)`,
+            }}
+            onClick={() => {
+              document.documentElement.style.setProperty(
+                `--color-${color}-hue`,
+                String(hue),
+              );
+            }}
+          >
+            <div className="my-auto text-center">{hue}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const ThemePickerPrimary = () => {
+  return <ThemePicker color="primary" />;
+};
+
+export const ThemePickerSecondary = () => {
+  return <ThemePicker color="secondary" />;
+};
+
+export const ThemeTemplatePrimary = () => {
+  return <ThemeTemplate color="primary" />;
+};
+
+export const ThemeTemplateSecondary = () => {
+  return <ThemeTemplate color="secondary" />;
+};

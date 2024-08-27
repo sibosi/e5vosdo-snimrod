@@ -24,7 +24,7 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
       <div
         className={
           "mx-auto mb-2 grid h-10 w-10 grid-cols-1 rounded-xl " +
-          (menu == "A" ? "bg-selfprimary" : "bg-secondary")
+          (menu == "A" ? "bg-selfprimary" : "bg-selfsecondary")
         }
       >
         <div className="m-auto max-h-fit max-w-fit text-lg font-bold text-white">

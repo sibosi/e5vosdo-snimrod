@@ -3,7 +3,7 @@ import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
 export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
-  const defaultHue = color === "primary" ? 228 : 270;
+  const defaultHue = color === "primary" ? 212 : 270;
   const [colorHue, setColorHue] = useState(defaultHue);
 
   const updateColors = () => {

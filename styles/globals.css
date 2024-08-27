@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-primary-hue: 212;
+  --color-secondary-hue: 270;
+}
+
 :root.light {
   /*
   HSL = Hue, Saturation, Lightness
@@ -28,7 +33,7 @@
   800: X, 92%, 90%
   900: X, 92%, 95%
   */
-  --color-primary-hue: 212; /* Hue érték (H) */
+  /* Hue érték (H) */
   --color-primary: hsl(var(--color-primary-hue), 100%, 47%);
   --color-primary-0: hsl(var(--color-primary-hue), 92%, 100%);
   --color-primary-20: hsl(var(--color-primary-hue), 92%, 98%);
@@ -43,7 +48,6 @@
   --color-primary-800: hsl(var(--color-primary-hue), 100%, 19%);
   --color-primary-900: hsl(var(--color-primary-hue), 100%, 10%);
 
-  --color-secondary-hue: 270;
   --color-secondary: hsl(var(--color-secondary-hue), 100%, 47%);
   --color-secondary-0: hsl(var(--color-secondary-hue), 92%, 100%);
   --color-secondary-20: hsl(var(--color-secondary-hue), 92%, 98%);

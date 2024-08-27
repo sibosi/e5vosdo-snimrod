@@ -2,6 +2,24 @@
 import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
+export const ThemeUpdate = () => {
+  useEffect(() => {
+    const colors = ["primary", "secondary"];
+
+    colors.forEach((color) => {
+      const savedColorHue = localStorage.getItem(`${color}Hue`);
+      if (savedColorHue) {
+        document.documentElement.style.setProperty(
+          `--color-${color}-hue`,
+          savedColorHue,
+        );
+      }
+    });
+  }, []);
+
+  return <></>;
+};
+
 export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
   const defaultHue = color === "primary" ? 212 : 270;
   const [colorHue, setColorHue] = useState(defaultHue);
@@ -126,6 +144,7 @@ export const ThemeTemplate = ({
               backgroundColor: `hsl(${hue}, 100%, 50%)`,
             }}
             onClick={() => {
+              localStorage.setItem(`${color}Hue`, String(hue));
               document.documentElement.style.setProperty(
                 `--color-${color}-hue`,
                 String(hue),

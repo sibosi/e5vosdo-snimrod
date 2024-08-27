@@ -4,9 +4,6 @@ import { Avatar } from "@nextui-org/react";
 import MySettings from "./mysettings";
 import ToManageButton from "./toManage";
 import IDCard from "./IDCard";
-import VersionTable from "./versionTable";
-import VersionManager from "@/components/PWA/versionManager";
-import CacheManager from "@/components/PWA/cacheManager";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -22,7 +19,7 @@ const AboutPage = async () => {
       />
       <h1 className="pb-5 pt-3 text-center text-4xl font-semibold text-foreground lg:text-5xl">
         Helló{" "}
-        <p className="inline bg-gradient-to-l from-[#39b2f8] to-[#2747fc] bg-clip-text text-transparent">
+        <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
           {selfUser.nickname}
         </p>
         !

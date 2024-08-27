@@ -11,11 +11,6 @@ import { Events } from "@/components/events";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { getAuth } from "@/db/dbreq";
 import TimetableDay from "@/components/timetable/timetableday";
-import {
-  ThemePickerPrimary,
-  ThemePickerSecondary,
-  ThemeTemplatePrimary,
-} from "@/components/themePicker";
 
 export default async function Home() {
   const selfUser = await getAuth();

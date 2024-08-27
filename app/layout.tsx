@@ -23,6 +23,7 @@ import dynamic from "next/dynamic";
 import Cookie from "@/components/cookie";
 import SkipMessenger from "./skipMessenger";
 import OGURL from "./ogurl";
+import { ThemeUpdate } from "@/components/themePicker";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });
@@ -125,6 +126,7 @@ export default async function RootLayout({
         <OGURL />
         <ServiceWorker />
         <PushManager />
+        <ThemeUpdate />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="bg-selfprimary-0 relative flex h-screen flex-col">
             <Navbar

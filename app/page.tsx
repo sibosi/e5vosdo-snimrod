@@ -111,11 +111,13 @@ export default async function Home() {
             </p>
             <Link
               href={siteConfig.links.feedback}
-              className={buttonStyles({
-                color: "primary",
-                radius: "full",
-                variant: "solid",
-              })}
+              className={clsx(
+                buttonStyles({
+                  radius: "full",
+                  variant: "solid",
+                }),
+                "bg-selfsecondary-200",
+              )}
             >
               Irány az űrlap!
             </Link>

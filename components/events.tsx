@@ -52,7 +52,11 @@ export const Events = () => {
                 <div className="flex gap-2">
                   {event.tags != undefined ? (
                     event.tags.map((tag, index) => (
-                      <Chip key={tag + "" + index} color="warning" size="sm">
+                      <Chip
+                        key={tag + "" + index}
+                        className="bg-selfprimary-200"
+                        size="sm"
+                      >
                         {tag}
                       </Chip>
                     ))

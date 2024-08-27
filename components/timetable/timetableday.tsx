@@ -424,7 +424,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             </Alert>
           ) : (
             hiddenLessons.length == 0 && (
-              <Alert className="text-sm">
+              <Alert className="bg-selfsecondary-300 border-selfsecondary-400 text-sm text-foreground">
                 A jelenlegi beállítások alapján az osztályod összes órája
                 látható az órarendben. Ha szeretnél egyes órákat elrejteni,
                 válaszd a &quot;Módosítás&quot; opciót.
@@ -444,7 +444,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                           key={"LessonBlock" + lessonBlockIndex}
                           className="flex w-full"
                         >
-                          <div className="my-1 mr-4 grid h-14 w-[70px] grid-cols-1 rounded-xl bg-default text-center">
+                          <div className="my-1 mr-4 grid h-14 w-[70px] grid-cols-1 rounded-xl bg-default-200 text-center shadow-sm">
                             <p>{lessonBlockIndex + ". óra"}</p>
                             <p className="text-sm">
                               {

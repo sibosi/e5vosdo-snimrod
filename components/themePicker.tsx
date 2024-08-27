@@ -126,6 +126,7 @@ export const ThemeTemplate = ({
           size="sm"
           className="my-auto ml-2"
           onClick={() => {
+            localStorage.removeItem(`${color}Hue`);
             document.documentElement.style.setProperty(
               `--color-${color}-hue`,
               color === "primary" ? "212" : "270",

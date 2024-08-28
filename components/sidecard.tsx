@@ -11,6 +11,7 @@ type SideCardProps = {
   popup: boolean;
   button_size?: "sm" | "md" | "lg";
   children?: React.ReactNode;
+  makeStringToHTML?: boolean;
 };
 
 export const SideCard = ({
@@ -21,6 +22,7 @@ export const SideCard = ({
   button_size,
   popup,
   children,
+  makeStringToHTML,
 }: SideCardProps) => {
   const OptionalButton = (popup: boolean) => {
     if (popup) {
@@ -32,6 +34,7 @@ export const SideCard = ({
             image={image}
             button_size={button_size}
             details={details}
+            makeStringToHTML={makeStringToHTML}
           />
         )
       );

@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import "../styles/globals.css";
+import parse from "html-react-parser";
 
 type CardProps = {
   title: string;
@@ -9,6 +10,7 @@ type CardProps = {
   button_size?: "sm" | "md" | "lg";
   className?: string;
   children?: React.ReactNode;
+  makeStringToHTML?: boolean;
 };
 
 import {
@@ -22,13 +24,14 @@ import {
 } from "@nextui-org/react";
 import React from "react";
 
-export const PopupButton = ({
+export const PopupButton: React.FC<CardProps> = ({
   title,
   image,
   details,
   button_size,
   className,
   children,
+  makeStringToHTML,
 }: CardProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const size = "5xl";
@@ -67,7 +70,9 @@ export const PopupButton = ({
                   </div>
                   <div className="overflow-auto fill-overlay px-6 py-6 text-left text-foreground md:max-h-[100%]">
                     <p className="text-md overflow-auto whitespace-pre-line pb-4">
-                      {details}
+                      <span>
+                        {makeStringToHTML ? parse(details as string) : details}
+                      </span>
                     </p>
                   </div>
                 </div>

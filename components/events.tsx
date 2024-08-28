@@ -48,6 +48,7 @@ export const Events = () => {
                 image={event.image ?? undefined}
                 popup={true}
                 button_size="sm"
+                makeStringToHTML={true}
               >
                 <div className="flex gap-2">
                   {event.tags != undefined ? (

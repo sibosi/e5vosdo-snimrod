@@ -38,7 +38,13 @@ export default async function Home() {
         )}
       </div>
 
-      {selfUser ? <TimetableDay selfUser={selfUser} /> : <></>}
+      {selfUser ? (
+        <Section title="Órarend" dropdownable={true}>
+          <TimetableDay selfUser={selfUser} />
+        </Section>
+      ) : (
+        <></>
+      )}
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section

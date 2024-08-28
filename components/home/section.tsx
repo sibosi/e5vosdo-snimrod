@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@/styles/globals.css";
 import { Link } from "@nextui-org/react";
 
@@ -10,6 +10,20 @@ type SectionProps = {
   children: React.ReactNode;
   className?: string;
   titleClassName?: string;
+};
+
+const loadSectionStatus = (name: string) => {
+  if (typeof window !== "undefined") {
+    const status = localStorage.getItem("section_" + name);
+    if (status === "false") return false;
+  }
+  return true;
+};
+
+const setSectionStatus = (name: string, status: boolean) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("section_" + name, status.toString());
+  }
 };
 
 export const Section = ({
@@ -24,8 +38,13 @@ export const Section = ({
     defaultStatus == "closed" ? false : true,
   );
 
+  useEffect(() => {
+    setIsOpen(loadSectionStatus(title));
+  }, []);
+
   const toggleDropdown = () => {
     if (dropdownable) {
+      setSectionStatus(title, !isOpen);
       setIsOpen(!isOpen);
     }
   };

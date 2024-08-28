@@ -5,11 +5,15 @@ import { Avatar, Badge, Link, Navbar, NavbarContent } from "@nextui-org/react";
 import Login from "@/components/LoginForm";
 import { LogoutIcon } from "@/components/LogOut";
 import { User } from "@/db/dbreq";
-import { ThemeSwitch } from "@/components/theme-switch";
+import dynamic from "next/dynamic";
 import { Notification } from "./profilebox/notification";
 import InstallAppNotif from "./profilebox/installAppNotif";
 import UpdateSWNotif from "./profilebox/updateSWNotif";
 import EnablePushNotif from "./profilebox/enablePushNotif";
+
+const ThemeSwitch = dynamic(() => import("@/components/theme-switch"), {
+  ssr: false,
+});
 
 const Account = () => {
   return (

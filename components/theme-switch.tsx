@@ -9,12 +9,12 @@ import {
   SystemThemeIcon,
 } from "@/components/icons";
 
-export interface ThemeSwitchProps {
+interface ThemeSwitchProps {
   className?: string;
   classNames?: SwitchProps["classNames"];
 }
 
-export const ThemeSwitch: FC<ThemeSwitchProps> = () => {
+const ThemeSwitch: FC<ThemeSwitchProps> = () => {
   const [theme, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       return localStorage.getItem("theme") || "system";
@@ -65,3 +65,5 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = () => {
     </div>
   );
 };
+
+export default ThemeSwitch;

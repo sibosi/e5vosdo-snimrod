@@ -10,7 +10,7 @@ import {
   Modal,
   ButtonGroup,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import VersionTable from "./versionTable";
 import { Section } from "@/components/home/section";
 import CacheManager from "@/components/PWA/cacheManager";
@@ -21,6 +21,15 @@ import {
   ThemeTemplatePrimary,
   ThemeTemplateSecondary,
 } from "@/components/themePicker";
+
+function updateCacheMethod(cacheMethod: "always" | "offline" | "never") {
+  if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      action: "updateCacheMethod",
+      cacheMethod: cacheMethod,
+    });
+  }
+}
 
 const SettingsSection = ({
   title,
@@ -56,6 +65,17 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
   const [nicknameError, setNicknameError] = useState<string>("");
   const [EJG_codeError, setEJG_codeError] = useState<string>("");
+  const [cacheMethod, setCacheMethod] = useState<
+    "always" | "offline" | "never"
+  >(
+    (localStorage.getItem("cacheMethod") as "always" | "offline" | "never") ??
+      "always",
+  );
+
+  useEffect(() => {
+    updateCacheMethod(cacheMethod as any);
+    localStorage.setItem("cacheMethod", cacheMethod);
+  }, [cacheMethod]);
 
   const [sureQuestion, setSureQuestion] = useState<boolean>(false);
 
@@ -179,13 +199,42 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 <th>
                   <RadioGroup
                     value={!["A", "B"].includes(menu) ? "?" : menu}
-                    onChange={(e) => setMenu(e.target.value)}
+                    onChange={(e) => {
+                      setMenu(e.target.value);
+                    }}
                     color="primary"
                   >
                     <Radio value="?">{"Nincs megadva"}</Radio>
                     <Radio value="A">{'"A" menü'}</Radio>
                     <Radio value="B">{'"B" menü'}</Radio>
                   </RadioGroup>
+                </th>
+              </tr>
+              <tr>
+                <th className="font-semibold">Gyorsítótár használata</th>
+                <th>
+                  <RadioGroup
+                    value={cacheMethod}
+                    onChange={(e) => setCacheMethod(e.target.value as any)}
+                  >
+                    <Radio value="always">Mindig</Radio>
+                    <Radio value="offline">Csak offline</Radio>
+                    <Radio value="never">Soha</Radio>
+                  </RadioGroup>
+
+                  <Button
+                    color="warning"
+                    onClick={() =>
+                      caches.keys().then((keys) => {
+                        keys.forEach((key) => {
+                          caches.delete(key);
+                        });
+                        alert("A gyorsítótár kiürítve.");
+                      })
+                    }
+                  >
+                    Gyorsítótár kiürítése
+                  </Button>
                 </th>
               </tr>
             </tbody>

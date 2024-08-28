@@ -24,6 +24,7 @@ import Cookie from "@/components/cookie";
 import SkipMessenger from "./skipMessenger";
 import OGURL from "./ogurl";
 import { ThemeUpdate } from "@/components/themePicker";
+import LoadCacheMethod from "./loadCacheMethod";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });
@@ -123,6 +124,7 @@ export default async function RootLayout({
           gtag('config', 'G-P74RJ9THHS');
           `}
         </Script>
+        <LoadCacheMethod />
         <OGURL />
         <ServiceWorker />
         <PushManager />

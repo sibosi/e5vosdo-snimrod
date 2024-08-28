@@ -343,7 +343,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             />
 
             <Button
-              color={showSettings ? "success" : "default"}
+              className={showSettings ? "bg-selfsecondary-400" : "bg-default"}
               onClick={() => setShowSettings(!showSettings)}
             >
               <FilterIcon />

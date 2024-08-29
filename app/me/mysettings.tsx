@@ -53,6 +53,7 @@ const SettingsSection = ({
       dropdownable={dropdownable}
       titleClassName="text-lg font-bold text-forground"
       className={"pt-0 " + className}
+      savable={false}
     >
       {children}
     </Section>
@@ -210,33 +211,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                   </RadioGroup>
                 </th>
               </tr>
-              <tr>
-                <th className="font-semibold">Gyorsítótár használata</th>
-                <th>
-                  <RadioGroup
-                    value={cacheMethod}
-                    onChange={(e) => setCacheMethod(e.target.value as any)}
-                  >
-                    <Radio value="always">Mindig</Radio>
-                    <Radio value="offline">Csak offline</Radio>
-                    <Radio value="never">Soha</Radio>
-                  </RadioGroup>
-
-                  <Button
-                    color="warning"
-                    onClick={() =>
-                      caches.keys().then((keys) => {
-                        keys.forEach((key) => {
-                          caches.delete(key);
-                        });
-                        alert("A gyorsítótár kiürítve.");
-                      })
-                    }
-                  >
-                    Gyorsítótár kiürítése
-                  </Button>
-                </th>
-              </tr>
             </tbody>
           </table>
         </SettingsSection>
@@ -259,6 +233,35 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           defaultStatus="closed"
           dropdownable={true}
         >
+          <table className="table gap-y-2">
+            <tr>
+              <th className="font-semibold">Gyorsítótár használata</th>
+              <th>
+                <RadioGroup
+                  value={cacheMethod}
+                  onChange={(e) => setCacheMethod(e.target.value as any)}
+                >
+                  <Radio value="always">Mindig</Radio>
+                  <Radio value="offline">Csak offline</Radio>
+                  <Radio value="never">Soha</Radio>
+                </RadioGroup>
+
+                <Button
+                  color="warning"
+                  onClick={() =>
+                    caches.keys().then((keys) => {
+                      keys.forEach((key) => {
+                        caches.delete(key);
+                      });
+                      alert("A gyorsítótár kiürítve.");
+                    })
+                  }
+                >
+                  Gyorsítótár kiürítése
+                </Button>
+              </th>
+            </tr>
+          </table>
           <VersionManager />
 
           <VersionTable />
@@ -279,15 +282,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </Button>
 
           <CacheManager />
-
-          <SettingsSection
-            title="Paletta"
-            dropdownable={true}
-            defaultStatus="closed"
-          >
-            <ThemePickerPrimary />
-            <ThemePickerSecondary />
-          </SettingsSection>
         </SettingsSection>
 
         <div

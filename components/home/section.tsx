@@ -10,14 +10,16 @@ type SectionProps = {
   children: React.ReactNode;
   className?: string;
   titleClassName?: string;
+  savable?: boolean;
 };
 
 const loadSectionStatus = (name: string) => {
   if (typeof window !== "undefined") {
     const status = localStorage.getItem("section_" + name);
     if (status === "false") return false;
+    if (status === "true") return true;
   }
-  return true;
+  return null;
 };
 
 const setSectionStatus = (name: string, status: boolean) => {
@@ -33,18 +35,22 @@ export const Section = ({
   children,
   className,
   titleClassName,
+  savable = true,
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(
     defaultStatus == "closed" ? false : true,
   );
 
   useEffect(() => {
-    setIsOpen(loadSectionStatus(title));
+    setIsOpen(
+      loadSectionStatus(title) ?? (defaultStatus == "closed" ? false : true),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleDropdown = () => {
     if (dropdownable) {
-      setSectionStatus(title, !isOpen);
+      if (savable) setSectionStatus(title, !isOpen);
       setIsOpen(!isOpen);
     }
   };

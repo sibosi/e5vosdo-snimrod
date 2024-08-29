@@ -57,7 +57,7 @@ export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
   ];
 
   return (
-    <div className={`mb-4 rounded-3xl bg-self${color}-300 p-6`}>
+    <div className={`mb-4 overflow-auto rounded-3xl bg-self${color}-300 p-6`}>
       <div className="mb-2 flex gap-2">
         <Input
           title="Primary Color"
@@ -117,10 +117,15 @@ export const ThemeTemplate = ({
   color: "primary" | "secondary";
 }) => {
   const colorHues = [...Array.from({ length: 24 }, (_, i) => i * 15)];
+  const [selectedHue, setSelectedHue] = useState(
+    Number(localStorage.getItem(`${color}Hue`)) ||
+      (color === "primary" ? 212 : 270),
+  );
+
   return (
-    <div className={`mb-4 rounded-3xl bg-self${color}-300 p-6`}>
+    <div className={`mb-4 rounded-3xl bg-self${color}-300 p-3`}>
       <h1 className="text-2xl font-bold">
-        {color === "primary" ? "Primary" : "Secondary"} Color
+        {color === "primary" ? "Elsődleges" : "Másodlagos"} szín
         <Button
           color={color}
           size="sm"
@@ -131,16 +136,19 @@ export const ThemeTemplate = ({
               `--color-${color}-hue`,
               color === "primary" ? "212" : "270",
             );
+            setSelectedHue(color === "primary" ? 212 : 270);
           }}
         >
           Reset
         </Button>
       </h1>
-      <div className="flex flex-wrap">
+      <div className="flex">
         {colorHues.map((hue) => (
           <div
             key={hue}
-            className="h-14 w-14 border-1"
+            className={
+              "h-14 w-full border-1 " + (selectedHue === hue ? "border-4" : "")
+            }
             style={{
               backgroundColor: `hsl(${hue}, 100%, 50%)`,
             }}
@@ -150,12 +158,30 @@ export const ThemeTemplate = ({
                 `--color-${color}-hue`,
                 String(hue),
               );
+              setSelectedHue(hue);
             }}
           >
-            <div className="my-auto text-center">{hue}</div>
+            <div className="my-auto hidden text-center">{hue}</div>
           </div>
         ))}
       </div>
+      <input
+        title="color"
+        type="range"
+        className="mt-2 w-full"
+        min={0}
+        max={colorHues.length - 1}
+        value={colorHues.indexOf(selectedHue) as any}
+        onChange={(e) => {
+          const hue = colorHues[Number(e.target.value)];
+          localStorage.setItem(`${color}Hue`, String(hue));
+          document.documentElement.style.setProperty(
+            `--color-${color}-hue`,
+            String(hue),
+          );
+          setSelectedHue(hue);
+        }}
+      />
     </div>
   );
 };

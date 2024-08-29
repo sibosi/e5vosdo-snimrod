@@ -1,6 +1,7 @@
 import { doLogout } from "@/actions/route";
 import { Button } from "@nextui-org/react";
 import React from "react";
+import resetCache from "./PWA/resetCache";
 
 interface LogoutProps {
   className?: string;
@@ -15,6 +16,7 @@ export const LogoutButton = ({ className, size }: LogoutProps) => {
         name="action"
         value="google"
         size={size ? size : "sm"}
+        onClick={resetCache}
         className={"rounded-badge fill-selfprimary " + className}
       >
         Kijelentkezés

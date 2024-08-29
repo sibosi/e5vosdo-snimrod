@@ -290,27 +290,45 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </SettingsSection>
         </SettingsSection>
 
-        <Button
-          onClick={() => {
-            EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();
-          }}
-          // make the button to be on the right side
-          className="float-right mt-2 fill-selfprimary"
-          isDisabled={
-            EJG_code &&
+        <div
+          className={
+            "fixed inset-x-0 z-50 mx-auto flex h-14 w-36 border-2 border-foreground-500 bg-foreground-100 transition-all duration-300 max-md:rounded-b-2xl max-md:border-t-0 xs:w-72 md:rounded-t-2xl md:border-b-0 " +
+            (!(EJG_code &&
             EJG_code.length === 13 &&
             nickname &&
             (EJG_code !== selfUser.EJG_code ||
               nickname !== selfUser.nickname ||
               menu !== selfUser.food_menu) &&
-            !nicknameError // Hozzáadva a hibaellenőrzés
+            !nicknameError
               ? false
-              : true
+              : true)
+              ? "max-md:top-0 md:bottom-0"
+              : "max-md:-top-16 md:-bottom-16")
           }
         >
-          Mentés
-        </Button>
+          <Button
+            onClick={() => {
+              EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();
+            }}
+            // make the button to be on the right side
+            className="m-auto bg-selfsecondary"
+            isDisabled={
+              EJG_code &&
+              EJG_code.length === 13 &&
+              nickname &&
+              (EJG_code !== selfUser.EJG_code ||
+                nickname !== selfUser.nickname ||
+                menu !== selfUser.food_menu) &&
+              !nicknameError // Hozzáadva a hibaellenőrzés
+                ? false
+                : true
+            }
+          >
+            Mentés
+          </Button>
+        </div>
       </div>
+
       <p className="mx-auto max-w-xl px-5 text-xs text-foreground-300">
         Amennyiben problémád adódik a fiókoddal kapcsolatban, vedd fel a
         kapcsolatot a fejlesztővel!

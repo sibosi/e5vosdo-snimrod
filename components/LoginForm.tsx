@@ -1,6 +1,7 @@
 import { doSocialLogin } from "@/actions/route";
 import { Button } from "@nextui-org/react";
 import React from "react";
+import resetCache from "./PWA/resetCache";
 
 const Login = () => {
   return (
@@ -10,7 +11,8 @@ const Login = () => {
         name="action"
         value="google"
         size="sm"
-        className="rounded-badge fill-selfprimary"
+        onClick={resetCache}
+        className="w-full rounded-badge bg-selfprimary-300"
       >
         Bejelentkezés
       </Button>

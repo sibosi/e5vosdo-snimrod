@@ -203,7 +203,15 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
               </NavbarContent>
             </>
           ) : (
-            <Login />
+            <>
+              <NavbarContent justify="start">
+                <ThemeSwitch />
+              </NavbarContent>
+              <NavbarContent justify="center">
+                <Login />
+              </NavbarContent>
+              <NavbarContent justify="end" />
+            </>
           )}
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">

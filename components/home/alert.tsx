@@ -9,7 +9,7 @@ export const Alert = ({ children, className }: Alert) => {
   return (
     <div
       className={
-        "mb-3 w-fit rounded-lg border-3 border-amber-400 bg-amber-300 px-3 py-2 text-sm text-black " +
+        "mb-3 w-fit rounded-lg border-3 border-amber-400 bg-amber-300 px-3 py-2 text-sm text-black shadow-md " +
         className
       }
     >

@@ -448,7 +448,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             </Alert>
           ) : (
             hiddenLessons.length == 0 && (
-              <Alert className="border-selfsecondary-400 bg-selfsecondary-300 text-sm text-foreground">
+              <Alert className="border-selfsecondary-300 bg-selfsecondary-100 text-sm text-foreground">
                 A jelenlegi beállítások alapján az osztályod összes órája
                 látható az órarendben. Ha szeretnél egyes órákat elrejteni,
                 válaszd a &quot;Módosítás&quot; opciót.

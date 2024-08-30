@@ -315,6 +315,24 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classGroupValue]);
 
+  function checkIfMultipleLessonsInTime(lessonBlock: LessonOption[]) {
+    let count = 0;
+    lessonBlock.forEach((lesson) => {
+      if (
+        lesson &&
+        !hiddenLessons.includes(lesson.id) &&
+        (lessonBlock.length != 2 ||
+          hide != "selected" ||
+          lesson.group_name == classGroupValue ||
+          lesson.group_name === "null" ||
+          classGroupValue == 0)
+      ) {
+        count++;
+      }
+    });
+    return count > 1;
+  }
+
   return (
     <div className="text-foreground transition-all duration-300">
       {EJG_class !== null ? (
@@ -440,21 +458,25 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
 
       {timetableDay ? (
         <div>
+          {hiddenLessons.length == 0 && hide !== "edit" && (
+            <Alert className="max-h-screen w-full border-selfsecondary-300 bg-selfsecondary-100 text-sm text-foreground transition-all duration-300">
+              A jelenlegi beállítások alapján az osztályod összes órája látható
+              az órarendben. Ha szeretnél egyes órákat elrejteni, válaszd a
+              &quot;Módosítás&quot; opciót.
+            </Alert>
+          )}
           {hide === "edit" ? (
-            <Alert className="text-sm">
-              Itt állíthatod, mely órák ne jelenjenek meg az órarendedben. Ha
-              egy sorban több órát látsz, kattints a sajátodra, hogy a többit
-              elrejthessük.
+            <Alert className="border-success-300 bg-success-100 text-sm">
+              Itt állíthatod, mely órák ne jelenjenek meg az órarendedben. Ha{" "}
+              <span className="rounded-lg bg-secondary-100">
+                egy sorban több órát
+              </span>{" "}
+              látsz, kattints a sajátodra, hogy a többit elrejthessük.
             </Alert>
           ) : (
-            hiddenLessons.length == 0 && (
-              <Alert className="border-selfsecondary-300 bg-selfsecondary-100 text-sm text-foreground">
-                A jelenlegi beállítások alapján az osztályod összes órája
-                látható az órarendben. Ha szeretnél egyes órákat elrejteni,
-                válaszd a &quot;Módosítás&quot; opciót.
-              </Alert>
-            )
+            <></>
           )}
+
           <div className="grid grid-cols-1">
             {
               <div>
@@ -518,9 +540,14 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                 <Cell
                                   key={"Lesson" + lesson.id}
                                   className={
-                                    hiddenLessons.includes(lesson.id)
-                                      ? "border-2 border-default-400 bg-default-100"
-                                      : "border-2 border-selfprimary-400 bg-selfprimary-100"
+                                    "border-2 " +
+                                    (hiddenLessons.includes(lesson.id)
+                                      ? "border-default-400 bg-default-100"
+                                      : checkIfMultipleLessonsInTime(
+                                            lessonBlock,
+                                          )
+                                        ? "border-selfsecondary-400 bg-selfsecondary-100"
+                                        : "border-selfprimary-400 bg-selfprimary-100")
                                   }
                                   onClick={() =>
                                     hide == "edit"

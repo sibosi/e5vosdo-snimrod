@@ -1,6 +1,6 @@
 "use client";
 import { Button, Input } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 export const ThemeUpdate = () => {
   useEffect(() => {
@@ -117,10 +117,15 @@ export const ThemeTemplate = ({
   color: "primary" | "secondary";
 }) => {
   const colorHues = [...Array.from({ length: 24 }, (_, i) => i * 15)];
-  const [selectedHue, setSelectedHue] = useState(
-    Number(localStorage.getItem(`${color}Hue`)) ||
-      (color === "primary" ? 212 : 270),
-  );
+  const [selectedHue, setSelectedHue] = useState(212);
+
+  useEffect(() => {
+    setSelectedHue(
+      Number(localStorage.getItem(`${color}Hue`)) ||
+        (color === "primary" ? 212 : 270),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={`mb-4 rounded-3xl bg-self${color}-300 p-3`}>

@@ -68,10 +68,11 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [EJG_codeError, setEJG_codeError] = useState<string>("");
   const [cacheMethod, setCacheMethod] = useState<
     "always" | "offline" | "never"
-  >(
-    (localStorage.getItem("cacheMethod") as "always" | "offline" | "never") ??
-      "always",
-  );
+  >("always");
+
+  useEffect(() => {
+    setCacheMethod((localStorage.getItem("cacheMethod") as any) ?? "always");
+  }, []);
 
   useEffect(() => {
     updateCacheMethod(cacheMethod as any);

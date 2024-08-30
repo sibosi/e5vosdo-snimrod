@@ -1,3 +1,4 @@
+"use client";
 import { doLogout } from "@/actions/route";
 import { Button } from "@nextui-org/react";
 import React from "react";

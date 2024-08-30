@@ -281,6 +281,28 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   );
 
   useEffect(() => {
+    const getDefaultGroup = async () => {
+      const resp = await fetch("/api/getDefaultGroup", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await resp.json();
+      const group = data as 0 | 1 | 2 | undefined;
+      setSelectedClassGroupKeys(
+        new Set(
+          ["Nincs csoport", "1-es csoport", "2-es csoport"][group ?? 0].split(
+            ", ",
+          ),
+        ),
+      );
+    };
+
+    getDefaultGroup();
+  }, []);
+
+  useEffect(() => {
     EJG_class && fetchTimetable(EJG_class, setTimetableDay);
   }, [EJG_class]);
 
@@ -309,6 +331,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                 variant="flat"
                 disallowEmptySelection
                 selectionMode="single"
+                className="text-foreground-600"
                 selectedKeys={selectedDayKeys}
                 onSelectionChange={(keys: any) =>
                   setSelectedDayKeys(new Set(keys))
@@ -363,6 +386,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
               <DropdownMenu
                 aria-label="Single selection example"
                 variant="flat"
+                className="text-foreground-600"
                 disallowEmptySelection
                 selectionMode="single"
                 selectedKeys={selectedClassGroupKeys}
@@ -424,7 +448,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             </Alert>
           ) : (
             hiddenLessons.length == 0 && (
-              <Alert className="bg-selfsecondary-300 border-selfsecondary-400 text-sm text-foreground">
+              <Alert className="border-selfsecondary-400 bg-selfsecondary-300 text-sm text-foreground">
                 A jelenlegi beállítások alapján az osztályod összes órája
                 látható az órarendben. Ha szeretnél egyes órákat elrejteni,
                 válaszd a &quot;Módosítás&quot; opciót.

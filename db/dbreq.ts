@@ -559,6 +559,13 @@ export async function setHiddenLessons(lessonsId: number[]) {
   return await dbreq(REQ1);
 }
 
+export async function getDefaultGroup() {
+  const email = (await getAuth())?.email;
+  const REQ1 = `SELECT default_group FROM users WHERE email = '${email}';`;
+
+  return ((await dbreq(REQ1)) as any)[0].default_group;
+}
+
 export async function editDefaultGroup(group: number | null) {
   const email = (await getAuth())?.email;
   const REQ1 = `UPDATE users SET default_group = ${group} WHERE email = '${email}';`;
@@ -701,6 +708,7 @@ export interface apireqType {
     | "editMySettings"
     | "getMyClassTimetable"
     | "setHiddenLessons"
+    | "getDefaultGroup"
     | "editDefaultGroup"
     | "addTicket"
     | "deleteTicket";
@@ -731,6 +739,7 @@ export const apioptions = [
   "editMySettings",
   "getMyClassTimetable",
   "setHiddenLessons",
+  "getDefaultGroup",
   "editDefaultGroup",
   "addTicket",
   "deleteTicket",
@@ -762,6 +771,7 @@ export const apireq = {
   editMySettings: { req: editMySettings, perm: ["student"] },
   getMyClassTimetable: { req: getMyClassTimetable, perm: ["student"] },
   setHiddenLessons: { req: setHiddenLessons, perm: ["student"] },
+  getDefaultGroup: { req: getDefaultGroup, perm: ["student"] },
   editDefaultGroup: { req: editDefaultGroup, perm: ["student"] },
   addTicket: { req: addTicket, perm: ["admin"] },
   deleteTicket: { req: deleteTicket, perm: ["admin"] },
@@ -810,6 +820,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "setHiddenLessons") {
     const { lessonsId } = body;
     return await setHiddenLessons(lessonsId);
+  } else if (req === "getDefaultGroup") {
+    return await getDefaultGroup();
   } else if (req === "editDefaultGroup") {
     const { group } = body;
     return await editDefaultGroup(group);

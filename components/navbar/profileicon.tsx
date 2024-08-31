@@ -139,6 +139,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
   }, [selfUser]);
 
   useEffect(() => {
+    if (!selfUser) return;
     const interval = setInterval(() => {
       fetchNotifications(
         notificationsIds,
@@ -148,7 +149,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
     }, 60 * 1000); // in ms
 
     return () => clearInterval(interval);
-  }, [notificationsIds]);
+  }, [notificationsIds, selfUser]);
 
   return (
     <div>

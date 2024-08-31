@@ -1,8 +1,20 @@
 "use client";
 import { useEffect } from "react";
 import { chechForUpdate, updateVersion } from "./version";
+import { useRouter } from "next/navigation";
 
 function ServiceWorker() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const allowedDomains = ["info.e5vosdo.hu", "localhost"];
+    const currentDomain = window.location.hostname;
+
+    if (!allowedDomains.includes(currentDomain)) {
+      router.push("https://info.e5vosdo.hu" + window.location.pathname);
+    }
+  }, [router]);
+
   useEffect(() => {
     console.log("Service Worker is going to be registered.");
     if ("serviceWorker" in navigator) {

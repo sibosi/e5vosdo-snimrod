@@ -9,20 +9,13 @@ import {
   Skeleton,
 } from "@nextui-org/react";
 import useSWR from "swr";
-
-type Teacher = {
-  country: string;
-  rank: number;
-  gold: number;
-  silver: number;
-  bronze: number;
-};
-
-type rowType = [string, string, string, Teacher[]];
+import { TeacherChange } from "@/app/api/route";
 
 export const QuickTeachers = () => {
-  const { data: tableData, error } = useSWR("/api/", fetcher);
-  const isLoaded = !error && !!tableData;
+  const { data: tableDataKhm, error } = useSWR("/api/", fetcher);
+  const isLoaded = !error && !!tableDataKhm;
+
+  const tableData = tableDataKhm as TeacherChange[];
 
   return (
     <Skeleton
@@ -33,7 +26,7 @@ export const QuickTeachers = () => {
         {error && <p>Error fetching data</p>}
         {!isLoaded && !error && <p>Loading...</p>}
         {isLoaded && tableData && tableData.length ? (
-          tableData.map((teacher: rowType, rowIndex: number) => (
+          tableData.map((teacher, rowIndex: number) => (
             <Dropdown key={rowIndex} className="md: block">
               <DropdownTrigger>
                 <User
@@ -41,27 +34,27 @@ export const QuickTeachers = () => {
                   type="button"
                   avatarProps={{
                     isBordered: true,
-                    src: teacher[1],
+                    src: teacher.photoUrl,
                   }}
                   className="p-2 transition-transform"
-                  description={teacher[2]}
-                  name={teacher[0]}
+                  description={teacher.subjects}
+                  name={teacher.name}
                 />
               </DropdownTrigger>
 
               <DropdownMenu aria-label="Static Actions">
-                {teacher[3] &&
-                  teacher[3].map((event: any, eventIndex: number) => (
+                {teacher.changes &&
+                  teacher.changes.map((event, eventIndex: number) => (
                     <DropdownItem key={eventIndex} className="text-foreground">
-                      {event[7] +
+                      {event.date +
                         " | " +
-                        event[8] +
+                        event.hour +
                         ". ó | terem: " +
-                        event[9] +
+                        event.room +
                         " | " +
-                        event[4] +
+                        event.subject +
                         " | " +
-                        event[5]}
+                        event.replacementTeacher}
                     </DropdownItem>
                   ))}
               </DropdownMenu>

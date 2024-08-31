@@ -4,7 +4,25 @@ import cheerio from "cheerio";
 const iconv = require("iconv-lite");
 import tanarok_tabla from "@/src/osszestanar.json";
 
-let cachedData: any[] | null = null;
+export interface TeacherChange {
+  name: string;
+  photoUrl: string;
+  subjects: string;
+  changes: {
+    date: string;
+    missingTeacher: string;
+    hourRoom: string;
+    group: string;
+    subject: string;
+    replacementTeacher: string;
+    comment: string;
+    day: string;
+    hour: string;
+    room: string;
+  }[];
+}
+
+let cachedData: TeacherChange[] | null = null;
 let lastUpdated: number | null = null;
 const CACHE_DURATION = (3600 * 1000) / 2; // Cache duration in milliseconds (1 hour)
 
@@ -105,7 +123,45 @@ async function update() {
       });
     });
 
-    cachedData = quick_data;
+    const pretty_data = quick_data.map((teacherData) => {
+      const name = teacherData[0];
+      const photoUrl = teacherData[1];
+      const subjects = teacherData[2];
+      const changes = teacherData[3].map((event: any) => {
+        const date = event[0];
+        const missingTeacher = event[1];
+        const hourRoom = event[2];
+        const group = event[3];
+        const subject = event[4];
+        const replacementTeacher = event[5];
+        const comment = event[6];
+        const day = event[7];
+        const hour = event[8];
+        const room = event[9];
+
+        return {
+          date,
+          missingTeacher,
+          hourRoom,
+          group,
+          subject,
+          replacementTeacher,
+          comment,
+          day,
+          hour,
+          room,
+        };
+      });
+
+      return {
+        name,
+        photoUrl,
+        subjects,
+        changes,
+      };
+    });
+
+    cachedData = pretty_data as TeacherChange[];
     lastUpdated = Date.now();
 
     return cachedData;

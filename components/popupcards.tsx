@@ -19,6 +19,7 @@ import {
   InstagramIcon,
   LinkIcon,
   PhoneIcon,
+  YoutubeIcon,
 } from "./icons";
 
 type CardProps = {
@@ -40,6 +41,7 @@ const LinkTypeIcons = {
   phone: <PhoneIcon size={iconSize} />,
   website: <LinkIcon size={iconSize} />,
   classroom: <ClassroomIcon size={iconSize} />,
+  youtube: <YoutubeIcon size={iconSize} />,
 };
 
 const navigateToLink = (value: Link) => {

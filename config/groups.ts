@@ -133,7 +133,13 @@ export const clubsConfig: Group[] = [
       "Az V. Kerületi Eötvös József Gimnáziumban működő E5vös Alkotó Műhely egy tér a játékhoz, az alkotáshoz, a tanuláshoz, a mentoráláshoz, a feltaláláshoz. Másképp megfogalmazva a tanulás és az innováció helye. Ez a nyitott tanulói tér a diákok és tanárok számára egyaránt rendelkezésre áll a projektjeik és ötleteik megvalósításához. A Műhely hozzáférést biztosít egy egyedi alkotókörnyezethez, ami segít a különböző hard és soft skillek elsajátításában azáltal, hogy a legkorszerűbb technológiákhoz, szoftverekhez és anyagokhoz nyújt hozzáférést. Így az iskola polgárai képesek elkészíteni (szinte) akármit , amit csak el tudnak képzelni.",
     image: "/groups/eam.png",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Eötvös Alkotó Műhely Weboldal",
+        value: "https://sites.google.com/e5vos.hu/e5vosalkotomuhely/",
+        type: "website",
+      },
+    ],
   },
   {
     title: "Elsősegélynyújtó Diákkör",
@@ -182,9 +188,20 @@ export const clubsConfig: Group[] = [
     title: "Eötvös Kosárlabdacsapat",
     details:
       "Legyél te is az Eötvös amatőr kosárcsapatának tagja, és légy részese a diákolimpia első helyéért folyó éves küzdelemnek! Szívesen várunk mindenkit, aki szeretné magát kipróbálni a kosárpályán, illetve szeretne tagja lenni egy összetartó, egymást segítő, vidám közösségnek. Kezdők és haladók egyaránt jöhetnek, de fontos, hogy csak az játszhat a diákolimpia mérkőzésein, aki legalább 1 éve nem igazolt játékos, tehát nem tagja egyesületnek.",
-    image: "/groups/kosar.jpg",
+    image: "/groups/kosar.jpeg",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Eötvös Kosárlabdacsapat Instagram",
+        value: "https://www.instagram.com/e5vosnegerek/",
+        type: "instagram",
+      },
+      {
+        title: "Eötvös Kosárlabdacsapat Facebook",
+        value: "https://www.facebook.com/eotvosbasketball/",
+        type: "facebook",
+      },
+    ],
   },
   {
     title: "Eötvös Média",

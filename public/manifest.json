@@ -6,8 +6,8 @@
   "lang": "hu",
   "dir": "ltr",
   "scope": "/",
-  "version": "0.0.2408.2.11",
-  "required_sw_version": "0.0.2408.2.7",
+  "version": "0.0.2408.2.12",
+  "required_sw_version": "0.0.2408.2.12",
 
   "start_url": "/",
   "id": "/",

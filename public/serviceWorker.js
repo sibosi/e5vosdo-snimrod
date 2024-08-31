@@ -203,7 +203,19 @@ self.addEventListener('message', (event) => {
     console.log(`Cache method updated to: ${event.data.cacheMethod}`);
   }
   else if (event.data && event.data.action === 'reCache') {
-    // Update the cache
+    // Delete all cache
+
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            return caches.delete(cacheName);
+          })
+        );
+      })
+    );
+
+    return;
 
     event.waitUntil(
       caches.open(CACHE_NAME).then((cache) => {
@@ -233,11 +245,5 @@ self.addEventListener('message', (event) => {
         });
       })
     );
-
-    fetch('/manifest.json').then((response) => {
-      return response.json();
-    }).then((manifest) => {
-      localStorage.setItem('version', manifest.version);
-    });
   }
 });

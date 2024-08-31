@@ -547,6 +547,11 @@ export async function getMyClassTimetable(EJG_class: string) {
   const response = (await dbreq(
     `SELECT * FROM timetable WHERE JSON_CONTAINS(JSON_EXTRACT(EJG_classes, '$[1]'), '"${EJG_class}"', '$')`,
   )) as Lesson[];
+
+  response.forEach((lesson) => {
+    lesson.teacher = lesson.teacher.replace(/\n/g, " ");
+  });
+
   return response;
 }
 

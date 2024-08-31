@@ -1,6 +1,5 @@
 "use client";
 import {
-  Badge,
   Button,
   Dropdown,
   DropdownItem,
@@ -19,6 +18,8 @@ import { UserType } from "@/db/dbreq";
 import { Alert } from "../home/alert";
 import { TeacherChange } from "@/app/api/route";
 const teacherByName = teacherDataByName as any;
+import TeachersName from "@/public/storage/teachersName.json";
+const teachersName = TeachersName as { [key: string]: string };
 
 interface Lesson {
   id: number;
@@ -215,6 +216,10 @@ const FilterIcon = () => (
     />
   </svg>
 );
+
+function teacherName(name: string) {
+  return teachersName[name] ?? name;
+}
 
 const Cell = ({
   children,
@@ -665,13 +670,24 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                     type="button"
                                     avatarProps={{
                                       isBordered: true,
-                                      src: teacherByName[lesson.teacher]?.Photo,
+                                      src: teacherByName[
+                                        teacherName(lesson.teacher)
+                                      ]?.Photo,
                                     }}
                                     className="w-52 justify-start px-2 transition-transform"
                                     description={
-                                      <p className="text-foreground">
-                                        {toShortRoom(lesson.room)}
-                                      </p>
+                                      changesToday[lesson.id]?.room ? (
+                                        <p className="text-foreground">
+                                          {toShortRoom(
+                                            changesToday[lesson.id]
+                                              ?.room as string,
+                                          )}
+                                        </p>
+                                      ) : (
+                                        <p className="text-foreground">
+                                          {toShortRoom(lesson.room)}
+                                        </p>
+                                      )
                                     }
                                     name={
                                       changesToday[lesson.id]?.teacher ===
@@ -688,12 +704,12 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                         )
                                       ) : (
                                         <span className="h-5 w-5 break-words font-bold">
-                                          {!lesson.teacher
+                                          {lesson.teacher
                                             ? changesToday[
                                                 lesson.id
                                               ].teacher?.substring(0, 20) +
                                               ((changesToday[lesson.id].teacher
-                                                ?.length ?? 0 > 20)
+                                                ?.length as number) > 20
                                                 ? "..."
                                                 : "")
                                             : "???"}
@@ -727,59 +743,71 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             onClose={() => setSelectedLesson(undefined)}
             className="mx-5"
           >
-            <ModalContent className="p-4 text-foreground">
-              <h3 className="text-lg font-bold">Az óra részletei</h3>
-              <div className="flex">
-                <User
-                  avatarProps={{
-                    isBordered: true,
-                    src: teacherByName[selectedLesson?.teacher ?? ""]?.Photo,
-                    className: "w-20 h-20",
-                  }}
-                  className="p-2 transition-transform"
-                  name
-                />
-                <div className="my-auto">
+            {selectedLesson && (
+              <ModalContent className="p-4 text-foreground">
+                <h3 className="text-lg font-bold">Az óra részletei</h3>
+                <div className="flex">
+                  <User
+                    avatarProps={{
+                      isBordered: true,
+                      src: teacherByName[ // Replace new line with space
+                        teacherName(selectedLesson.teacher.replace(/\n/g, " "))
+                      ]?.Photo,
+                      className: "w-20 h-20",
+                    }}
+                    className="p-2 transition-transform"
+                    name
+                  />
+                  <div className="my-auto">
+                    <p>
+                      <b>
+                        {selectedLesson.teacher}
+                        {changesToday[selectedLesson.id]?.teacher
+                          ? ` (${changesToday[selectedLesson.id].teacher})`
+                          : ""}
+                      </b>
+                    </p>
+                    <p>
+                      <b>Tantárgy:</b> {selectedLesson.subject}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-foreground-600">
                   <p>
-                    <b>{selectedLesson?.teacher}</b>
+                    <b>Terem:</b> {selectedLesson.room}
+                    {changesToday[selectedLesson.id]?.room
+                      ? ` (${changesToday[selectedLesson.id].room})`
+                      : ""}
                   </p>
                   <p>
-                    <b>Tantárgy:</b> {selectedLesson?.subject}
+                    <b>Osztály:</b> {selectedLesson.EJG_classes.join(", ")}
+                  </p>
+                  <p>
+                    <b>Csoport:</b>{" "}
+                    {selectedLesson.group_name == "null"
+                      ? "Nincs csoport"
+                      : selectedLesson.group_name}
+                  </p>
+                  <p>
+                    <b>Kezdés:</b> {selectedLesson.start_time}
+                  </p>
+                  <p>
+                    <b>Vége:</b> {selectedLesson.end_time}
                   </p>
                 </div>
-              </div>
-              <div className="text-foreground-600">
-                <p>
-                  <b>Terem:</b> {selectedLesson?.room}
-                </p>
-                <p>
-                  <b>Osztály:</b> {selectedLesson?.EJG_classes.join(", ")}
-                </p>
-                <p>
-                  <b>Csoport:</b>{" "}
-                  {selectedLesson?.group_name == "null"
-                    ? "Nincs csoport"
-                    : selectedLesson?.group_name}
-                </p>
-                <p>
-                  <b>Kezdés:</b> {selectedLesson?.start_time}
-                </p>
-                <p>
-                  <b>Vége:</b> {selectedLesson?.end_time}
-                </p>
-              </div>
 
-              <div className="pt-2">
-                <Button
-                  className="fill-selfprimary"
-                  onClick={() => {
-                    setSelectedLesson(undefined);
-                  }}
-                >
-                  Rendben
-                </Button>
-              </div>
-            </ModalContent>
+                <div className="pt-2">
+                  <Button
+                    className="fill-selfprimary"
+                    onClick={() => {
+                      setSelectedLesson(undefined);
+                    }}
+                  >
+                    Rendben
+                  </Button>
+                </div>
+              </ModalContent>
+            )}
           </Modal>
         </div>
       ) : (

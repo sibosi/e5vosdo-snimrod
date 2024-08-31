@@ -1,5 +1,6 @@
 "use client";
 import {
+  Badge,
   Button,
   Dropdown,
   DropdownItem,
@@ -16,6 +17,7 @@ import teacherDataByName from "@/public/storage/teacherDataByNames.json";
 import getUserClass from "@/public/getUserClass";
 import { UserType } from "@/db/dbreq";
 import { Alert } from "../home/alert";
+import { TeacherChange } from "@/app/api/route";
 const teacherByName = teacherDataByName as any;
 
 interface Lesson {
@@ -55,6 +57,14 @@ type WeekDuration = [
   DayDuration,
   DayDuration,
 ];
+
+interface LocalChanges {
+  [key: number]: {
+    teacher?: string;
+    room?: string;
+    comment?: string;
+  };
+}
 
 const countWeekDuration = (
   timetableDay: TimetableDay,
@@ -218,7 +228,7 @@ const Cell = ({
   return (
     <div
       className={
-        "my-1 grid h-14 w-full min-w-fit grid-cols-1 rounded-xl px-4 " +
+        "relative my-1 grid h-14 w-full min-w-fit grid-cols-1 rounded-xl px-3 pr-4 " +
         className
       }
       onClick={onClick}
@@ -233,6 +243,9 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   const [timetableDay, setTimetableDay] = useState<TimetableDay>();
   const [selectedLesson, setSelectedLesson] = useState<LessonOption>();
   const [showSettings, setShowSettings] = useState(false);
+
+  const [teacherChanges, setTeacherChanges] = useState<TeacherChange[]>();
+  const [changesToday, setChangesToday] = useState<LocalChanges>({});
 
   const [hiddenLessons, setHiddenLessons] = useState<number[]>(
     selfUser.hidden_lessons ?? [],
@@ -299,7 +312,13 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
       );
     };
 
+    const getTeacherChanges = async () => {
+      const data = await fetch("api").then((res) => res.json());
+      setTeacherChanges(data as TeacherChange[]);
+    };
+
     getDefaultGroup();
+    getTeacherChanges();
   }, []);
 
   useEffect(() => {
@@ -332,6 +351,53 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
     });
     return count > 1;
   }
+
+  useEffect(() => {
+    function checkIfChangeToday() {
+      let changes: LocalChanges = {};
+
+      if (!timetableDay) {
+        console.log("Nincs helyettesítés ma!");
+        return changes;
+      }
+
+      for (const lessonBlock of timetableDay[dayOfWeek]) {
+        for (const lesson of lessonBlock) {
+          if (lesson && teacherChanges) {
+            for (const teacherChange of teacherChanges) {
+              for (const change of teacherChange.changes) {
+                if (
+                  change.missingTeacher.toLowerCase() ===
+                    lesson.teacher.toLowerCase() &&
+                  change.day === selectedDayValue &&
+                  [
+                    "07:15",
+                    "08:15",
+                    "09:15",
+                    "10:15",
+                    "11:15",
+                    "12:25",
+                    "13:35",
+                    "14:30",
+                    "15:25",
+                  ][Number(change.hour)] === lesson.start_time
+                ) {
+                  changes[lesson.id] = {
+                    teacher: change.replacementTeacher,
+                    comment: change.comment,
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return changes;
+    }
+
+    setChangesToday(checkIfChangeToday());
+  }, [timetableDay, teacherChanges, dayOfWeek]);
 
   return (
     <div className="text-foreground transition-all duration-300">
@@ -476,6 +542,11 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
           ) : (
             <></>
           )}
+          {Object.keys(changesToday).length > 0 && (
+            <Alert className="border-danger-300 bg-danger-100 text-sm text-foreground">
+              Az órarendedben változás található! (helyettesítés)
+            </Alert>
+          )}
 
           <div className="grid grid-cols-1">
             {
@@ -543,11 +614,20 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                     "border-2 " +
                                     (hiddenLessons.includes(lesson.id)
                                       ? "border-default-400 bg-default-100"
-                                      : checkIfMultipleLessonsInTime(
-                                            lessonBlock,
+                                      : Object.keys(changesToday).includes(
+                                            String(lesson.id),
                                           )
-                                        ? "border-selfsecondary-400 bg-selfsecondary-100"
-                                        : "border-selfprimary-400 bg-selfprimary-100")
+                                        ? "border-danger-400 bg-danger-100"
+                                        : checkIfMultipleLessonsInTime(
+                                              lessonBlock,
+                                            )
+                                          ? "border-selfsecondary-400 bg-selfsecondary-100"
+                                          : "border-selfprimary-400 bg-selfprimary-100") +
+                                    (Object.keys(changesToday).includes(
+                                      String(lesson.id),
+                                    )
+                                      ? " mr-2"
+                                      : "")
                                   }
                                   onClick={() =>
                                     hide == "edit"
@@ -573,6 +653,13 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                       : setSelectedLesson(lesson)
                                   }
                                 >
+                                  {Object.keys(changesToday).includes(
+                                    lesson.id.toString(),
+                                  ) && (
+                                    <div className="absolute right-0 top-0 -mx-2 -my-1 rounded-badge border-2 border-selfsecondary-400 bg-selfsecondary-200 px-2 text-xs">
+                                      változás
+                                    </div>
+                                  )}
                                   <User
                                     as="button"
                                     type="button"
@@ -587,15 +674,30 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                       </p>
                                     }
                                     name={
-                                      lesson.teacher != "null" ? (
-                                        <span className="h-5 w-5 break-words">
-                                          {lesson.teacher.substring(0, 20) +
-                                            (lesson.teacher.length > 20
-                                              ? "..."
-                                              : "")}
-                                        </span>
+                                      changesToday[lesson.id]?.teacher ===
+                                      undefined ? (
+                                        lesson.teacher != "null" ? (
+                                          <span className="h-5 w-5 break-words">
+                                            {lesson.teacher.substring(0, 20) +
+                                              (lesson.teacher.length > 20
+                                                ? "..."
+                                                : "")}
+                                          </span>
+                                        ) : (
+                                          "Tanár"
+                                        )
                                       ) : (
-                                        "Tanár"
+                                        <span className="h-5 w-5 break-words font-bold">
+                                          {!lesson.teacher
+                                            ? changesToday[
+                                                lesson.id
+                                              ].teacher?.substring(0, 20) +
+                                              ((changesToday[lesson.id].teacher
+                                                ?.length ?? 0 > 20)
+                                                ? "..."
+                                                : "")
+                                            : "???"}
+                                        </span>
                                       )
                                     }
                                   />

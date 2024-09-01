@@ -1,6 +1,6 @@
 {
   "name": "e5vos-do",
-  "version": "0.0.2408.2",
+  "version": "0.0.2409.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

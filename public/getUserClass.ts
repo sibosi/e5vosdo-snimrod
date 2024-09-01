@@ -1,7 +1,8 @@
 import { User } from "@/db/dbreq";
 
-const getUserClass = (selfUser: User) => {
-  if (!selfUser.coming_year || !selfUser.class_character) return null;
+const getUserClass = (selfUser: User | undefined) => {
+  if (!selfUser || !selfUser.coming_year || !selfUser.class_character)
+    return null;
   // How many year after the coming year aug. 1st.
 
   const msInAYear = 1000 * 60 * 60 * 24 * 365.25;

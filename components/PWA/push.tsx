@@ -7,9 +7,9 @@ const publicVapidKey =
 async function subscribeUser() {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     try {
-      console.log("Registering service worker");
+      // Registering service worker
       const registration = await navigator.serviceWorker.ready;
-      console.log("Service Worker is registered");
+      // Service Worker is registered
       const existingSubscription =
         await registration.pushManager.getSubscription();
 
@@ -29,7 +29,7 @@ async function subscribeUser() {
       } else {
         console.log("Existing subscription found");
         subscription = existingSubscription;
-        console.log("Existing subscription:", subscription);
+        // Existing subscription:", subscription
         const response = await fetch("/api/subscribe", {
           method: "POST",
           body: JSON.stringify((subscription as any).endpoint || ""),
@@ -37,7 +37,7 @@ async function subscribeUser() {
             "Content-Type": "application/json",
           },
         });
-        console.log("Response:", response);
+        // Response:", response
         if (!response) {
           await fetch("/api/subscribe", {
             method: "POST",

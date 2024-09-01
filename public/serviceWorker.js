@@ -200,7 +200,6 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.action === 'updateCacheMethod') {
     writeStorage('cacheMethod', event.data.cacheMethod);
-    console.log(`Cache method updated to: ${event.data.cacheMethod}`);
   }
   else if (event.data && event.data.action === 'reCache') {
     // Delete all cache

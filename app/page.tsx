@@ -39,7 +39,7 @@ export default async function Home() {
       </div>
 
       <Section title="Órarend" dropdownable={true}>
-        {true ? (
+        {0 ? (
           selfUser ? (
             <TimetableDay selfUser={selfUser} />
           ) : (

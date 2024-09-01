@@ -1,23 +1,58 @@
 "use client";
 import { Button, Input } from "@nextui-org/react";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { hexFromArgb, Hct } from "@material/material-color-utilities";
 
-export const ThemeUpdate = () => {
-  useEffect(() => {
-    const colors = ["primary", "secondary"];
+const versions = [
+  "20",
+  "50",
+  "100",
+  "200",
+  "300",
+  "400",
+  "500",
+  "600",
+  "700",
+  "800",
+  "900",
+];
 
-    colors.forEach((color) => {
-      const savedColorHue = localStorage.getItem(`${color}Hue`);
-      if (savedColorHue) {
-        document.documentElement.style.setProperty(
-          `--color-${color}-hue`,
-          savedColorHue,
-        );
-      }
-    });
-  }, []);
+export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
+  const colorHue =
+    Number(localStorage.getItem(`${colorName}Hue`)) !== undefined
+      ? Number(localStorage.getItem(`${colorName}Hue`))
+      : colorName === "primary"
+        ? 255
+        : 300;
+  document.documentElement.style.setProperty(
+    `--color-${colorName}`,
+    hexFromArgb(Hct.from(colorHue, 100, 50).toInt()),
+  );
 
-  return <></>;
+  const isDarkMode = theme
+    ? theme === "dark"
+    : window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  versions.forEach((version) => {
+    const argbColor = Hct.from(
+      colorHue,
+      100,
+      isDarkMode ? Number(version) / 10 : 100 - Number(version) / 10,
+    );
+    if (argbColor) {
+      document.documentElement.style.setProperty(
+        `--color-${colorName}-${version}`,
+        hexFromArgb(argbColor.toInt()),
+      );
+    }
+  });
+
+  if (localStorage.getItem("materialBg") === "true") {
+    document.documentElement.style.setProperty(
+      `--color-${colorName}-bg`,
+      hexFromArgb(Hct.from(colorHue, 100, isDarkMode ? 3 : 97).toInt()),
+    );
+  }
 };
 
 export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
@@ -25,36 +60,33 @@ export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
   const [colorHue, setColorHue] = useState(defaultHue);
 
   const updateColors = () => {
+    const savedColorHue = Number(localStorage.getItem(`${color}Hue`));
+
     document.documentElement.style.setProperty(
-      `--color-${color}-hue`,
-      String(colorHue),
+      `--color-${color}`,
+      hexFromArgb(Hct.from(savedColorHue, 100, 50).toInt()),
     );
+
+    versions.forEach((version) => {
+      const argbColor = Hct.from(
+        savedColorHue,
+        100,
+        100 - Number(version) / 10,
+      );
+      if (argbColor) {
+        document.documentElement.style.setProperty(
+          `--color-${color}-${version}`,
+          hexFromArgb(argbColor.toInt()),
+        );
+        console.log(
+          `--color-${color}-${version}`,
+          hexFromArgb(argbColor.toInt()),
+          argbColor,
+        );
+      }
+    });
     localStorage.setItem(`${color}Hue`, String(colorHue));
   };
-
-  useEffect(() => {
-    const savedColorHue = localStorage.getItem(`${color}Hue`);
-    if (savedColorHue) {
-      setColorHue(Number(savedColorHue));
-      document.documentElement.style.setProperty(
-        `--color-${color}-hue`,
-        savedColorHue,
-      );
-    }
-  }, [color]);
-
-  const LIGHT_HSLS = [
-    [228, 92, 95],
-    [228, 92, 90],
-    [228, 93, 79],
-    [228, 92, 69],
-    [228, 92, 58],
-    [228, 100, 47],
-    [228, 100, 38],
-    [228, 100, 29],
-    [228, 100, 19],
-    [228, 100, 10],
-  ];
 
   return (
     <div className={`mb-4 overflow-auto rounded-3xl bg-self${color}-300 p-6`}>
@@ -90,7 +122,9 @@ export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
             key={num}
             className="w-full p-2 text-center"
             style={{
-              backgroundColor: `hsl(${colorHue}, ${LIGHT_HSLS[index][1]}%, ${LIGHT_HSLS[index][2]}%)`,
+              backgroundColor: hexFromArgb(
+                Hct.from(colorHue, 100, 100 - num / 10).toInt(),
+              ),
             }}
           >
             {num}
@@ -124,11 +158,15 @@ export const ThemeTemplate = ({
       Number(localStorage.getItem(`${color}Hue`)) ||
         (color === "primary" ? 212 : 270),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className={`mb-4 rounded-3xl bg-self${color}-300 p-3`}>
+    <div
+      className={
+        "mb-4 rounded-3xl p-3 " +
+        (color === "primary" ? "bg-selfprimary-300" : "bg-selfsecondary-300")
+      }
+    >
       <h1 className="text-2xl font-bold">
         {color === "primary" ? "Elsődleges" : "Másodlagos"} szín
         <Button
@@ -155,15 +193,15 @@ export const ThemeTemplate = ({
               "h-14 w-full border-1 " + (selectedHue === hue ? "border-4" : "")
             }
             style={{
-              backgroundColor: `hsl(${hue}, 100%, 50%)`,
+              // From Hct.from(hue, 100, 0) to Hct.from(hue, 100, 100) gradient
+              background: `linear-gradient(to bottom, ${hexFromArgb(
+                Hct.from(hue, 100, 40).toInt(),
+              )}, ${hexFromArgb(Hct.from(hue, 100, 80).toInt())})`,
             }}
             onClick={() => {
               localStorage.setItem(`${color}Hue`, String(hue));
-              document.documentElement.style.setProperty(
-                `--color-${color}-hue`,
-                String(hue),
-              );
               setSelectedHue(hue);
+              loadPalette(color);
             }}
           >
             <div className="my-auto hidden text-center">{hue}</div>
@@ -179,12 +217,9 @@ export const ThemeTemplate = ({
         value={colorHues.indexOf(selectedHue) as any}
         onChange={(e) => {
           const hue = colorHues[Number(e.target.value)];
-          localStorage.setItem(`${color}Hue`, String(hue));
-          document.documentElement.style.setProperty(
-            `--color-${color}-hue`,
-            String(hue),
-          );
           setSelectedHue(hue);
+          localStorage.setItem(`${color}Hue`, String(hue));
+          loadPalette(color);
         }}
       />
     </div>

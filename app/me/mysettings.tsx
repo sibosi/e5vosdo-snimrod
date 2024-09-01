@@ -16,6 +16,7 @@ import { Section } from "@/components/home/section";
 import CacheManager from "@/components/PWA/cacheManager";
 import VersionManager from "@/components/PWA/versionManager";
 import {
+  loadPalette,
   ThemePickerPrimary,
   ThemePickerSecondary,
   ThemeTemplatePrimary,
@@ -66,12 +67,16 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
   const [nicknameError, setNicknameError] = useState<string>("");
   const [EJG_codeError, setEJG_codeError] = useState<string>("");
+  const [isMaterialBg, setIsMaterialBg] = useState<boolean>(false);
   const [cacheMethod, setCacheMethod] = useState<
     "always" | "offline" | "never"
   >("always");
 
   useEffect(() => {
     setCacheMethod((localStorage.getItem("cacheMethod") as any) ?? "always");
+    setIsMaterialBg(
+      localStorage.getItem("materialBg") === "true" ? true : false,
+    );
   }, []);
 
   useEffect(() => {
@@ -227,6 +232,22 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         >
           <ThemeTemplatePrimary />
           <ThemeTemplateSecondary />
+
+          <Button
+            onClick={() => {
+              localStorage.setItem(
+                "materialBg",
+                isMaterialBg ? "false" : "true",
+              );
+              setIsMaterialBg(!isMaterialBg);
+              loadPalette("primary");
+            }}
+            className="fill-selfprimary"
+          >
+            {isMaterialBg
+              ? "Színes háttér kikapcsolása"
+              : "Színes háttér bekapcsolása"}
+          </Button>
         </SettingsSection>
 
         <SettingsSection
@@ -235,33 +256,35 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           dropdownable={true}
         >
           <table className="table gap-y-2">
-            <tr>
-              <th className="font-semibold">Gyorsítótár használata</th>
-              <th>
-                <RadioGroup
-                  value={cacheMethod}
-                  onChange={(e) => setCacheMethod(e.target.value as any)}
-                >
-                  <Radio value="always">Mindig</Radio>
-                  <Radio value="offline">Csak offline</Radio>
-                  <Radio value="never">Soha</Radio>
-                </RadioGroup>
+            <tbody>
+              <tr>
+                <th className="font-semibold">Gyorsítótár használata</th>
+                <th>
+                  <RadioGroup
+                    value={cacheMethod}
+                    onChange={(e) => setCacheMethod(e.target.value as any)}
+                  >
+                    <Radio value="always">Mindig</Radio>
+                    <Radio value="offline">Csak offline</Radio>
+                    <Radio value="never">Soha</Radio>
+                  </RadioGroup>
 
-                <Button
-                  color="warning"
-                  onClick={() =>
-                    caches.keys().then((keys) => {
-                      keys.forEach((key) => {
-                        caches.delete(key);
-                      });
-                      alert("A gyorsítótár kiürítve.");
-                    })
-                  }
-                >
-                  Gyorsítótár kiürítése
-                </Button>
-              </th>
-            </tr>
+                  <Button
+                    color="warning"
+                    onClick={() =>
+                      caches.keys().then((keys) => {
+                        keys.forEach((key) => {
+                          caches.delete(key);
+                        });
+                        alert("A gyorsítótár kiürítve.");
+                      })
+                    }
+                  >
+                    Gyorsítótár kiürítése
+                  </Button>
+                </th>
+              </tr>
+            </tbody>
           </table>
           <VersionManager />
 

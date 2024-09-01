@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
-import { add } from "cheerio/lib/api/traversing";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -131,7 +130,7 @@ export async function getUsersEmail() {
 }
 
 export async function getEvents() {
-  return await dbreq(`SELECT * FROM \`events\``);
+  return (await dbreq(`SELECT * FROM \`events\``)) as any[];
 }
 
 export async function getStudentUsers() {
@@ -758,7 +757,7 @@ export const apireq = {
   getAuth: { req: getAuth, perm: [] },
   hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
-  getEvents: { req: getEvents, perm: ["student"] },
+  getEvents: { req: getEvents, perm: [] },
   getStudentUsers: { req: getStudentUsers, perm: ["admin", "tester"] },
   getStudentUsersEmail: { req: getStudentUsersEmail, perm: [] },
   getAdminUsers: { req: getAdminUsers, perm: ["admin", "tester"] },
@@ -772,12 +771,12 @@ export const apireq = {
   markAsRead: { req: markAsRead, perm: ["user"] },
   newNotificationByEmails: { req: newNotificationByEmails, perm: ["admin"] },
   newNotificationByNames: { req: newNotificationByNames, perm: ["admin"] },
-  checkPushAuth: { req: checkPushAuth, perm: ["student"] },
-  editMySettings: { req: editMySettings, perm: ["student"] },
-  getMyClassTimetable: { req: getMyClassTimetable, perm: ["student"] },
-  setHiddenLessons: { req: setHiddenLessons, perm: ["student"] },
-  getDefaultGroup: { req: getDefaultGroup, perm: ["student"] },
-  editDefaultGroup: { req: editDefaultGroup, perm: ["student"] },
+  checkPushAuth: { req: checkPushAuth, perm: ["user"] },
+  editMySettings: { req: editMySettings, perm: ["user"] },
+  getMyClassTimetable: { req: getMyClassTimetable, perm: ["user"] },
+  setHiddenLessons: { req: setHiddenLessons, perm: ["user"] },
+  getDefaultGroup: { req: getDefaultGroup, perm: ["user"] },
+  editDefaultGroup: { req: editDefaultGroup, perm: ["user"] },
   addTicket: { req: addTicket, perm: ["admin"] },
   deleteTicket: { req: deleteTicket, perm: ["admin"] },
 };

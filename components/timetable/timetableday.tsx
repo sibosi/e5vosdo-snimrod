@@ -362,7 +362,6 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
       let changes: LocalChanges = {};
 
       if (!timetableDay) {
-        console.log("Nincs helyettesítés ma!");
         return changes;
       }
 
@@ -402,7 +401,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
     }
 
     setChangesToday(checkIfChangeToday());
-  }, [timetableDay, teacherChanges, dayOfWeek]);
+  }, [timetableDay, teacherChanges, dayOfWeek, selectedDayValue]);
 
   return (
     <div className="text-foreground transition-all duration-300">
@@ -447,7 +446,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
               }}
               placeholder="Osztály"
               // variant="underlined"
-              value={EJG_class}
+              value={EJG_class ?? ""}
               onValueChange={(value: string) =>
                 setEJG_class(value.toUpperCase().substring(0, 5))
               }
@@ -556,7 +555,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
           <div className="grid grid-cols-1">
             {
               <div>
-                {timetableDay[dayOfWeek] ? (
+                {timetableDay && timetableDay[dayOfWeek] ? (
                   timetableDay[dayOfWeek].map(
                     (lessonBlock, lessonBlockIndex) =>
                       weekDuration &&

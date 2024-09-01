@@ -23,7 +23,6 @@ import dynamic from "next/dynamic";
 import Cookie from "@/components/cookie";
 import SkipMessenger from "./skipMessenger";
 import OGURL from "./ogurl";
-import { ThemeUpdate } from "@/components/themePicker";
 import LoadCacheMethod from "./loadCacheMethod";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
@@ -106,7 +105,7 @@ export default async function RootLayout({
 
       <body
         className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
+          "bg-selfprimary-bg min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
           "light:bg-white",
         )}
@@ -128,53 +127,38 @@ export default async function RootLayout({
         <OGURL />
         <ServiceWorker />
         <PushManager />
-        <ThemeUpdate />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="bg-selfprimary-0 relative flex h-screen flex-col">
+          <div className="bg-selfprimary-bg relative flex h-screen flex-col">
             <Navbar
               selfUser={selfUser}
               isActiveHeadSpace={pageSettings.headspace}
-              className="bg-selfprimary-0"
+              className="bg-selfprimary-bg"
             />
 
             <Cookie />
             <SkipMessenger />
 
-            {session &&
-            session.user &&
-            session.user.email &&
-            (users as string[]).includes(session.user.email) ? (
-              <>
-                {console.log("New login from " + session.user.email)}
-                <main className="bg-selfprimary-0 container mx-auto max-w-7xl flex-grow pl-3 pr-3 pt-4">
-                  {children}
-                </main>
-                <footer className="bg-selfprimary-0 flex w-full items-center justify-center py-3">
-                  <Link
-                    isExternal
-                    className="flex items-center gap-1 pb-14 text-current"
-                    href={siteConfig.links.mypage}
-                    title="Nimród oldala"
-                  >
-                    <span className="text-default-600">Fejlesztette</span>
-                    <p className="text-selfprimary">Simon Nimród</p>
-                    <span className="text-default-600">10.C</span>
-                  </Link>
-                  <br />
-                  <PageNav />
-                </footer>
-              </>
-            ) : (
-              <>
-                <Access
-                  name={
-                    session && session.user && session.user.name
-                      ? session.user.name
-                      : undefined
-                  }
-                />
-              </>
-            )}
+            <>
+              {session?.user?.email &&
+                console.log("New login from " + session.user.email)}
+              <main className="bg-selfprimary-bg container mx-auto max-w-7xl flex-grow pl-3 pr-3 pt-4">
+                {children}
+              </main>
+              <footer className="bg-selfprimary-bg flex w-full items-center justify-center py-3">
+                <Link
+                  isExternal
+                  className="flex items-center gap-1 pb-14 text-current"
+                  href={siteConfig.links.mypage}
+                  title="Nimród oldala"
+                >
+                  <span className="text-default-600">Fejlesztette</span>
+                  <p className="text-selfprimary">Simon Nimród</p>
+                  <span className="text-default-600">10.C</span>
+                </Link>
+                <br />
+                <PageNav />
+              </footer>
+            </>
           </div>
         </Providers>
         <GoogleAnalytics measurementId="G-P74RJ9THHS" />

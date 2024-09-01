@@ -29,22 +29,26 @@ export default async function Home() {
           </>
         ) : (
           <h1 className="inline text-4xl font-semibold lg:text-5xl">
-            Valami&nbsp;
-            <p className="inline bg-gradient-to-l from-[#FF1CF7] to-[#b249f8] bg-clip-text text-transparent">
-              jó&nbsp;
+            Helló{" "}
+            <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
+              Eötvös Népe
             </p>
-            készül...
+            !
           </h1>
         )}
       </div>
 
-      {selfUser ? (
-        <Section title="Órarend" dropdownable={true}>
-          <TimetableDay selfUser={selfUser} />
-        </Section>
-      ) : (
-        <></>
-      )}
+      <Section title="Órarend" dropdownable={true}>
+        {true ? (
+          selfUser ? (
+            <TimetableDay selfUser={selfUser} />
+          ) : (
+            <p>Bejelentkezés után láthatod az órarended!</p>
+          )
+        ) : (
+          <p>Jelenleg nem elérhető az órarended. Kérjük nézz vissza később!</p>
+        )}
+      </Section>
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section

@@ -102,7 +102,7 @@ VALUES (
     (
         'Tanévnyitó ünnepség',
         'szeptember 2. 9:00',
-        '2024-08-01',
+        '2024-09-02',
         '2024-09-03',
         '/events/evnyito.jpg',
         NULL,
@@ -110,9 +110,9 @@ VALUES (
     ),
     (
         'Klub Expo',
-        'szeptember 5. 15:30',
-        '2024-08-01',
+        'szeptember 6. 15:30',
         '2024-09-06',
+        '2024-09-07',
         '/events/klubexpo.jpg',
         NULL,
         '["bemutató"]'
@@ -120,7 +120,7 @@ VALUES (
     (
         'Walk The Wish',
         'szeptember 15. 15:30',
-        '2024-08-01',
+        '2024-09-15 15:30',
         '2024-09-16',
         '/events/walkthewish.jpg',
         NULL,
@@ -129,11 +129,65 @@ VALUES (
     (
         'Kilencedikes gólyatábor',
         'Kezdés: szeptember 27.',
-        '2024-08-01',
-        '2024-08-06',
+        '2024-09-27',
+        '2024-09-29',
         '/events/9golyatabor.jpg',
         NULL,
         '["9. évf", "tábor"]'
+    ),
+    (
+        'Eötvös napok',
+        'október 24. - 25.',
+        '2024-10-24',
+        '2024-10-26',
+        '/events/eotvosnapok.jpg',
+        NULL,
+        '[]'
+    ),
+    (
+        'Őszi szünet',
+        'október 26. - november 3.',
+        '2024-10-26',
+        '2024-11-04',
+        '/events/szunet.jpg',
+        NULL,
+        '[]'
+    ),
+    (
+        'Szalagavató',
+        'november 30.',
+        '2024-11-30',
+        '2024-12-01',
+        '/events/szalagavato.jpg',
+        NULL,
+        '[]'
+    ),
+    (
+        'Téli szünet',
+        'december 21. - január 5.',
+        '2024-12-21',
+        '2025-01-06',
+        '/events/szunet.jpg',
+        NULL,
+        '[]'
+    ),
+    (
+        '1. félév vége',
+        'január 17.',
+        '2025-01-17',
+        '2025-01-18',
+        '/events/felevvege.jpg',
+        NULL,
+        '[]'
+    ),
+    (
+        'Bizonyítványosztás',
+        'január 24.',
+        '2025-01-24',
+        '2025-01-25',
+        '/events/bizonyitvanyosztas.jpg',
+        NULL,
+        '[]'
     );
 --@block
 SELECT *

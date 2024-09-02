@@ -33,9 +33,8 @@ export const Events = () => {
       {events.map(
         (event, index) =>
           (event.show_time != undefined
-            ? // if the show_time is at least 21 days before the current time
-              new Date(event.show_time) <
-              new Date(new Date().getTime() - 21 * 24 * 60 * 60 * 1000)
+            ? new Date(event.show_time).getTime() - 21 * 24 * 60 * 60 * 1000 <
+              new Date().getTime()
             : true) &&
           new Date(event.hide_time) > new Date() && (
             <div key={index + 100} className="pb-4">

@@ -83,7 +83,7 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
   return (
     <div className="text-foreground">
       <p className="pb-1 text-sm font-medium">
-        <button onClick={() => changeDate(-1)}>{"<"} &nbsp;</button>
+        <button onClick={() => changeDate(-1)}>{"<"}&nbsp;</button>
         {formatDate()}
         <button onClick={() => changeDate(1)}>
           &nbsp;

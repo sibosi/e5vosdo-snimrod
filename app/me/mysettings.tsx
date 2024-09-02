@@ -211,7 +211,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                     }}
                     color="primary"
                   >
-                    <Radio value="?">{"Nincs megadva"}</Radio>
+                    <Radio value="?">{"Mindkettő"}</Radio>
                     <Radio value="A">{'"A" menü'}</Radio>
                     <Radio value="B">{'"B" menü'}</Radio>
                   </RadioGroup>

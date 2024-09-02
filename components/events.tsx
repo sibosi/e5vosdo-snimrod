@@ -1,8 +1,6 @@
 "use client";
-import eventsConfig from "@/config/events.tsx";
 import { Chip, Link } from "@nextui-org/react";
 import { SideCard } from "./sidecard";
-import { getEvents } from "@/db/dbreq";
 import { useState, useEffect } from "react";
 
 type Event = {
@@ -35,7 +33,9 @@ export const Events = () => {
       {events.map(
         (event, index) =>
           (event.show_time != undefined
-            ? new Date(event.show_time) < new Date()
+            ? // if the show_time is at least 21 days before the current time
+              new Date(event.show_time) <
+              new Date(new Date().getTime() - 21 * 24 * 60 * 60 * 1000)
             : true) &&
           new Date(event.hide_time) > new Date() && (
             <div key={index + 100} className="pb-4">
@@ -45,7 +45,7 @@ export const Events = () => {
                 title={event.title}
                 details={event.details ?? undefined}
                 description={event.time}
-                image={event.image ?? undefined}
+                image={event.image ?? "/events/default.jpg"}
                 popup={true}
                 button_size="sm"
                 makeStringToHTML={true}

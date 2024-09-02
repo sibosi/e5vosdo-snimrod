@@ -46,14 +46,17 @@ export const QuickTeachers = () => {
                 {teacher.changes &&
                   teacher.changes.map((event, eventIndex: number) => (
                     <DropdownItem key={eventIndex} className="text-foreground">
-                      {event.date +
-                        " | " +
+                      {"🕒 " +
+                        ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"][
+                          new Date(event.date).getDay()
+                        ] +
+                        " " +
                         event.hour +
-                        ". ó | terem: " +
+                        ". ó 📍" +
                         event.room +
-                        " | " +
+                        "  📔" +
                         event.subject +
-                        " | " +
+                        "  🧑🏼‍🏫" +
                         event.replacementTeacher}
                     </DropdownItem>
                   ))}

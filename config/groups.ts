@@ -20,46 +20,33 @@ interface Group {
   links: Link[];
 }
 
+export const clubsOrder: string[] = [
+  "Eötvös Diák",
+  "Eötvös Média",
+  "ZöldBiz",
+
+  "Debate Club",
+
+  "Elsősegélynyújtó Diákkör",
+
+  "Eötvös Kosárlabdacsapat",
+  "Eötvös Vakondok",
+  "Kéktúra-szakkör",
+  "TársasTár",
+
+  "Színjátszó",
+  "MUN-Club",
+  "Nekünk X",
+  "Sakk - klub",
+  "Sulirádió",
+
+  "Technikusi Szervezet",
+
+  "Bimun",
+  "Eötvös Alkotó Műhely",
+];
+
 export const clubsConfig: Group[] = [
-  {
-    title: "Bimun",
-    image: "/groups/bimun.jpg",
-    details:
-      "A BIMUN egy minden évben megrendezésre kerülő nemzetközi MUN-konferencia, melyet az iskola és az ide járó diákok szerveznek. Többféle módon is van lehetőség ebben részt venni. Lehet szervezői pozíciókra jelentkezni, akik az esemény megvalósításáért felelősek. Vannak olyan pozíciók is, akik a konferencia alatt segítik a sikerességét, például staffként, médiásként, pressesként, hostként, supervisorként. Ez azért nagy lehetőség a számunkra, mert így nem csak a konferenciára érkező résztvevők, hanem a szervezői gárda is találkozhatunk külföldi diákokkal, és akár életre szóló ismeretségeket köthetnek. Minden évben remek csapat áll össze, hogy megvalósítsa iskolánk egyik fontos rendezvényét.",
-    description: "",
-    links: [
-      {
-        title: "BIMUN Facebook",
-        value: "https://www.facebook.com/bimun2011",
-        type: "facebook",
-      },
-      {
-        title: "BIMUN Nekünk",
-        value: "https://www.facebook.com/bimunnekunk",
-        type: "facebook",
-      },
-      {
-        title: "BIMUN Instagram",
-        value: "https://www.instagram.com/bimun.official/",
-        type: "instagram",
-      },
-      {
-        title: "BIMUN Nekünk Instagram",
-        value: "https://www.instagram.com/bimun.nekunk/",
-        type: "instagram",
-      },
-      {
-        title: "BIMUN Website",
-        value: "https://www.bimun.hu/",
-        type: "website",
-      },
-      {
-        title: "BIMUN Email",
-        value: "bimun@bimun.hu",
-        type: "email",
-      },
-    ],
-  },
   {
     title: "ZöldBiz",
     details:
@@ -124,20 +111,6 @@ export const clubsConfig: Group[] = [
         title: "Kriston tanár Úr",
         value: "kriston.attila@e5vos.hu",
         type: "email",
-      },
-    ],
-  },
-  {
-    title: "Eötvös Alkotó Műhely",
-    details:
-      "Az V. Kerületi Eötvös József Gimnáziumban működő E5vös Alkotó Műhely egy tér a játékhoz, az alkotáshoz, a tanuláshoz, a mentoráláshoz, a feltaláláshoz. Másképp megfogalmazva a tanulás és az innováció helye. Ez a nyitott tanulói tér a diákok és tanárok számára egyaránt rendelkezésre áll a projektjeik és ötleteik megvalósításához. A Műhely hozzáférést biztosít egy egyedi alkotókörnyezethez, ami segít a különböző hard és soft skillek elsajátításában azáltal, hogy a legkorszerűbb technológiákhoz, szoftverekhez és anyagokhoz nyújt hozzáférést. Így az iskola polgárai képesek elkészíteni (szinte) akármit , amit csak el tudnak képzelni.",
-    image: "/groups/eam.png",
-    description: "",
-    links: [
-      {
-        title: "Eötvös Alkotó Műhely Weboldal",
-        value: "https://sites.google.com/e5vos.hu/e5vosalkotomuhely/",
-        type: "website",
       },
     ],
   },
@@ -361,6 +334,73 @@ export const clubsConfig: Group[] = [
         title: "Gőz Barnabás",
         value: "goz.barnabas@e5vos.hu",
         type: "email",
+      },
+    ],
+  },
+  {
+    title: "Eötvös Vakondok",
+    details:
+      "A csapat, ami három éven keresztül letaszíthatatlan volt a diákolimpia trónjáról, tavaly megkezdte az újjáépítést, várunk mindenkit, aki szeretne kipróbálni egy új sportot, és emellett jól érezni magát!",
+    image: "/groups/eotvosvakondok.png",
+    description: "",
+    links: [
+      {
+        title: "Márkus Benedek",
+        value: "markus.benedek@e5vos.hu",
+        type: "email",
+      },
+    ],
+  },
+  {
+    title: "Bimun",
+    image: "/groups/bimun.jpg",
+    details:
+      "A BIMUN egy minden évben megrendezésre kerülő nemzetközi MUN-konferencia, melyet az iskola és az ide járó diákok szerveznek. Többféle módon is van lehetőség ebben részt venni. Lehet szervezői pozíciókra jelentkezni, akik az esemény megvalósításáért felelősek. Vannak olyan pozíciók is, akik a konferencia alatt segítik a sikerességét, például staffként, médiásként, pressesként, hostként, supervisorként. Ez azért nagy lehetőség a számunkra, mert így nem csak a konferenciára érkező résztvevők, hanem a szervezői gárda is találkozhatunk külföldi diákokkal, és akár életre szóló ismeretségeket köthetnek. Minden évben remek csapat áll össze, hogy megvalósítsa iskolánk egyik fontos rendezvényét.",
+    description: "",
+    links: [
+      {
+        title: "BIMUN Facebook",
+        value: "https://www.facebook.com/bimun2011",
+        type: "facebook",
+      },
+      {
+        title: "BIMUN Nekünk",
+        value: "https://www.facebook.com/bimunnekunk",
+        type: "facebook",
+      },
+      {
+        title: "BIMUN Instagram",
+        value: "https://www.instagram.com/bimun.official/",
+        type: "instagram",
+      },
+      {
+        title: "BIMUN Nekünk Instagram",
+        value: "https://www.instagram.com/bimun.nekunk/",
+        type: "instagram",
+      },
+      {
+        title: "BIMUN Website",
+        value: "https://www.bimun.hu/",
+        type: "website",
+      },
+      {
+        title: "BIMUN Email",
+        value: "bimun@bimun.hu",
+        type: "email",
+      },
+    ],
+  },
+  {
+    title: "Eötvös Alkotó Műhely",
+    details:
+      "Az V. Kerületi Eötvös József Gimnáziumban működő E5vös Alkotó Műhely egy tér a játékhoz, az alkotáshoz, a tanuláshoz, a mentoráláshoz, a feltaláláshoz. Másképp megfogalmazva a tanulás és az innováció helye. Ez a nyitott tanulói tér a diákok és tanárok számára egyaránt rendelkezésre áll a projektjeik és ötleteik megvalósításához. A Műhely hozzáférést biztosít egy egyedi alkotókörnyezethez, ami segít a különböző hard és soft skillek elsajátításában azáltal, hogy a legkorszerűbb technológiákhoz, szoftverekhez és anyagokhoz nyújt hozzáférést. Így az iskola polgárai képesek elkészíteni (szinte) akármit , amit csak el tudnak képzelni.",
+    image: "/groups/eam.png",
+    description: "",
+    links: [
+      {
+        title: "Eötvös Alkotó Műhely Weboldal",
+        value: "https://sites.google.com/e5vos.hu/e5vosalkotomuhely/",
+        type: "website",
       },
     ],
   },

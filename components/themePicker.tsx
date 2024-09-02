@@ -3,6 +3,11 @@ import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { hexFromArgb, Hct } from "@material/material-color-utilities";
 
+const defaultHues = {
+  primary: 255,
+  secondary: 300,
+};
+
 const versions = [
   "20",
   "50",
@@ -18,12 +23,11 @@ const versions = [
 ];
 
 export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
-  const colorHue =
-    Number(localStorage.getItem(`${colorName}Hue`)) !== undefined
-      ? Number(localStorage.getItem(`${colorName}Hue`))
-      : colorName === "primary"
-        ? 255
-        : 300;
+  const colorHue = Number(localStorage.getItem(`${colorName}Hue`))
+    ? Number(localStorage.getItem(`${colorName}Hue`))
+    : colorName === "primary"
+      ? defaultHues.primary
+      : defaultHues.secondary;
   document.documentElement.style.setProperty(
     `--color-${colorName}`,
     hexFromArgb(Hct.from(colorHue, 100, 50).toInt()),
@@ -56,7 +60,8 @@ export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
 };
 
 export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
-  const defaultHue = color === "primary" ? 212 : 270;
+  const defaultHue =
+    color === "primary" ? defaultHues.primary : defaultHues.secondary;
   const [colorHue, setColorHue] = useState(defaultHue);
 
   const updateColors = () => {
@@ -156,7 +161,7 @@ export const ThemeTemplate = ({
   useEffect(() => {
     setSelectedHue(
       Number(localStorage.getItem(`${color}Hue`)) ||
-        (color === "primary" ? 212 : 270),
+        (color === "primary" ? defaultHues.primary : defaultHues.secondary),
     );
   }, []);
 
@@ -175,11 +180,7 @@ export const ThemeTemplate = ({
           className="my-auto ml-2"
           onClick={() => {
             localStorage.removeItem(`${color}Hue`);
-            document.documentElement.style.setProperty(
-              `--color-${color}-hue`,
-              color === "primary" ? "212" : "270",
-            );
-            setSelectedHue(color === "primary" ? 212 : 270);
+            location.reload();
           }}
         >
           Reset

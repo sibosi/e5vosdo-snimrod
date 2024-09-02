@@ -240,7 +240,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 isMaterialBg ? "false" : "true",
               );
               setIsMaterialBg(!isMaterialBg);
-              loadPalette("primary");
+              location.reload();
             }}
             className="fill-selfprimary"
           >

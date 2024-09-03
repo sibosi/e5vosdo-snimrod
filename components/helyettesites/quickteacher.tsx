@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -7,15 +7,20 @@ import {
   DropdownItem,
   User,
   Skeleton,
+  Modal,
+  ModalContent,
+  ModalBody,
 } from "@nextui-org/react";
 import useSWR from "swr";
-import { TeacherChange } from "@/app/api/route";
+import { Change, TeacherChange } from "@/app/api/route";
 
 export const QuickTeachers = () => {
   const { data: tableDataKhm, error } = useSWR("/api/", fetcher);
   const isLoaded = !error && !!tableDataKhm;
 
   const tableData = tableDataKhm as TeacherChange[];
+
+  const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
   return (
     <Skeleton
@@ -45,19 +50,36 @@ export const QuickTeachers = () => {
               <DropdownMenu aria-label="Static Actions">
                 {teacher.changes &&
                   teacher.changes.map((event, eventIndex: number) => (
-                    <DropdownItem key={eventIndex} className="text-foreground">
-                      {"🕒 " +
-                        ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"][
-                          new Date(event.date).getDay()
-                        ] +
-                        " " +
-                        event.hour +
-                        ". ó 📍" +
-                        event.room +
-                        "  📔" +
-                        event.subject +
-                        "  🧑🏼‍🏫" +
-                        event.replacementTeacher}
+                    <DropdownItem
+                      key={eventIndex}
+                      className="text-foreground"
+                      onClick={() => setSelectedEvent(event)}
+                    >
+                      <p>
+                        {"🕒 " +
+                          ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"][
+                            new Date(event.date).getDay()
+                          ] +
+                          " " +
+                          event.hour +
+                          ". ó"}
+                        &nbsp;
+                        {" 📍" + // Replace &nbsp; with nothing
+                          (event.room.replace(" ", "").length !== 0
+                            ? event.room
+                            : "???")}{" "}
+                        &nbsp;
+                        {"  📔" + event.subject}
+                      </p>
+                      <p>
+                        {"   🧑🏼‍🏫 " +
+                          (event.replacementTeacher.replace(" ", "").length !==
+                          0
+                            ? event.replacementTeacher
+                            : "???")}{" "}
+                        &nbsp;
+                        {" 📝" + event.comment}
+                      </p>
                     </DropdownItem>
                   ))}
               </DropdownMenu>
@@ -65,6 +87,48 @@ export const QuickTeachers = () => {
           ))
         ) : (
           <p>Nincs információ</p>
+        )}
+
+        {selectedEvent !== null && (
+          <Modal
+            isOpen={selectedEvent !== null}
+            onClose={() => setSelectedEvent(null)}
+          >
+            <ModalContent>
+              <ModalBody>
+                <p>
+                  {"🕒 " +
+                    ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"][
+                      new Date(selectedEvent.date).getDay()
+                    ] +
+                    " " +
+                    selectedEvent.hour +
+                    ". ó"}
+                  &nbsp;
+                  {" 📍" +
+                    (selectedEvent.room.replace(" ", "").length !== 0
+                      ? selectedEvent.room
+                      : "???")}{" "}
+                  &nbsp;
+                  {"  📔" + selectedEvent.subject}
+                </p>
+                <p>{"Hiányzó tanár: " + selectedEvent.missingTeacher}</p>
+                <p>
+                  {"Helyettesítő tanár: " +
+                    (selectedEvent.replacementTeacher.replace(" ", "")
+                      .length !== 0
+                      ? selectedEvent.replacementTeacher
+                      : "???")}
+                </p>
+                <p>
+                  {"Megjegyzés: " +
+                    (selectedEvent.comment.replace(" ", "").length !== 0
+                      ? selectedEvent.comment
+                      : "Nincs")}
+                </p>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         )}
       </React.Fragment>
     </Skeleton>

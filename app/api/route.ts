@@ -4,22 +4,24 @@ import cheerio from "cheerio";
 const iconv = require("iconv-lite");
 import tanarok_tabla from "@/src/osszestanar.json";
 
+export interface Change {
+  date: string;
+  missingTeacher: string;
+  hourRoom: string;
+  group: string;
+  subject: string;
+  replacementTeacher: string;
+  comment: string;
+  day: string;
+  hour: string;
+  room: string;
+}
+
 export interface TeacherChange {
   name: string;
   photoUrl: string;
   subjects: string;
-  changes: {
-    date: string;
-    missingTeacher: string;
-    hourRoom: string;
-    group: string;
-    subject: string;
-    replacementTeacher: string;
-    comment: string;
-    day: string;
-    hour: string;
-    room: string;
-  }[];
+  changes: Change[];
 }
 
 let cachedData: TeacherChange[] | null = null;

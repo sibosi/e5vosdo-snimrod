@@ -46,7 +46,7 @@ export default async function Home() {
             <p>Bejelentkezés után láthatod az órarended!</p>
           )
         ) : (
-          <p>Jelenleg nem elérhető az órarended. Kérjük nézz vissza később!</p>
+          <p>Jelenleg nem elérhető az órarended. Kérjük, nézz vissza később!</p>
         )}
       </Section>
 

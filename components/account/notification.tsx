@@ -59,7 +59,7 @@ const NewNotification = () => {
   }
 
   return (
-    <div className="my-4 rounded-3xl bg-primary-50 p-6 text-foreground">
+    <div className="bg-selfprimary-50 my-4 rounded-3xl p-6 text-foreground">
       <h2 className="text-2xl font-semibold">
         Új értesítés &middot; csak adminoknak
       </h2>
@@ -142,7 +142,7 @@ const NewNotification = () => {
         )}
       </div>
       <Button
-        color="primary"
+        className="fill-selfprimary"
         isDisabled={
           !notificationTitle ||
           !notificationMessage ||

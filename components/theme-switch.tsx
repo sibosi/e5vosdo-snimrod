@@ -8,13 +8,14 @@ import {
   MoonFilledIcon,
   SystemThemeIcon,
 } from "@/components/icons";
+import { loadPalette } from "./themePicker";
 
-export interface ThemeSwitchProps {
+interface ThemeSwitchProps {
   className?: string;
   classNames?: SwitchProps["classNames"];
 }
 
-export const ThemeSwitch: FC<ThemeSwitchProps> = () => {
+const ThemeSwitch: FC<ThemeSwitchProps> = () => {
   const [theme, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       return localStorage.getItem("theme") || "system";
@@ -42,6 +43,17 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = () => {
         document.documentElement.classList.add("light");
       }
     }
+
+    ["primary", "secondary"].forEach((selfColor) => {
+      loadPalette(
+        selfColor,
+        ["dark", "light"].includes(theme)
+          ? (theme as "dark" | "light")
+          : window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light",
+      );
+    });
   }, [theme]);
 
   const toggleTheme = () => {
@@ -65,3 +77,5 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = () => {
     </div>
   );
 };
+
+export default ThemeSwitch;

@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
-import { add } from "cheerio/lib/api/traversing";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -131,7 +130,7 @@ export async function getUsersEmail() {
 }
 
 export async function getEvents() {
-  return await dbreq(`SELECT * FROM \`events\``);
+  return (await dbreq(`SELECT * FROM \`events\``)) as any[];
 }
 
 export async function getStudentUsers() {
@@ -547,6 +546,11 @@ export async function getMyClassTimetable(EJG_class: string) {
   const response = (await dbreq(
     `SELECT * FROM timetable WHERE JSON_CONTAINS(JSON_EXTRACT(EJG_classes, '$[1]'), '"${EJG_class}"', '$')`,
   )) as Lesson[];
+
+  response.forEach((lesson) => {
+    lesson.teacher = lesson.teacher.replace(/\n/g, " ");
+  });
+
   return response;
 }
 
@@ -557,6 +561,13 @@ export async function setHiddenLessons(lessonsId: number[]) {
   )}' WHERE email = '${email}';`;
 
   return await dbreq(REQ1);
+}
+
+export async function getDefaultGroup() {
+  const email = (await getAuth())?.email;
+  const REQ1 = `SELECT default_group FROM users WHERE email = '${email}';`;
+
+  return ((await dbreq(REQ1)) as any)[0].default_group;
 }
 
 export async function editDefaultGroup(group: number | null) {
@@ -701,6 +712,7 @@ export interface apireqType {
     | "editMySettings"
     | "getMyClassTimetable"
     | "setHiddenLessons"
+    | "getDefaultGroup"
     | "editDefaultGroup"
     | "addTicket"
     | "deleteTicket";
@@ -731,6 +743,7 @@ export const apioptions = [
   "editMySettings",
   "getMyClassTimetable",
   "setHiddenLessons",
+  "getDefaultGroup",
   "editDefaultGroup",
   "addTicket",
   "deleteTicket",
@@ -744,7 +757,7 @@ export const apireq = {
   getAuth: { req: getAuth, perm: [] },
   hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
-  getEvents: { req: getEvents, perm: ["student"] },
+  getEvents: { req: getEvents, perm: [] },
   getStudentUsers: { req: getStudentUsers, perm: ["admin", "tester"] },
   getStudentUsersEmail: { req: getStudentUsersEmail, perm: [] },
   getAdminUsers: { req: getAdminUsers, perm: ["admin", "tester"] },
@@ -758,11 +771,12 @@ export const apireq = {
   markAsRead: { req: markAsRead, perm: ["user"] },
   newNotificationByEmails: { req: newNotificationByEmails, perm: ["admin"] },
   newNotificationByNames: { req: newNotificationByNames, perm: ["admin"] },
-  checkPushAuth: { req: checkPushAuth, perm: ["student"] },
-  editMySettings: { req: editMySettings, perm: ["student"] },
-  getMyClassTimetable: { req: getMyClassTimetable, perm: ["student"] },
-  setHiddenLessons: { req: setHiddenLessons, perm: ["student"] },
-  editDefaultGroup: { req: editDefaultGroup, perm: ["student"] },
+  checkPushAuth: { req: checkPushAuth, perm: ["user"] },
+  editMySettings: { req: editMySettings, perm: ["user"] },
+  getMyClassTimetable: { req: getMyClassTimetable, perm: ["user"] },
+  setHiddenLessons: { req: setHiddenLessons, perm: ["user"] },
+  getDefaultGroup: { req: getDefaultGroup, perm: ["user"] },
+  editDefaultGroup: { req: editDefaultGroup, perm: ["user"] },
   addTicket: { req: addTicket, perm: ["admin"] },
   deleteTicket: { req: deleteTicket, perm: ["admin"] },
 };
@@ -810,6 +824,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "setHiddenLessons") {
     const { lessonsId } = body;
     return await setHiddenLessons(lessonsId);
+  } else if (req === "getDefaultGroup") {
+    return await getDefaultGroup();
   } else if (req === "editDefaultGroup") {
     const { group } = body;
     return await editDefaultGroup(group);

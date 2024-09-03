@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@/styles/globals.css";
 import { Link } from "@nextui-org/react";
 
@@ -10,6 +10,22 @@ type SectionProps = {
   children: React.ReactNode;
   className?: string;
   titleClassName?: string;
+  savable?: boolean;
+};
+
+const loadSectionStatus = (name: string) => {
+  if (typeof window !== "undefined") {
+    const status = localStorage.getItem("section_" + name);
+    if (status === "false") return false;
+    if (status === "true") return true;
+  }
+  return null;
+};
+
+const setSectionStatus = (name: string, status: boolean) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("section_" + name, status.toString());
+  }
 };
 
 export const Section = ({
@@ -19,13 +35,22 @@ export const Section = ({
   children,
   className,
   titleClassName,
+  savable = true,
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(
     defaultStatus == "closed" ? false : true,
   );
 
+  useEffect(() => {
+    setIsOpen(
+      loadSectionStatus(title) ?? (defaultStatus == "closed" ? false : true),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const toggleDropdown = () => {
     if (dropdownable) {
+      if (savable) setSectionStatus(title, !isOpen);
       setIsOpen(!isOpen);
     }
   };
@@ -38,9 +63,12 @@ export const Section = ({
         } ` + className
       }
     >
-      <h1 className="py-1 text-2xl font-medium" onClick={toggleDropdown}>
+      <h1
+        className="max-w-fit py-1 text-2xl font-medium"
+        onClick={toggleDropdown}
+      >
         {dropdownable && (
-          <Link onClick={toggleDropdown}>
+          <Link onClick={toggleDropdown} className="max-w-fit text-selfprimary">
             <svg
               stroke="currentColor"
               fill="currentColor"

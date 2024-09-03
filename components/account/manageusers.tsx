@@ -122,7 +122,7 @@ const ManageUsers = ({
       />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {users.slice(0, 12).map((user: UserType) => (
-          <div key={user.email} className="rounded-3xl bg-primary-50 p-6">
+          <div key={user.email} className="bg-selfprimary-50 rounded-3xl p-6">
             <div className="flex">
               <div className="flex w-full">
                 <Image
@@ -181,7 +181,7 @@ const ManageUsers = ({
       {users.length == 0 ? (
         <div className="text-foreground">Nincs találat</div>
       ) : users.length > 12 ? (
-        <div className="my-2 rounded-3xl bg-primary-50 p-6 text-center">
+        <div className="bg-selfprimary-50 my-2 rounded-3xl p-6 text-center">
           Túl sok találat ({users.length})
         </div>
       ) : (
@@ -285,7 +285,7 @@ const ManageUsers = ({
               </table>
             </div>
             <div>
-              <div className="rounded-3xl bg-primary-50 p-6">
+              <div className="bg-selfprimary-50 rounded-3xl p-6">
                 <h3>Hozzáférés hozzáadása</h3>
                 <ButtonGroup>
                   <Input
@@ -317,7 +317,7 @@ const ManageUsers = ({
                 </div>
               </div>
 
-              <div className="mt-6 rounded-3xl bg-primary-50 p-6">
+              <div className="bg-selfprimary-50 mt-6 rounded-3xl p-6">
                 <h3>Tickets</h3>
                 <ButtonGroup>
                   <Input
@@ -351,8 +351,7 @@ const ManageUsers = ({
               </div>
               <Button
                 onClick={() => setSelectedUser(null)}
-                color="primary"
-                className="ml-auto mt-2 flex"
+                className="ml-auto mt-2 flex fill-selfprimary"
               >
                 Rendben
               </Button>

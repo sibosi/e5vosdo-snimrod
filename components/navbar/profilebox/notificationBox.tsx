@@ -20,7 +20,9 @@ export const NotificationBox = ({
   className?: string;
   color?:
     | "primary"
+    | "selfprimary"
     | "secondary"
+    | "selfsecondary"
     | "success"
     | "warning"
     | "danger"
@@ -29,7 +31,9 @@ export const NotificationBox = ({
   const colorStyle = color
     ? {
         primary: "bg-primary-100 text-primary-700",
+        selfprimary: "bg-selfprimary-100 text-selfprimary-700",
         secondary: "bg-secondary-100 text-secondary-700",
+        selfsecondary: "bg-selfsecondary-100 text-selfsecondary-700",
         success: "bg-success-100 text-success-700",
         warning: "bg-warning-100 text-warning-700",
         danger: "bg-danger-100 text-danger-700",

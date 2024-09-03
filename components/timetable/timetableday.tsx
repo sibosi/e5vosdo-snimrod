@@ -16,7 +16,10 @@ import teacherDataByName from "@/public/storage/teacherDataByNames.json";
 import getUserClass from "@/public/getUserClass";
 import { UserType } from "@/db/dbreq";
 import { Alert } from "../home/alert";
+import { TeacherChange } from "@/app/api/route";
 const teacherByName = teacherDataByName as any;
+import TeachersName from "@/public/storage/teachersName.json";
+const teachersName = TeachersName as { [key: string]: string };
 
 interface Lesson {
   id: number;
@@ -55,6 +58,14 @@ type WeekDuration = [
   DayDuration,
   DayDuration,
 ];
+
+interface LocalChanges {
+  [key: number]: {
+    teacher?: string;
+    room?: string;
+    comment?: string;
+  };
+}
 
 const countWeekDuration = (
   timetableDay: TimetableDay,
@@ -206,6 +217,10 @@ const FilterIcon = () => (
   </svg>
 );
 
+function teacherName(name: string) {
+  return teachersName[name] ?? name;
+}
+
 const Cell = ({
   children,
   className,
@@ -218,7 +233,7 @@ const Cell = ({
   return (
     <div
       className={
-        "my-1 grid h-14 w-full min-w-fit grid-cols-1 rounded-xl px-4 " +
+        "relative my-1 grid h-14 w-full min-w-fit grid-cols-1 rounded-xl px-3 pr-4 " +
         className
       }
       onClick={onClick}
@@ -233,6 +248,9 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   const [timetableDay, setTimetableDay] = useState<TimetableDay>();
   const [selectedLesson, setSelectedLesson] = useState<LessonOption>();
   const [showSettings, setShowSettings] = useState(false);
+
+  const [teacherChanges, setTeacherChanges] = useState<TeacherChange[]>();
+  const [changesToday, setChangesToday] = useState<LocalChanges>({});
 
   const [hiddenLessons, setHiddenLessons] = useState<number[]>(
     selfUser.hidden_lessons ?? [],
@@ -281,6 +299,34 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   );
 
   useEffect(() => {
+    const getDefaultGroup = async () => {
+      const resp = await fetch("/api/getDefaultGroup", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await resp.json();
+      const group = data as 0 | 1 | 2 | undefined;
+      setSelectedClassGroupKeys(
+        new Set(
+          ["Nincs csoport", "1-es csoport", "2-es csoport"][group ?? 0].split(
+            ", ",
+          ),
+        ),
+      );
+    };
+
+    const getTeacherChanges = async () => {
+      const data = await fetch("api").then((res) => res.json());
+      setTeacherChanges(data as TeacherChange[]);
+    };
+
+    getDefaultGroup();
+    getTeacherChanges();
+  }, []);
+
+  useEffect(() => {
     EJG_class && fetchTimetable(EJG_class, setTimetableDay);
   }, [EJG_class]);
 
@@ -292,6 +338,70 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
     showSettings ? editDefaultGroup(classGroupValue) : null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classGroupValue]);
+
+  function checkIfMultipleLessonsInTime(lessonBlock: LessonOption[]) {
+    let count = 0;
+    lessonBlock.forEach((lesson) => {
+      if (
+        lesson &&
+        !hiddenLessons.includes(lesson.id) &&
+        (lessonBlock.length != 2 ||
+          hide != "selected" ||
+          lesson.group_name == classGroupValue ||
+          lesson.group_name === "null" ||
+          classGroupValue == 0)
+      ) {
+        count++;
+      }
+    });
+    return count > 1;
+  }
+
+  useEffect(() => {
+    function checkIfChangeToday() {
+      let changes: LocalChanges = {};
+
+      if (!timetableDay) {
+        return changes;
+      }
+
+      for (const lessonBlock of timetableDay[dayOfWeek]) {
+        for (const lesson of lessonBlock) {
+          if (lesson && teacherChanges) {
+            for (const teacherChange of teacherChanges) {
+              for (const change of teacherChange.changes) {
+                if (
+                  change.missingTeacher.toLowerCase() ===
+                    lesson.teacher.toLowerCase() &&
+                  change.day === selectedDayValue &&
+                  [
+                    "07:15",
+                    "08:15",
+                    "09:15",
+                    "10:15",
+                    "11:15",
+                    "12:25",
+                    "13:35",
+                    "14:30",
+                    "15:25",
+                  ][Number(change.hour)] === lesson.start_time
+                ) {
+                  changes[lesson.id] = {
+                    teacher: change.replacementTeacher,
+                    comment: change.comment,
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return changes;
+    }
+
+    setChangesToday(checkIfChangeToday());
+  }, [timetableDay, teacherChanges, dayOfWeek, selectedDayValue]);
 
   return (
     <div className="text-foreground transition-all duration-300">
@@ -309,6 +419,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                 variant="flat"
                 disallowEmptySelection
                 selectionMode="single"
+                className="text-foreground-600"
                 selectedKeys={selectedDayKeys}
                 onSelectionChange={(keys: any) =>
                   setSelectedDayKeys(new Set(keys))
@@ -335,7 +446,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
               }}
               placeholder="Osztály"
               // variant="underlined"
-              value={EJG_class}
+              value={EJG_class ?? ""}
               onValueChange={(value: string) =>
                 setEJG_class(value.toUpperCase().substring(0, 5))
               }
@@ -343,7 +454,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             />
 
             <Button
-              color={showSettings ? "success" : "default"}
+              className={showSettings ? "bg-selfsecondary-400" : "bg-default"}
               onClick={() => setShowSettings(!showSettings)}
             >
               <FilterIcon />
@@ -363,6 +474,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
               <DropdownMenu
                 aria-label="Single selection example"
                 variant="flat"
+                className="text-foreground-600"
                 disallowEmptySelection
                 selectionMode="single"
                 selectedKeys={selectedClassGroupKeys}
@@ -416,25 +528,34 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
 
       {timetableDay ? (
         <div>
+          {hiddenLessons.length == 0 && hide !== "edit" && (
+            <Alert className="max-h-screen w-full border-selfsecondary-300 bg-selfsecondary-100 text-sm text-foreground transition-all duration-300">
+              A jelenlegi beállítások alapján az osztályod összes órája látható
+              az órarendben. Ha szeretnél egyes órákat elrejteni, válaszd a
+              &quot;Módosítás&quot; opciót.
+            </Alert>
+          )}
           {hide === "edit" ? (
-            <Alert className="text-sm">
-              Itt állíthatod, mely órák ne jelenjenek meg az órarendedben. Ha
-              egy sorban több órát látsz, kattints a sajátodra, hogy a többit
-              elrejthessük.
+            <Alert className="border-success-300 bg-success-100 text-sm">
+              Itt állíthatod, mely órák ne jelenjenek meg az órarendedben. Ha{" "}
+              <span className="rounded-lg bg-secondary-100">
+                egy sorban több órát
+              </span>{" "}
+              látsz, kattints a sajátodra, hogy a többit elrejthessük.
             </Alert>
           ) : (
-            hiddenLessons.length == 0 && (
-              <Alert className="text-sm">
-                A jelenlegi beállítások alapján az osztályod összes órája
-                látható az órarendben. Ha szeretnél egyes órákat elrejteni,
-                válaszd a &quot;Módosítás&quot; opciót.
-              </Alert>
-            )
+            <></>
           )}
+          {Object.keys(changesToday).length > 0 && (
+            <Alert className="border-danger-300 bg-danger-100 text-sm text-foreground">
+              Az órarendedben változás található! (helyettesítés)
+            </Alert>
+          )}
+
           <div className="grid grid-cols-1">
             {
               <div>
-                {timetableDay[dayOfWeek] ? (
+                {timetableDay && timetableDay[dayOfWeek] ? (
                   timetableDay[dayOfWeek].map(
                     (lessonBlock, lessonBlockIndex) =>
                       weekDuration &&
@@ -444,7 +565,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                           key={"LessonBlock" + lessonBlockIndex}
                           className="flex w-full"
                         >
-                          <div className="my-1 mr-4 grid h-14 w-[70px] grid-cols-1 rounded-xl bg-default text-center">
+                          <div className="my-1 mr-4 grid h-14 w-[70px] grid-cols-1 rounded-xl bg-default-200 text-center shadow-sm">
                             <p>{lessonBlockIndex + ". óra"}</p>
                             <p className="text-sm">
                               {
@@ -494,9 +615,23 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                 <Cell
                                   key={"Lesson" + lesson.id}
                                   className={
-                                    hiddenLessons.includes(lesson.id)
-                                      ? "border-2 border-default-400 bg-default-100"
-                                      : "border-2 border-primary-400 bg-primary-100"
+                                    "border-2 " +
+                                    (hiddenLessons.includes(lesson.id)
+                                      ? "border-default-400 bg-default-100"
+                                      : Object.keys(changesToday).includes(
+                                            String(lesson.id),
+                                          )
+                                        ? "border-danger-400 bg-danger-100"
+                                        : checkIfMultipleLessonsInTime(
+                                              lessonBlock,
+                                            )
+                                          ? "border-selfsecondary-400 bg-selfsecondary-100"
+                                          : "border-selfprimary-400 bg-selfprimary-100") +
+                                    (Object.keys(changesToday).includes(
+                                      String(lesson.id),
+                                    )
+                                      ? " mr-2"
+                                      : "")
                                   }
                                   onClick={() =>
                                     hide == "edit"
@@ -522,29 +657,62 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                       : setSelectedLesson(lesson)
                                   }
                                 >
+                                  {Object.keys(changesToday).includes(
+                                    lesson.id.toString(),
+                                  ) && (
+                                    <div className="absolute right-0 top-0 -mx-2 -my-1 rounded-badge border-2 border-selfsecondary-400 bg-selfsecondary-200 px-2 text-xs">
+                                      változás
+                                    </div>
+                                  )}
                                   <User
                                     as="button"
                                     type="button"
                                     avatarProps={{
                                       isBordered: true,
-                                      src: teacherByName[lesson.teacher]?.Photo,
+                                      src: teacherByName[
+                                        teacherName(lesson.teacher)
+                                      ]?.Photo,
                                     }}
                                     className="w-52 justify-start px-2 transition-transform"
                                     description={
-                                      <p className="text-foreground">
-                                        {toShortRoom(lesson.room)}
-                                      </p>
+                                      changesToday[lesson.id]?.room ? (
+                                        <p className="text-foreground">
+                                          {toShortRoom(
+                                            changesToday[lesson.id]
+                                              ?.room as string,
+                                          )}
+                                        </p>
+                                      ) : (
+                                        <p className="text-foreground">
+                                          {toShortRoom(lesson.room)}
+                                        </p>
+                                      )
                                     }
                                     name={
-                                      lesson.teacher != "null" ? (
-                                        <span className="h-5 w-5 break-words">
-                                          {lesson.teacher.substring(0, 20) +
-                                            (lesson.teacher.length > 20
-                                              ? "..."
-                                              : "")}
-                                        </span>
+                                      changesToday[lesson.id]?.teacher ===
+                                      undefined ? (
+                                        lesson.teacher != "null" ? (
+                                          <span className="h-5 w-5 break-words">
+                                            {lesson.teacher.substring(0, 20) +
+                                              (lesson.teacher.length > 20
+                                                ? "..."
+                                                : "")}
+                                          </span>
+                                        ) : (
+                                          "Tanár"
+                                        )
                                       ) : (
-                                        "Tanár"
+                                        <span className="h-5 w-5 break-words font-bold">
+                                          {lesson.teacher
+                                            ? changesToday[
+                                                lesson.id
+                                              ].teacher?.substring(0, 20) +
+                                              ((changesToday[lesson.id].teacher
+                                                ?.length as number) > 20
+                                                ? "..."
+                                                : "")
+                                            : "???"}
+                                        </span>
                                       )
                                     }
                                   />
@@ -574,59 +742,71 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             onClose={() => setSelectedLesson(undefined)}
             className="mx-5"
           >
-            <ModalContent className="p-4 text-foreground">
-              <h3 className="text-lg font-bold">Az óra részletei</h3>
-              <div className="flex">
-                <User
-                  avatarProps={{
-                    isBordered: true,
-                    src: teacherByName[selectedLesson?.teacher ?? ""]?.Photo,
-                    className: "w-20 h-20",
-                  }}
-                  className="p-2 transition-transform"
-                  name
-                />
-                <div className="my-auto">
+            {selectedLesson && (
+              <ModalContent className="p-4 text-foreground">
+                <h3 className="text-lg font-bold">Az óra részletei</h3>
+                <div className="flex">
+                  <User
+                    avatarProps={{
+                      isBordered: true,
+                      src: teacherByName[ // Replace new line with space
+                        teacherName(selectedLesson.teacher.replace(/\n/g, " "))
+                      ]?.Photo,
+                      className: "w-20 h-20",
+                    }}
+                    className="p-2 transition-transform"
+                    name
+                  />
+                  <div className="my-auto">
+                    <p>
+                      <b>
+                        {selectedLesson.teacher}
+                        {changesToday[selectedLesson.id]?.teacher
+                          ? ` (${changesToday[selectedLesson.id].teacher})`
+                          : ""}
+                      </b>
+                    </p>
+                    <p>
+                      <b>Tantárgy:</b> {selectedLesson.subject}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-foreground-600">
                   <p>
-                    <b>{selectedLesson?.teacher}</b>
+                    <b>Terem:</b> {selectedLesson.room}
+                    {changesToday[selectedLesson.id]?.room
+                      ? ` (${changesToday[selectedLesson.id].room})`
+                      : ""}
                   </p>
                   <p>
-                    <b>Tantárgy:</b> {selectedLesson?.subject}
+                    <b>Osztály:</b> {selectedLesson.EJG_classes.join(", ")}
+                  </p>
+                  <p>
+                    <b>Csoport:</b>{" "}
+                    {selectedLesson.group_name == "null"
+                      ? "Nincs csoport"
+                      : selectedLesson.group_name}
+                  </p>
+                  <p>
+                    <b>Kezdés:</b> {selectedLesson.start_time}
+                  </p>
+                  <p>
+                    <b>Vége:</b> {selectedLesson.end_time}
                   </p>
                 </div>
-              </div>
-              <div className="text-foreground-600">
-                <p>
-                  <b>Terem:</b> {selectedLesson?.room}
-                </p>
-                <p>
-                  <b>Osztály:</b> {selectedLesson?.EJG_classes.join(", ")}
-                </p>
-                <p>
-                  <b>Csoport:</b>{" "}
-                  {selectedLesson?.group_name == "null"
-                    ? "Nincs csoport"
-                    : selectedLesson?.group_name}
-                </p>
-                <p>
-                  <b>Kezdés:</b> {selectedLesson?.start_time}
-                </p>
-                <p>
-                  <b>Vége:</b> {selectedLesson?.end_time}
-                </p>
-              </div>
 
-              <div className="pt-2">
-                <Button
-                  color="primary"
-                  onClick={() => {
-                    setSelectedLesson(undefined);
-                  }}
-                >
-                  Rendben
-                </Button>
-              </div>
-            </ModalContent>
+                <div className="pt-2">
+                  <Button
+                    className="fill-selfprimary"
+                    onClick={() => {
+                      setSelectedLesson(undefined);
+                    }}
+                  >
+                    Rendben
+                  </Button>
+                </div>
+              </ModalContent>
+            )}
           </Modal>
         </div>
       ) : (

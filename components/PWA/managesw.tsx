@@ -41,7 +41,7 @@ export const ServiceWorkerDetails = () => {
   );
 };
 
-export const reinstallServiceWorker = () => {
+export const reinstallServiceWorker = async () => {
   const deleteServiceWorker = async () => {
     if ("serviceWorker" in navigator) {
       await navigator.serviceWorker
@@ -93,7 +93,8 @@ export const reinstallServiceWorker = () => {
   };
 
   deleteServiceWorker();
-  registerServiceWorker();
+  await registerServiceWorker();
+  return "Service worker újratelepítve";
 };
 
 export const ReinstallServiceWorker = ({

@@ -83,7 +83,7 @@ export const UpdateSWNotif = () => {
               "Content-Type": "application/json",
             },
           });
-          console.log("Subscribe response:", response);
+          // Subscribe response:", response
           setIsServiceWorkerRegistered(true);
         })
         .catch((error) => {

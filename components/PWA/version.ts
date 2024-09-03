@@ -106,13 +106,13 @@ export const updateVersion = async () => {
   if (!navigator.serviceWorker.controller)
     return "Update failed: No service worker controller";
 
+  if ((await checkSWupdate()).updateRequired) await reinstallServiceWorker();
+
   navigator.serviceWorker.controller.postMessage({ action: "reCache" });
   const latestVersion = (await getManifest()).version;
 
   localStorage.setItem("version", latestVersion);
   console.log("App updated to version", latestVersion);
-
-  if ((await checkSWupdate()).updateRequired) reinstallServiceWorker();
 
   return latestVersion;
 };

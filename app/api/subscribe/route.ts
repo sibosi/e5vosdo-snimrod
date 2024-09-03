@@ -31,22 +31,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
   console.log("Subscription added:", subscriptionObj);
 
-  const payload = JSON.stringify({
-    title: "Az eszköz sikeresen azonosítva!",
-    message: "Sikeres azonosítás!",
+  return NextResponse.json({
+    status: 201,
+    message: "Subscription added",
   });
-
-  try {
-    console.log("Sending notification to:", subscriptionObj);
-    await webPush.sendNotification(subscriptionObj, payload);
-    return NextResponse.json({
-      status: 201,
-      message: "Subscription added and notification sent",
-    });
-  } catch (error) {
-    console.error("Error sending notification:", error);
-    return NextResponse.json({ status: 500, error: error });
-  }
 }
 
 export async function GET(req: NextRequest, res: NextResponse) {

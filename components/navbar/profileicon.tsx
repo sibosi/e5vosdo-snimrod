@@ -5,11 +5,15 @@ import { Avatar, Badge, Link, Navbar, NavbarContent } from "@nextui-org/react";
 import Login from "@/components/LoginForm";
 import { LogoutIcon } from "@/components/LogOut";
 import { User } from "@/db/dbreq";
-import { ThemeSwitch } from "@/components/theme-switch";
+import dynamic from "next/dynamic";
 import { Notification } from "./profilebox/notification";
 import InstallAppNotif from "./profilebox/installAppNotif";
 import UpdateSWNotif from "./profilebox/updateSWNotif";
 import EnablePushNotif from "./profilebox/enablePushNotif";
+
+const ThemeSwitch = dynamic(() => import("@/components/theme-switch"), {
+  ssr: false,
+});
 
 const Account = () => {
   return (
@@ -135,6 +139,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
   }, [selfUser]);
 
   useEffect(() => {
+    if (!selfUser) return;
     const interval = setInterval(() => {
       fetchNotifications(
         notificationsIds,
@@ -144,7 +149,7 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
     }, 60 * 1000); // in ms
 
     return () => clearInterval(interval);
-  }, [notificationsIds]);
+  }, [notificationsIds, selfUser]);
 
   return (
     <div>
@@ -199,7 +204,15 @@ export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
               </NavbarContent>
             </>
           ) : (
-            <Login />
+            <>
+              <NavbarContent justify="start">
+                <ThemeSwitch />
+              </NavbarContent>
+              <NavbarContent justify="center">
+                <Login />
+              </NavbarContent>
+              <NavbarContent justify="end" />
+            </>
           )}
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">

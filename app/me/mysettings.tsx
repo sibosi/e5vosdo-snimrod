@@ -10,11 +10,27 @@ import {
   Modal,
   ButtonGroup,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import VersionTable from "./versionTable";
 import { Section } from "@/components/home/section";
 import CacheManager from "@/components/PWA/cacheManager";
 import VersionManager from "@/components/PWA/versionManager";
+import {
+  loadPalette,
+  ThemePickerPrimary,
+  ThemePickerSecondary,
+  ThemeTemplatePrimary,
+  ThemeTemplateSecondary,
+} from "@/components/themePicker";
+
+function updateCacheMethod(cacheMethod: "always" | "offline" | "never") {
+  if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      action: "updateCacheMethod",
+      cacheMethod: cacheMethod,
+    });
+  }
+}
 
 const SettingsSection = ({
   title,
@@ -38,6 +54,7 @@ const SettingsSection = ({
       dropdownable={dropdownable}
       titleClassName="text-lg font-bold text-forground"
       className={"pt-0 " + className}
+      savable={false}
     >
       {children}
     </Section>
@@ -50,6 +67,22 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
   const [nicknameError, setNicknameError] = useState<string>("");
   const [EJG_codeError, setEJG_codeError] = useState<string>("");
+  const [isMaterialBg, setIsMaterialBg] = useState<boolean>(false);
+  const [cacheMethod, setCacheMethod] = useState<
+    "always" | "offline" | "never"
+  >("always");
+
+  useEffect(() => {
+    setCacheMethod((localStorage.getItem("cacheMethod") as any) ?? "always");
+    setIsMaterialBg(
+      localStorage.getItem("materialBg") === "true" ? true : false,
+    );
+  }, []);
+
+  useEffect(() => {
+    updateCacheMethod(cacheMethod as any);
+    localStorage.setItem("cacheMethod", cacheMethod);
+  }, [cacheMethod]);
 
   const [sureQuestion, setSureQuestion] = useState<boolean>(false);
 
@@ -135,7 +168,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 <th>
                   <Link
                     href="https://myaccount.google.com/personal-info?hl=hu&utm_source=OGB&utm_medium=act"
-                    color="primary"
+                    className="text-selfprimary"
                   >
                     Google fiók profilképének állítása
                   </Link>
@@ -173,10 +206,12 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 <th>
                   <RadioGroup
                     value={!["A", "B"].includes(menu) ? "?" : menu}
-                    onChange={(e) => setMenu(e.target.value)}
+                    onChange={(e) => {
+                      setMenu(e.target.value);
+                    }}
                     color="primary"
                   >
-                    <Radio value="?">{"Nincs megadva"}</Radio>
+                    <Radio value="?">{"Mindkettő"}</Radio>
                     <Radio value="A">{'"A" menü'}</Radio>
                     <Radio value="B">{'"B" menü'}</Radio>
                   </RadioGroup>
@@ -191,10 +226,66 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         </SettingsSection>
 
         <SettingsSection
+          title="Megjelenés"
+          defaultStatus="closed"
+          dropdownable={true}
+        >
+          <ThemeTemplatePrimary />
+          <ThemeTemplateSecondary />
+
+          <Button
+            onClick={() => {
+              localStorage.setItem(
+                "materialBg",
+                isMaterialBg ? "false" : "true",
+              );
+              setIsMaterialBg(!isMaterialBg);
+              location.reload();
+            }}
+            className="fill-selfprimary"
+          >
+            {isMaterialBg
+              ? "Színes háttér kikapcsolása"
+              : "Színes háttér bekapcsolása"}
+          </Button>
+        </SettingsSection>
+
+        <SettingsSection
           title="Haladó beállítások"
           defaultStatus="closed"
           dropdownable={true}
         >
+          <table className="table gap-y-2">
+            <tbody>
+              <tr>
+                <th className="font-semibold">Gyorsítótár használata</th>
+                <th>
+                  <RadioGroup
+                    value={cacheMethod}
+                    onChange={(e) => setCacheMethod(e.target.value as any)}
+                  >
+                    <Radio value="always">Mindig</Radio>
+                    <Radio value="offline">Csak offline</Radio>
+                    <Radio value="never">Soha</Radio>
+                  </RadioGroup>
+
+                  <Button
+                    color="warning"
+                    onClick={() =>
+                      caches.keys().then((keys) => {
+                        keys.forEach((key) => {
+                          caches.delete(key);
+                        });
+                        alert("A gyorsítótár kiürítve.");
+                      })
+                    }
+                  >
+                    Gyorsítótár kiürítése
+                  </Button>
+                </th>
+              </tr>
+            </tbody>
+          </table>
           <VersionManager />
 
           <VersionTable />
@@ -217,28 +308,45 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           <CacheManager />
         </SettingsSection>
 
-        <Button
-          onClick={() => {
-            EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();
-          }}
-          color="primary"
-          // make the button to be on the right side
-          className="float-right mt-2"
-          isDisabled={
-            EJG_code &&
+        <div
+          className={
+            "fixed inset-x-0 z-50 mx-auto flex h-14 w-36 border-2 border-foreground-500 bg-foreground-100 transition-all duration-300 max-md:rounded-b-2xl max-md:border-t-0 xs:w-72 md:rounded-t-2xl md:border-b-0 " +
+            (!(EJG_code &&
             EJG_code.length === 13 &&
             nickname &&
             (EJG_code !== selfUser.EJG_code ||
               nickname !== selfUser.nickname ||
               menu !== selfUser.food_menu) &&
-            !nicknameError // Hozzáadva a hibaellenőrzés
+            !nicknameError
               ? false
-              : true
+              : true)
+              ? "max-md:top-0 md:bottom-0"
+              : "max-md:-top-16 md:-bottom-16")
           }
         >
-          Mentés
-        </Button>
+          <Button
+            onClick={() => {
+              EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();
+            }}
+            // make the button to be on the right side
+            className="m-auto bg-selfsecondary"
+            isDisabled={
+              EJG_code &&
+              EJG_code.length === 13 &&
+              nickname &&
+              (EJG_code !== selfUser.EJG_code ||
+                nickname !== selfUser.nickname ||
+                menu !== selfUser.food_menu) &&
+              !nicknameError // Hozzáadva a hibaellenőrzés
+                ? false
+                : true
+            }
+          >
+            Mentés
+          </Button>
+        </div>
       </div>
+
       <p className="mx-auto max-w-xl px-5 text-xs text-foreground-300">
         Amennyiben problémád adódik a fiókoddal kapcsolatban, vedd fel a
         kapcsolatot a fejlesztővel!

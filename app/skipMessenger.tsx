@@ -30,7 +30,9 @@ const SkipMessenger: React.FC = () => {
               megtekintéséhez használja a Google Chrome böngészőt vagy a
               Safari-t (iOS).
             </p>
-            <p className="tegt-xl font-bold text-primary">info.e5vosdo.hu</p>
+            <p className="tegt-xl font-bold text-selfprimary">
+              info.e5vosdo.hu
+            </p>
             <Button
               onClick={() => {
                 navigator.clipboard.writeText("info.e5vosdo.hu");

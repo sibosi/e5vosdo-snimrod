@@ -21,7 +21,7 @@ export default async function Home() {
           <>
             <h1 className="inline text-5xl font-semibold lg:text-5xl">
               Helló{" "}
-              <p className="inline bg-gradient-to-l from-[#39b2f8] to-[#2747fc] bg-clip-text text-transparent">
+              <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
                 {selfUser.nickname}
               </p>
               !
@@ -29,16 +29,26 @@ export default async function Home() {
           </>
         ) : (
           <h1 className="inline text-4xl font-semibold lg:text-5xl">
-            Valami&nbsp;
-            <p className="inline bg-gradient-to-l from-[#FF1CF7] to-[#b249f8] bg-clip-text text-transparent">
-              jó&nbsp;
+            Helló{" "}
+            <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
+              Eötvös Népe
             </p>
-            készül...
+            !
           </h1>
         )}
       </div>
 
-      {selfUser ? <TimetableDay selfUser={selfUser} /> : <></>}
+      <Section title="Órarend" dropdownable={true}>
+        {0 ? (
+          selfUser ? (
+            <TimetableDay selfUser={selfUser} />
+          ) : (
+            <p>Bejelentkezés után láthatod az órarended!</p>
+          )
+        ) : (
+          <p>Jelenleg nem elérhető az órarended. Kérjük, nézz vissza később!</p>
+        )}
+      </Section>
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section
@@ -87,10 +97,10 @@ export default async function Home() {
       )}
 
       <Section title="Keresel valamit?" className="max-w-xs">
-        <Link href={"/clubs"} color="primary" className="block">
+        <Link href={"/clubs"} className="block max-w-fit text-selfprimary">
           Klubok és szakkörök ➜
         </Link>
-        <Link href={"/events"} color="primary" className="block">
+        <Link href={"/events"} className="block max-w-fit text-selfprimary">
           Összes esemény ➜
         </Link>
       </Section>
@@ -111,11 +121,13 @@ export default async function Home() {
             </p>
             <Link
               href={siteConfig.links.feedback}
-              className={buttonStyles({
-                color: "primary",
-                radius: "full",
-                variant: "solid",
-              })}
+              className={clsx(
+                buttonStyles({
+                  radius: "full",
+                  variant: "solid",
+                }),
+                "bg-selfsecondary-200",
+              )}
             >
               Irány az űrlap!
             </Link>

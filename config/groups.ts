@@ -20,46 +20,33 @@ interface Group {
   links: Link[];
 }
 
+export const clubsOrder: string[] = [
+  "Eötvös Diák",
+  "Eötvös Média",
+  "ZöldBiz",
+
+  "Debate Club",
+
+  "Elsősegélynyújtó Diákkör",
+
+  "Eötvös Kosárlabdacsapat",
+  "Eötvös Vakondok",
+  "Kéktúra-szakkör",
+  "TársasTár",
+
+  "Színjátszó",
+  "MUN-Club",
+  "Nekünk X",
+  "Sakk - klub",
+  "Sulirádió",
+
+  "Technikusi Szervezet",
+
+  "Bimun",
+  "Eötvös Alkotó Műhely",
+];
+
 export const clubsConfig: Group[] = [
-  {
-    title: "Bimun",
-    image: "/groups/bimun.jpg",
-    details:
-      "A BIMUN egy minden évben megrendezésre kerülő nemzetközi MUN-konferencia, melyet az iskola és az ide járó diákok szerveznek. Többféle módon is van lehetőség ebben részt venni. Lehet szervezői pozíciókra jelentkezni, akik az esemény megvalósításáért felelősek. Vannak olyan pozíciók is, akik a konferencia alatt segítik a sikerességét, például staffként, médiásként, pressesként, hostként, supervisorként. Ez azért nagy lehetőség a számunkra, mert így nem csak a konferenciára érkező résztvevők, hanem a szervezői gárda is találkozhatunk külföldi diákokkal, és akár életre szóló ismeretségeket köthetnek. Minden évben remek csapat áll össze, hogy megvalósítsa iskolánk egyik fontos rendezvényét.",
-    description: "",
-    links: [
-      {
-        title: "BIMUN Facebook",
-        value: "https://www.facebook.com/bimun2011",
-        type: "facebook",
-      },
-      {
-        title: "BIMUN Nekünk",
-        value: "https://www.facebook.com/bimunnekunk",
-        type: "facebook",
-      },
-      {
-        title: "BIMUN Instagram",
-        value: "https://www.instagram.com/bimun.official/",
-        type: "instagram",
-      },
-      {
-        title: "BIMUN Nekünk Instagram",
-        value: "https://www.instagram.com/bimun.nekunk/",
-        type: "instagram",
-      },
-      {
-        title: "BIMUN Website",
-        value: "https://www.bimun.hu/",
-        type: "website",
-      },
-      {
-        title: "BIMUN Email",
-        value: "bimun@bimun.hu",
-        type: "email",
-      },
-    ],
-  },
   {
     title: "ZöldBiz",
     details:
@@ -90,12 +77,23 @@ export const clubsConfig: Group[] = [
       "A Debate club egy lehetőség az Eötvös József Gimnázium diákjai számára, hogy jó hangulat és érdekes témák között fejlesszék a vita tudásukat angol nyelven. Heti egy alkalommal és számos csapatépítő programmal várunk minden érdeklődőt!",
     image: "/groups/debate.png",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Debate Club Instagram",
+        value: "https://www.instagram.com/e5vosdebate/",
+        type: "instagram",
+      },
+      {
+        title: "Lukács Lujza",
+        value: "lukacs.lujza@e5vos.hu",
+        type: "email",
+      },
+    ],
   },
   {
     title: "Eötvös Diák",
     details:
-      "A suliújság keretein belül igyekszünk betekintést nyújtani egy újság működésébe. A diákok részt vehetnek szövegek alkotásában, azok illusztrálásában vagy tördelőként a meglévő anyagok végső kinézetét tudják megtervezni. A tanév során workshopokat is tartunk, ahol játékokkal és különböző feladatokkal szeretnénk elősegíteni az ihletszerzést és a többiekkel való ismerkedést. Minden elkészült lapunk megjelenik nyomtatásban, hogy teljessé váljon az élmény. :)",
+      "Az Eötvös Diák iskolánk nagyrabecsült újsága, amelyet mi, a diákság írunk, illusztrálunk, tördelünk és szerkesztünk. Egyaránt megjelennek benne szépirodalmi, ismeretterjesztő, kritikai szövegek, illetve minden, ami foglalkoztatja az Eötvös Népét. Ha szeretnéd, hogy a te műved is szerepeljen a következő számban, keress minket Instagramon (@e5vosdiak) vagy e-mailben (pillar.blanka@e5vos.hu), és kapcsolódj be - akár év közben is!",
     image: "/groups/diak.jpg",
     description: "",
     links: [
@@ -104,15 +102,17 @@ export const clubsConfig: Group[] = [
         value: "https://www.instagram.com/e5vosdiak/",
         type: "instagram",
       },
+      {
+        title: "Pillár Blanka",
+        value: "pillar.blanka@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "Kriston tanár Úr",
+        value: "kriston.attila@e5vos.hu",
+        type: "email",
+      },
     ],
-  },
-  {
-    title: "Eötvös Alkotó Műhely",
-    details:
-      "Az V. Kerületi Eötvös József Gimnáziumban működő E5vös Alkotó Műhely egy tér a játékhoz, az alkotáshoz, a tanuláshoz, a mentoráláshoz, a feltaláláshoz. Másképp megfogalmazva a tanulás és az innováció helye. Ez a nyitott tanulói tér a diákok és tanárok számára egyaránt rendelkezésre áll a projektjeik és ötleteik megvalósításához. A Műhely hozzáférést biztosít egy egyedi alkotókörnyezethez, ami segít a különböző hard és soft skillek elsajátításában azáltal, hogy a legkorszerűbb technológiákhoz, szoftverekhez és anyagokhoz nyújt hozzáférést. Így az iskola polgárai képesek elkészíteni (szinte) akármit , amit csak el tudnak képzelni.",
-    image: "/groups/eam.png",
-    description: "",
-    links: [],
   },
   {
     title: "Elsősegélynyújtó Diákkör",
@@ -161,9 +161,20 @@ export const clubsConfig: Group[] = [
     title: "Eötvös Kosárlabdacsapat",
     details:
       "Legyél te is az Eötvös amatőr kosárcsapatának tagja, és légy részese a diákolimpia első helyéért folyó éves küzdelemnek! Szívesen várunk mindenkit, aki szeretné magát kipróbálni a kosárpályán, illetve szeretne tagja lenni egy összetartó, egymást segítő, vidám közösségnek. Kezdők és haladók egyaránt jöhetnek, de fontos, hogy csak az játszhat a diákolimpia mérkőzésein, aki legalább 1 éve nem igazolt játékos, tehát nem tagja egyesületnek.",
-    image: "/groups/kosar.jpg",
+    image: "/groups/kosar.jpeg",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Eötvös Kosárlabdacsapat Instagram",
+        value: "https://www.instagram.com/e5vosnegerek/",
+        type: "instagram",
+      },
+      {
+        title: "Eötvös Kosárlabdacsapat Facebook",
+        value: "https://www.facebook.com/eotvosbasketball/",
+        type: "facebook",
+      },
+    ],
   },
   {
     title: "Eötvös Média",
@@ -196,7 +207,7 @@ export const clubsConfig: Group[] = [
         title: "Eötvös Média Weboldal",
         value: "https://e5vosmedia.hu",
         type: "website",
-      }
+      },
     ],
   },
   {
@@ -205,22 +216,55 @@ export const clubsConfig: Group[] = [
       "Nálunk kipróbálhatod magad egy ENSZ delegált cipőjében, és fejlesztheted a public speaking képességed, az önbizalmad, az angol tudásod. Miközben nemzetközi problémákat és kríziseket oldasz meg, tanulhatsz a modern geopolitikáról, és arról, hogyan működik a nemzetközi diplomácia, és, hogy mit jelent felelős vezetőnek lenni (vagy éppen diktátornak). Velünk tarthatsz a nemzetközi konferenciákra, és az itthoniakra egyaránt. Ha még sosem próbáltad a munozást, akkor se aggódj, tapasztalt mentorokkal várunk, akik végigkísérnek a tanuláson! Sok szeretettel várunk téged is a közösségünkben!",
     image: "/groups/munclub.png",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "MUN-Club Instagram",
+        value: "https://www.instagram.com/munclubejg/",
+        type: "instagram",
+      },
+      {
+        title: "Pajor Blanka",
+        value: "pajor.blanka@e5vos.hu",
+        type: "email",
+      },
+    ],
   },
   {
     title: "Nekünk X",
     details: "Iskolai közösségi szolgálatos órák összegyűjtésében segítünk.",
     image: "/groups/old/nekunkx.jpg",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Nekünk X Instagram",
+        value: "https://www.instagram.com/nekunk_x/",
+        type: "instagram",
+      },
+      {
+        title: "Nekünk X email",
+        value: "iksz.program@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "Nekünk X Weboldal",
+        value: "https://nekunk-x.site/",
+        type: "website",
+      },
+    ],
   },
   {
-    title: "Iskolarádió (biz. Sulirádió)",
+    title: "Sulirádió",
     details:
       "Mi irányítjuk az iskolai szünetekben és az Eötvös programjain a stúdiót. Mi vagyunk az iskola audió formájú hangulatfelelősei. Olyanokat várunk a csapatunkba, akik képesek a közjót, az iskola hangulatát szolgálni empatikus, alázatos módon, nem pedig a saját extrém ízlésüket prezentálni ezer állampolgár kínzatásául.",
     image: "/groups/suliradio.png",
     description: "",
-    links: [],
+    links: [
+      {
+        title: "Iskolarádió Instagram",
+        value: "https://www.instagram.com/eotvossuliradio/",
+        type: "instagram",
+      },
+    ],
   },
   {
     title: "Sakk - klub",
@@ -247,7 +291,7 @@ export const clubsConfig: Group[] = [
         title: "Színjátszó YouTube",
         value: "https://youtube.com/@szinjatszosdoku2492",
         type: "youtube",
-      }
+      },
     ],
   },
   {
@@ -290,6 +334,73 @@ export const clubsConfig: Group[] = [
         title: "Gőz Barnabás",
         value: "goz.barnabas@e5vos.hu",
         type: "email",
+      },
+    ],
+  },
+  {
+    title: "Eötvös Vakondok",
+    details:
+      "A csapat, ami három éven keresztül letaszíthatatlan volt a diákolimpia trónjáról, tavaly megkezdte az újjáépítést, várunk mindenkit, aki szeretne kipróbálni egy új sportot, és emellett jól érezni magát!",
+    image: "/groups/eotvosvakondok.png",
+    description: "",
+    links: [
+      {
+        title: "Márkus Benedek",
+        value: "markus.benedek@e5vos.hu",
+        type: "email",
+      },
+    ],
+  },
+  {
+    title: "Bimun",
+    image: "/groups/bimun.jpg",
+    details:
+      "A BIMUN egy minden évben megrendezésre kerülő nemzetközi MUN-konferencia, melyet az iskola és az ide járó diákok szerveznek. Többféle módon is van lehetőség ebben részt venni. Lehet szervezői pozíciókra jelentkezni, akik az esemény megvalósításáért felelősek. Vannak olyan pozíciók is, akik a konferencia alatt segítik a sikerességét, például staffként, médiásként, pressesként, hostként, supervisorként. Ez azért nagy lehetőség a számunkra, mert így nem csak a konferenciára érkező résztvevők, hanem a szervezői gárda is találkozhatunk külföldi diákokkal, és akár életre szóló ismeretségeket köthetnek. Minden évben remek csapat áll össze, hogy megvalósítsa iskolánk egyik fontos rendezvényét.",
+    description: "",
+    links: [
+      {
+        title: "BIMUN Facebook",
+        value: "https://www.facebook.com/bimun2011",
+        type: "facebook",
+      },
+      {
+        title: "BIMUN Nekünk",
+        value: "https://www.facebook.com/bimunnekunk",
+        type: "facebook",
+      },
+      {
+        title: "BIMUN Instagram",
+        value: "https://www.instagram.com/bimun.official/",
+        type: "instagram",
+      },
+      {
+        title: "BIMUN Nekünk Instagram",
+        value: "https://www.instagram.com/bimun.nekunk/",
+        type: "instagram",
+      },
+      {
+        title: "BIMUN Website",
+        value: "https://www.bimun.hu/",
+        type: "website",
+      },
+      {
+        title: "BIMUN Email",
+        value: "bimun@bimun.hu",
+        type: "email",
+      },
+    ],
+  },
+  {
+    title: "Eötvös Alkotó Műhely",
+    details:
+      "Az V. Kerületi Eötvös József Gimnáziumban működő E5vös Alkotó Műhely egy tér a játékhoz, az alkotáshoz, a tanuláshoz, a mentoráláshoz, a feltaláláshoz. Másképp megfogalmazva a tanulás és az innováció helye. Ez a nyitott tanulói tér a diákok és tanárok számára egyaránt rendelkezésre áll a projektjeik és ötleteik megvalósításához. A Műhely hozzáférést biztosít egy egyedi alkotókörnyezethez, ami segít a különböző hard és soft skillek elsajátításában azáltal, hogy a legkorszerűbb technológiákhoz, szoftverekhez és anyagokhoz nyújt hozzáférést. Így az iskola polgárai képesek elkészíteni (szinte) akármit , amit csak el tudnak képzelni.",
+    image: "/groups/eam.png",
+    description: "",
+    links: [
+      {
+        title: "Eötvös Alkotó Műhely Weboldal",
+        value: "https://sites.google.com/e5vos.hu/e5vosalkotomuhely/",
+        type: "website",
       },
     ],
   },

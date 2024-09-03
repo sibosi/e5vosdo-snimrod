@@ -60,7 +60,7 @@ export const EnablePushNotif = () => {
         <NotificationBox
           icon={PushIcon}
           title="Push értesítések engedélyezése"
-          body="Kérjük engedélyezze a push értesítéseket!"
+          body="Kérjük, engedélyezze a push értesítéseket!"
           // onClick={}
           color="warning"
         />

@@ -56,7 +56,6 @@ export const reinstallServiceWorker = async () => {
               }
             });
           }
-          location.reload();
         })
         .catch((error) => {
           console.error("Error getting service worker registrations:", error);
@@ -92,7 +91,7 @@ export const reinstallServiceWorker = async () => {
     }
   };
 
-  deleteServiceWorker();
+  await deleteServiceWorker();
   await registerServiceWorker();
   return "Service worker újratelepítve";
 };

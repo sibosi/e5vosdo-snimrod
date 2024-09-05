@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import cheerio from "cheerio";
 const iconv = require("iconv-lite");
-import tanarok_tabla from "@/src/osszestanar.json";
+import teacherDataByNames from "@/public/storage/teacherDataByNames.json";
+const teacherByName = teacherDataByNames as any;
+import TeachersName from "@/public/storage/teachersName.json";
+const teachersName = TeachersName as { [key: string]: string };
+
+function teacherName(name: string) {
+  return teachersName[name] ?? name;
+}
 
 export interface Change {
   date: string;
@@ -68,26 +75,22 @@ async function update() {
       }
 
       if (i != -1) {
-        let found = false;
-        for (const tanar of tanarok_tabla) {
-          if (tanar["Name"] === new_event[1] && !found && tanar["Photo"]) {
-            quick_data.push([
-              new_event[1],
-              tanar["Photo"],
-              tanar["Subjects"],
-              [new_event],
-            ]);
-            found = true;
-            break;
-          }
-        }
-        if (!found)
+        let teacherData = teacherByName[teacherName(new_event[1])];
+        if (teacherData) {
+          quick_data.push([
+            new_event[1],
+            teacherData.Photo,
+            teacherData.Subjects,
+            [new_event],
+          ]);
+        } else {
           quick_data.push([
             new_event[1],
             TEACHER_AVATAR,
             "@Tanár",
             [new_event],
           ]);
+        }
       }
     });
 

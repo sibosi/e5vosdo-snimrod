@@ -57,9 +57,15 @@ export const QuickTeachers = () => {
                     >
                       <p>
                         {"🕒 " +
-                          ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"][
-                            new Date(event.date).getDay()
-                          ] +
+                          [
+                            "Vasárnap",
+                            "Hétfő",
+                            "Kedd",
+                            "Szerda",
+                            "Csütörtök",
+                            "Péntek",
+                            "Szombat",
+                          ][new Date(event.date).getDay()] +
                           " " +
                           event.hour +
                           ". ó"}

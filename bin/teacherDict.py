@@ -14,11 +14,6 @@ for teacher in teacherDict:
 
 # print(teacherDataByNames)
 
-# Export the dictionary to a JSON file
-with open('src/teacherDataByNames.json', 'w', encoding="UTF-8") as f:
-    f.write(json.dumps(teacherDataByNames, ensure_ascii=False, indent=4))
-    f.close()
-
 with open('public/storage/teacherDataByNames.json', 'w', encoding="UTF-8") as f:
     f.write(json.dumps(teacherDataByNames, ensure_ascii=False, indent=4))
     f.close()

@@ -49,28 +49,23 @@ CIM = 'TEREMVÁLTOZÁSOK\nkisérettségimiatt\n2024.szeptember9.hétfő'
 
 
 def kovetkezo_datum(datum: str, lepes=1) -> str:
-    ev = int(datum.split('.')[0])
-    ho = int(datum.split('.')[1])
-    nap = int(datum.split('.')[2])
+    ev, ho, nap = map(int, datum.split('.'))
     next_day_date = datetime(ev, ho, nap) + timedelta(days=lepes)
     return next_day_date.strftime('%Y.%m.%d')
 
 
 def het_napja(datum: str) -> str:
-    ev = int(datum.split('.')[0])
-    ho = int(datum.split('.')[1])
-    nap = int(datum.split('.')[2])
+    ev, ho, nap = map(int, datum.split('.'))
     datum = datetime(ev, ho, nap)
     return datum.strftime('%A')
 
 
 def en_to_hu(word: str) -> str:
-    word = word.lower()
     return {
         'monday': 'hétfő', 'tuesday': 'kedd', 'wednesday': 'szerda',
         'thursday': 'csütörtök', 'friday': 'péntek',
         'saturday': 'szombat', 'sunday': 'vasárnap'
-    }[word]
+    }.get(word.lower(), word)
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -94,31 +89,27 @@ keys.append(CIM)
 keys.append('')
 
 quick_forras = []
-
 for sor in nyers_cserek:
-    tmp = []
-    for key in keys:
-        tmp.append(sor[key])
+    tmp = [sor.get(key) for key in keys]
     quick_forras.append(tmp)
 
 KEZDO_DATUM = '2024.09.09'
 input('A kezdő dátum: ' + KEZDO_DATUM + '\nHa helyes, nyomj entert! ')
 
 ossz_cserek = []
-
 ma = kovetkezo_datum(KEZDO_DATUM, -1)
 
 i = 0
 mai_cserek = []
 while i < len(quick_forras):
     sor = quick_forras[i]
-    kov_sor = quick_forras[i+1]
+    kov_sor = quick_forras[i + 1]
     if (not sor[keys.index(CIM)] or sor[keys.index(CIM)] == '  ') and not sor[keys.index('1')]:
-        if mai_cserek != []:
+        if mai_cserek:
             ossz_cserek.append([ma, mai_cserek])
         ma = kovetkezo_datum(ma)
         mai_cserek = []
-        if en_to_hu(het_napja(ma).lower()) != sor[keys.index('')].lower():
+        if en_to_hu(het_napja(ma)) != sor[keys.index('')].lower():
             print('A kezdő dátum nem egyezik a táblázattal.\nA műveletet megszakítottuk.')
             exit()
         i += 1
@@ -127,12 +118,12 @@ while i < len(quick_forras):
         i += 1
         continue
 
-    for ora in range(0, 9):
+    for ora in range(9):
         if sor[ora] is not None:
-            mai_cserek.append([ora+1, str(sor[keys.index(CIM)]).split('-')[0], kov_sor[ora], str(sor[ora]).split('\n')[0], str(sor[ora]).split('\n')[1]])
+            mai_cserek.append([ora + 1, str(sor[keys.index(CIM)]).split('-')[0], kov_sor[ora], str(sor[ora]).split('\n')[0], str(sor[ora]).split('\n')[1]])
     i += 2
 
-if mai_cserek != []:
+if mai_cserek:
     ossz_cserek.append([ma, mai_cserek])
 
 quickRoomchangesConfig = []
@@ -163,9 +154,16 @@ for day in shorted_quickRoomchangesConfig:
     final_data[date] = {}
     for group in day[1]:
         osztaly = group[0].replace('\r', '')
-        final_data[date][osztaly] = []
+        final_data[date][osztaly] = {
+            'all' : []
+        }
         for lesson in group[1]:
-            final_data[date][osztaly].append([lesson[0], lesson[1], lesson[2], lesson[3]])
+            if final_data[date][osztaly].get(lesson[0]) is None:
+                final_data[date][osztaly][lesson[0]] = []
+            final_data[date][osztaly][lesson[0]].append([lesson[0], lesson[1], lesson[2], lesson[3]])
+            final_data[date][osztaly]['all'].append([lesson[0], lesson[1], lesson[2], lesson[3]])
 
-with open('public\\storage\\roomchanges.json', 'w', encoding='utf-8') as outfile:
+# JSON fájl írása
+output_path = os.path.join('public', 'storage', 'roomchanges.json')
+with open(output_path, 'w', encoding='utf-8') as outfile:
     json.dump(final_data, outfile, indent=2, ensure_ascii=False)

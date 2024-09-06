@@ -5,7 +5,10 @@ import { useState } from "react";
 import { Button } from "@nextui-org/react";
 
 type RoomChange = [number, string, string, string];
-type ClassRoomChanges = Record<string, RoomChange[]>;
+type ClassRoomChanges = {
+  [key: string]: Record<string, RoomChange[]>;
+  all: Record<string, RoomChange[]>;
+};
 type RoomchangesConfig = Record<string, ClassRoomChanges>;
 
 const roomchangesConfig = oldRoomchangesConfig as unknown as RoomchangesConfig;
@@ -52,7 +55,7 @@ export const RoomChanges = () => {
       <div className="grid max-w-full grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {todayRoomchangesConfig &&
           selectedGroup &&
-          todayRoomchangesConfig[selectedGroup].map(
+          todayRoomchangesConfig[selectedGroup].all.map(
             (change: RoomChange, changeIndex: number) => (
               <p
                 key={changeIndex}

@@ -119,7 +119,7 @@ VALUES (
     ),
     (
         'Walk The Wish',
-        'szeptember 15. 15:30',
+        'szeptember 20. 15:30',
         '2024-09-15 15:30',
         '2024-09-16',
         '/events/walkthewish.jpg',

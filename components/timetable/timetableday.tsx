@@ -20,6 +20,28 @@ import { TeacherChange } from "@/app/api/route";
 const teacherByName = teacherDataByName as any;
 import TeachersName from "@/public/storage/teachersName.json";
 const teachersName = TeachersName as { [key: string]: string };
+import oldRoomchangesConfig from "@/public/storage/roomchanges.json";
+import { RoomchangesConfig } from "../roomchanges/roomchanges";
+const roomchangesConfig = oldRoomchangesConfig as unknown as RoomchangesConfig;
+
+const today = new Date();
+const dd = String(today.getDate()).padStart(2, "0");
+const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
+const yyyy = today.getFullYear();
+
+const today_date = "2024.09.12"; // yyyy + "." + mm + "." + dd;
+
+const START_TIMES = [
+  "07:15",
+  "08:15",
+  "09:15",
+  "10:15",
+  "11:15",
+  "12:25",
+  "13:35",
+  "14:30",
+  "15:25",
+];
 
 interface Lesson {
   id: number;
@@ -112,18 +134,7 @@ const fetchTimetable = async (
 
   // Sort lessons by day [H, K, SZ, CS, P]
   const DAYS = ["H", "K", "SZ", "CS", "P"];
-  const HOURS = [
-    "07:15",
-    "08:15",
-    "09:15",
-    "10:15",
-    "11:15",
-    "12:25",
-    "13:35",
-    "14:30",
-    "15:25",
-    "16:20",
-  ];
+  const HOURS = START_TIMES;
 
   lessons.sort((a, b) => {
     return DAYS.indexOf(a.day) - DAYS.indexOf(b.day);
@@ -169,6 +180,11 @@ const toShortRoom = (room: string) => {
   // Földrajz szaktanterem földszint 10.
   const roomNumberDot = room.split(" ")[room.split(" ").length - 1];
   const roomNumber = roomNumberDot.split(".")[0];
+
+  // Informatika 4. labor földszint 1.
+  if (room.includes("labor")) {
+    return room.replace(" labor", "").replace("Informatika ", "Infó labor ");
+  }
 
   // if roomNumber is a number
   if (!isNaN(parseInt(roomNumber))) {
@@ -216,6 +232,24 @@ const FilterIcon = () => (
     />
   </svg>
 );
+
+function myRoomChange(EJGclass: string) {
+  let possibleChanges: { [key: string]: any } = {};
+  if (roomchangesConfig[today_date]) {
+    if (roomchangesConfig[today_date][EJGclass.split(".")[0] + "."])
+      possibleChanges[EJGclass.split(".")[0] + "."] =
+        roomchangesConfig[today_date][EJGclass.split(".")[0] + "."].all;
+    Object.keys(roomchangesConfig[today_date]).forEach((group) => {
+      if (
+        group.includes(EJGclass.split(".")[0]) &&
+        group.includes(EJGclass.split(".")[1])
+      ) {
+        possibleChanges[group] = roomchangesConfig[today_date][group].all;
+      }
+    });
+  }
+  return possibleChanges;
+}
 
 function teacherName(name: string) {
   return teachersName[name] ?? name;
@@ -374,24 +408,41 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                   change.missingTeacher.toLowerCase() ===
                     lesson.teacher.toLowerCase() &&
                   change.day === selectedDayValue &&
-                  [
-                    "07:15",
-                    "08:15",
-                    "09:15",
-                    "10:15",
-                    "11:15",
-                    "12:25",
-                    "13:35",
-                    "14:30",
-                    "15:25",
-                  ][Number(change.hour)] === lesson.start_time
+                  START_TIMES[Number(change.hour)] === lesson.start_time
                 ) {
+                  console.log('"' + change.replacementTeacher + '"');
                   changes[lesson.id] = {
-                    teacher: change.replacementTeacher,
+                    // If the last character is &nbsp; or  " " remove it
+                    teacher: change.replacementTeacher.replace(/ /g, ""),
                     comment: change.comment,
                   };
                 }
               }
+            }
+          }
+          if (lesson && roomchangesConfig[today_date][lesson.EJG_classes[0]]) {
+            if (
+              roomchangesConfig[today_date][lesson.EJG_classes[0]][
+                START_TIMES.indexOf(lesson.start_time)
+              ]
+            ) {
+              console.log(roomchangesConfig[today_date][lesson.EJG_classes[0]]);
+              roomchangesConfig[today_date][lesson.EJG_classes[0]][
+                START_TIMES.indexOf(lesson.start_time)
+              ].forEach((change) => {
+                if (
+                  change[1] === toShortRoom(lesson.room).replace(". terem", "")
+                ) {
+                  changes[lesson.id] = {
+                    ...changes[lesson.id],
+                    room: String(change[2]),
+                  };
+                }
+                console.log(change);
+                console.log(toShortRoom(lesson.room).replace(". terem", ""));
+                console.log(lesson);
+                console.log(changes);
+              });
             }
           }
         }
@@ -551,6 +602,38 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
               Az órarendedben változás található! (helyettesítés)
             </Alert>
           )}
+          {EJG_class && Object.keys(myRoomChange(EJG_class)).length > 0 && (
+            <>
+              <Alert className="border-danger-300 bg-danger-100 text-sm text-foreground">
+                Az órarendedben teremcsere lehet! (teremcsere)
+              </Alert>
+              <div className="my-3 grid grid-cols-1 gap-2">
+                {Object.entries(myRoomChange(EJG_class)).map(
+                  ([group, changes], groupIndex) => (
+                    <div key={groupIndex}>
+                      <h3 className="text-lg font-bold">{group}</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {changes.map((change: any, changeIndex: number) => (
+                          <p
+                            key={changeIndex}
+                            className="min-w-fit rounded-xl bg-default-300 px-3 py-1"
+                          >
+                            {change[0] +
+                              ". óra " +
+                              change[3] +
+                              " | " +
+                              change[1] +
+                              " ➜ " +
+                              change[2]}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  ),
+                )}
+              </div>
+            </>
+          )}
 
           <div className="grid grid-cols-1">
             {
@@ -568,19 +651,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                           <div className="my-1 mr-4 grid h-14 w-[70px] grid-cols-1 rounded-xl bg-default-200 text-center shadow-sm">
                             <p>{lessonBlockIndex + ". óra"}</p>
                             <p className="text-sm">
-                              {
-                                [
-                                  "07:15",
-                                  "08:15",
-                                  "09:15",
-                                  "10:15",
-                                  "11:15",
-                                  "12:25",
-                                  "13:35",
-                                  "14:30",
-                                  "15:25",
-                                ][lessonBlockIndex]
-                              }
+                              {START_TIMES[lessonBlockIndex]}
                             </p>
                           </div>
                           <div
@@ -670,13 +741,16 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                     avatarProps={{
                                       isBordered: true,
                                       src: teacherByName[
-                                        teacherName(lesson.teacher)
+                                        teacherName(
+                                          changesToday[lesson.id]?.teacher ??
+                                            lesson.teacher,
+                                        )
                                       ]?.Photo,
                                     }}
                                     className="w-52 justify-start px-2 transition-transform"
                                     description={
                                       changesToday[lesson.id]?.room ? (
-                                        <p className="text-foreground">
+                                        <p className="font-bold text-foreground">
                                           {toShortRoom(
                                             changesToday[lesson.id]
                                               ?.room as string,

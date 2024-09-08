@@ -9,7 +9,7 @@ type ClassRoomChanges = {
   [key: string]: Record<string, RoomChange[]>;
   all: Record<string, RoomChange[]>;
 };
-type RoomchangesConfig = Record<string, ClassRoomChanges>;
+export type RoomchangesConfig = Record<string, ClassRoomChanges>;
 
 const roomchangesConfig = oldRoomchangesConfig as unknown as RoomchangesConfig;
 
@@ -18,7 +18,7 @@ const dd = String(today.getDate()).padStart(2, "0");
 const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
 const yyyy = today.getFullYear();
 
-const today_date = "2024.09.09"; // yyyy + "." + mm + "." + dd;
+const today_date = "2024.09.12"; // yyyy + "." + mm + "." + dd;
 
 export const RoomChanges = () => {
   let todayRoomchangesConfig: ClassRoomChanges | null = null;

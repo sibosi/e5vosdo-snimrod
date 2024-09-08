@@ -685,6 +685,23 @@ export async function updateMatch(id: number, match: any) {
   return await dbreq(REQ1);
 }
 
+export async function getFreeRooms(
+  day: "H" | "K" | "SZ" | "CS" | "P",
+  time: string,
+) {
+  const rooms = (
+    (await dbreq(`SELECT DISTINCT room FROM timetable;`)) as { room: string }[]
+  ).map((room) => room.room);
+
+  const occupiedRooms = (
+    (await dbreq(
+      `SELECT DISTINCT room FROM timetable WHERE day = '${day}' AND start_time = '${time}';`,
+    )) as { room: string }[]
+  ).map((room) => room.room);
+
+  return rooms.filter((room) => !occupiedRooms.includes(room));
+}
+
 export interface apireqType {
   gate:
     | "getUsers"
@@ -715,7 +732,8 @@ export interface apireqType {
     | "getDefaultGroup"
     | "editDefaultGroup"
     | "addTicket"
-    | "deleteTicket";
+    | "deleteTicket"
+    | "getFreeRooms";
 }
 export const apioptions = [
   "getUsers",
@@ -747,6 +765,7 @@ export const apioptions = [
   "editDefaultGroup",
   "addTicket",
   "deleteTicket",
+  "getFreeRooms",
 ];
 
 export const apireq = {
@@ -779,6 +798,7 @@ export const apireq = {
   editDefaultGroup: { req: editDefaultGroup, perm: ["user"] },
   addTicket: { req: addTicket, perm: ["admin"] },
   deleteTicket: { req: deleteTicket, perm: ["admin"] },
+  getFreeRooms: { req: getFreeRooms, perm: ["user"] },
 };
 
 export const defaultApiReq = async (req: string, body: any) => {
@@ -835,5 +855,8 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "deleteTicket") {
     const { email, ticket } = body;
     return await deleteTicket(email, ticket);
+  } else if (req === "getFreeRooms") {
+    const { day, time } = body;
+    return await getFreeRooms(day, time);
   } else return "No such request";
 };

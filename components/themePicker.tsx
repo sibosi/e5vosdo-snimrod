@@ -28,9 +28,12 @@ export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
     : colorName === "primary"
       ? defaultHues.primary
       : defaultHues.secondary;
+
+  const colorChroma = Number(localStorage.getItem(`${colorName}Chroma`)) || 50;
+
   document.documentElement.style.setProperty(
     `--color-${colorName}`,
-    hexFromArgb(Hct.from(colorHue, 100, 50).toInt()),
+    hexFromArgb(Hct.from(colorHue, colorChroma, 50).toInt()),
   );
 
   const isDarkMode = theme
@@ -40,7 +43,7 @@ export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
   versions.forEach((version) => {
     const argbColor = Hct.from(
       colorHue,
-      100,
+      colorChroma,
       isDarkMode ? Number(version) / 10 : 100 - Number(version) / 10,
     );
     if (argbColor) {
@@ -156,13 +159,16 @@ export const ThemeTemplate = ({
   color: "primary" | "secondary";
 }) => {
   const colorHues = [...Array.from({ length: 24 }, (_, i) => i * 15)];
+  const colorChromas = [...Array.from({ length: 5 }, (_, i) => i * 10 + 20)];
   const [selectedHue, setSelectedHue] = useState(212);
+  const [selectedChroma, setSelectedChroma] = useState(50);
 
   useEffect(() => {
     setSelectedHue(
       Number(localStorage.getItem(`${color}Hue`)) ||
         (color === "primary" ? defaultHues.primary : defaultHues.secondary),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -172,6 +178,7 @@ export const ThemeTemplate = ({
         (color === "primary" ? "bg-selfprimary-300" : "bg-selfsecondary-300")
       }
     >
+      {color}: {selectedHue}/{selectedChroma}
       <h1 className="text-2xl font-bold">
         {color === "primary" ? "Elsődleges" : "Másodlagos"} szín
         <Button
@@ -187,51 +194,95 @@ export const ThemeTemplate = ({
         </Button>
       </h1>
       <div className="flex">
-        {colorHues.map((hue) => (
-          <div key={hue} className="h-auto w-full">
-            {[...Array.from({ length: 8 }, (_, i) => i * 10 + 20)].map(
-              (croma) => (
-                <div
-                  key={hue + croma}
-                  className={
-                    "h-14 w-full border-1 " +
-                    (selectedHue === hue ? "border-4" : "")
-                  }
-                  style={{
-                    // From Hct.from(hue, 100, 0) to Hct.from(hue, 100, 100) gradient
-                    background: `linear-gradient(to bottom, ${hexFromArgb(
-                      Hct.from(hue, croma, 40).toInt(),
-                    )}, ${hexFromArgb(Hct.from(hue, croma, 80).toInt())})`,
-                  }}
-                  onClick={() => {
-                    localStorage.setItem(`${color}Hue`, String(hue));
-                    setSelectedHue(hue);
-                    loadPalette(color);
-                  }}
-                >
-                  <div className="my-auto hidden text-center">{hue}</div>
-                </div>
-              ),
-            )}
+        <input
+          title="color"
+          type="range"
+          style={{ writingMode: "vertical-lr" }}
+          className="my-4 mr-2"
+          min={0}
+          max={colorHues.length - 1}
+          value={colorHues.indexOf(selectedHue) as any}
+          onChange={(e) => {
+            const hue = colorHues[Number(e.target.value)];
+            setSelectedHue(hue);
+            localStorage.setItem(`${color}Hue`, String(hue));
+            loadPalette(color);
+          }}
+        />
+        {colorChromas.map((chroma) => (
+          <div key={chroma} className="h-auto w-full">
+            {colorHues.map((hue) => (
+              <div
+                key={hue + chroma}
+                className={
+                  "h-5 w-full border-1 " +
+                  (selectedHue === hue && selectedChroma === chroma
+                    ? "border-4"
+                    : "")
+                }
+                style={{
+                  // From Hct.from(hue, 100, 0) to Hct.from(hue, 100, 100) gradient
+                  background: `linear-gradient(to bottom, ${hexFromArgb(
+                    Hct.from(hue, chroma, 50).toInt(),
+                  )}, ${hexFromArgb(Hct.from(hue, chroma, 70).toInt())})`,
+                }}
+                onClick={() => {
+                  localStorage.setItem(`${color}Hue`, String(hue));
+                  localStorage.setItem(`${color}Chroma`, String(chroma));
+                  setSelectedHue(hue);
+                  setSelectedChroma(chroma);
+                  loadPalette(color);
+                }}
+              >
+                <div className="my-auto hidden text-center">{hue}</div>
+              </div>
+            ))}
           </div>
         ))}
       </div>
       <input
-        title="color"
+        title="chroma"
         type="range"
-        className="mt-2 w-full"
+        className="w-full"
+        style={{ writingMode: "horizontal-tb" }}
         min={0}
-        max={colorHues.length - 1}
-        value={colorHues.indexOf(selectedHue) as any}
+        max={colorChromas.length - 1}
+        value={colorChromas.indexOf(selectedChroma) as any}
         onChange={(e) => {
-          const hue = colorHues[Number(e.target.value)];
-          setSelectedHue(hue);
-          localStorage.setItem(`${color}Hue`, String(hue));
+          const chroma = colorChromas[Number(e.target.value)];
+          localStorage.setItem(`${color}Chroma`, String(chroma));
+          setSelectedChroma(chroma);
           loadPalette(color);
         }}
       />
+      {color}: {selectedHue}/{selectedChroma}
     </div>
   );
+};
+
+export const ThemeOptions = ({}: {}) => {
+  const templates = [
+    {
+      // Coral x Olive
+      primary: [30, 50],
+      secondary: [135, 40],
+    },
+    {
+      // Stone x Lavender
+      primary: [120, 20],
+      secondary: [285, 50],
+    },
+    {
+      // Sky x Mango
+      primary: [240, 60],
+      secondary: [45, 50],
+    },
+    {
+      // Camel x Lavender
+      primary: [75, 40],
+      secondary: [300, 60],
+    },
+  ];
 };
 
 export const ThemePickerPrimary = () => {

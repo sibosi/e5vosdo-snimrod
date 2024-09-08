@@ -38,7 +38,9 @@ export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
 
   const isDarkMode = theme
     ? theme === "dark"
-    : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    : theme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+      : localStorage.getItem("theme") === "dark";
 
   versions.forEach((version) => {
     const argbColor = Hct.from(
@@ -174,7 +176,7 @@ export const ThemeTemplate = ({
   return (
     <div
       className={
-        "mb-4 rounded-3xl p-3 " +
+        "mb-4 rounded-3xl p-3 text-foreground " +
         (color === "primary" ? "bg-selfprimary-300" : "bg-selfsecondary-300")
       }
     >
@@ -260,29 +262,113 @@ export const ThemeTemplate = ({
   );
 };
 
-export const ThemeOptions = ({}: {}) => {
+export const ThemeOptions = () => {
   const templates = [
     {
-      // Coral x Olive
+      name: "Default",
+      primary: [267, 71],
+      secondary: [305, 87],
+    },
+    {
+      // Coral, Olive
+      name: "Coral, Olive",
       primary: [30, 50],
       secondary: [135, 40],
     },
     {
-      // Stone x Lavender
+      // Stone, Lavender (Nimród)
+      name: "Stone, Lavender",
       primary: [120, 20],
       secondary: [285, 50],
     },
     {
-      // Sky x Mango
+      // Sky, Mango
+      name: "Sky, Mango",
       primary: [240, 60],
       secondary: [45, 50],
     },
     {
-      // Camel x Lavender
+      // Camel, Lavender
+      name: "Camel, Lavender",
       primary: [75, 40],
       secondary: [300, 60],
     },
+    {
+      // Helina
+      name: "Windows, Tulip",
+      primary: [255, 50],
+      secondary: [345, 50],
+    },
+    {
+      // Luca
+      name: "Orhid, Rose",
+      primary: [330, 60],
+      secondary: [15, 60],
+    },
+    {
+      // Timi
+      name: "Slate, Wood",
+      primary: [255, 20],
+      secondary: [60, 40],
+    },
+    {
+      // Timi 2
+      name: "Leaf, Gold",
+      primary: [165, 20],
+      secondary: [90, 60],
+    },
   ];
+
+  return (
+    <div className="flex flex-wrap gap-4 text-foreground">
+      {templates.map((template) => (
+        <div
+          key={template.name}
+          className="rounded-lg bg-selfprimary-100 p-2 text-center"
+          onClick={() => {
+            localStorage.setItem("primaryHue", String(template.primary[0]));
+            localStorage.setItem("primaryChroma", String(template.primary[1]));
+            localStorage.setItem("secondaryHue", String(template.secondary[0]));
+            localStorage.setItem(
+              "secondaryChroma",
+              String(template.secondary[1]),
+            );
+            loadPalette("primary");
+            loadPalette("secondary");
+          }}
+        >
+          <div className="mx-auto grid h-8 w-8 grid-cols-2 overflow-hidden rounded-badge">
+            <div
+              className="h-full w-full"
+              style={{
+                backgroundColor: hexFromArgb(
+                  Hct.from(
+                    template.primary[0],
+                    template.primary[1],
+                    50,
+                  ).toInt(),
+                ),
+              }}
+            />
+            <div
+              className="h-full w-full"
+              style={{
+                backgroundColor: hexFromArgb(
+                  Hct.from(
+                    template.secondary[0],
+                    template.secondary[1],
+                    50,
+                  ).toInt(),
+                ),
+              }}
+            />
+          </div>
+
+          <div className="max-w-min">{template.name}</div>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export const ThemePickerPrimary = () => {

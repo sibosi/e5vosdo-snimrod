@@ -1,10 +1,7 @@
 export type SiteConfig = typeof siteConfig;
 
 interface PageSectionsType {
-  teremcserek: "opened" | "closed" | "hidden";
-  helyettesitesek: "opened" | "closed" | "hidden";
-  menza: "opened" | "closed" | "hidden";
-  esemenyek: "opened" | "closed" | "hidden";
+  [key: string]: "opened" | "closed" | "hidden";
 }
 
 const pageSections: PageSectionsType = {

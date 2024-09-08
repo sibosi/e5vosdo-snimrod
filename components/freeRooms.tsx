@@ -60,6 +60,7 @@ const getCurrentLessonOrder = () => {
 };
 
 async function getFreeRooms(day: "H" | "K" | "SZ" | "CS" | "P", time: string) {
+  if (time === START_TIMES[8] || time === START_TIMES[0]) return [];
   const resp = await fetch("/api/getFreeRooms", {
     method: "POST",
     body: JSON.stringify({ day, time }),
@@ -209,36 +210,41 @@ const FreeRooms = () => {
           </DropdownMenu>
         </Dropdown>
       </div>
-      <div className="flex flex-wrap">
-        <div className="m-2 w-52 rounded-lg border-2 border-selfsecondary-200 bg-selfsecondary-50 p-2">
-          <h4 className="text-lg font-bold">Figyelem!</h4>
-          <span>
-            A be nem jelentett teremváltozások miatt előfordulhatnak hibák. Az
-            esetleges hibákért elnézést kérünk! (És felelősséget nem vállalunk.)
-            ( ͡° ͜ʖ ͡°)
-          </span>
-        </div>
-        {Object.keys(freeRoomsByFloor).map(
-          (floor) =>
-            freeRoomsByFloor[
-              floor as "-1" | "0" | "0.5" | "1" | "2" | "3" | "?"
-            ].length > 0 && (
-              <div
-                key={floor}
-                className="m-2 rounded-lg border-2 border-selfprimary-200 bg-selfprimary-50 p-2"
-              >
-                <h4 className="text-lg font-bold">{FLOORS_NAMES[floor]}</h4>
-                <div>
-                  {freeRoomsByFloor[
-                    floor as "-1" | "0" | "0.5" | "1" | "2" | "3" | "?"
-                  ].map((room) => (
-                    <p key={room}>- {toShortRoom(room)}</p>
-                  ))}
+
+      {startOrder !== 8 && startOrder !== 0 ? (
+        <div className="flex flex-wrap">
+          <div className="m-2 w-52 rounded-lg border-2 border-selfsecondary-200 bg-selfsecondary-50 p-2">
+            <h4 className="text-lg font-bold">Figyelem!</h4>
+            <span>
+              A be nem jelentett teremváltozások miatt előfordulhatnak hibák. Az
+              esetleges hibákért elnézést kérünk! (És felelősséget nem
+              vállalunk.) ( ͡° ͜ʖ ͡°)
+            </span>
+          </div>
+          {Object.keys(freeRoomsByFloor).map(
+            (floor) =>
+              freeRoomsByFloor[
+                floor as "-1" | "0" | "0.5" | "1" | "2" | "3" | "?"
+              ].length > 0 && (
+                <div
+                  key={floor}
+                  className="m-2 rounded-lg border-2 border-selfprimary-200 bg-selfprimary-50 p-2"
+                >
+                  <h4 className="text-lg font-bold">{FLOORS_NAMES[floor]}</h4>
+                  <div>
+                    {freeRoomsByFloor[
+                      floor as "-1" | "0" | "0.5" | "1" | "2" | "3" | "?"
+                    ].map((room) => (
+                      <p key={room}>- {toShortRoom(room)}</p>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ),
-        )}
-      </div>
+              ),
+          )}
+        </div>
+      ) : (
+        <p>A modul 0. és 8. órában nem használható.</p>
+      )}
     </div>
   );
 };

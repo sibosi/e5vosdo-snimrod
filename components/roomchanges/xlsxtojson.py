@@ -45,7 +45,7 @@ import json
 from datetime import timedelta, datetime
 import os
 
-CIM = 'cim'
+CIM = 'TEREMVÁLTOZÁSOK\nkisérettségimiatt\n2024.szeptember9.hétfő'
 
 
 def kovetkezo_datum(datum: str, lepes=1) -> str:

@@ -18,7 +18,7 @@ const dd = String(today.getDate()).padStart(2, "0");
 const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
 const yyyy = today.getFullYear();
 
-const today_date = "2024.09.12"; // yyyy + "." + mm + "." + dd;
+const today_date = yyyy + "." + mm + "." + dd;
 
 export const RoomChanges = () => {
   let todayRoomchangesConfig: ClassRoomChanges | null = null;
@@ -72,6 +72,10 @@ export const RoomChanges = () => {
             ),
           )}
       </div>
+
+      {!todayRoomchangesConfig && (
+        <p>A mai napon nincsenek teremcsere adatok.</p>
+      )}
     </div>
   );
 };

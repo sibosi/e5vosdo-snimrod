@@ -12,11 +12,7 @@ import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { getAuth } from "@/db/dbreq";
 import TimetableDay from "@/components/timetable/timetableday";
 import FreeRooms from "@/components/freeRooms";
-import {
-  ThemeTemplatePrimary,
-  ThemeTemplateSecondary,
-} from "@/components/themePicker";
-import { Alert } from "@/components/home/alert";
+import Welcome from "@/components/home/welcome";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -44,18 +40,10 @@ export default async function Home() {
         )}
       </div>
 
-      <Alert className="border-selfsecondary-300 bg-selfsecondary-100">
-        Az oldal jelenleg tesztelés alatt áll. Ha tesztelő vagy: Válassz két
-        színt (lejjebb), amelyet Te is használnál megjelenésnek és küldd el a
-        választásod Nimródnak! (pl: Primary: 75/50, Secondary: 300/50)
-        Kösziköszi! :D
-      </Alert>
-
-      <ThemeTemplatePrimary />
-      <ThemeTemplateSecondary />
+      <Welcome />
 
       <Section title="Órarend" dropdownable={true}>
-        {1 ? (
+        {0 ? (
           selfUser ? (
             <TimetableDay selfUser={selfUser} />
           ) : (
@@ -66,8 +54,18 @@ export default async function Home() {
         )}
       </Section>
 
-      <Section title="Szabad teremkereső" dropdownable={true}>
-        <FreeRooms />
+      <Section
+        title="Szabad teremkereső"
+        dropdownable={true}
+        defaultStatus="closed"
+      >
+        {0 ? (
+          <FreeRooms />
+        ) : (
+          <p>
+            Jelenleg nem elérhető a teremkereső. Kérjük, nézz vissza később!
+          </p>
+        )}
       </Section>
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (

@@ -119,11 +119,11 @@ async function update() {
         }
         event.push(nap);
         event.push(
-          ora_terem.split(" ")[0].charAt(ora_terem.split(" ")[0].length - 1),
+          ora_terem.split("/")[0].charAt(ora_terem.split(" ")[0].length - 1),
         );
         if (!napok.includes(nap)) napok.push(nap);
 
-        const terem = ora_terem.split(" ")[1].slice(1);
+        const terem = ora_terem.split("/")[1];
         event.push(terem);
       });
     });

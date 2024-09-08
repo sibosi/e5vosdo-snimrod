@@ -54,7 +54,7 @@ export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
   if (localStorage.getItem("materialBg") === "true") {
     document.documentElement.style.setProperty(
       `--color-${colorName}-bg`,
-      hexFromArgb(Hct.from(colorHue, 100, isDarkMode ? 3 : 97).toInt()),
+      hexFromArgb(Hct.from(colorHue, 6, isDarkMode ? 2 : 98).toInt()),
     );
   }
 };
@@ -188,24 +188,31 @@ export const ThemeTemplate = ({
       </h1>
       <div className="flex">
         {colorHues.map((hue) => (
-          <div
-            key={hue}
-            className={
-              "h-14 w-full border-1 " + (selectedHue === hue ? "border-4" : "")
-            }
-            style={{
-              // From Hct.from(hue, 100, 0) to Hct.from(hue, 100, 100) gradient
-              background: `linear-gradient(to bottom, ${hexFromArgb(
-                Hct.from(hue, 100, 40).toInt(),
-              )}, ${hexFromArgb(Hct.from(hue, 100, 80).toInt())})`,
-            }}
-            onClick={() => {
-              localStorage.setItem(`${color}Hue`, String(hue));
-              setSelectedHue(hue);
-              loadPalette(color);
-            }}
-          >
-            <div className="my-auto hidden text-center">{hue}</div>
+          <div key={hue} className="h-auto w-full">
+            {[...Array.from({ length: 8 }, (_, i) => i * 10 + 20)].map(
+              (croma) => (
+                <div
+                  key={hue + croma}
+                  className={
+                    "h-14 w-full border-1 " +
+                    (selectedHue === hue ? "border-4" : "")
+                  }
+                  style={{
+                    // From Hct.from(hue, 100, 0) to Hct.from(hue, 100, 100) gradient
+                    background: `linear-gradient(to bottom, ${hexFromArgb(
+                      Hct.from(hue, croma, 40).toInt(),
+                    )}, ${hexFromArgb(Hct.from(hue, croma, 80).toInt())})`,
+                  }}
+                  onClick={() => {
+                    localStorage.setItem(`${color}Hue`, String(hue));
+                    setSelectedHue(hue);
+                    loadPalette(color);
+                  }}
+                >
+                  <div className="my-auto hidden text-center">{hue}</div>
+                </div>
+              ),
+            )}
           </div>
         ))}
       </div>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import oldRoomchangesConfig from "@/public/storage/roomchanges.json";
 import { useState } from "react";
 import { Button } from "@nextui-org/react";
@@ -21,17 +21,47 @@ const yyyy = today.getFullYear();
 const today_date = yyyy + "." + mm + "." + dd;
 
 export const RoomChanges = () => {
-  let todayRoomchangesConfig: ClassRoomChanges | null = null;
+  const [date, setDate] = useState(new Date());
 
-  // Az új formátumban a `roomchangesConfig` egy objektum, és a dátum alapján keressük meg az adatokat
-  if (roomchangesConfig[today_date]) {
-    todayRoomchangesConfig = roomchangesConfig[today_date];
+  function changeDate(days: number) {
+    setDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(newDate.getDate() + days);
+      return newDate;
+    });
+  }
+
+  function formatDate() {
+    return date
+      .toLocaleDateString("hu")
+      .replaceAll(". ", "/")
+      .replaceAll(".", "")
+      .replaceAll("/", ".");
   }
 
   const [selectedGroup, setSelect] = useState<string | null>(null);
+  const [todayRoomchangesConfig, setTodayRoomchangesConfig] =
+    useState<ClassRoomChanges | null>(null);
+
+  useEffect(() => {
+    setSelect(null);
+    if (roomchangesConfig[formatDate()])
+      setTodayRoomchangesConfig(roomchangesConfig[formatDate()]);
+    else setTodayRoomchangesConfig(null);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date]);
 
   return (
     <div className="text-foreground">
+      <p className="pb-1 text-sm font-medium">
+        <button onClick={() => changeDate(-1)}>{"<"}&nbsp;</button>
+        {formatDate()}
+        <button onClick={() => changeDate(1)}>
+          &nbsp;
+          {">"}
+        </button>
+      </p>
       {/* Osztályok neveinek megjelenítése, ha van az adott dátumhoz tartozó helyettesítés */}
       <div className="flex gap-2 overflow-auto py-2 scrollbar-hide">
         {todayRoomchangesConfig &&

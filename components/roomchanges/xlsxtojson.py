@@ -45,7 +45,11 @@ import json
 from datetime import timedelta, datetime
 import os
 
-CIM = 'TEREMVÁLTOZÁSOK\nkisérettségimiatt\n2024.szeptember9.hétfő'
+CIM = 'TEREMVÁLTOZÁSOK\r\nkisérettségimiatt\r\n2024.szeptember11.szerda'
+KEZDO_DATUM = '2024.09.11'
+
+with open('public/storage/roomchanges.json', 'r', encoding='utf-8') as outfile:
+    regi_cserek = json.loads(outfile.read())
 
 
 def kovetkezo_datum(datum: str, lepes=1) -> str:
@@ -93,7 +97,6 @@ for sor in nyers_cserek:
     tmp = [sor.get(key) for key in keys]
     quick_forras.append(tmp)
 
-KEZDO_DATUM = '2024.09.09'
 input('A kezdő dátum: ' + KEZDO_DATUM + '\nHa helyes, nyomj entert! ')
 
 ossz_cserek = []
@@ -163,6 +166,8 @@ for day in shorted_quickRoomchangesConfig:
             final_data[date][osztaly][lesson[0]].append([lesson[0], lesson[1], lesson[2], lesson[3]])
             final_data[date][osztaly]['all'].append([lesson[0], lesson[1], lesson[2], lesson[3]])
 
+# Add to the final data the old roomchanges
+final_data = {**final_data, **regi_cserek}
 # JSON fájl írása
 output_path = os.path.join('public', 'storage', 'roomchanges.json')
 with open(output_path, 'w', encoding='utf-8') as outfile:

@@ -17,11 +17,13 @@ import CacheManager from "@/components/PWA/cacheManager";
 import VersionManager from "@/components/PWA/versionManager";
 import {
   loadPalette,
+  ThemeOptions,
   ThemePickerPrimary,
   ThemePickerSecondary,
   ThemeTemplatePrimary,
   ThemeTemplateSecondary,
 } from "@/components/themePicker";
+import { Alert } from "@/components/home/alert";
 
 function updateCacheMethod(cacheMethod: "always" | "offline" | "never") {
   if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
@@ -84,6 +86,37 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
     localStorage.setItem("cacheMethod", cacheMethod);
   }, [cacheMethod]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (
+        !(EJG_code &&
+        EJG_code.length === 13 &&
+        nickname &&
+        (EJG_code !== selfUser.EJG_code ||
+          nickname !== selfUser.nickname ||
+          menu !== selfUser.food_menu) &&
+        !nicknameError
+          ? false
+          : true)
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [
+    EJG_code,
+    menu,
+    nickname,
+    nicknameError,
+    selfUser.EJG_code,
+    selfUser.food_menu,
+    selfUser.nickname,
+  ]);
+
   const [sureQuestion, setSureQuestion] = useState<boolean>(false);
 
   const isAlphabetic = (username: string): boolean => {
@@ -125,6 +158,14 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           Itt állíthatod a profilodat, és nézheted az oldalra vonatkozó
           beállításaidat.
         </p>
+
+        {EJG_code === "" && (
+          <Alert className="mt-2 border-selfsecondary-400 bg-selfsecondary-200">
+            Az EJG kódod még nincs megadva. Az EJG kódod nélkül nem tudod
+            használni az alkalmazás számos funkcióját, például az órarended
+            megtekintését és a beállításaid módosítását.
+          </Alert>
+        )}
 
         <SettingsSection title="">
           <table className="table gap-y-2">
@@ -221,7 +262,13 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </table>
         </SettingsSection>
 
-        <SettingsSection title="Értesítési preferenciák">
+        <ThemeOptions />
+
+        <SettingsSection
+          title="Értesítési preferenciák"
+          dropdownable={true}
+          defaultStatus="closed"
+        >
           Hamarosan
         </SettingsSection>
 

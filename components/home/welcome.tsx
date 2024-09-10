@@ -1,10 +1,12 @@
+"use client";
 import React from "react";
 import { ThemeOptions } from "../themePicker";
 import { Button, Link } from "@nextui-org/react";
 import { siteConfig } from "@/config/site";
+import { reinstallServiceWorker } from "../PWA/managesw";
 
 const Welcome = () => {
-  return (
+  return localStorage.getItem("welcome") === "false" ? null : (
     <div className="rounded-2xl border-1 p-4 text-lg text-foreground shadow-lg">
       <h1 className="text-4xl font-bold">Üdv a DÖ alkalmazásban! 🎉</h1>
       <p className="mt-2">Az alkalmazásban a következő modulok érhetőek el:</p>
@@ -39,8 +41,15 @@ const Welcome = () => {
         </span>{" "}
         keresztül!
       </p>
-
-      <Button className="mt-4 bg-selfprimary-100">Jó szórakozást!</Button>
+      <Button
+        className="mt-4 bg-selfprimary-100"
+        onClick={() => {
+          localStorage.setItem("welcome", "false");
+          reinstallServiceWorker();
+        }}
+      >
+        Jó szórakozást!
+      </Button>
     </div>
   );
 };

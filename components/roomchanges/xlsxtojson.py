@@ -156,7 +156,7 @@ for day in shorted_quickRoomchangesConfig:
     date = day[0]
     final_data[date] = {}
     for group in day[1]:
-        osztaly = group[0].replace('\r', '')
+        osztaly = group[0].replace('\r', '').replace(' ', '')
         final_data[date][osztaly] = {
             'all' : []
         }

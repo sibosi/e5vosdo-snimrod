@@ -1,7 +1,7 @@
 {
   "Acosta-Varga Sára": {
     "Name": "Acosta-Varga Sára",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Varga_Sara2-scaled.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Acosta-Varga_Sara24-scaled.jpg",
     "Subjects": "történelem, etika",
     "Head": "10. F",
     "Others": "",
@@ -17,7 +17,7 @@
   },
   "Antal Erzsébet": {
     "Name": "Antal Erzsébet",
-    "Photo": "",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Antal_Erzsebet24-scaled.jpg",
     "Subjects": "matematika, fizika",
     "Head": "",
     "Others": "",
@@ -33,7 +33,7 @@
   },
   "Bácskai-Nagy Barnabás": {
     "Name": "Bácskai-Nagy Barnabás",
-    "Photo": "",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Bacskai-Nagy_Barnabas24-scaled.jpg",
     "Subjects": "történelem",
     "Head": "",
     "Others": "",
@@ -49,7 +49,7 @@
   },
   "Balga Attila": {
     "Name": "Balga Attila",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Balga_Attila.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Balga_Attila24-scaled.jpg",
     "Subjects": "matematika, fizika, digitális kultúra",
     "Head": "12. A",
     "Others": "matematika mkvez.",
@@ -70,6 +70,14 @@
     "Head": "9. A",
     "Others": "",
     "Mail": "mailto:balogh.andrea@e5vos.hu"
+  },
+  "Baloghné Földessy Beáta": {
+    "Name": "Baloghné Földessy Beáta",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Foldessy_Beata24-scaled.jpg",
+    "Subjects": "orosz",
+    "Head": "",
+    "Others": "",
+    "Mail": "mailto:foldessy.beata@e5vos.hu"
   },
   "Baranyai Balázs": {
     "Name": "Baranyai Balázs",
@@ -153,7 +161,7 @@
   },
   "Czirók Adrienn": {
     "Name": "Czirók Adrienn",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Czirók_Adrienn.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Czirok_Adrienn24-scaled.jpg",
     "Subjects": "matematika, fizika",
     "Head": "10. D",
     "Others": "",
@@ -201,7 +209,7 @@
   },
   "Ernyei Dániel": {
     "Name": "Ernyei Dániel",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Ernyei_Daniel-scaled.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Ernyey_Daniel24-scaled.jpg",
     "Subjects": "fizika, kémia",
     "Head": "",
     "Others": "",
@@ -209,7 +217,7 @@
   },
   "Eszes Valéria": {
     "Name": "Eszes Valéria",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Eszes_Valeria2-2-scaled.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Eszes-_Valeria24-scaled.jpg",
     "Subjects": "magyar, történelem",
     "Head": "",
     "Others": "",
@@ -249,7 +257,7 @@
   },
   "Gergelyi Katalin": {
     "Name": "Gergelyi Katalin",
-    "Photo": "",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Gergelyi_Katalin24-scaled.jpg",
     "Subjects": "magyar, francia",
     "Head": "",
     "Others": "",
@@ -345,7 +353,7 @@
   },
   "Horváthné Bujtás Anna": {
     "Name": "Horváthné Bujtás Anna",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Bujtas_Anna.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Bujtas_Anna24-scaled.jpg",
     "Subjects": "matematika, latin",
     "Head": "",
     "Others": "2. idegen nyelv mkvez.",
@@ -489,7 +497,7 @@
   },
   "Mongyi Norbert": {
     "Name": "Mongyi Norbert",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Mongyi_Norbert2-1-scaled.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Mongyi_Norbert24-scaled.jpg",
     "Subjects": "angol, francia",
     "Head": "10. E",
     "Others": "",
@@ -577,8 +585,8 @@
   },
   "Rémai Martin": {
     "Name": "Rémai Martin",
-    "Photo": "",
-    "Subjects": "angol",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Remai_Martin24-scaled.jpg",
+    "Subjects": "angol, földrajz",
     "Head": "",
     "Others": "",
     "Mail": "mailto:remai.martin@e5vos.hu"
@@ -617,7 +625,7 @@
   },
   "Solymoss Miklós": {
     "Name": "Solymoss Miklós",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Solymoss_Miklos_23-scaled.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Solymoss_Miklos24-scaled.jpg",
     "Subjects": "biológia",
     "Head": "11. D",
     "Others": "",
@@ -665,7 +673,7 @@
   },
   "Szeiman-Kedves Júlia": {
     "Name": "Szeiman-Kedves Júlia",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Kedves_Julia017.jpg",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Szeiman-Kedves_Julia24-scaled.jpg",
     "Subjects": "történelem, földrajz",
     "Head": "9. B",
     "Others": "földrajz mkvez.",

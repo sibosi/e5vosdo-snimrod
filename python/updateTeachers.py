@@ -33,11 +33,11 @@ URL = 'https://www.ejg.hu/tanarok/tanarok/'
 TITLES = ['Name', 'Photo', 'Subjects', 'Head', 'Others', 'Mail']
 response = requests.get(URL, verify=False)
 html_content = response.text
+html_content = html_content.replace('</tr\n', '</tr>\n') # I know. It hurts me too. But it's necessary.
 soup = BeautifulSoup(html_content, 'html.parser')
 
-# There are multiple tables on the page. We need that one which is in a div with the class 'entry-content'
-
-table = soup.find('div', class_='entry-content').find('table')
+# There are multiple tables on the page. We need that one which has an id == 'tanarok_elerhetosege'
+table = soup.find('table', id='tanarok_elerhetosege')
 
 data = []
 rows = table.find_all('tr')

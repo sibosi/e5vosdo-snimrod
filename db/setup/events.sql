@@ -136,6 +136,15 @@ VALUES (
         '["9. évf", "tábor"]'
     ),
     (
+        'Zene világnapja',
+        'október 1.',
+        '2024-10-01',
+        '2024-10-02',
+        '/events/ZVN.jpeg',
+        NULL,
+        '["zene"]'
+    ),
+    (
         'Eötvös napok',
         'október 24. - 25.',
         '2024-10-24',

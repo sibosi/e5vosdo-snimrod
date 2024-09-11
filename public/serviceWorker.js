@@ -1,8 +1,10 @@
 "use strict";
 
+const SW_settings_name = 'SW-settings';
+
 function getDb() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('settingsDB', 1);
+    const request = indexedDB.open(SW_settings_name, 1);
 
     request.onerror = (event) => {
       console.error('IndexedDB error:', event);
@@ -23,7 +25,7 @@ function getDb() {
 }
 
 async function writeStorage(id, value) {
-  return getDb().then((db) => {
+  return await getDb().then((db) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(['settings'], 'readwrite');
       const objectStore = transaction.objectStore('settings');
@@ -42,7 +44,7 @@ async function writeStorage(id, value) {
 }
 
 async function getStorage(id) {
-  return getDb().then((db) => {
+  return await getDb().then((db) => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(['settings'], 'readonly');
       const objectStore = transaction.objectStore('settings');
@@ -198,10 +200,10 @@ self.addEventListener('fetch', (event) => {
 
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'updateCacheMethod') {
-    writeStorage('cacheMethod', event.data.cacheMethod);
+  if (event.data && event.data.action === 'cacheMethodUpdated') {
+    (async () => cacheMethod = await getStorage('cacheMethod'))()
   }
-  else if (event.data && event.data.action === 'reCache') {
+  if (event.data && event.data.action === 'reCache') {
     // Delete all cache
 
     event.waitUntil(

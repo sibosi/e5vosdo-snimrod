@@ -5,7 +5,7 @@ interface PageSectionsType {
 }
 
 const pageSections: PageSectionsType = {
-  teremcserek: "opened",
+  teremcserek: "hidden",
   helyettesitesek: "opened",
   menza: "opened",
   esemenyek: "opened",

@@ -236,7 +236,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
 
   return (
     <>
-      <div className="mx-auto max-w-xl gap-3 rounded-2xl bg-default-100 px-5 pb-16 pt-5">
+      <div className="mx-auto max-w-xl gap-3 rounded-2xl border-2 bg-transparent px-5 pb-16 pt-5">
         <p className="">
           Itt állíthatod a profilodat, és nézheted az oldalra vonatkozó
           beállításaidat.

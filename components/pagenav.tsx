@@ -99,7 +99,7 @@ export const PageNav = () => {
               href={page.route}
               className="group inline-flex flex-col items-center justify-center px-5"
             >
-              <div className="text-xl text-foreground hover:text-sky-700">
+              <div className="text-xl text-foreground hover:text-selfprimary-600">
                 {page.icon}
               </div>
             </Link>

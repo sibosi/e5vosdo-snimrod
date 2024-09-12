@@ -62,7 +62,7 @@ export default async function RootLayout({
   const pageSettings = await getPageSettings();
 
   return (
-    <html lang="hu" suppressHydrationWarning className="bg-background">
+    <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
       <head>
         <link rel="apple-touch-icon" href="ios/1024.png" sizes="1024x1024" />
         <link rel="manifest" href="/manifest.json" />
@@ -105,7 +105,7 @@ export default async function RootLayout({
 
       <body
         className={clsx(
-          "bg-selfprimary-bg min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-background bg-selfprimary-bg font-sans antialiased",
           fontSans.variable,
           "light:bg-white",
         )}
@@ -128,7 +128,7 @@ export default async function RootLayout({
         <ServiceWorker />
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="bg-selfprimary-bg relative flex h-screen flex-col">
+          <div className="relative flex h-screen flex-col bg-selfprimary-bg">
             <Navbar
               selfUser={selfUser}
               isActiveHeadSpace={pageSettings.headspace}
@@ -141,10 +141,10 @@ export default async function RootLayout({
             <>
               {session?.user?.email &&
                 console.log("New login from " + session.user.email)}
-              <main className="bg-selfprimary-bg container mx-auto max-w-7xl flex-grow pl-3 pr-3 pt-4">
+              <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
                 {children}
               </main>
-              <footer className="bg-selfprimary-bg flex w-full items-center justify-center py-3">
+              <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
                 <Link
                   isExternal
                   className="flex items-center gap-1 pb-14 text-current"

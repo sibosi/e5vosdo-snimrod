@@ -131,7 +131,7 @@ export default async function RootLayout({
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">
             <Navbar
               selfUser={selfUser}
-              isActiveHeadSpace={pageSettings.headspace}
+              isActiveHeadSpace={pageSettings.headspace === 1}
               className="bg-selfprimary-bg"
             />
 

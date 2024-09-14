@@ -80,14 +80,9 @@ export const Navbar = ({
       </NavbarContent>
 
       <NavbarContent justify="start" />
-
-      {isActiveHeadSpace ? (
-        <NavbarContent justify="center" className="md:hidden">
-          <LiveScore />
-        </NavbarContent>
-      ) : (
-        <></>
-      )}
+      <NavbarContent justify="center" className="md:hidden">
+        <LiveScore />
+      </NavbarContent>
 
       <NavbarContent justify="end" />
 

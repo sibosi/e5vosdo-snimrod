@@ -6,56 +6,29 @@ import { getComingMatch, getPageSettings, updateMatch } from "@/db/dbreq";
 
 const cache = new NodeCache();
 
-const oldFetchSoccerData = async () => {
-  try {
-    // Replace this URL with the actual URL you are scraping
-    const url = (await getComingMatch()) as string;
-    const { data: html } = await axios.get(url);
-
-    const $ = cheerio.load(html);
-
-    // Extract the game details
-    const teams = $("h3").text().trim();
-    const score = $(".detail")
-      .eq(0)
-      .text()
-      .trim()
-      .split(" ")[0]
-      .split(":")
-      .map(Number);
-    const halftimeScore = $(".detail").eq(1).text().trim();
-    const gameTime = $(".detail").eq(2).text().trim();
-    const events: any[] = [];
-
-    $("#detail-tab-content .incident.soccer").each((index, element) => {
-      const time = $(element).find(".i-field.time").text().trim();
-      const iconElement = $(element).find(".i-field.icon");
-      const eventType = iconElement.attr("class")
-        ? iconElement.attr("class")?.split(" ")[1]
-        : "unknown";
-      const eventDetail = $(element).text().trim();
-      events.push({ time, eventType, eventDetail });
-    });
-
-    // Construct the response object
-    const gameData = {
-      teams,
-      score,
-      halftimeScore,
-      gameTime,
-      events,
-    };
-
-    return gameData;
-  } catch (error) {
-    return { error: error };
-  }
-};
+function formatTime(time: string) {
+  // time : dd.mm.yyyy hh:mm
+  const [date, hour] = time.split(" ");
+  const [day, month, year] = date.split(".");
+  return `${year}/${month}/${day} ${hour}`;
+}
 
 const fetchSoccerData = async () => {
   try {
     // Replace this URL with the actual URL you are scraping
-    const url = ((await getComingMatch()) as any).url;
+    const comingMatch = await getComingMatch();
+    const url = comingMatch.url;
+    if (["undefined", "null", "0"].includes(url))
+      return {
+        ...comingMatch,
+        image1:
+          comingMatch.image1 ||
+          `/flags/${comingMatch.team1?.toLowerCase().replace(/\s+/g, "")}.png`,
+        image2:
+          comingMatch.image2 ||
+          `/flags/${comingMatch.team2?.toLowerCase().replace(/\s+/g, "")}.png`,
+      };
+
     const { data: html } = await axios.get(url);
 
     const $ = cheerio.load(html);
@@ -94,16 +67,18 @@ const fetchSoccerData = async () => {
       id: 1, // Assign a unique ID if necessary
       team1: teams[0] || "Unknown Team 1",
       team2: teams[1] || "Unknown Team 2",
-      teamShort1: teams[0] ? teams[0].substring(0, 3).toUpperCase() : "???",
-      teamShort2: teams[1] ? teams[1].substring(0, 3).toUpperCase() : "???",
+      team_short1: teams[0] ? teams[0].substring(0, 3).toUpperCase() : "???",
+      team_short2: teams[1] ? teams[1].substring(0, 3).toUpperCase() : "???",
       score1: score[0] || 0,
       score2: score[1] || 0,
       image1: `/flags/${teams[0]?.toLowerCase().replace(/\s+/g, "")}.png`,
       image2: `/flags/${teams[1]?.toLowerCase().replace(/\s+/g, "")}.png`,
       status:
         time === "Finished" ? "Finished" : time === "" ? "Upcoming" : "Live",
-      time: time == "Time" ? "Félidő" : time,
-      startTime: time === "" ? firstDetail.split(" ").reverse()[0] : startTime,
+      time: formatTime(time == "Time" ? "Félidő" : time),
+      start_time: formatTime(
+        time === "" ? firstDetail.split(" ").reverse()[0] : startTime,
+      ),
     };
 
     return gameData;

@@ -11,6 +11,8 @@ import {
 import ManageUsers from "@/components/account/manageusers";
 import NewNotification from "@/components/account/notification";
 import { ManageSW } from "@/components/PWA/managesw";
+import PageSettings from "@/components/pagesettings";
+import { Section } from "@/components/home/section";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -47,6 +49,19 @@ const AboutPage = async () => {
       <div>{"Adminok: " + admins.join(", ")}</div>
       <br />
       <br />
+
+      {selfUser.permissions.includes("admin") ? (
+        <Section
+          title="Oldalbeállítások"
+          dropdownable={true}
+          defaultStatus="closed"
+        >
+          <PageSettings />
+        </Section>
+      ) : (
+        <></>
+      )}
+
       {(await hasPermission(selfUser.email, "getUsers")) ? (
         <ManageUsers selfUser={selfUser} initialUsers={await getUsers()} />
       ) : (

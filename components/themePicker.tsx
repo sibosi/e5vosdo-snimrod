@@ -324,7 +324,7 @@ export const ThemeOptions = () => {
       {templates.map((template) => (
         <div
           key={template.name}
-          className="rounded-lg bg-selfprimary-100 p-2 text-center"
+          className="max-w-min rounded-lg bg-selfprimary-100 p-2 text-center"
           onClick={() => {
             localStorage.setItem("primaryHue", String(template.primary[0]));
             localStorage.setItem("primaryChroma", String(template.primary[1]));

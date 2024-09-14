@@ -778,7 +778,7 @@ export const apireq = {
   getMatches: { req: getMatches, perm: ["user"] },
   updateMatch: { req: updateMatch, perm: ["admin"] },
   getComingMatch: { req: getComingMatch, perm: ["user"] },
-};
+} as const;
 
 export const apioptions = Object.keys(apireq) as (keyof typeof apireq)[];
 

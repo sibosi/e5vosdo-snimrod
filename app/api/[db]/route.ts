@@ -22,7 +22,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
   }
 
   const gate = context.params.db;
-  if (apioptions.includes(gate) === false) {
+  if (apioptions.includes(gate as any) === false) {
     return NextResponse.json(
       { error: "Invalid API endpoint" },
       { status: 400 },
@@ -35,10 +35,10 @@ export const GET = async (request: Request, context: { params: Params }) => {
   }
 
   const userPermissionsSet = new Set(user.permissions);
-  const gatePermissions = new Set(apireq[gate as apireqType["gate"]].perm);
+  const gatePermissions = new Set(apireq[gate as apireqType].perm);
 
   if (
-    apireq[gate as apireqType["gate"]].perm != null &&
+    apireq[gate as apireqType].perm != null &&
     !Array.from(gatePermissions).some((item) => userPermissionsSet.has(item))
   ) {
     return NextResponse.json(
@@ -58,7 +58,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
   }
 
   try {
-    const data = await defaultApiReq(gate as apireqType["gate"], bodyData);
+    const data = await defaultApiReq(gate as apireqType, bodyData);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching events:", error);

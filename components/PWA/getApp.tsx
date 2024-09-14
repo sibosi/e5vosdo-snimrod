@@ -59,6 +59,20 @@ const showIosInstallModal = () => {
   return isIos() && !isInStandaloneMode();
 };
 
+function getBrowser() {
+  const userAgent = window.navigator.userAgent;
+  if (userAgent.indexOf("Firefox") > -1) return "firefox";
+  else if (userAgent.indexOf("SamsungBrowser") > -1) return "samsung";
+  else if (userAgent.indexOf("Opera") > -1 || userAgent.indexOf("OPR") > -1)
+    return "opera";
+  else if (userAgent.indexOf("Trident") > -1) return "ie";
+  else if (userAgent.indexOf("Edge") > -1) return "edge";
+  else if (userAgent.indexOf("Chrome") > -1) return "chrome";
+  else if (userAgent.indexOf("Safari") > -1) return "safari";
+  else if (userAgent.indexOf("Arc") > -1) return "arc";
+  else return undefined;
+}
+
 const InstallPWAButton = ({ size }: { size?: "small" | "medium" }) => {
   const deferredPrompt = usePWAInstallPrompt();
   const [isVisible, setIsVisible] = useState(false);
@@ -120,24 +134,111 @@ const InstallPWAButton = ({ size }: { size?: "small" | "medium" }) => {
           onClose={() => setModalOpen(false)}
           className="text-foreground"
         >
-          <ModalContent>
+          <ModalContent className="text-lg">
             <ModalHeader>
-              Hogyan telepítsd az alkalmazást iOS eszközödön?
+              App telepítéséhez iOS-en, {getBrowser()} böngészőben
             </ModalHeader>
-            <ModalBody>
-              <p>
-                1. Nyomd meg a <strong>Megosztás</strong> gombot az alul lévő
-                navigációs sávon.
-              </p>
-              <p>
-                2. Válaszd ki az <strong>Hozzáadás a kezdőképernyőhöz</strong>{" "}
-                opciót.
-              </p>
-              <p>
-                3. Erősítsd meg az <strong>Hozzáadás</strong> gomb
-                megnyomásával.
-              </p>
-            </ModalBody>
+            {{
+              safari: (
+                <ModalBody>
+                  <p className="flex gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="25"
+                      height="25"
+                      fill="currentColor"
+                      className="bi bi-box-arrow-up m-auto min-w-max"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"
+                      />
+                    </svg>
+                    Nyomd meg a megosztás gombot az alul lévő navigációs sávon.
+                  </p>
+                  <p className="flex gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="25"
+                      height="25"
+                      fill="currentColor"
+                      className="bi bi-plus-square m-auto min-w-max"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                    </svg>
+                    <span>
+                      Keresd meg és válaszd ki az{" "}
+                      <strong>Alkalmazás hozzáadása</strong> opciót.
+                    </span>
+                  </p>
+                  <p>
+                    Erősítsd meg az <strong>Hozzáadás</strong> gomb
+                    megnyomásával.
+                  </p>
+                </ModalBody>
+              ),
+              chrome: (
+                <ModalBody>
+                  <p className="flex gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="25"
+                      height="25"
+                      fill="currentColor"
+                      className="bi bi-box-arrow-up m-auto min-w-max"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"
+                      />
+                    </svg>
+                    Nyomd meg a megosztás gombot a jobb felső sarokban.
+                  </p>
+                  <p className="flex gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="25"
+                      height="25"
+                      fill="currentColor"
+                      className="bi bi-plus-square m-auto min-w-max"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                    </svg>
+                    <span>
+                      Keresd meg és válaszd ki az{" "}
+                      <strong>Alkalmazás hozzáadása</strong> opciót.
+                    </span>
+                  </p>
+                  <p>
+                    Erősítsd meg az <strong>Hozzáadás</strong> gomb
+                    megnyomásával.
+                  </p>
+                </ModalBody>
+              ),
+            }[getBrowser() as "safari"] || (
+              <ModalBody>
+                <p>
+                  Az alkalmazás telepítéséhez nyomd meg a{" "}
+                  <strong>megosztás</strong> gombot az alul lévő navigációs
+                  sávon, majd válaszd ki az{" "}
+                  <strong>Alkalmazás hozzáadása</strong> opciót.
+                </p>
+              </ModalBody>
+            )}
             <ModalFooter>
               <Button onClick={() => setModalOpen(false)}>Bezárás</Button>
             </ModalFooter>

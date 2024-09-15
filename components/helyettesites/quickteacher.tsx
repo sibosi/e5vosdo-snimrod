@@ -101,12 +101,18 @@ export const QuickTeachers = () => {
             onClose={() => setSelectedEvent(null)}
           >
             <ModalContent>
-              <ModalBody>
+              <ModalBody className="text-foreground">
                 <p>
                   {"🕒 " +
-                    ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"][
-                      new Date(selectedEvent.date).getDay()
-                    ] +
+                    [
+                      "Vasárnap",
+                      "Hétfő",
+                      "Kedd",
+                      "Szerda",
+                      "Csütörtök",
+                      "Péntek",
+                      "Szombat",
+                    ][new Date(selectedEvent.date).getDay()] +
                     " " +
                     selectedEvent.hour +
                     ". ó"}

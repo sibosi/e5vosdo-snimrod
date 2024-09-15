@@ -119,7 +119,7 @@ VALUES (
     ),
     (
         'Walk The Wish',
-        'szeptember 15. 15:30',
+        'szeptember 20. 15:30',
         '2024-09-15 15:30',
         '2024-09-16',
         '/events/walkthewish.jpg',
@@ -134,6 +134,15 @@ VALUES (
         '/events/9golyatabor.jpg',
         NULL,
         '["9. évf", "tábor"]'
+    ),
+    (
+        'Zene világnapja',
+        'október 1.',
+        '2024-10-01',
+        '2024-10-02',
+        '/events/ZVN.jpeg',
+        NULL,
+        '["zene"]'
     ),
     (
         'Eötvös napok',

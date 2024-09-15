@@ -11,6 +11,8 @@ import { Events } from "@/components/events";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { getAuth } from "@/db/dbreq";
 import TimetableDay from "@/components/timetable/timetableday";
+import FreeRooms from "@/components/freeRooms";
+import Welcome from "@/components/home/welcome";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -38,6 +40,8 @@ export default async function Home() {
         )}
       </div>
 
+      <Welcome />
+
       <Section title="Órarend" dropdownable={true}>
         {0 ? (
           selfUser ? (
@@ -47,6 +51,20 @@ export default async function Home() {
           )
         ) : (
           <p>Jelenleg nem elérhető az órarended. Kérjük, nézz vissza később!</p>
+        )}
+      </Section>
+
+      <Section
+        title="Szabad teremkereső"
+        dropdownable={true}
+        defaultStatus="closed"
+      >
+        {0 ? (
+          <FreeRooms />
+        ) : (
+          <p>
+            Jelenleg nem elérhető a teremkereső. Kérjük, nézz vissza később!
+          </p>
         )}
       </Section>
 

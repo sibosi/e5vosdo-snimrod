@@ -1,5 +1,6 @@
 import { clubsConfig, clubsOrder } from "@/config/groups";
 import PopupCards from "@/components/popupcards";
+import { Alert } from "@/components/home/alert";
 
 function sortClubs() {
   const sortedClubs = new Set();
@@ -18,6 +19,10 @@ export default function ClubsPage() {
       <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
         Klubok és szakkörök
       </h1>
+
+      <Alert className="border-selfprimary-300 bg-selfprimary-100">
+        A kártyákra kattintva további információkat találsz a klubokról.
+      </Alert>
 
       <PopupCards cards={sortClubs()} />
     </>

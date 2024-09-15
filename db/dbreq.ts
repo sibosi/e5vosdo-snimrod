@@ -11,6 +11,30 @@ webPush.setVapidDetails(
   privateVapidKey,
 );
 
+export interface PageSettingsType {
+  id: number;
+  name: string;
+  headspace: 0 | 1;
+  livescore: number;
+}
+
+export interface Match {
+  id: number;
+  url: string;
+  team1: string;
+  team2: string;
+  team_short1: string;
+  team_short2: string;
+  score1: number;
+  score2: number;
+  image1: string;
+  image2: string;
+  status: string;
+  time: string;
+  start_time: string;
+  end_time: string;
+}
+
 export interface User {
   name: string;
   username: string;
@@ -110,9 +134,7 @@ export async function hasPermission(
   if (!email) return false;
   const user = (await getUser(email)) as User;
   const userPermissionsSet = new Set(user.permissions);
-  const functionPermissions = new Set(
-    apireq[functionname as apireqType["gate"]].perm,
-  );
+  const functionPermissions = new Set(apireq[functionname as apireqType].perm);
 
   const response = Array.from(functionPermissions).some((item) =>
     userPermissionsSet.has(item),
@@ -527,7 +549,13 @@ export async function editMySettings({
 export async function getPageSettings() {
   return (
     (await dbreq(`SELECT * FROM settings WHERE name = "now";`)) as any
-  )[0];
+  )[0] as PageSettingsType;
+}
+
+export async function editPageSettings(settings: PageSettingsType) {
+  const REQ1 = `UPDATE settings SET headspace = ${settings.headspace}, livescore = ${settings.livescore} WHERE name = 'now';`;
+
+  return await dbreq(REQ1);
 }
 
 export async function getMyClassTimetable(EJG_class: string) {
@@ -578,7 +606,13 @@ export async function editDefaultGroup(group: number | null) {
 }
 
 export async function getMatch(id: number) {
-  return ((await dbreq(`SELECT * FROM matches WHERE id = ${id};`)) as any)[0];
+  return (
+    (await dbreq(`SELECT * FROM matches WHERE id = ${id};`)) as any
+  )[0] as Match;
+}
+
+export async function getMatches() {
+  return (await dbreq(`SELECT * FROM matches;`)) as Match[];
 }
 
 export async function getComingMatch() {
@@ -586,16 +620,21 @@ export async function getComingMatch() {
   return await getMatch(matchId);
 }
 
-export async function updateMatch(id: number, match: any) {
+export async function updateMatch(id: number, match: Match) {
+  // If there is no match with the given id, make a new one
+  if (!(await getMatch(id))) {
+    const REQ1 = `INSERT INTO matches (id, url, team1, team2, team_short1, team_short2, score1, score2, status, time, start_time, end_time) VALUES (${id}, '${match.url}', '${match.team1}', '${match.team2}', '${match.team_short1}', '${match.team_short2}', ${match.score1}, ${match.score2}, '${match.status}', '${match.time}', '${match.start_time}', '${match.end_time}');`;
+    return await dbreq(REQ1);
+  }
   const sendNotification = true;
   const REQ1 = `UPDATE matches SET team1 = '${match.team1}', team2 = '${
     match.team2
-  }', team_short1 = '${match.teamShort1}', team_short2 = '${
-    match.teamShort2
+  }', team_short1 = '${match.team_short1}', team_short2 = '${
+    match.team_short2
   }', score1 = ${match.score1}, score2 = ${match.score2}, status = '${
     match.status
-  }', time = "${match.time}", start_time = '${match.startTime}', end_time = '${
-    match.endTime || match.startTime
+  }', time = "${match.time}", start_time = '${match.start_time}', end_time = '${
+    match.end_time || match.start_time
   }' WHERE id = ${id};`;
 
   if (sendNotification) {
@@ -604,8 +643,8 @@ export async function updateMatch(id: number, match: any) {
     const notificationPermission = "tester";
     if (match.status === "Finished" && oldMatch.status !== "Finished") {
       console.log("Sending notification - Game finished");
-      const title = `${match.teamShort1} - ${match.teamShort2}`;
-      const message = `A meccsnek vége. Az eredmény: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const title = `${match.team_short1} - ${match.team_short2}`;
+      const message = `A meccsnek vége. Az eredmény: ${match.team_short1} ${match.score1} - ${match.score2} ${match.team_short2}`;
       const receiving_emails = await getUsersEmailByPermission(
         notificationPermission,
       );
@@ -623,7 +662,7 @@ export async function updateMatch(id: number, match: any) {
       console.log("Notification sent - Game finished");
     } else if (match.status === "Live" && oldMatch.status !== "Live") {
       console.log("Sending notification - Game started");
-      const title = `${match.teamShort1} - ${match.teamShort2}`;
+      const title = `${match.team_short1} - ${match.team_short2}`;
       const message = `A meccs elkezdődött! ${match.team1} vs ${match.team2}`;
       const receiving_emails = await getUsersEmailByPermission(
         notificationPermission,
@@ -642,8 +681,8 @@ export async function updateMatch(id: number, match: any) {
       console.log("Notification sent - Game started");
     } else if (match.score1 !== oldMatch.score1) {
       console.log("Sending notification - Goal");
-      const title = `Gól! | ${match.teamShort1} - ${match.teamShort2}`;
-      const message = `${match.team1} gólt lőtt! Az aktuális állás: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const title = `Gól! | ${match.team_short1} - ${match.team_short2}`;
+      const message = `${match.team1} gólt lőtt! Az aktuális állás: ${match.team_short1} ${match.score1} - ${match.score2} ${match.team_short2}`;
       const receiving_emails = await getUsersEmailByPermission(
         notificationPermission,
       );
@@ -661,8 +700,8 @@ export async function updateMatch(id: number, match: any) {
       console.log("Notification sent - Goal");
     } else if (match.score2 !== oldMatch.score2) {
       console.log("Sending notification - Goal");
-      const title = `Gól! | ${match.teamShort1} - ${match.teamShort2}`;
-      const message = `${match.team2} gólt lőtt! Az aktuális állás: ${match.teamShort1} ${match.score1} - ${match.score2} ${match.teamShort2}`;
+      const title = `Gól! | ${match.team_short1} - ${match.team_short2}`;
+      const message = `${match.team2} gólt lőtt! Az aktuális állás: ${match.team_short1} ${match.score1} - ${match.score2} ${match.team_short2}`;
       const receiving_emails = await getUsersEmailByPermission(
         notificationPermission,
       );
@@ -685,71 +724,26 @@ export async function updateMatch(id: number, match: any) {
   return await dbreq(REQ1);
 }
 
-export interface apireqType {
-  gate:
-    | "getUsers"
-    | "getUsersName"
-    | "getUser"
-    | "getAllUsersNameByEmail"
-    | "getAuth"
-    | "hasPermission"
-    | "getUsersEmail"
-    | "getEvents"
-    | "getStudentUsers"
-    | "getStudentUsersEmail"
-    | "getAdminUsers"
-    | "getAdminUsersEmail"
-    | "updateUser"
-    | "addUserPermission"
-    | "removeUserPermissions"
-    | "getNotificationById"
-    | "getUserNotificationsIds"
-    | "getUserNotifications"
-    | "markAsRead"
-    | "newNotificationByEmails"
-    | "newNotificationByNames"
-    | "checkPushAuth"
-    | "editMySettings"
-    | "getMyClassTimetable"
-    | "setHiddenLessons"
-    | "getDefaultGroup"
-    | "editDefaultGroup"
-    | "addTicket"
-    | "deleteTicket";
+export async function getFreeRooms(
+  day: "H" | "K" | "SZ" | "CS" | "P",
+  time: string,
+) {
+  const rooms = (
+    (await dbreq(`SELECT DISTINCT room FROM timetable;`)) as { room: string }[]
+  ).map((room) => room.room);
+
+  const occupiedRooms = (
+    (await dbreq(
+      `SELECT DISTINCT room FROM timetable WHERE day = '${day}' AND start_time = '${time}';`,
+    )) as { room: string }[]
+  ).map((room) => room.room);
+
+  return rooms.filter((room) => !occupiedRooms.includes(room));
 }
-export const apioptions = [
-  "getUsers",
-  "getUsersName",
-  "getUser",
-  "getAllUsersNameByEmail",
-  "getAuth",
-  "hasPermission",
-  "getUsersEmail",
-  "getEvents",
-  "getStudentUsers",
-  "getStudentUsersEmail",
-  "getAdminUsers",
-  "getAdminUsersEmail",
-  "updateUser",
-  "addUserPermission",
-  "removeUserPermissions",
-  "getNotificationById",
-  "getUserNotificationsIds",
-  "getUserNotifications",
-  "markAsRead",
-  "newNotificationByEmails",
-  "newNotificationByNames",
-  "checkPushAuth",
-  "editMySettings",
-  "getMyClassTimetable",
-  "setHiddenLessons",
-  "getDefaultGroup",
-  "editDefaultGroup",
-  "addTicket",
-  "deleteTicket",
-];
 
 export const apireq = {
+  getPageSettings: { req: getPageSettings, perm: ["user"] },
+  editPageSettings: { req: editPageSettings, perm: ["admin"] },
   getUsers: { req: getUsers, perm: ["admin", "tester"] },
   getUsersName: { req: getUsersName, perm: ["student"] },
   getUser: { req: getUser, perm: [] },
@@ -779,10 +773,22 @@ export const apireq = {
   editDefaultGroup: { req: editDefaultGroup, perm: ["user"] },
   addTicket: { req: addTicket, perm: ["admin"] },
   deleteTicket: { req: deleteTicket, perm: ["admin"] },
-};
+  getFreeRooms: { req: getFreeRooms, perm: ["user"] },
+  getMatch: { req: getMatch, perm: ["user"] },
+  getMatches: { req: getMatches, perm: ["user"] },
+  updateMatch: { req: updateMatch, perm: ["admin"] },
+  getComingMatch: { req: getComingMatch, perm: ["user"] },
+} as const;
+
+export const apioptions = Object.keys(apireq) as (keyof typeof apireq)[];
+
+export type apireqType = (typeof apioptions)[number];
 
 export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getUsers") return await getUsers();
+  else if (req === "getPageSettings") return await getPageSettings();
+  else if (req === "editPageSettings")
+    return await editPageSettings(body.settings);
   else if (req === "getAllUsersNameByEmail")
     return await getAllUsersNameByEmail();
   else if (req === "getUsersName") return await getUsersName();
@@ -835,5 +841,18 @@ export const defaultApiReq = async (req: string, body: any) => {
   } else if (req === "deleteTicket") {
     const { email, ticket } = body;
     return await deleteTicket(email, ticket);
+  } else if (req === "getFreeRooms") {
+    const { day, time } = body;
+    return await getFreeRooms(day, time);
+  } else if (req === "getMatch") {
+    const { id } = body;
+    return await getMatch(id);
+  } else if (req === "getMatches") {
+    return await getMatches();
+  } else if (req === "updateMatch") {
+    const { id, match } = body;
+    return await updateMatch(id, match);
+  } else if (req === "getComingMatch") {
+    return await getComingMatch();
   } else return "No such request";
 };

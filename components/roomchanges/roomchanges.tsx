@@ -1,57 +1,92 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import oldRoomchangesConfig from "@/public/storage/roomchanges.json";
 import { useState } from "react";
 import { Button } from "@nextui-org/react";
 
-type QuickRoomchangesConfig = [
-  string, // Date string
-  Array<[string, [Array<[number, string, string, string]>]]>, // Array of tuples
-][];
+type RoomChange = [number, string, string, string];
+type ClassRoomChanges = {
+  [key: string]: Record<string, RoomChange[]>;
+  all: Record<string, RoomChange[]>;
+};
+export type RoomchangesConfig = Record<string, ClassRoomChanges>;
 
-const roomchangesConfig = oldRoomchangesConfig as QuickRoomchangesConfig;
+const roomchangesConfig = oldRoomchangesConfig as unknown as RoomchangesConfig;
 
 const today = new Date();
 const dd = String(today.getDate()).padStart(2, "0");
-const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
 const yyyy = today.getFullYear();
 
 const today_date = yyyy + "." + mm + "." + dd;
 
 export const RoomChanges = () => {
-  let todayRoomchangesConfig: any = null;
+  const [date, setDate] = useState(new Date());
 
-  roomchangesConfig.map((day, dayIndex) => {
-    if (day[0] == today_date) {
-      todayRoomchangesConfig = roomchangesConfig[dayIndex];
-    }
-  });
+  function changeDate(days: number) {
+    setDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(newDate.getDate() + days);
+      return newDate;
+    });
+  }
 
-  const [selectedGroupIndex, setSelect] = useState(0);
+  function formatDate() {
+    return date
+      .toLocaleDateString("hu")
+      .replaceAll(". ", "/")
+      .replaceAll(".", "")
+      .replaceAll("/", ".");
+  }
+
+  const [selectedGroup, setSelect] = useState<string | null>(null);
+  const [todayRoomchangesConfig, setTodayRoomchangesConfig] =
+    useState<ClassRoomChanges | null>(null);
+
+  useEffect(() => {
+    setSelect(null);
+    if (roomchangesConfig[formatDate()])
+      setTodayRoomchangesConfig(roomchangesConfig[formatDate()]);
+    else setTodayRoomchangesConfig(null);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date]);
 
   return (
     <div className="text-foreground">
+      <p className="pb-1 text-sm font-medium">
+        <button onClick={() => changeDate(-1)}>{"<"}&nbsp;</button>
+        {formatDate()}
+        <button onClick={() => changeDate(1)}>
+          &nbsp;
+          {">"}
+        </button>
+      </p>
+      {/* Osztályok neveinek megjelenítése, ha van az adott dátumhoz tartozó helyettesítés */}
       <div className="flex gap-2 overflow-auto py-2 scrollbar-hide">
         {todayRoomchangesConfig &&
-          todayRoomchangesConfig[1].map((group: any, groupIndex: any) => (
+          Object.keys(todayRoomchangesConfig).map((group, groupIndex) => (
             <Button
               key={groupIndex}
               size="sm"
-              onClick={() => setSelect(groupIndex)}
+              onClick={() => setSelect(group)}
               className={`text-md rounded-xl ${
-                selectedGroupIndex == groupIndex
+                selectedGroup === group
                   ? "bg-selfprimary-400"
                   : "bg-selfprimary-200"
               } `}
             >
-              {group[0]}
+              {group}
             </Button>
           ))}
       </div>
+
+      {/* Az adott osztályhoz tartozó helyettesítések megjelenítése */}
       <div className="grid max-w-full grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {todayRoomchangesConfig &&
-          todayRoomchangesConfig[1][selectedGroupIndex][1].map(
-            (change: any, changeIndex: any) => (
+          selectedGroup &&
+          todayRoomchangesConfig[selectedGroup].all.map(
+            (change: RoomChange, changeIndex: number) => (
               <p
                 key={changeIndex}
                 className="min-w-fit rounded-xl bg-default-300 px-3 py-1"
@@ -67,6 +102,10 @@ export const RoomChanges = () => {
             ),
           )}
       </div>
+
+      {!todayRoomchangesConfig && (
+        <p>A mai napon nincsenek teremcsere adatok.</p>
+      )}
     </div>
   );
 };

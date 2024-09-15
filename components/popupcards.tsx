@@ -8,6 +8,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  Chip,
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import { Link } from "@/config/groups";
@@ -30,6 +31,7 @@ type CardProps = {
   popup?: boolean;
   children?: React.ReactNode;
   links?: Link[];
+  new?: boolean;
 };
 
 const iconSize = 20; // Icon size in pixels
@@ -67,11 +69,16 @@ const PopupCards = ({
   const size = "5xl";
   return (
     <>
-      <div className="grid grid-cols-2 justify-items-center gap-2 border-b-8 border-transparent text-left md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 justify-items-center gap-2 text-left md:grid-cols-3 lg:grid-cols-4">
         {cards.map((card, index) => (
           <div
             key={"CardList" + index}
-            className="card mb-2 h-auto w-40 border-1 border-foreground-100 bg-foreground-50 text-foreground sm:w-60"
+            className="card mb-2 h-auto w-40 border-1 border-selfprimary-200 bg-selfprimary-bg text-foreground shadow-md sm:w-60"
+            onClick={() =>
+              typeof card.details === "string" &&
+              showingCard === null &&
+              setShowingCard(card)
+            }
           >
             {typeof card.image === "string" && (
               <figure className="relative h-unit-40 w-40 sm:h-unit-60 sm:w-60">
@@ -83,6 +90,11 @@ const PopupCards = ({
                   alt="image"
                   priority={true}
                 />
+                {card.new && (
+                  <Chip className="absolute right-2 top-2 bg-selfsecondary-300 shadow-md">
+                    Új
+                  </Chip>
+                )}
               </figure>
             )}
 
@@ -163,67 +175,54 @@ const PopupCards = ({
                   }
                 </div>
               )}
-
-              <div className="card-actions justify-end">
-                <div className="flex flex-wrap gap-3">
-                  {typeof card.details === "string" ? (
-                    <>
-                      <Button
-                        size={buttonSize == undefined ? "md" : buttonSize}
-                        onPress={() => setShowingCard(card)}
-                        // className={className}
-                      >
-                        Részletek
-                      </Button>
-                    </>
-                  ) : null}
-                </div>
-              </div>
             </div>
           </div>
         ))}
       </div>
-      {showingCard !== null && (
-        <Modal
-          size={size}
-          isOpen={showingCard !== null}
-          onClose={() => setShowingCard(null)}
-        >
-          <ModalContent className="max-h-[95vh] overflow-auto">
-            <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-foreground">
-              {showingCard.title}
-            </ModalHeader>
-            <ModalBody>
-              <div className="overflow-auto sm:flex">
-                <div className="relative w-auto justify-center p-14 sm:w-56 sm:justify-normal sm:p-28">
-                  {typeof showingCard.image === "string" && (
-                    <Image
-                      fill={true}
-                      className="max-h-fit rounded-md object-contain"
-                      src={showingCard.image}
-                      alt="image"
-                      priority={true}
-                    />
-                  )}
-                </div>
-                <div className="overflow-auto fill-overlay px-6 py-6 text-left text-foreground md:max-h-[100%]">
-                  <p className="text-md overflow-auto whitespace-pre-line pb-4">
-                    {showingCard.details}
-                  </p>
-                </div>
+
+      <Modal
+        size={size}
+        isOpen={showingCard !== null}
+        onClose={() => setShowingCard(null)}
+        onClick={(e) => {
+          e.stopPropagation();
+          console.log("clicked");
+        }}
+      >
+        <ModalContent className="max-h-[95vh] overflow-auto bg-selfprimary-bg">
+          <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-foreground">
+            {showingCard?.title}
+          </ModalHeader>
+          <ModalBody>
+            <div className="overflow-auto sm:flex">
+              <div className="relative w-auto justify-center p-14 sm:w-56 sm:justify-normal sm:p-28">
+                {typeof showingCard?.image === "string" && (
+                  <Image
+                    fill={true}
+                    className="max-h-fit rounded-md object-contain"
+                    src={showingCard.image}
+                    alt="image"
+                    priority={true}
+                  />
+                )}
               </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                className="fill-selfprimary"
-                onPress={() => setShowingCard(null)}
-              >
-                Ok
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      )}
+              <div className="overflow-auto fill-overlay px-6 py-6 text-left text-foreground md:max-h-[100%]">
+                <p className="text-md overflow-auto whitespace-pre-line pb-4">
+                  {showingCard?.details}
+                </p>
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              className="bg-selfprimary-300"
+              onClick={() => setShowingCard(null)}
+            >
+              Ok
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

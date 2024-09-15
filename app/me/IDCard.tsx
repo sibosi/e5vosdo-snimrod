@@ -10,6 +10,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@nextui-org/react";
+import { Alert } from "@/components/home/alert";
 
 const IDCard = ({
   EJG_code,
@@ -30,7 +31,7 @@ const IDCard = ({
 
   return (
     <div className={"flex max-w-min p-4 " + (center ? "mx-auto" : "")}>
-      <Button onClick={handleGenerate} className="w-full">
+      <Button onClick={handleGenerate} className="w-full bg-selfprimary-200">
         {codeType === "both"
           ? "QR kód és vonalkód"
           : codeType === "qr"
@@ -43,7 +44,7 @@ const IDCard = ({
         isOpen={showQr || showBarcode}
         onClose={handleGenerate}
         size="sm"
-        className="mx-5 overflow-auto"
+        className="mx-5 overflow-auto bg-selfprimary-bg text-foreground"
         placement="center"
       >
         <ModalContent>
@@ -56,11 +57,18 @@ const IDCard = ({
           </ModalHeader>
           <ModalBody>
             <p>A kód az EJG azonosítód alapján készült.</p>
+            <Alert className="border-danger-400 bg-danger-100">
+              Menzán és kiléptetéskor a kód nem használható, csak a kártya. (A
+              lézeres vonalkódolvasók nem tudják beolvasni a kijelzőn található
+              kódokat.)
+            </Alert>
             {showQr && <QrCodeGenerator value={EJG_code} />}
             {showBarcode && <BarcodeGenerator value={EJG_code} />}
           </ModalBody>
           <ModalFooter>
-            <Button onClick={handleGenerate}>Bezárás</Button>
+            <Button className="bg-selfprimary-200" onClick={handleGenerate}>
+              Bezárás
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

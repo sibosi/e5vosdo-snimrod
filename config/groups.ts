@@ -21,6 +21,7 @@ interface Group {
 }
 
 export const clubsOrder: string[] = [
+  "Eötvös Podcast",
   "Eötvös Diák",
   "Eötvös Média",
   "ZöldBiz",
@@ -401,6 +402,20 @@ export const clubsConfig: Group[] = [
         title: "Eötvös Alkotó Műhely Weboldal",
         value: "https://sites.google.com/e5vos.hu/e5vosalkotomuhely/",
         type: "website",
+      },
+    ],
+  },
+  {
+    title: "Eötvös Podcast",
+    details:
+      "Az első műhelyfoglalkozásokon meghívott újságírók segítségével és saját műsorok készítésén keresztül mélyebben megismerjük a műfajt. Tervezünk rövidebb interjúkat és elmélyülős portrébeszélgetéseket, eötvösös hírműsort és egy-egy témában elmélyülő oktatási podcastet. Ha szívesen lennél állandó műsorkészítő várunk szeretettel Jelentkezhetsz egyénileg vagy két három főből álló műsorstábbal is. A szakkör tagjaival havonta egyszer találkozunk egy szombati műhelymunkára.",
+    image: "/groups/podcast.png",
+    description: "",
+    links: [
+      {
+        title: "Eötvös Podcast Instagram",
+        value: "https://www.instagram.com/e5_podcast/",
+        type: "instagram",
       },
     ],
   },

@@ -17,19 +17,91 @@ import CacheManager from "@/components/PWA/cacheManager";
 import VersionManager from "@/components/PWA/versionManager";
 import {
   loadPalette,
+  ThemeOptions,
   ThemePickerPrimary,
   ThemePickerSecondary,
   ThemeTemplatePrimary,
   ThemeTemplateSecondary,
 } from "@/components/themePicker";
+import { Alert } from "@/components/home/alert";
 
 function updateCacheMethod(cacheMethod: "always" | "offline" | "never") {
-  if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({
-      action: "updateCacheMethod",
-      cacheMethod: cacheMethod,
-    });
-  }
+  const request = indexedDB.open("SW-settings", 1);
+
+  console.log("2/2 Cache method is updating to:", cacheMethod);
+
+  request.onupgradeneeded = (event: any) => {
+    const db = (event.target as IDBRequest).result;
+    if (!db.objectStoreNames.contains("settings")) {
+      db.createObjectStore("settings", { keyPath: "id" });
+    }
+  };
+
+  console.log("2/3 Cache method is updating to:", cacheMethod);
+
+  request.onsuccess = (event) => {
+    console.log(event);
+    const db = (event.target as IDBRequest).result;
+
+    console.log(db);
+
+    console.log("2/4 Cache method is updating to:", cacheMethod);
+
+    const transaction = db.transaction(["settings"], "readwrite");
+    const store = transaction.objectStore("settings");
+
+    console.log(transaction, store);
+
+    const data = {
+      id: "cacheMethod",
+      value: cacheMethod,
+    };
+
+    const putRequest = store.put(data);
+
+    console.log("2/5 Cache method is updating to:", cacheMethod);
+
+    putRequest.onsuccess = () => {
+      console.log("Cache method updated in IndexedDB:", cacheMethod);
+    };
+
+    putRequest.onerror = (err: any) => {
+      console.error("Error updating cache method:", err);
+    };
+  };
+
+  request.onerror = (event: any) => {
+    console.error(
+      "IndexedDB error:",
+      (event.target as IDBRequest).error?.message,
+    );
+  };
+}
+
+function getCacheMethod() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("SW-settings", 1);
+
+    request.onsuccess = (event: any) => {
+      const db = (event.target as IDBRequest).result;
+      const transaction = db.transaction(["settings"], "readonly");
+      const store = transaction.objectStore("settings");
+
+      const getRequest = store.get("cacheMethod");
+
+      getRequest.onsuccess = () => {
+        resolve(getRequest.result ? getRequest.result.value : null);
+      };
+
+      getRequest.onerror = (err: any) => {
+        reject(err);
+      };
+    };
+
+    request.onerror = (event: any) => {
+      reject((event.target as IDBRequest).error?.message);
+    };
+  });
 }
 
 const SettingsSection = ({
@@ -70,19 +142,63 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [isMaterialBg, setIsMaterialBg] = useState<boolean>(false);
   const [cacheMethod, setCacheMethod] = useState<
     "always" | "offline" | "never"
-  >("always");
+  >();
 
   useEffect(() => {
-    setCacheMethod((localStorage.getItem("cacheMethod") as any) ?? "always");
+    getCacheMethod().then((method) => {
+      setCacheMethod(
+        method === "always" || method === "offline" || method === "never"
+          ? method
+          : "always",
+      );
+    });
+
     setIsMaterialBg(
       localStorage.getItem("materialBg") === "true" ? true : false,
     );
   }, []);
 
   useEffect(() => {
-    updateCacheMethod(cacheMethod as any);
-    localStorage.setItem("cacheMethod", cacheMethod);
+    if (cacheMethod) {
+      updateCacheMethod(cacheMethod as any);
+      console.log("Cache method updated3:", cacheMethod);
+      // send a message to the service worker
+      navigator.serviceWorker.controller?.postMessage({
+        type: "cacheMethodUpdated",
+      });
+    }
   }, [cacheMethod]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (
+        !(EJG_code &&
+        EJG_code.length === 13 &&
+        nickname &&
+        (EJG_code !== selfUser.EJG_code ||
+          nickname !== selfUser.nickname ||
+          menu !== selfUser.food_menu) &&
+        !nicknameError
+          ? false
+          : true)
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [
+    EJG_code,
+    menu,
+    nickname,
+    nicknameError,
+    selfUser.EJG_code,
+    selfUser.food_menu,
+    selfUser.nickname,
+  ]);
 
   const [sureQuestion, setSureQuestion] = useState<boolean>(false);
 
@@ -120,11 +236,19 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
 
   return (
     <>
-      <div className="mx-auto max-w-xl gap-3 rounded-2xl bg-default-100 px-5 pb-16 pt-5">
+      <div className="mx-auto max-w-xl gap-3 rounded-2xl border-2 bg-transparent px-5 pb-16 pt-5">
         <p className="">
           Itt állíthatod a profilodat, és nézheted az oldalra vonatkozó
           beállításaidat.
         </p>
+
+        {EJG_code === "" && (
+          <Alert className="mt-2 border-selfsecondary-400 bg-selfsecondary-200">
+            Az EJG kódod még nincs megadva. Az EJG kódod nélkül nem tudod
+            használni az alkalmazás számos funkcióját, például az órarended
+            megtekintését és a beállításaid módosítását.
+          </Alert>
+        )}
 
         <SettingsSection title="">
           <table className="table gap-y-2">
@@ -202,7 +326,9 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 </th>
               </tr>
               <tr>
-                <th className="font-semibold">Menza menü:</th>
+                <th className="font-semibold">
+                  Menza menü <strong>az oldalunkon</strong>:
+                </th>
                 <th>
                   <RadioGroup
                     value={!["A", "B"].includes(menu) ? "?" : menu}
@@ -221,7 +347,13 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           </table>
         </SettingsSection>
 
-        <SettingsSection title="Értesítési preferenciák">
+        <ThemeOptions />
+
+        <SettingsSection
+          title="Értesítési preferenciák"
+          dropdownable={true}
+          defaultStatus="closed"
+        >
           Hamarosan
         </SettingsSection>
 

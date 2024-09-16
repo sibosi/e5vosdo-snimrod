@@ -120,8 +120,8 @@ VALUES (
     (
         'Walk The Wish',
         'szeptember 20. 15:30',
-        '2024-09-15 15:30',
-        '2024-09-16',
+        '2024-09-20 15:30',
+        '2024-09-21',
         '/events/walkthewish.jpg',
         NULL,
         '["jótékonyság"]'

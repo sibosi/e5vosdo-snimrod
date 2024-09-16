@@ -122,7 +122,8 @@ const PopupCards = ({
                             )[0]) && (
                           <div
                             key={"CardLink" + index}
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               openedLink === link
                                 ? setOpenedLink(null)
                                 : card.links?.filter(

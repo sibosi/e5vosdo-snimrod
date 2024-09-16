@@ -1,7 +1,7 @@
 import { getEvents } from "@/db/dbreq";
 import { NextResponse } from "next/server";
 
-const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
+const CACHE_DURATION = 1000 * 60 * 20; // 20 minutes
 let cachedData: any[];
 let lastUpdated: number;
 

@@ -220,7 +220,7 @@ export const ClassroomIcon = ({
         style={{
           opacity: 1,
           fill: "none",
-          stroke: "#000000",
+          stroke: "currentColor",
           strokeWidth: 2,
           strokeLinecap: "butt",
           strokeLinejoin: "miter",

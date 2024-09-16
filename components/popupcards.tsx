@@ -26,8 +26,8 @@ import {
 type CardProps = {
   title: string;
   image?: string;
-  details?: string;
-  description: string;
+  details: string;
+  description?: string;
   popup?: boolean;
   children?: React.ReactNode;
   links?: Link[];

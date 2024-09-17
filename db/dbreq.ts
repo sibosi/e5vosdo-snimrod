@@ -52,6 +52,8 @@ export interface User {
   hidden_lessons: number[];
   default_group: number | null;
   service_workers: any[];
+  push_perission: boolean;
+  push_about_games: boolean;
 }
 
 export type UserType = User;
@@ -518,13 +520,21 @@ export async function deleteTicket(email: string, ticket: string) {
 export async function editMySettings({
   settings,
 }: {
-  settings: { nickname: string; EJG_code: string; food_menu: string };
+  settings: {
+    nickname: string;
+    EJG_code: string;
+    food_menu: string;
+    push_perission?: boolean;
+    push_about_games?: boolean;
+  };
 }) {
   const user = await getAuth();
   if (!user) return "No user";
   const email = user?.email;
 
   addLog("editMySettings");
+
+  let requests: string[] = [];
 
   const valid_EJG_code = user.tickets.includes("EJG_code_edit")
     ? settings.EJG_code
@@ -537,13 +547,33 @@ export async function editMySettings({
     await removeTicket("EJG_code_edit");
   }
 
+  console.log(JSON.stringify(settings));
+
+  if (settings.push_perission !== undefined)
+    requests.push(
+      `UPDATE users SET push_perission = ${
+        settings.push_perission ? 1 : 0
+      } WHERE email = '${email}';`,
+    );
+
+  if (settings.push_about_games !== undefined)
+    requests.push(
+      `UPDATE users SET push_about_games = ${
+        settings.push_about_games ? 1 : 0
+      } WHERE email = '${email}';`,
+    );
+
   const REQ1 = `UPDATE users SET nickname = '${
     settings.nickname
   }', EJG_code = '${valid_EJG_code}', food_menu = ${
     settings.food_menu == null ? null : "'" + settings.food_menu + "'"
   } WHERE email = '${email}';`;
 
-  return await dbreq(REQ1);
+  requests.push(REQ1);
+  console.log(requests);
+  console.log(await multipledbreq(requests));
+
+  return null;
 }
 
 export async function getPageSettings() {
@@ -742,7 +772,7 @@ export async function getFreeRooms(
 }
 
 export const apireq = {
-  getPageSettings: { req: getPageSettings, perm: ["user"] },
+  getPageSettings: { req: getPageSettings, perm: [] },
   editPageSettings: { req: editPageSettings, perm: ["admin"] },
   getUsers: { req: getUsers, perm: ["admin", "tester"] },
   getUsersName: { req: getUsersName, perm: ["student"] },

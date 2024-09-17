@@ -9,6 +9,7 @@ import {
   ModalContent,
   Modal,
   ButtonGroup,
+  Switch,
 } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import VersionTable from "./versionTable";
@@ -212,6 +213,32 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
     return regex.test(code);
   };
 
+  async function save_settings({
+    settings,
+    reload,
+  }: {
+    settings: any;
+    reload?: boolean;
+  }) {
+    const response = await fetch("/api/editMySettings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ settings }),
+    });
+    if (response.status === 200) {
+      if (reload) {
+        alert("Sikeresen mentetted a beállításaidat!");
+        location.reload();
+      }
+      console.log(JSON.stringify({ settings }));
+      console.log(JSON.stringify(selfUser));
+    } else {
+      alert("Hiba történt a mentés során.");
+    }
+  }
+
   async function save() {
     const response = await fetch("/api/editMySettings", {
       method: "POST",
@@ -354,7 +381,30 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           dropdownable={true}
           defaultStatus="closed"
         >
-          Hamarosan
+          <div className="grid grid-cols-1 gap-2">
+            <Switch
+              defaultChecked={selfUser.push_perission}
+              isDisabled={true}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  Notification.requestPermission();
+                }
+              }}
+            >
+              Értesítések engedélyezése
+            </Switch>
+
+            <Switch
+              defaultChecked={selfUser.push_about_games}
+              onChange={(e) => {
+                save_settings({
+                  settings: { push_about_games: e.target.checked },
+                });
+              }}
+            >
+              Értesítések bajnokságokról (kosár, foci, stb.)
+            </Switch>
+          </div>
         </SettingsSection>
 
         <SettingsSection

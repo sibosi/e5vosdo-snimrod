@@ -38,7 +38,7 @@ export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
 
   const isDarkMode = theme
     ? theme === "dark"
-    : theme === "system"
+    : theme === "system" || theme === undefined
       ? window.matchMedia("(prefers-color-scheme: dark)").matches
       : localStorage.getItem("theme") === "dark";
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -11,7 +11,6 @@ import {
   ModalContent,
   ModalBody,
 } from "@nextui-org/react";
-import useSWR from "swr";
 import { Change, TeacherChange } from "@/app/api/route";
 
 const fetcher = async (url: string) => {
@@ -20,8 +19,12 @@ const fetcher = async (url: string) => {
   return res.json();
 };
 
-const getTeacherChangesByDate = (changesByTeacher: TeacherChange[]) => {
-  const changesByDate: { [date: string]: TeacherChange[] } = {};
+interface TeacherChangesByDate {
+  [date: string]: TeacherChange[];
+}
+
+function getTeacherChangesByDate(changesByTeacher: TeacherChange[]) {
+  const changesByDate: TeacherChangesByDate = {};
   let teachersByDate: { [date: string]: string[] } = {};
 
   changesByTeacher.forEach((teacher) => {
@@ -46,14 +49,30 @@ const getTeacherChangesByDate = (changesByTeacher: TeacherChange[]) => {
       });
     });
   });
-  return changesByDate;
-};
+
+  const sortedKeys = Object.keys(changesByDate).sort((a, b) =>
+    a.localeCompare(b),
+  );
+  const sortedChangesByDate: TeacherChangesByDate = {};
+  sortedKeys.forEach((key) => {
+    sortedChangesByDate[key] = changesByDate[key];
+  });
+
+  return sortedChangesByDate;
+}
 
 export const QuickTeachers = () => {
-  const { data: tableDataKhm, error } = useSWR("/api/", fetcher);
-  const isLoaded = !error && !!tableDataKhm;
+  const [tableData, setTableData] = useState<TeacherChangesByDate>({});
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const tableData = getTeacherChangesByDate(tableDataKhm as TeacherChange[]);
+  useEffect(() => {
+    fetcher("/api/")
+      .then((data: TeacherChange[]) => {
+        setTableData(getTeacherChangesByDate(data));
+        setIsLoaded(true);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
   const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
@@ -63,13 +82,14 @@ export const QuickTeachers = () => {
       className="h-auto w-auto rounded-lg text-foreground"
     >
       <React.Fragment>
-        {error && <p>Error fetching data</p>}
-        {!isLoaded && !error && <p>Loading...</p>}
-        {isLoaded && tableData && tableData.length ? (
-          Object.keys(tableData).map((date, dateIndex) => (
-            <div key={date} className="m-2 rounded-lg bg-selfprimary-50 p-2">
-              <h2 className="text-center text-foreground">
-                {date} -{" "}
+        {!isLoaded && <p>Loading...</p>}
+        {isLoaded && tableData && Object.keys(tableData).length ? (
+          Object.keys(tableData).map((date) => (
+            <div
+              key={date}
+              className="my-2 rounded-lg border-1 border-selfprimary-100 bg-selfprimary-bg p-2 shadow-md"
+            >
+              <h2 className="text-center font-bold text-foreground">
                 {
                   [
                     "Vasárnap",
@@ -80,7 +100,8 @@ export const QuickTeachers = () => {
                     "Péntek",
                     "Szombat",
                   ][new Date(date).getDay()]
-                }
+                }{" "}
+                ({date.slice(5, 10).replace("-", "/")})
               </h2>
               {tableData[date].map((teacher, rowIndex: number) => (
                 <Dropdown key={rowIndex} className="md: block">

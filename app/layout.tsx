@@ -64,6 +64,8 @@ export default async function RootLayout({
   return (
     <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
       <head>
+        <link rel="canonical" href={siteConfig.links.home} />
+        <link rel="alternative" href={siteConfig.links.alternative} />
         <link rel="apple-touch-icon" href="ios/1024.png" sizes="1024x1024" />
         <link rel="manifest" href="/manifest.json" />
         <link

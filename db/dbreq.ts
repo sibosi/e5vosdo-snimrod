@@ -83,6 +83,13 @@ export async function getLogs(max: number = 10) {
   )) as Log[];
 }
 
+export async function getUserLogs(email: string) {
+  addLog("getUserLogs", email);
+  return (await dbreq(
+    `SELECT * FROM logs WHERE user = '${email}' ORDER BY id DESC;`,
+  )) as Log[];
+}
+
 export async function getUsers() {
   return await dbreq(`SELECT * FROM \`users\``);
 }
@@ -808,6 +815,7 @@ export const apireq = {
   getMatches: { req: getMatches, perm: ["user"] },
   updateMatch: { req: updateMatch, perm: ["admin"] },
   getComingMatch: { req: getComingMatch, perm: ["user"] },
+  getUserLogs: { req: getUserLogs, perm: ["admin"] },
 } as const;
 
 export const apioptions = Object.keys(apireq) as (keyof typeof apireq)[];
@@ -884,5 +892,8 @@ export const defaultApiReq = async (req: string, body: any) => {
     return await updateMatch(id, match);
   } else if (req === "getComingMatch") {
     return await getComingMatch();
+  } else if (req === "getUserLogs") {
+    const { email } = body;
+    return await getUserLogs(email);
   } else return "No such request";
 };

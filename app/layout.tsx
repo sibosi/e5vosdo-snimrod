@@ -24,6 +24,7 @@ import Cookie from "@/components/cookie";
 import SkipMessenger from "./skipMessenger";
 import OGURL from "./ogurl";
 import LoadCacheMethod from "./loadCacheMethod";
+import OnCSSBug from "@/components/home/oncssbug";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });
@@ -56,7 +57,6 @@ export default async function RootLayout({
 }) {
   const session = await auth();
   session?.user ? await updateUser(session?.user as User) : null;
-  const users = await getStudentUsersEmail();
   const selfUser = await getAuth(session?.user?.email ?? undefined);
 
   const pageSettings = await getPageSettings();
@@ -144,6 +144,7 @@ export default async function RootLayout({
               {session?.user?.email &&
                 console.log("New login from " + session.user.email)}
               <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
+                <OnCSSBug />
                 {children}
               </main>
               <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">

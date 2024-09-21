@@ -16,12 +16,14 @@ interface Group {
   title: string;
   image: string;
   details: string;
-  description: string;
+  description?: string;
   links: Link[];
+  new?: boolean;
 }
 
 export const clubsOrder: string[] = [
   "Eötvös Podcast",
+  "FLC EJG",
   "Eötvös Diák",
   "Eötvös Média",
   "ZöldBiz",
@@ -149,7 +151,7 @@ export const clubsConfig: Group[] = [
       {
         title: "Kéktúra-szakkör Facebook",
         value: "https://www.facebook.com/groups/ejgkektura/",
-        type: "instagram",
+        type: "facebook",
       },
       {
         title: "Kéktúra-szakkör Instagram",
@@ -418,5 +420,21 @@ export const clubsConfig: Group[] = [
         type: "instagram",
       },
     ],
+    new: true,
+  },
+  {
+    title: "FLC EJG",
+    image: "/groups/FLC.jpg",
+    description: "",
+    details:
+      "FLC: Nálunk betekintést nyerhetsz a pénzügyek világába, miközben fejlesztheted üzleti, marketing és értékesítési készségeidet. Különböző szakemberek által tartott előadásokon és csoportos foglalkozásokon vehetsz részt, ahol valódi pénzügyi kérdésekkel foglalkozhatsz, és tanulhatsz a modern gazdaságról. Ha még nem vagy jártas a témában, tapasztalt mentorok segítenek neked. Szeretettel várunk minden jelentkezőt!",
+    links: [
+      {
+        title: "FLC EJG Instagram",
+        value: "https://www.instagram.com/flc_ejg/",
+        type: "instagram",
+      },
+    ],
+    new: true,
   },
 ];

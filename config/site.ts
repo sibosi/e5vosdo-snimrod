@@ -40,6 +40,8 @@ export const siteConfig = {
   ],
   //navMenuItems: [],
   links: {
+    home: "https://info.e5vosdo.hu",
+    alternative: "https://snimrod.com",
     github: "https://github.com/Sibosi",
     mypage: "https://linktr.ee/snimrod",
     instagram: "https://instagram.com/e5vosdo/",

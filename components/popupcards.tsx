@@ -26,8 +26,8 @@ import {
 type CardProps = {
   title: string;
   image?: string;
-  details?: string;
-  description: string;
+  details: string;
+  description?: string;
   popup?: boolean;
   children?: React.ReactNode;
   links?: Link[];
@@ -122,7 +122,8 @@ const PopupCards = ({
                             )[0]) && (
                           <div
                             key={"CardLink" + index}
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               openedLink === link
                                 ? setOpenedLink(null)
                                 : card.links?.filter(

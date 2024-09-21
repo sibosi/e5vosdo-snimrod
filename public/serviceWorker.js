@@ -1,13 +1,13 @@
 "use strict";
 
-const SW_settings_name = 'SW-settings';
+const SW_settings_name = "SW-settings";
 
 function getDb() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(SW_settings_name, 1);
 
     request.onerror = (event) => {
-      console.error('IndexedDB error:', event);
+      console.error("IndexedDB error:", event);
       reject(event);
     };
 
@@ -17,8 +17,8 @@ function getDb() {
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      if (!db.objectStoreNames.contains('settings')) {
-        db.createObjectStore('settings', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains("settings")) {
+        db.createObjectStore("settings", { keyPath: "id" });
       }
     };
   });
@@ -27,12 +27,12 @@ function getDb() {
 async function writeStorage(id, value) {
   return await getDb().then((db) => {
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction(['settings'], 'readwrite');
-      const objectStore = transaction.objectStore('settings');
+      const transaction = db.transaction(["settings"], "readwrite");
+      const objectStore = transaction.objectStore("settings");
       const request = objectStore.put({ id: id, value: value });
 
       request.onerror = (event) => {
-        console.error('Error writing cache method to IndexedDB:', event);
+        console.error("Error writing cache method to IndexedDB:", event);
         reject(event);
       };
 
@@ -46,12 +46,12 @@ async function writeStorage(id, value) {
 async function getStorage(id) {
   return await getDb().then((db) => {
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction(['settings'], 'readonly');
-      const objectStore = transaction.objectStore('settings');
+      const transaction = db.transaction(["settings"], "readonly");
+      const objectStore = transaction.objectStore("settings");
       const request = objectStore.get(id);
 
       request.onerror = (event) => {
-        console.error('Error reading data from IndexedDB:', event);
+        console.error("Error reading data from IndexedDB:", event);
         reject(event);
       };
 
@@ -61,7 +61,6 @@ async function getStorage(id) {
     });
   });
 }
-
 
 self.addEventListener("push", function (event) {
   let data = JSON.parse(event.data.text());
@@ -90,47 +89,48 @@ self.addEventListener("notificationclick", function (event) {
   );
 });
 
-const CACHE_NAME = 'simple-cache'
+const CACHE_NAME = "simple-cache";
 
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   caches.keys().then((cacheNames) => {
     return Promise.all(
       cacheNames.map((cacheName) => {
         if (cacheName !== CACHE_NAME) {
           return caches.delete(cacheName);
         }
-      })
+      }),
     );
-  })
+  });
 });
 
 const DISALLOWED_URLS = [
-  '/api',
-  '/me',
-  '/about',
-  '/admin',
-  '/manifest.json',
-  '/serviceWorker.js',
-  '/sw.js'
-]
+  "/api",
+  "/about",
+  "/admin",
+  "/clearCache",
+  "/manifest.json",
+  "/me",
+  "/serviceWorker.js",
+  "/sw.js",
+];
 
-const DISALLOWED_URL_BEGINNINGS = [
-  '/api',
-]
+const DISALLOWED_URL_BEGINNINGS = ["/api"];
 
 let cacheMethod = null;
-(async () => cacheMethod = await getStorage('cacheMethod'))()
+(async () => (cacheMethod = await getStorage("cacheMethod")))();
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
 
   const shouldDisallow = DISALLOWED_URLS.some((disallowedUrl) => {
     return event.request.url.includes(disallowedUrl);
   });
 
-  const shouldDisallowBeginning = DISALLOWED_URL_BEGINNINGS.some((disallowedUrlBeginning) => {
-    return event.request.url.startsWith(disallowedUrlBeginning);
-  });
+  const shouldDisallowBeginning = DISALLOWED_URL_BEGINNINGS.some(
+    (disallowedUrlBeginning) => {
+      return event.request.url.startsWith(disallowedUrlBeginning);
+    },
+  );
 
   if (shouldDisallow || shouldDisallowBeginning) {
     return;
@@ -140,15 +140,21 @@ self.addEventListener('fetch', (event) => {
     (async () => {
       const url = new URL(event.request.url);
 
+      if (url.pathname === "/clearCache")
+        caches.keys().then((cacheNames) => {
+          cacheNames.forEach((cacheName) => caches.delete(cacheName));
+        });
+
       if (cacheMethod === null) {
-        cacheMethod = await getStorage('cacheMethod');
-        console.log('Chachce updated:', cacheMethod);
+        cacheMethod = await getStorage("cacheMethod");
+        console.log("Chachce updated:", cacheMethod);
       }
 
-      if (cacheMethod === 'never') return fetch(event.request);
-      if (cacheMethod === 'offline' && navigator.onLine) return fetch(event.request);
-      if (url.pathname.startsWith('/_next/image')) {
-        const cache = await caches.open('dynamic-images-cache');
+      if (cacheMethod === "never") return fetch(event.request);
+      if (cacheMethod === "offline" && navigator.onLine)
+        return fetch(event.request);
+      if (url.pathname.startsWith("/_next/image")) {
+        const cache = await caches.open("dynamic-images-cache");
         const cachedResponse = await cache.match(event.request);
 
         if (cachedResponse) {
@@ -160,7 +166,7 @@ self.addEventListener('fetch', (event) => {
           cache.put(event.request, networkResponse.clone());
           return networkResponse;
         } catch (error) {
-          console.error('Failed to fetch and cache image:', error);
+          console.error("Failed to fetch and cache image:", error);
           throw error;
         }
       } else {
@@ -178,9 +184,11 @@ self.addEventListener('fetch', (event) => {
             return event.request.url.includes(disallowedUrl);
           });
 
-          const shouldDisallowBeginning = DISALLOWED_URL_BEGINNINGS.some((disallowedUrlBeginning) => {
-            return event.request.url.startsWith(disallowedUrlBeginning);
-          });
+          const shouldDisallowBeginning = DISALLOWED_URL_BEGINNINGS.some(
+            (disallowedUrlBeginning) => {
+              return event.request.url.startsWith(disallowedUrlBeginning);
+            },
+          );
 
           if (shouldDisallow || shouldDisallowBeginning) {
             return networkResponse;
@@ -189,21 +197,19 @@ self.addEventListener('fetch', (event) => {
           cache.put(event.request, networkResponse.clone());
           return networkResponse;
         } catch (error) {
-          console.error('Fetch failed:', error);
+          console.error("Fetch failed:", error);
           throw error;
         }
       }
-    })()
+    })(),
   );
 });
 
-
-
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'cacheMethodUpdated') {
-    (async () => cacheMethod = await getStorage('cacheMethod'))()
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.action === "cacheMethodUpdated") {
+    (async () => (cacheMethod = await getStorage("cacheMethod")))();
   }
-  if (event.data && event.data.action === 'reCache') {
+  if (event.data && event.data.action === "reCache") {
     // Delete all cache
 
     event.waitUntil(
@@ -211,9 +217,9 @@ self.addEventListener('message', (event) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             return caches.delete(cacheName);
-          })
+          }),
         );
-      })
+      }),
     );
 
     return;
@@ -222,29 +228,33 @@ self.addEventListener('message', (event) => {
       caches.open(CACHE_NAME).then((cache) => {
         // 1. Store cache URLs
         return cache.keys().then((requests) => {
-          const urlsToReCache = requests.map(request => request.url);
+          const urlsToReCache = requests.map((request) => request.url);
 
           // 2. Delete old cache
           return caches.delete(CACHE_NAME).then(() => {
             return caches.open(CACHE_NAME).then((newCache) => {
-
               // 3. Re-cache URLs
               return Promise.all(
                 urlsToReCache.map((url) => {
-                  return fetch(url).then((response) => {
-                    if (response.ok) {
-                      return newCache.put(url, response);
-                    }
-                    console.warn(`Fetching ${url} failed during re-cache.`);
-                  }).catch((error) => {
-                    console.error(`Error fetching ${url} during re-cache:`, error);
-                  });
-                })
+                  return fetch(url)
+                    .then((response) => {
+                      if (response.ok) {
+                        return newCache.put(url, response);
+                      }
+                      console.warn(`Fetching ${url} failed during re-cache.`);
+                    })
+                    .catch((error) => {
+                      console.error(
+                        `Error fetching ${url} during re-cache:`,
+                        error,
+                      );
+                    });
+                }),
               );
             });
           });
         });
-      })
+      }),
     );
   }
 });

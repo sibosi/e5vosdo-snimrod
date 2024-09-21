@@ -13,6 +13,7 @@ import { getAuth } from "@/db/dbreq";
 import TimetableDay from "@/components/timetable/timetableday";
 import FreeRooms from "@/components/freeRooms";
 import Welcome from "@/components/home/welcome";
+import { Alert } from "@/components/home/alert";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -39,6 +40,11 @@ export default async function Home() {
           </h1>
         )}
       </div>
+
+      <Alert className="mb-4 border-selfprimary-400 bg-selfprimary-200">
+        Az oldal fejlesztője béna volt és törölte a felhasználók adatait. Ez
+        van, lehet panaszkodni. (Legalább ebből is tanult.)
+      </Alert>
 
       <Welcome />
 

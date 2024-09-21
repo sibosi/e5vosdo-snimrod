@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -11,14 +11,68 @@ import {
   ModalContent,
   ModalBody,
 } from "@nextui-org/react";
-import useSWR from "swr";
 import { Change, TeacherChange } from "@/app/api/route";
 
-export const QuickTeachers = () => {
-  const { data: tableDataKhm, error } = useSWR("/api/", fetcher);
-  const isLoaded = !error && !!tableDataKhm;
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch data");
+  return res.json();
+};
 
-  const tableData = tableDataKhm as TeacherChange[];
+interface TeacherChangesByDate {
+  [date: string]: TeacherChange[];
+}
+
+function getTeacherChangesByDate(changesByTeacher: TeacherChange[]) {
+  const changesByDate: TeacherChangesByDate = {};
+  let teachersByDate: { [date: string]: string[] } = {};
+
+  changesByTeacher.forEach((teacher) => {
+    teacher.changes.forEach((change) => {
+      if (!changesByDate[change.date]) {
+        changesByDate[change.date] = [];
+        teachersByDate[change.date] = [];
+      }
+      if (!teachersByDate[change.date].includes(teacher.name)) {
+        changesByDate[change.date].push({
+          name: teacher.name,
+          photoUrl: teacher.photoUrl,
+          subjects: teacher.subjects,
+          changes: [],
+        });
+        teachersByDate[change.date].push(teacher.name);
+      }
+
+      changesByDate[change.date].forEach((teacherChange) => {
+        if (teacherChange.name === teacher.name)
+          teacherChange.changes.push(change);
+      });
+    });
+  });
+
+  const sortedKeys = Object.keys(changesByDate).sort((a, b) =>
+    a.localeCompare(b),
+  );
+  const sortedChangesByDate: TeacherChangesByDate = {};
+  sortedKeys.forEach((key) => {
+    sortedChangesByDate[key] = changesByDate[key];
+  });
+
+  return sortedChangesByDate;
+}
+
+export const QuickTeachers = () => {
+  const [tableData, setTableData] = useState<TeacherChangesByDate>({});
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    fetcher("/api/")
+      .then((data: TeacherChange[]) => {
+        setTableData(getTeacherChangesByDate(data));
+        setIsLoaded(true);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
   const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
@@ -28,68 +82,88 @@ export const QuickTeachers = () => {
       className="h-auto w-auto rounded-lg text-foreground"
     >
       <React.Fragment>
-        {error && <p>Error fetching data</p>}
-        {!isLoaded && !error && <p>Loading...</p>}
-        {isLoaded && tableData && tableData.length ? (
-          tableData.map((teacher, rowIndex: number) => (
-            <Dropdown key={rowIndex} className="md: block">
-              <DropdownTrigger>
-                <User
-                  as="button"
-                  type="button"
-                  avatarProps={{
-                    isBordered: true,
-                    src: teacher.photoUrl,
-                  }}
-                  className="p-2 transition-transform"
-                  description={teacher.subjects}
-                  name={teacher.name}
-                />
-              </DropdownTrigger>
+        {!isLoaded && <p>Loading...</p>}
+        {isLoaded && tableData && Object.keys(tableData).length ? (
+          Object.keys(tableData).map((date) => (
+            <div
+              key={date}
+              className="my-2 rounded-lg border-1 border-selfprimary-100 bg-selfprimary-bg p-2 shadow-md"
+            >
+              <h2 className="text-center font-bold text-foreground">
+                {
+                  [
+                    "Vasárnap",
+                    "Hétfő",
+                    "Kedd",
+                    "Szerda",
+                    "Csütörtök",
+                    "Péntek",
+                    "Szombat",
+                  ][new Date(date).getDay()]
+                }{" "}
+                ({date.slice(5, 10).replace("-", "/")})
+              </h2>
+              {tableData[date].map((teacher, rowIndex: number) => (
+                <Dropdown key={rowIndex} className="md: block">
+                  <DropdownTrigger>
+                    <User
+                      as="button"
+                      type="button"
+                      avatarProps={{
+                        isBordered: true,
+                        src: teacher.photoUrl,
+                      }}
+                      className="p-2 transition-transform"
+                      description={teacher.subjects}
+                      name={teacher.name}
+                    />
+                  </DropdownTrigger>
 
-              <DropdownMenu aria-label="Static Actions">
-                {teacher.changes &&
-                  teacher.changes.map((event, eventIndex: number) => (
-                    <DropdownItem
-                      key={eventIndex}
-                      className="text-foreground"
-                      onClick={() => setSelectedEvent(event)}
-                    >
-                      <p>
-                        {"🕒 " +
-                          [
-                            "Vasárnap",
-                            "Hétfő",
-                            "Kedd",
-                            "Szerda",
-                            "Csütörtök",
-                            "Péntek",
-                            "Szombat",
-                          ][new Date(event.date).getDay()] +
-                          " " +
-                          event.hour +
-                          ". ó"}
-                        &nbsp;
-                        {" 📍" + // Replace &nbsp; with nothing
-                          (event.room.replace(" ", "").length !== 0
-                            ? event.room
-                            : "???")}{" "}
-                        &nbsp;
-                        {"  📔" + event.subject}
-                      </p>
-                      <p>
-                        {"   🧑🏼‍🏫 " +
-                          (event.replacementTeacher.replace(" ", "").length !==
-                          0
-                            ? event.replacementTeacher
-                            : "???")}{" "}
-                        &nbsp;
-                        {" 📝" + event.comment}
-                      </p>
-                    </DropdownItem>
-                  ))}
-              </DropdownMenu>
-            </Dropdown>
+                  <DropdownMenu aria-label="Static Actions">
+                    {teacher.changes &&
+                      teacher.changes.map((event, eventIndex: number) => (
+                        <DropdownItem
+                          key={eventIndex}
+                          className="text-foreground"
+                          onClick={() => setSelectedEvent(event)}
+                        >
+                          <p>
+                            {"🕒 " +
+                              [
+                                "Vasárnap",
+                                "Hétfő",
+                                "Kedd",
+                                "Szerda",
+                                "Csütörtök",
+                                "Péntek",
+                                "Szombat",
+                              ][new Date(event.date).getDay()] +
+                              " " +
+                              event.hour +
+                              ". ó"}
+                            &nbsp;
+                            {" 📍" + // Replace &nbsp; with nothing
+                              (event.room.replace(" ", "").length !== 0
+                                ? event.room
+                                : "???")}{" "}
+                            &nbsp;
+                            {"  📔" + event.subject}
+                          </p>
+                          <p>
+                            {"   🧑🏼‍🏫 " +
+                              (event.replacementTeacher.replace(" ", "")
+                                .length !== 0
+                                ? event.replacementTeacher
+                                : "???")}{" "}
+                            &nbsp;
+                            {" 📝" + event.comment}
+                          </p>
+                        </DropdownItem>
+                      ))}
+                  </DropdownMenu>
+                </Dropdown>
+              ))}
+            </div>
           ))
         ) : (
           <p>Nincs információ</p>
@@ -145,10 +219,4 @@ export const QuickTeachers = () => {
       </React.Fragment>
     </Skeleton>
   );
-};
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch data");
-  return res.json();
 };

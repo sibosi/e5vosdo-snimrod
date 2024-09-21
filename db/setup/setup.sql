@@ -1,4 +1,5 @@
-DROP TABLE IF EXISTS users;
+
+--@block
 CREATE TABLE IF NOT EXISTS `users` (
     `name` varchar(255) NOT NULL,
     `username` varchar(255) NOT NULL,
@@ -19,7 +20,9 @@ CREATE TABLE IF NOT EXISTS `users` (
     `nickname` VARCHAR(255) NOT NULL,
     `tickets` JSON NOT NULL,
     `hidden_lessons` JSON NOT NULL,
-    `default_group` INT
+    `default_group` INT,
+    `push_permission` BOOLEAN NOT NULL DEFAULT 0,
+    `push_about_games` BOOLEAN NOT NULL DEFAULT 0
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 -- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE
@@ -34,7 +37,7 @@ SET NEW.coming_year = SUBSTRING(NEW.EJG_code, 1, 4);
 SET NEW.class_character = SUBSTRING(NEW.EJG_code, 5, 1);
 SET NEW.order_number = SUBSTRING(NEW.EJG_code, 6, 2);
 END;
-DROP TABLE IF EXISTS events;
+--@block
 CREATE TABLE IF NOT EXISTS events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -46,7 +49,7 @@ CREATE TABLE IF NOT EXISTS events (
     tags JSON
 );
 -- Add notifications table
-DROP TABLE IF EXISTS notifications;
+
 CREATE TABLE IF NOT EXISTS notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -69,14 +72,14 @@ VALUES (
         'simon.nimrod.zalan@e5vos.hu',
         '[]'
     );
-DROP TABLE IF EXISTS push_auths;
+
 CREATE TABLE IF NOT EXISTS push_auths (
     id INT AUTO_INCREMENT PRIMARY KEY,
     auth VARCHAR(255) NOT NULL
 );
 -- Add the settings table
 -- First delete the old settings table
-DROP TABLE IF EXISTS settings;
+
 CREATE TABLE IF NOT EXISTS settings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -91,7 +94,7 @@ VALUES ('soccer', 1, 1);
 INSERT INTO settings (name, headspace, livescore)
 VALUES ('now', 0, 0);
 -- Add the matches table
-DROP TABLE IF EXISTS matches;
+
 CREATE TABLE IF NOT EXISTS matches (
     id INT AUTO_INCREMENT PRIMARY KEY,
     url VARCHAR(255) NOT NULL,
@@ -139,7 +142,7 @@ VALUES (
         "2021-10-24 22:00:00"
     );
 -- Add logs table
-DROP TABLE IF EXISTS logs;
+
 CREATE TABLE IF NOT EXISTS logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     time VARCHAR(255) NOT NULL,

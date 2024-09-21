@@ -22,12 +22,16 @@ const versions = [
   "900",
 ];
 
-export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
-  const colorHue = Number(localStorage.getItem(`${colorName}Hue`))
-    ? Number(localStorage.getItem(`${colorName}Hue`))
-    : colorName === "primary"
-      ? defaultHues.primary
-      : defaultHues.secondary;
+export const loadPalette = (
+  colorName: string,
+  theme?: "light" | "dark" | "system",
+) => {
+  const colorHue = (() => {
+    if (Number(localStorage.getItem(`${colorName}Hue`)))
+      return Number(localStorage.getItem(`${colorName}Hue`));
+    else if (colorName === "primary") return defaultHues.primary;
+    else return defaultHues.secondary;
+  })();
 
   const colorChroma = Number(localStorage.getItem(`${colorName}Chroma`)) || 50;
 
@@ -36,11 +40,12 @@ export const loadPalette = (colorName: string, theme?: "light" | "dark") => {
     hexFromArgb(Hct.from(colorHue, colorChroma, 50).toInt()),
   );
 
-  const isDarkMode = theme
-    ? theme === "dark"
-    : theme === "system"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
-      : localStorage.getItem("theme") === "dark";
+  const isDarkMode = (() => {
+    if ((theme || localStorage.getItem("theme")) === "dark") return true;
+    else if ((theme || localStorage.getItem("theme")) === "light") return false;
+    else if ((theme || localStorage.getItem("theme")) === "system")
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  })();
 
   versions.forEach((version) => {
     const argbColor = Hct.from(

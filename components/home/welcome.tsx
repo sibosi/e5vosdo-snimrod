@@ -7,6 +7,10 @@ import { reinstallServiceWorker } from "../PWA/managesw";
 
 const Welcome = () => {
   const [showWelcome, setShowWelcome] = useState<boolean | null>(null);
+  const isPWA =
+    typeof window !== "undefined" &&
+    window.matchMedia("(display-mode: standalone)").matches;
+  const siteName = isPWA ? "alkalmazásban" : "oldalon";
 
   useEffect(() => {
     const getWelcome = () => {
@@ -19,10 +23,8 @@ const Welcome = () => {
   return (
     showWelcome && (
       <div className="rounded-2xl border-1 p-4 text-lg text-foreground shadow-lg">
-        <h1 className="text-4xl font-bold">Üdv a DÖ alkalmazásban! 🎉</h1>
-        <p className="mt-2">
-          Az alkalmazásban a következő modulok érhetőek el:
-        </p>
+        <h1 className="text-4xl font-bold">Üdv a DÖ {siteName}! 🎉🍪</h1>
+        <p className="mt-2">Az {siteName} a következő modulok érhetőek el:</p>
         <ul className="mt-2 list-inside list-disc">
           <li>Órarend</li>
           <li>Szabad teremkereső</li>

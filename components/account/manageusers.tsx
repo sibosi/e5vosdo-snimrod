@@ -1,5 +1,5 @@
 "use client";
-import { User, UserType } from "@/db/dbreq";
+import { Log, User, UserType } from "@/db/dbreq";
 import getUserClass from "@/public/getUserClass";
 import {
   Button,
@@ -39,6 +39,8 @@ const ManageUsers = ({
 
   const [newPermission, setNewPermission] = useState("");
   const [newTicket, setNewTicket] = useState("");
+
+  const [selectedUserLogs, setSelectedUserLogs] = useState<Log[]>([]);
 
   async function addUserPermission(email: any, permission: string) {
     const response = await fetch(`/api/addUserPermission`, {
@@ -122,7 +124,7 @@ const ManageUsers = ({
       />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {users.slice(0, 12).map((user: UserType) => (
-          <div key={user.email} className="bg-selfprimary-50 rounded-3xl p-6">
+          <div key={user.email} className="rounded-3xl bg-selfprimary-50 p-6">
             <div className="flex">
               <div className="flex w-full">
                 <Image
@@ -138,7 +140,10 @@ const ManageUsers = ({
               <Button
                 size="sm"
                 color="default"
-                onClick={() => setSelectedUser(user)}
+                onClick={() => {
+                  setSelectedUser(user);
+                  setSelectedUserLogs([]);
+                }}
               >
                 Részletek
               </Button>
@@ -181,7 +186,7 @@ const ManageUsers = ({
       {users.length == 0 ? (
         <div className="text-foreground">Nincs találat</div>
       ) : users.length > 12 ? (
-        <div className="bg-selfprimary-50 my-2 rounded-3xl p-6 text-center">
+        <div className="my-2 rounded-3xl bg-selfprimary-50 p-6 text-center">
           Túl sok találat ({users.length})
         </div>
       ) : (
@@ -285,7 +290,39 @@ const ManageUsers = ({
               </table>
             </div>
             <div>
-              <div className="bg-selfprimary-50 rounded-3xl p-6">
+              <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
+                <h3>Get users logs</h3>
+
+                <Button
+                  onClick={() => {
+                    fetch("api/getUserLogs", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({ email: selectedUser?.email }),
+                    })
+                      .then((res) => res.json())
+                      .then((data) => setSelectedUserLogs(data));
+                  }}
+                  color="success"
+                >
+                  Get logs
+                </Button>
+
+                <div className="max-h-40 max-w-min overflow-auto">
+                  {selectedUserLogs.map((log) => (
+                    <div key={log.id} className="border-b-1 py-1">
+                      <span>{log.time}</span>
+                      <br />
+                      <span>{log.action}</span>
+                      <br />
+                      <span>{log.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
                 <h3>Hozzáférés hozzáadása</h3>
                 <ButtonGroup>
                   <Input
@@ -317,7 +354,7 @@ const ManageUsers = ({
                 </div>
               </div>
 
-              <div className="bg-selfprimary-50 mt-6 rounded-3xl p-6">
+              <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
                 <h3>Tickets</h3>
                 <ButtonGroup>
                   <Input

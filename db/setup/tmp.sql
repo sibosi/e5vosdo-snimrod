@@ -3,10 +3,11 @@ SELECT *
 FROM users;
 --@block
 SELECT *
-FROM logs;
+FROM notifications;
 --@block
--- Delete all tables
-DROP TABLE users;
+SHOW VARIABLES LIKE 'log_bin';
+SHOW VARIABLES LIKE 'log_bin_basename';
+SHOW BINARY LOGS;
 --@block
 -- Add A food menu to nimrod user
 UPDATE users
@@ -47,9 +48,6 @@ ALTER TABLE users
 ADD COLUMN name VARCHAR(255) NOT NULL;
 UPDATE users
 SET name = username;
---@block
--- Remove permissions colunm
-ALTER TABLE users DROP COLUMN permissions;
 --@block
 -- Add permissions colunm
 ALTER TABLE users
@@ -210,7 +208,6 @@ SELECT *
 FROM matches;
 --@block
 -- Reset notifications
-DROP TABLE notifications;
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,

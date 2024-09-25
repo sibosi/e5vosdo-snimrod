@@ -21,7 +21,6 @@ import {
 } from "@/db/dbreq";
 import dynamic from "next/dynamic";
 import Cookie from "@/components/cookie";
-import SkipMessenger from "./skipMessenger";
 import OGURL from "./ogurl";
 import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
@@ -138,7 +137,6 @@ export default async function RootLayout({
             />
 
             <Cookie />
-            <SkipMessenger />
 
             <>
               {session?.user?.email &&

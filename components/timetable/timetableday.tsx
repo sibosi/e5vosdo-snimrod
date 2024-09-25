@@ -43,6 +43,8 @@ const START_TIMES = [
   "15:25",
 ];
 
+const DAYS = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"];
+
 interface Lesson {
   id: number;
   day: string;
@@ -188,9 +190,7 @@ const toShortRoom = (room: string) => {
 
   // if roomNumber is a number
   if (!isNaN(parseInt(roomNumber))) {
-    return roomNumberDot[roomNumberDot.length - 1] === "."
-      ? roomNumber + ". terem"
-      : roomNumber;
+    return roomNumberDot.endsWith(".") ? roomNumber + ". terem" : roomNumber;
   } else {
     return room;
   }
@@ -265,19 +265,19 @@ const Cell = ({
   onClick?: () => void;
 }) => {
   return (
-    <div
+    <button
       className={
         "relative my-1 grid h-14 w-full min-w-fit grid-cols-1 rounded-xl px-3 pr-4 " +
         className
       }
       onClick={onClick}
     >
-      <div className="flex max-w-fit">{children}</div>
-    </div>
+      <div className="my-auto flex max-w-fit">{children}</div>
+    </button>
   );
 };
 
-const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
+function TimetableDay({ selfUser }: { readonly selfUser: UserType }) {
   const [EJG_class, setEJG_class] = useState(getUserClass(selfUser));
   const [timetableDay, setTimetableDay] = useState<TimetableDay>();
   const [selectedLesson, setSelectedLesson] = useState<LessonOption>();
@@ -291,45 +291,15 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   );
 
   const [weekDuration, setWeekDuration] = useState<WeekDuration>();
-  const [hide, setHide] = useState<"none" | "selected" | "edit">("selected");
+  const [mode, setMode] = useState<"none" | "selected" | "edit">("selected");
 
-  const [selectedDayKeys, setSelectedDayKeys] = React.useState<any>(
-    new Set([
-      [
-        ["Hétfő", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Hétfő"][
-          new Date().getDay()
-        ],
-      ],
-    ]),
-  );
-  const selectedDayValue = React.useMemo(
-    () => Array.from(selectedDayKeys).join(", ").replaceAll("_", " "),
-    [selectedDayKeys],
+  const [selectedDay, setSelectedDay] = useState<string>(
+    ["Hétfő", ...DAYS, "Hétfő"][new Date().getDay()],
   );
 
-  const dayOfWeek = React.useMemo(
-    () =>
-      ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"].indexOf(
-        selectedDayValue,
-      ),
-    [selectedDayValue],
-  );
-
-  const [selectedClassGroupKeys, setSelectedClassGroupKeys] = React.useState(
-    new Set(
-      (
-        ["Nincs csoport", "1-es csoport", "2-es csoport"][
-          selfUser.default_group ?? 0
-        ] ?? "Nincs csoport"
-      ).split(", "),
-    ),
-  );
-  const classGroupValue = React.useMemo(
-    () =>
-      ["Nincs csoport", "1-es csoport", "2-es csoport"].indexOf(
-        Array.from(selectedClassGroupKeys)[0],
-      ),
-    [selectedClassGroupKeys],
+  const CLASS_GROUPS = ["Nincs csoport", "1-es csoport", "2-es csoport"];
+  const [selectedClassGroup, setSelectedClassGroup] = useState(
+    CLASS_GROUPS[selfUser.default_group ?? 0],
   );
 
   useEffect(() => {
@@ -342,12 +312,10 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
       });
       const data = await resp.json();
       const group = data as 0 | 1 | 2 | undefined;
-      setSelectedClassGroupKeys(
-        new Set(
-          ["Nincs csoport", "1-es csoport", "2-es csoport"][group ?? 0].split(
-            ", ",
-          ),
-        ),
+      setSelectedClassGroup(
+        CLASS_GROUPS[
+          group !== undefined ? group : (selfUser.default_group ?? 0)
+        ],
       );
     };
 
@@ -358,7 +326,8 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
 
     getDefaultGroup();
     getTeacherChanges();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selfUser.default_group]);
 
   useEffect(() => {
     EJG_class && fetchTimetable(EJG_class, setTimetableDay);
@@ -369,26 +338,37 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
   }, [timetableDay]);
 
   useEffect(() => {
-    showSettings ? editDefaultGroup(classGroupValue) : null;
+    if (showSettings)
+      editDefaultGroup(CLASS_GROUPS.indexOf(selectedClassGroup));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classGroupValue]);
+  }, [selectedClassGroup]);
+
+  function isLessonVisible(lesson: LessonOption) {
+    if (lesson && !hiddenLessons.includes(lesson.id))
+      if (
+        mode != "selected" ||
+        lesson.group_name === CLASS_GROUPS.indexOf(selectedClassGroup) ||
+        lesson.group_name === "null" ||
+        CLASS_GROUPS.indexOf(selectedClassGroup) === 0
+      )
+        return true;
+    return false;
+  }
 
   function checkIfMultipleLessonsInTime(lessonBlock: LessonOption[]) {
-    let count = 0;
+    let counter = 0;
     lessonBlock.forEach((lesson) => {
-      if (
-        lesson &&
-        !hiddenLessons.includes(lesson.id) &&
-        (lessonBlock.length != 2 ||
-          hide != "selected" ||
-          lesson.group_name == classGroupValue ||
+      if (lesson && !hiddenLessons.includes(lesson.id))
+        if (
+          lessonBlock.length != 2 ||
+          mode != "selected" ||
+          lesson.group_name === CLASS_GROUPS.indexOf(selectedClassGroup) ||
           lesson.group_name === "null" ||
-          classGroupValue == 0)
-      ) {
-        count++;
-      }
+          CLASS_GROUPS.indexOf(selectedClassGroup) === 0
+        )
+          counter++;
     });
-    return count > 1;
+    return counter > 1;
   }
 
   useEffect(() => {
@@ -399,51 +379,51 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
         return changes;
       }
 
-      for (const lessonBlock of timetableDay[dayOfWeek]) {
+      for (const lessonBlock of timetableDay[DAYS.indexOf(selectedDay)]) {
         for (const lesson of lessonBlock) {
-          if (lesson && teacherChanges) {
-            for (const teacherChange of teacherChanges) {
-              for (const change of teacherChange.changes) {
-                if (
-                  change.missingTeacher.toLowerCase() ===
-                    lesson.teacher.toLowerCase() &&
-                  change.day === selectedDayValue &&
-                  START_TIMES[Number(change.hour)] === lesson.start_time
-                ) {
-                  console.log('"' + change.replacementTeacher + '"');
-                  changes[lesson.id] = {
-                    // If the last character is &nbsp; or  " " remove it
-                    teacher: change.replacementTeacher.replace(/ /g, ""),
-                    comment: change.comment,
-                  };
+          if (lesson) {
+            // For teacher changes
+            if (teacherChanges) {
+              for (const teacherChange of teacherChanges) {
+                for (const change of teacherChange.changes) {
+                  if (
+                    change.missingTeacher.toLowerCase() ===
+                      lesson.teacher.toLowerCase() &&
+                    change.day === selectedDay &&
+                    START_TIMES[Number(change.hour)] === lesson.start_time
+                  ) {
+                    changes[lesson.id] = {
+                      // If the last character is &nbsp; or  " " remove it
+                      teacher: change.replacementTeacher.replace(/ /g, ""),
+                      comment: change.comment,
+                    };
+                  }
                 }
               }
             }
-          }
-          if (lesson && roomchangesConfig[today_date][lesson.EJG_classes[0]]) {
-            if (
-              roomchangesConfig[today_date][lesson.EJG_classes[0]][
-                START_TIMES.indexOf(lesson.start_time)
-              ]
-            ) {
-              console.log(roomchangesConfig[today_date][lesson.EJG_classes[0]]);
-              roomchangesConfig[today_date][lesson.EJG_classes[0]][
-                START_TIMES.indexOf(lesson.start_time)
-              ].forEach((change) => {
+
+            // For room changes
+            if (roomchangesConfig[today_date])
+              if (roomchangesConfig[today_date][lesson?.EJG_classes[0]])
                 if (
-                  change[1] === toShortRoom(lesson.room).replace(". terem", "")
+                  roomchangesConfig[today_date][lesson.EJG_classes[0]][
+                    START_TIMES.indexOf(lesson.start_time)
+                  ]
                 ) {
-                  changes[lesson.id] = {
-                    ...changes[lesson.id],
-                    room: String(change[2]),
-                  };
+                  for (const change of roomchangesConfig[today_date][
+                    lesson.EJG_classes[0]
+                  ][START_TIMES.indexOf(lesson.start_time)]) {
+                    if (
+                      change[1] ===
+                      toShortRoom(lesson.room).replace(". terem", "")
+                    ) {
+                      changes[lesson.id] = {
+                        ...changes[lesson.id],
+                        room: String(change[2]),
+                      };
+                    }
+                  }
                 }
-                console.log(change);
-                console.log(toShortRoom(lesson.room).replace(". terem", ""));
-                console.log(lesson);
-                console.log(changes);
-              });
-            }
           }
         }
       }
@@ -452,7 +432,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
     }
 
     setChangesToday(checkIfChangeToday());
-  }, [timetableDay, teacherChanges, dayOfWeek, selectedDayValue]);
+  }, [timetableDay, teacherChanges, selectedDay]);
 
   return (
     <div className="text-foreground transition-all duration-300">
@@ -462,7 +442,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" className="capitalize">
-                  {selectedDayValue}
+                  {selectedDay}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
@@ -471,9 +451,9 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                 disallowEmptySelection
                 selectionMode="single"
                 className="text-foreground-600"
-                selectedKeys={selectedDayKeys}
+                selectedKeys={new Set([selectedDay])}
                 onSelectionChange={(keys: any) =>
-                  setSelectedDayKeys(new Set(keys))
+                  setSelectedDay(keys.values().next().value)
                 }
               >
                 <DropdownItem key="Hétfő">Hétfő</DropdownItem>
@@ -519,7 +499,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             <Dropdown>
               <DropdownTrigger>
                 <Button variant="bordered" className="w-full">
-                  {selectedClassGroupKeys}
+                  {selectedClassGroup}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
@@ -528,9 +508,9 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                 className="text-foreground-600"
                 disallowEmptySelection
                 selectionMode="single"
-                selectedKeys={selectedClassGroupKeys}
+                selectedKeys={new Set([selectedClassGroup])}
                 onSelectionChange={(keys: any) =>
-                  setSelectedClassGroupKeys(new Set(keys))
+                  setSelectedClassGroup(keys.values().next().value)
                 }
               >
                 <DropdownItem key="Nincs csoport">Nincs csoport</DropdownItem>
@@ -539,21 +519,35 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
               </DropdownMenu>
             </Dropdown>
 
-            <Button
-              onClick={() => {
-                hide == "selected"
-                  ? setHide("none")
-                  : hide == "none"
-                    ? setHide("edit")
-                    : setHide("selected");
-              }}
-            >
-              {hide == "selected"
-                ? "Saját órák"
-                : hide === "edit"
-                  ? "Módosítás"
-                  : "Összes óra"}
-            </Button>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button variant="bordered" className="w-full">
+                  {
+                    {
+                      selected: "Saját óráim",
+                      edit: "Módosítás",
+                      none: "Összes óra",
+                    }[mode]
+                  }
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Single selection example"
+                variant="flat"
+                className="text-foreground-600"
+                disallowEmptySelection
+                selectionMode="single"
+                selectedKeys={new Set([mode])}
+                onSelectionChange={(keys: any) =>
+                  setMode(keys.values().next().value)
+                }
+              >
+                <DropdownItem key="selected">Saját óráim</DropdownItem>
+                <DropdownItem key="edit">Óráim módosítása</DropdownItem>
+                <DropdownItem key="none">Az osztály összes órája</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+
             <Button
               onClick={() => {
                 hideLessons([], [], [], setHiddenLessons);
@@ -563,30 +557,26 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
             </Button>
           </div>
         </>
-      ) : EJG_class === null ? (
-        <Cell className="bg-warning-400 text-black">
-          <p>
-            Kérlek add meg az osztályodat{" "}
-            <Link href="/me" className="font-bold">
-              a profilodban
-            </Link>
-            , hogy megjeleníthessük az órarendedet.
-          </p>
-        </Cell>
       ) : (
-        <p>Osztály betöltése...</p>
+        <Alert className="border-warning-400 bg-warning-200 text-black">
+          Kérlek add meg az osztályodat{" "}
+          <Link href="/me" className="font-bold text-selfprimary">
+            a profilodban
+          </Link>
+          , hogy megjeleníthessük az órarendedet.
+        </Alert>
       )}
 
       {timetableDay ? (
         <div>
-          {hiddenLessons.length == 0 && hide !== "edit" && (
+          {hiddenLessons.length == 0 && mode !== "edit" && (
             <Alert className="max-h-screen w-full border-selfsecondary-300 bg-selfsecondary-100 text-sm text-foreground transition-all duration-300">
               A jelenlegi beállítások alapján az osztályod összes órája látható
               az órarendben. Ha szeretnél egyes órákat elrejteni, válaszd a
-              &quot;Módosítás&quot; opciót.
+              &quot;Saját óráim&quot; --&gt; &quot;Módosítás&quot; opciót.
             </Alert>
           )}
-          {hide === "edit" ? (
+          {mode === "edit" ? (
             <Alert className="border-success-300 bg-success-100 text-sm">
               Itt állíthatod, mely órák ne jelenjenek meg az órarendedben. Ha{" "}
               <span className="rounded-lg bg-secondary-100">
@@ -609,13 +599,13 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
               </Alert>
               <div className="my-3 grid grid-cols-1 gap-2">
                 {Object.entries(myRoomChange(EJG_class)).map(
-                  ([group, changes], groupIndex) => (
-                    <div key={groupIndex}>
+                  ([group, changes]) => (
+                    <div key={group}>
                       <h3 className="text-lg font-bold">{group}</h3>
                       <div className="grid grid-cols-2 gap-2">
-                        {changes.map((change: any, changeIndex: number) => (
+                        {changes.map((change: any) => (
                           <p
-                            key={changeIndex}
+                            key={change[0] + change[1] + change[2]}
                             className="min-w-fit rounded-xl bg-default-300 px-3 py-1"
                           >
                             {change[0] +
@@ -638,12 +628,14 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
           <div className="grid grid-cols-1">
             {
               <div>
-                {timetableDay && timetableDay[dayOfWeek] ? (
-                  timetableDay[dayOfWeek].map(
+                {timetableDay && timetableDay[DAYS.indexOf(selectedDay)] ? (
+                  timetableDay[DAYS.indexOf(selectedDay)].map(
                     (lessonBlock, lessonBlockIndex) =>
                       weekDuration &&
-                      weekDuration[dayOfWeek][0] <= lessonBlockIndex &&
-                      lessonBlockIndex <= weekDuration[dayOfWeek][1] && (
+                      weekDuration[DAYS.indexOf(selectedDay)][0] <=
+                        lessonBlockIndex &&
+                      lessonBlockIndex <=
+                        weekDuration[DAYS.indexOf(selectedDay)][1] && (
                         <div
                           key={"LessonBlock" + lessonBlockIndex}
                           className="flex w-full"
@@ -677,12 +669,14 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                   Szünet
                                 </Cell>
                               ) : (!hiddenLessons.includes(lesson.id) ||
-                                  hide != "selected") &&
+                                  mode != "selected") &&
                                 (lessonBlock.length != 2 ||
-                                  hide != "selected" ||
-                                  lesson.group_name == classGroupValue ||
+                                  mode != "selected" ||
+                                  lesson.group_name ==
+                                    CLASS_GROUPS.indexOf(selectedClassGroup) ||
                                   lesson.group_name === "null" ||
-                                  classGroupValue == 0) ? (
+                                  CLASS_GROUPS.indexOf(selectedClassGroup) ==
+                                    0) ? (
                                 <Cell
                                   key={"Lesson" + lesson.id}
                                   className={
@@ -705,7 +699,7 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
                                       : "")
                                   }
                                   onClick={() =>
-                                    hide == "edit"
+                                    mode == "edit"
                                       ? !hiddenLessons.includes(lesson.id)
                                         ? hideLessons(
                                             lessonBlock.filter(
@@ -888,6 +882,6 @@ const TimetableDay = ({ selfUser }: { selfUser: UserType }) => {
       )}
     </div>
   );
-};
+}
 
 export default TimetableDay;

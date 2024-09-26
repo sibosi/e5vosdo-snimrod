@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 
 export function checkMessengerBrowser() {
   // Ellenőrzi, hogy a felhasználó a Messenger beépített böngészőjét használja-e
+  if (typeof navigator === "undefined") return false;
   const userAgent =
     navigator.userAgent || navigator.vendor || (window as any).opera;
   if (

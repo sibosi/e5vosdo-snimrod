@@ -11,6 +11,7 @@ type SectionProps = {
   className?: string;
   titleClassName?: string;
   savable?: boolean;
+  chip?: React.ReactNode;
 };
 
 const loadSectionStatus = (name: string) => {
@@ -36,6 +37,7 @@ export const Section = ({
   className,
   titleClassName,
   savable = true,
+  chip,
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(
     defaultStatus == "closed" ? false : true,
@@ -43,7 +45,8 @@ export const Section = ({
 
   useEffect(() => {
     setIsOpen(
-      loadSectionStatus(title) ?? (defaultStatus == "closed" ? false : true),
+      (savable ? loadSectionStatus(title) : undefined) ??
+        (defaultStatus == "closed" ? false : true),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -63,8 +66,8 @@ export const Section = ({
         } ` + className
       }
     >
-      <h1
-        className="max-w-fit py-1 text-2xl font-medium"
+      <div
+        className="flex max-w-fit py-1 text-2xl font-medium"
         onClick={toggleDropdown}
       >
         {dropdownable && (
@@ -92,7 +95,10 @@ export const Section = ({
           </Link>
         )}
         <span className={titleClassName}>{title}</span>
-      </h1>
+        <span className="my-auto ml-2 flex max-h-min justify-center pt-1 align-middle">
+          {chip}
+        </span>
+      </div>
       <div
         className={`transition-all duration-1000 ${
           !isOpen ? "max-h-0 overflow-hidden" : "h-auto"

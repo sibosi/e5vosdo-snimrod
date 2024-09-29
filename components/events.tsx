@@ -50,6 +50,19 @@ export const Events = () => {
                 makeStringToHTML={true}
               >
                 <div className="flex gap-2">
+                  {event.show_time ? (
+                    <Chip
+                      key={"day of week"}
+                      size="sm"
+                      className="bg-selfsecondary-200"
+                    >
+                      {new Date(event.show_time).toLocaleDateString("hu-HU", {
+                        weekday: "long",
+                      })}
+                    </Chip>
+                  ) : (
+                    <></>
+                  )}
                   {event.tags != undefined ? (
                     event.tags.map((tag, index) => (
                       <Chip

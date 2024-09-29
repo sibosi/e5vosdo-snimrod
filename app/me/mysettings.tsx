@@ -409,6 +409,20 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             >
               Értesítések bajnokságokról (kosár, foci, stb.)
             </Switch>
+
+            <Switch
+              defaultSelected={selfUser.push_about_timetable}
+              onChange={(e) => {
+                save_settings({
+                  settings: {
+                    ...selfUser,
+                    push_about_timetable: e.target.checked,
+                  },
+                });
+              }}
+            >
+              Értesítések az órarend változásakor (nem elérhető)
+            </Switch>
           </div>
         </SettingsSection>
 

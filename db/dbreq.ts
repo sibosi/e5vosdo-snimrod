@@ -54,6 +54,7 @@ export interface User {
   service_workers: any[];
   push_perission: boolean;
   push_about_games: boolean;
+  push_about_timetable: boolean;
 }
 
 export type UserType = User;

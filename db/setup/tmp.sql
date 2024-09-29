@@ -51,6 +51,10 @@ ADD COLUMN name VARCHAR(255) NOT NULL;
 UPDATE users
 SET name = username;
 --@block
+-- Add name col. and set name to username
+ALTER TABLE users
+ADD COLUMN push_about_timetable BOOLEAN NOT NULL DEFAULT 0;
+--@block
 -- Add permissions colunm
 ALTER TABLE users
 ADD COLUMN permissions JSON NOT NULL;

@@ -20,7 +20,7 @@ function padTo2Digits(num: number) {
 const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
   return (
     <div
-      className="gap-2 rounded-md bg-foreground-200 p-4 max-xs:text-center xs:flex"
+      className="gap-2 rounded-md bg-foreground-200 p-4 max-sm:text-center sm:flex"
       key={menu}
     >
       <div

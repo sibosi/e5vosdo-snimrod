@@ -1,4 +1,4 @@
-export default function HelloLayout({
+export default function SupportLayout({
   children,
 }: {
   children: React.ReactNode;

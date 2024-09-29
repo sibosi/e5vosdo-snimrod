@@ -1,13 +1,15 @@
-import { redirect } from "next/navigation";
 import { getAuth, hasPermission } from "@/db/dbreq";
 import { Avatar } from "@nextui-org/react";
 import MySettings from "./mysettings";
 import ToManageButton from "./toManage";
 import IDCard from "./IDCard";
+import RedirectToLogin from "./redirectToLogin";
+import Login from "@/components/LoginForm";
+import PleaseLogin from "./redirectToLogin";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
-  if (!selfUser) redirect("/");
+  if (!selfUser) return <PleaseLogin />;
 
   return (
     <>

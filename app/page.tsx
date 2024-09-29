@@ -14,6 +14,8 @@ import TimetableDay from "@/components/timetable/timetableday";
 import FreeRooms from "@/components/freeRooms";
 import Welcome from "@/components/home/welcome";
 import { Alert } from "@/components/home/alert";
+import { ChipBeta } from "@/components/chips";
+import TxtLiquid from "@/components/home/txtLiquid";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -23,56 +25,21 @@ export default async function Home() {
         {selfUser ? (
           <>
             <h1 className="inline text-5xl font-semibold lg:text-5xl">
-              Helló{" "}
-              <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
-                {selfUser.nickname}
-              </p>
-              !
+              Helló <TxtLiquid text={selfUser.nickname} />!
             </h1>
           </>
         ) : (
-          <h1 className="inline text-4xl font-semibold lg:text-5xl">
+          <div className="inline text-4xl font-semibold lg:text-5xl">
             Helló{" "}
             <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
               Eötvös Népe
             </p>
             !
-          </h1>
+          </div>
         )}
       </div>
 
-      <Alert className="mb-4 border-selfprimary-400 bg-selfprimary-200">
-        Az oldal fejlesztője béna volt és törölte a felhasználók adatait. Ez
-        van, lehet panaszkodni. (Legalább ebből is tanult.)
-      </Alert>
-
       <Welcome />
-
-      <Section title="Órarend" dropdownable={true}>
-        {0 ? (
-          selfUser ? (
-            <TimetableDay selfUser={selfUser} />
-          ) : (
-            <p>Bejelentkezés után láthatod az órarended!</p>
-          )
-        ) : (
-          <p>Jelenleg nem elérhető az órarended. Kérjük, nézz vissza később!</p>
-        )}
-      </Section>
-
-      <Section
-        title="Szabad teremkereső"
-        dropdownable={true}
-        defaultStatus="closed"
-      >
-        {0 ? (
-          <FreeRooms />
-        ) : (
-          <p>
-            Jelenleg nem elérhető a teremkereső. Kérjük, nézz vissza később!
-          </p>
-        )}
-      </Section>
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section
@@ -127,6 +94,56 @@ export default async function Home() {
         <Link href={"/events"} className="block max-w-fit text-selfprimary">
           Összes esemény ➜
         </Link>
+        <Link href={"/me"} className="block max-w-fit text-selfprimary">
+          Saját beállítások ➜
+        </Link>
+        <Link
+          href={"/clearCacke"}
+          className="hidden max-w-fit text-selfprimary"
+        >
+          Gyorsítótár törlése ➜
+        </Link>
+      </Section>
+
+      <Section
+        title="Hamarosan"
+        dropdownable={true}
+        defaultStatus="closed"
+        className="rounded-2xl bg-gradient-to-r from-selfprimary-50 to-selfprimary-bg"
+      >
+        <Section
+          title="Órarend"
+          dropdownable={false}
+          defaultStatus="closed"
+          className="mx-3 rounded-xl pl-3"
+        >
+          {0 ? (
+            selfUser ? (
+              <TimetableDay selfUser={selfUser} />
+            ) : (
+              <p>Bejelentkezés után láthatod az órarended!</p>
+            )
+          ) : (
+            <p>
+              Jelenleg nem elérhető az órarended. Kérjük, nézz vissza később!
+            </p>
+          )}
+        </Section>
+
+        <Section
+          title="Szabad teremkereső"
+          dropdownable={true}
+          defaultStatus="closed"
+          chip={<ChipBeta />}
+        >
+          {0 ? (
+            <FreeRooms />
+          ) : (
+            <p>
+              Jelenleg nem elérhető a teremkereső. Kérjük, nézz vissza később!
+            </p>
+          )}
+        </Section>
       </Section>
 
       <div className="hero bg-[url('/opinion.png')]">

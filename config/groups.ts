@@ -26,6 +26,8 @@ export const clubsOrder: string[] = [
   "FLC EJG",
   "Eötvös Diák",
   "Eötvös Média",
+  "Technikusi Szervezet",
+  "Eötvös Alkotó Műhely",
   "ZöldBiz",
 
   "Debate Club",
@@ -43,10 +45,9 @@ export const clubsOrder: string[] = [
   "Sakk - klub",
   "Sulirádió",
 
-  "Technikusi Szervezet",
+
 
   "Bimun",
-  "Eötvös Alkotó Műhely",
 ];
 
 export const clubsConfig: Group[] = [

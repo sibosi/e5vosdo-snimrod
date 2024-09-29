@@ -5,6 +5,8 @@ FROM users;
 SELECT *
 FROM notifications;
 --@block
+UPDATE notifications SET message = 'Gratulálok!\nSikeresen beléptél az Eötvös DÖ rendszerébe! Jó szórakozást!\nÜdvözlettel: Nimród, a fejlesztő' WHERE id = 1;
+--@block
 SHOW VARIABLES LIKE 'log_bin';
 SHOW VARIABLES LIKE 'log_bin_basename';
 SHOW BINARY LOGS;

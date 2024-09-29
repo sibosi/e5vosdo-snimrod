@@ -137,7 +137,9 @@ export const Notification = ({
               <h3 className="font-bold text-foreground">
                 {notification.title}
               </h3>
-              <p className="text-foreground-600">{notification.message}</p>
+              <p className="whitespace-pre-line text-foreground-600">
+                {notification.message}
+              </p>
             </div>
           </ModalBody>
         </ModalContent>

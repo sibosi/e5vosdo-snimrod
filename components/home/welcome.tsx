@@ -26,7 +26,6 @@ const Welcome = () => {
         <h1 className="text-4xl font-bold">Üdv a DÖ {siteName}! 🎉🍪</h1>
         <p className="mt-2">Az {siteName} a következő modulok érhetőek el:</p>
         <ul className="mt-2 list-inside list-disc">
-          <li>Teremcserék</li>
           <li>Helyettesítések</li>
           <li>Teremcserék</li>
           <li>Menza</li>
@@ -63,7 +62,7 @@ const Welcome = () => {
           keresztül!
         </p>
         <Button
-          className="mt-4 bg-selfprimary-100"
+          className="mr-2 mt-4 bg-selfprimary-100"
           onClick={() => {
             localStorage.setItem("welcome", "false");
             reinstallServiceWorker();

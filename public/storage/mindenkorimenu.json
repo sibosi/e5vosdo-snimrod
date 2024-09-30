@@ -305,5 +305,542 @@
       "Tk. Keny\u00e9r"
     ],
     "nap": "Monday"
+  },
+  "2024.10.01": {
+    "A": [
+      "Z\u00f6lds\u00e9gleves vajasgalusk\u00e1val",
+      "Paradcsicsomos k\u00e1posztaf\u0151zel\u00e9k",
+      "Fokhagym\u00e1s sert\u00e9scs\u00edkok"
+    ],
+    "B": [
+      "Z\u00f6lds\u00e9gleves vajasgalusk\u00e1val",
+      "Cs\u0151ben s\u00fclt tonhalfil\u00e9",
+      "P\u00e1rolt rizs 1/2adag"
+    ],
+    "nap": "Tuesday"
+  },
+  "2024.10.02": {
+    "A": ["100% iv\u00f3l\u00e9", "S\u00fclt csirkecomb", "Petrezselymes rizs"],
+    "B": [
+      "100% iv\u00f3l\u00e9",
+      "Tarhony\u00e1sh\u00fas",
+      "Vegyes v\u00e1gott savany\u00fas\u00e1g"
+    ],
+    "nap": "Wednesday"
+  },
+  "2024.10.03": {
+    "A": [
+      "S\u00e1rgabors\u00f3leves",
+      "Tejsz\u00ednes gomb\u00e1s pulykaragu",
+      "Bulgur"
+    ],
+    "B": [
+      "S\u00e1rgabors\u00f3leves",
+      "M\u00e1trai borzas csirkemellfil\u00e9",
+      "Vajas burgonya"
+    ],
+    "nap": "Thursday"
+  },
+  "2024.10.04": {
+    "A": [
+      "Karotta kr\u00e9mleves K\u00f6les goly\u00f3",
+      "Vega rakott burgonya",
+      "Csemege uborka",
+      null
+    ],
+    "B": [
+      "Tavaszi z\u00f6ldbors\u00f3leves",
+      "Pan\u00edrozott sajtgoly\u00f3",
+      "J\u00e1zmin rizs",
+      "Csemege uborka"
+    ],
+    "nap": "Friday"
+  },
+  "2024.10.07": {
+    "A": [
+      "Csontleves eperlev\u00e9llel",
+      "Lencsef\u0151zel\u00e9k",
+      "S\u00fclt sonkaszelet",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "B": [
+      "Csontleves eperlev\u00e9llel",
+      "P\u00e1rolt csirkemllfil\u00e9",
+      "Meggym\u00e1rt\u00e1s",
+      "F\u0151tt burgonya 1/2adag"
+    ],
+    "nap": "Monday"
+  },
+  "2024.10.08": {
+    "A": [
+      "Zellerkr\u00e9mleves levesgy\u00f6ngy",
+      "Csirkecomb fil\u00e9 gyros f\u0171szerrel",
+      "Kevert sal\u00e1ta joghurt \u00f6ntet"
+    ],
+    "B": [
+      "Zellerkr\u00e9mleves levesgy\u00f6ngy",
+      "Sert\u00e9spaprik\u00e1s",
+      "F\u0151tt t\u00e9szta"
+    ],
+    "nap": "Tuesday"
+  },
+  "2024.10.09": {
+    "A": [
+      "Tejf\u00f6l\u00f6s karfiolleves",
+      "Borsos sert\u00e9stok\u00e1ny",
+      "Bulgur",
+      "Csemege uborka"
+    ],
+    "B": [
+      "Tejf\u00f6l\u00f6s karfiolleves",
+      "Vasi sert\u00e9sborda",
+      "Hagym\u00e1s t\u00f6rtburgonya",
+      "Csemege uborka"
+    ],
+    "nap": "Wednesday"
+  },
+  "2024.10.10": {
+    "A": [
+      "100% iv\u00f3l\u00e9",
+      "R\u00e1ntott harcsafil\u00e9",
+      "J\u00e1zmin rizs",
+      "Francia sal\u00e1ta 1/2adag"
+    ],
+    "B": [
+      "100% iv\u00f3l\u00e9",
+      "BBQ csirkecomb cs\u00edkok",
+      "J\u00e1zmin rizs",
+      "T\u00far\u00f3 Rudi"
+    ],
+    "nap": "Thursday"
+  },
+  "2024.10.11": {
+    "A": [
+      "Magyaros z\u00f6ldbableves vajasgalusk\u00e1val",
+      "S\u00fct\u0151t\u00f6k\u00f6s tejsz\u00ednes penne",
+      "Reszelt sajt",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "B": [
+      "Magyaros z\u00f6ldbableves vajasgalusk\u00e1val",
+      "Sajtos brokkolis nuggets",
+      "Burgonyap\u00fcr\u00e9",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "nap": "Friday"
+  },
+  "2024.10.14": {
+    "A": [
+      "Kassai burgonyaleves",
+      "Pisk\u00f3ta kocka",
+      "Csokol\u00e1d\u00e9 \u00f6ntet",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "B": [
+      "Kassai burgonyaleves",
+      "Juht\u00far\u00f3s sztrapacska",
+      "Gy\u00fcm\u00f6lcs",
+      "Tk.keny\u00e9r"
+    ],
+    "nap": "Monday"
+  },
+  "2024.10.15": {
+    "A": [
+      "Er\u0151leves gazdagon",
+      "Sz\u00e9kelyk\u00e1poszta \u00e1rpagy\u00f6nggyel",
+      "Tk.keny\u00e9r",
+      null
+    ],
+    "B": [
+      "Er\u0151leves gazdagon",
+      "Z\u00f6ldbors\u00f3f\u0151zel\u00e9k",
+      "Sajttal t\u00f6lt\u00f6tt pulykatall\u00e9r",
+      "Tk.keny\u00e9r"
+    ],
+    "nap": "Tuesday"
+  },
+  "2024.10.16": {
+    "A": [
+      "M\u00e1jgaluskaleves",
+      "Sajtos tejf\u00f6l\u00f6s csirkemell",
+      "Z\u00f6lds\u00e9ges rizs"
+    ],
+    "B": [
+      "M\u00e1jgaluskaleves",
+      "Sert\u00e9s flecken",
+      "Z\u00f6lds\u00e9ges rizs"
+    ],
+    "nap": "Wednesday"
+  },
+  "2024.10.17": {
+    "A": ["Meggyleves", "Vadas pulykaragu", "Spagetti", "Gy\u00fcm\u00f6lcs"],
+    "B": [
+      "Meggyleves",
+      "R\u00e1ntott tonhalr\u00fad",
+      "P\u00e1rolt rizs 1/2adag",
+      "Francia sal\u00e1ta 1/2adag"
+    ],
+    "nap": "Thursday"
+  },
+  "2024.10.18": {
+    "A": [
+      "Csurgatott toj\u00e1sleves",
+      "Vega paradicsomos gomb\u00f3c",
+      "F\u0151tt burgonya 1/2adag"
+    ],
+    "B": [
+      "Csurgatott toj\u00e1sleves",
+      "Tejsz\u00ednes gomb\u00e1s farfalle",
+      "T\u00far\u00f3 Rudi"
+    ],
+    "nap": "Friday"
+  },
+  "2024.10.21": {
+    "A": [
+      "Frankfurtileves",
+      "Tejbendara",
+      "Kaka\u00f3 sz\u00f3rat",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "B": [
+      "Frankfurtileves",
+      "Morzs\u00e1s nudli",
+      "Baracklekv\u00e1r",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "nap": "Monday"
+  },
+  "2024.10.22": {
+    "A": [
+      "100%-os iv\u00f3l\u00e9",
+      "Szez\u00e1mmagos r\u00e1ntott sert\u00e9sborda",
+      "Rizi-bizi",
+      "Csemege uborka"
+    ],
+    "B": [
+      "100%-os iv\u00f3l\u00e9",
+      "B\u00e1cskai rizsesh\u00fas",
+      "Csemege uborka",
+      "S\u00fctem\u00e9ny"
+    ],
+    "nap": "Tuesday"
+  },
+  "2024.10.23": {
+    "A": ["\u00dcnnep"],
+    "B": ["\u00dcnnep"],
+    "nap": "Wednesday"
+  },
+  "2024.10.24": {
+    "A": [
+      "Z\u00f6lds\u00e9ges brokkolileves",
+      "Paradicsomos tonhalas penne",
+      null
+    ],
+    "B": [
+      "Z\u00f6lds\u00e9ges brokkolileves",
+      "R\u00e1ntott csirkemell",
+      "Burgonyap\u00fcr\u00e9"
+    ],
+    "nap": "Thursday"
+  },
+  "2024.10.25": {
+    "A": [
+      "Fejtett bableves (z\u00f6lds\u00e9ges)",
+      "Parajf\u0151zel\u00e9k 1/2adag",
+      "F\u0151tt toj\u00e1s",
+      "F\u0151tt burgonya 1/2adag"
+    ],
+    "B": [
+      "Fejtett bableves",
+      "T\u00far\u00f3s cs\u00fasza (szalonna n\u00e9lk\u00fcl)",
+      "Tejf\u00f6l \u00f6ntet",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "nap": "Friday"
+  },
+  "2024.11.04": {
+    "A": [
+      "Bakonyi bety\u00e1rleves",
+      "Gr\u00e1n\u00e1tos kocka",
+      "Csemege uborka"
+    ],
+    "B": [
+      "Bakonyi bety\u00e1rleves",
+      "B\u00e9csi f\u00e1nk 2db",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "nap": "Monday"
+  },
+  "2024.11.05": {
+    "A": [
+      "Daragaluskaleves",
+      "Z\u00f6ldbabf\u0151zel\u00e9k",
+      "S\u00fclt virsli"
+    ],
+    "B": [
+      "Daragaluskaleves",
+      "\u00d3v\u00e1ri sert\u00e9sborda",
+      "Burgonyap\u00fcr\u00e9"
+    ],
+    "nap": "Tuesday"
+  },
+  "2024.11.06": {
+    "A": [
+      "100%-os iv\u00f3l\u00e9",
+      "Sokmagvas r\u00e1ntott harcsa",
+      "Karott\u00e1s j\u00e1zmin rizs",
+      "Tart\u00e1r m\u00e1rt\u00e1s"
+    ],
+    "B": [
+      "100%-os iv\u00f3l\u00e9",
+      "K\u00ednai \u00e9des-savany\u00fa csirkemell",
+      "Karott\u00e1s j\u00e1zmin rizs",
+      "T\u00far\u00f3 Rudi"
+    ],
+    "nap": "Wednesday"
+  },
+  "2024.11.07": {
+    "A": [
+      "Hamis guly\u00e1sleves",
+      "Csik\u00f3s pulykatok\u00e1ny",
+      "Bulgur",
+      null
+    ],
+    "B": [
+      "Hamis guly\u00e1sleves",
+      "Erd\u00e9lyi rakott k\u00e1poszta",
+      "Tejf\u00f6l \u00f6ntet",
+      "Tk.keny\u00e9r"
+    ],
+    "nap": "Thursday"
+  },
+  "2024.11.08": {
+    "A": [
+      "Csurgatott toj\u00e1sleves",
+      "Veg\u00e1n chilisbab",
+      "Gy\u00fcm\u00f6lcs",
+      "Tk.keny\u00e9r",
+      null
+    ],
+    "B": [
+      "Csurgatott toj\u00e1sleves",
+      "R\u00e1ntott sajt",
+      "J\u00e1zmin rizs",
+      "Tart\u00e1r m\u00e1rt\u00e1s",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "nap": "Friday"
+  },
+  "2024.11.11": {
+    "A": [
+      "Lebbencsleves",
+      "Tejf\u00f6l\u00f6s t\u00f6kf\u0151zel\u00e9k",
+      "Sert\u00e9sp\u00f6rk\u00f6lt",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "B": [
+      "Lebbencsleves",
+      "Tonhal r\u00e1ntva",
+      "P\u00e1rolt rizs",
+      "Tart\u00e1r m\u00e1rt\u00e1s"
+    ],
+    "nap": "Monday"
+  },
+  "2024.11.12": {
+    "A": [
+      "\u0150szibarack kr\u00e9mleves",
+      "Ludask\u00e1sa",
+      "Csemege uborka",
+      null
+    ],
+    "B": [
+      "\u0150szibarack kr\u00e9mleves",
+      "S\u00fclt csirkecomb",
+      "Rizi-bizi",
+      "Csemege uborka"
+    ],
+    "nap": "Tuesday"
+  },
+  "2024.11.13": {
+    "A": [
+      "Francia hagymaleves kukorica pehely",
+      "Paprik\u00e1s burgonya gazdagon",
+      "C\u00e9kla sal\u00e1ta"
+    ],
+    "B": [
+      "Francia hagymaleves kukorica pehely",
+      "Brass\u00f3i apr\u00f3pecsenye",
+      "C\u00e9kla sal\u00e1ta"
+    ],
+    "nap": "Wednesday"
+  },
+  "2024.11.14": {
+    "A": [
+      "Z\u00f6ldbors\u00f3leves",
+      "Dubarry sert\u00e9szelet",
+      "K\u00f6les",
+      "T\u00far\u00f3 Rudi"
+    ],
+    "B": [
+      "Z\u00f6ldbors\u00f3leves",
+      "Torock\u00f3i tarhony\u00e1sh\u00fas",
+      "Csalam\u00e1d\u00e9",
+      "T\u00far\u00f3 Rudi"
+    ],
+    "nap": "Thursday"
+  },
+  "2024.11.15": {
+    "A": [
+      "Magyaros karal\u00e1b\u00e9leves",
+      "Parajos penne",
+      "Reszelt sajt",
+      "Gy\u00fcm\u00f6lcs",
+      null
+    ],
+    "B": [
+      "Magyaros karal\u00e1b\u00e9leves",
+      "R\u00e1ntott camembert sajt",
+      "J\u00e1zmin rizs",
+      "\u00c1fonya lekv\u00e1r",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "nap": "Friday"
+  },
+  "2024.11.18": {
+    "A": [
+      "Z\u00f6lds\u00e9ges burgonyaleves",
+      "Fejtett babf\u0151zel\u00e9k",
+      "S\u00fclt sonka",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "B": [
+      "Z\u00f6lds\u00e9ges burgonyaleves",
+      "Marhap\u00f6rk\u00f6lt",
+      "Galuska",
+      "Vitamin sal\u00e1ta"
+    ],
+    "nap": "Monday"
+  },
+  "2024.11.19": {
+    "A": ["Gombaleves", "Paradicsomos halas t\u00e9szta", "Reszelt sajt", null],
+    "B": [
+      "Gombaleves",
+      "Rakott karfiol",
+      "Tejf\u00f6l \u00f6ntet",
+      "Tk.keny\u00e9r"
+    ],
+    "nap": "Tuesday"
+  },
+  "2024.11.20": {
+    "A": [
+      "Csontleves c\u00e9rnamet\u00e9lttel",
+      "Bajor sert\u00e9sszelet",
+      "Petrezselymes burgonya",
+      "P\u00e1rolt k\u00e1poszta",
+      null
+    ],
+    "B": [
+      "Csontleves c\u00e9rnamet\u00e9lttel",
+      "Gyros csirkecombcs\u00edkok",
+      "Kevert sal\u00e1ta",
+      "Joghurtos \u00f6ntet",
+      "Pita"
+    ],
+    "nap": "Wednesday"
+  },
+  "2024.11.21": {
+    "A": [
+      "Vegyes gy\u00fcm\u00f6lcsleves",
+      "Csirkep\u00f6rk\u00f6lt",
+      "Bulgur",
+      "Csalam\u00e1d\u00e9"
+    ],
+    "B": [
+      "Vegyes gy\u00fcm\u00f6lcsleves",
+      "P\u00e1rizsi csirkemellfil\u00e9",
+      "Rizi-bizi",
+      "Csalam\u00e1d\u00e9"
+    ],
+    "nap": "Thursday"
+  },
+  "2024.11.22": {
+    "A": [
+      "Sajtkr\u00e9mleves levesgy\u00f6ngy",
+      "R\u00e1ntott karfiol",
+      "P\u00e1rolt rizs",
+      "Tart\u00e1r m\u00e1rt\u00e1s"
+    ],
+    "B": [
+      "Lencseleves",
+      "M\u00e1kos met\u00e9lt",
+      "Gy\u00fcm\u00f6lcs",
+      "Tk.keny\u00e9r"
+    ],
+    "nap": "Friday"
+  },
+  "2024.11.25": {
+    "A": [
+      "Kert\u00e9szleves",
+      "Mil\u00e1n\u00f3i makar\u00f3ni",
+      "Reszelt sajt"
+    ],
+    "B": ["Kert\u00e9szleves", "Must\u00e1ros lazac", "J\u00e1zmin rizs"],
+    "nap": "Monday"
+  },
+  "2024.11.26": {
+    "A": [
+      "100%-os iv\u00f3l\u00e9",
+      "S\u00fclt csirkecomb",
+      "Vajas t\u00f6rtburgonya",
+      "Csemege uborka"
+    ],
+    "B": [
+      "100%-os iv\u00f3l\u00e9",
+      "Inyenc sert\u00e9sborda",
+      "Vajas burgonya",
+      "S\u00fctem\u00e9ny"
+    ],
+    "nap": "Tuesday"
+  },
+  "2024.11.27": {
+    "A": [
+      "S\u00fct\u0151t\u00f6kkr\u00e9mleves t\u00f6kmaggal",
+      "B\u00e1cskai rizsesh\u00fas",
+      "C\u00e9kla sal\u00e1ta"
+    ],
+    "B": [
+      "S\u00fct\u0151t\u00f6kkr\u00e9mleves t\u00f6kmaggal",
+      "Hawai csirkemellfil\u00e9",
+      "P\u00e1rolt rizs"
+    ],
+    "nap": "Wednesday"
+  },
+  "2024.11.28": {
+    "A": [
+      "Reszelt t\u00e9sztaleves",
+      "Kelk\u00e1posztaf\u0151zel\u00e9k",
+      "Sert\u00e9svagdalt"
+    ],
+    "B": [
+      "Reszelt t\u00e9sztaleves",
+      "Pusztap\u00f6rk\u00f6lt",
+      "Vitamin sal\u00e1ta"
+    ],
+    "nap": "Thursday"
+  },
+  "2024.11.29": {
+    "A": [
+      "Z\u00f6lds\u00e9ges fejtett bableves",
+      "Aranygaluska",
+      "Vanilia sod\u00f3",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "B": [
+      "Z\u00f6lds\u00e9ges fejtett bableves",
+      "Pisk\u00f3ta kocka",
+      "Csoki \u00f6ntet",
+      "Gy\u00fcm\u00f6lcs"
+    ],
+    "nap": "Friday"
   }
 }

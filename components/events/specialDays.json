@@ -1,0 +1,76 @@
+[
+  {
+    "date": "2024/10/01",
+    "title": "Zene világnapja",
+    "image": "/events/ZVN.jpeg",
+    "events": [
+      {
+        "type": "table",
+        "title": "Diákok zenélnek",
+        "headers": [
+          "Időpont",
+          "Udvar",
+          "1. emelet",
+          "2. emelet",
+          "Büfé",
+          "3. emelet"
+        ],
+        "table": [
+          ["7:45-8:15", "Kisnullos tábori dalok", null, null, null, null],
+          [
+            "1.",
+            "Zuhanó hónapok",
+            "Szőke Boldizsár",
+            "Iovescu-Udvardy Mánuel",
+            "Traccs Alexander",
+            "Plattner Kata"
+          ],
+          [
+            "2.",
+            "Kovács Gregor",
+            "Annus Medárd",
+            "Orbán Csenge",
+            "Székely Belián, Zilahi-Sebess Sarolta, Trautsch Alexander, Trautsch Hannah",
+            "Péntek András"
+          ],
+          [
+            "3.",
+            "Pinceklubb",
+            "Izsák Simon",
+            "Bujáki Flóra, Hong Yezi",
+            "Czirók Tomi és népzene",
+            "Mészáros Marcell"
+          ],
+          [
+            "4.",
+            "Nullos zenélés",
+            "Balog Levente, Ferdinandy Réka",
+            "Terényi András",
+            "Kovács Laura, Jenei Zita, Németh Zoltán, Nagy Viola",
+            "Székely Péter, Szőke Boldizsár"
+          ],
+          [
+            "5.",
+            "Lucien; Eisler Olga, Eisler Jana",
+            "Kórus",
+            "Rósa Letícia, Mihályffy-Kádár Emma",
+            "Pulay Johanna, Veres Rebeka, Szőke Boldizsár",
+            "Suhai Soma"
+          ]
+        ]
+      },
+      {
+        "type": "event",
+        "title": "ZVN táncház",
+        "description": "Délután 16:00-17:30-ig élőzenés táncház lesz az udvaron.",
+        "date": "2024/10/01 16:00"
+      },
+      {
+        "type": "event",
+        "title": "ZVN esti koncert",
+        "description": "18:00-tól pedig a díszteremben várunk mindenkit az esti koncertre. Lesz süti, tea, zene és beszélgetés. Jegyeket a koncertre a büfében tudtok venni 500 Ft-ért. A két délutáni programra bátran hívhattok külsősöket is! (Részletek az emailben)",
+        "date": "2024/10/01 18:00"
+      }
+    ]
+  }
+]

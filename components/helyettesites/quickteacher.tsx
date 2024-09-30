@@ -12,6 +12,7 @@ import {
   ModalBody,
 } from "@nextui-org/react";
 import { Change, TeacherChange } from "@/app/api/route";
+import { Alert } from "../home/alert";
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -81,6 +82,9 @@ export const QuickTeachers = () => {
       isLoaded={isLoaded}
       className="h-auto w-auto rounded-lg text-foreground"
     >
+      <Alert className="mb-4 border-selfprimary-300 bg-selfprimary-100">
+        Kattints a tanárokra, hogy megtekintsd a helyettesítéseket!
+      </Alert>
       <React.Fragment>
         {!isLoaded && <p>Loading...</p>}
         {isLoaded && tableData && Object.keys(tableData).length ? (

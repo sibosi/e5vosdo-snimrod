@@ -95,6 +95,7 @@ const SecialDay = () => {
             <div key={index} className="my-4 text-foreground">
               {event.type == "table" && event.table
                 ? event.table.map(
+                    // @ts-ignore
                     (row: string[], rowIndex: number) =>
                       today.getTime() - 0.5 * 3600000 <
                         (row[0].endsWith(".")

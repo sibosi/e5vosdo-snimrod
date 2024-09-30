@@ -327,9 +327,10 @@ export const ThemeOptions = () => {
   return (
     <div className="flex flex-wrap gap-4 text-foreground">
       {templates.map((template) => (
-        <div
+        <button
+          type="button"
           key={template.name}
-          className="max-w-min rounded-lg bg-selfprimary-100 p-2 text-center"
+          className="max-w-min rounded-lg bg-selfprimary-100 p-2 text-center hover:bg-selfprimary-200"
           onClick={() => {
             localStorage.setItem("primaryHue", String(template.primary[0]));
             localStorage.setItem("primaryChroma", String(template.primary[1]));
@@ -370,7 +371,7 @@ export const ThemeOptions = () => {
           </div>
 
           <div className="max-w-min">{template.name}</div>
-        </div>
+        </button>
       ))}
     </div>
   );

@@ -62,7 +62,7 @@ const Welcome = () => {
           keresztül!
         </p>
         <Button
-          className="mt-4 bg-selfprimary-100"
+          className="mr-2 mt-4 bg-selfprimary-100"
           onClick={() => {
             localStorage.setItem("welcome", "false");
             reinstallServiceWorker();

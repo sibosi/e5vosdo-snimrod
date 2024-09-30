@@ -16,6 +16,7 @@ import Welcome from "@/components/home/welcome";
 import { Alert } from "@/components/home/alert";
 import { ChipBeta } from "@/components/chips";
 import TxtLiquid from "@/components/home/txtLiquid";
+import SecialDay from "@/components/events/specialDay";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -23,11 +24,9 @@ export default async function Home() {
     <div>
       <div className="pb-14 text-center text-foreground">
         {selfUser ? (
-          <>
-            <h1 className="inline text-5xl font-semibold lg:text-5xl">
-              Helló <TxtLiquid text={selfUser.nickname} />!
-            </h1>
-          </>
+          <h1 className="inline text-5xl font-semibold lg:text-5xl">
+            Helló <TxtLiquid text={selfUser.nickname} />!
+          </h1>
         ) : (
           <div className="inline text-4xl font-semibold lg:text-5xl">
             Helló{" "}
@@ -40,6 +39,10 @@ export default async function Home() {
       </div>
 
       <Welcome />
+
+      <Section title="Zene világnapja" dropdownable={true}>
+        <SecialDay />
+      </Section>
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section

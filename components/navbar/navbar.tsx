@@ -52,7 +52,11 @@ export const Navbar = ({
   );
 
   return (
-    <NextUINavbar maxWidth="xl" position="sticky" className={className}>
+    <NextUINavbar
+      maxWidth="xl"
+      position="sticky"
+      className={"top-0 " + className}
+    >
       <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
           <NextLink className="flex items-center justify-start gap-1" href="/">

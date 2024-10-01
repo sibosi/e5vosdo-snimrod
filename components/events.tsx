@@ -33,7 +33,7 @@ export const Events = () => {
       {events.map(
         (event, index) =>
           (event.show_time != undefined
-            ? new Date(event.show_time).getTime() - 21 * 24 * 60 * 60 * 1000 <
+            ? new Date(event.show_time).getTime() - 28 * 24 * 60 * 60 * 1000 <
               new Date().getTime()
             : true) &&
           new Date(event.hide_time) > new Date() && (

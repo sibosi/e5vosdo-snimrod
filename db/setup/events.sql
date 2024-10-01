@@ -83,6 +83,15 @@ VALUES
         '["zene", "koncert"]'
     ),
     (
+        "Eötvös Diák Workshop",
+        "október 2. 15:30",
+        "2024-10-02 15:30",
+        "2024-10-03",
+        "/groups/diak.jpg",
+        "Érdekel az ujságirás? Szeretsz illusztrálni, alkotni, van müvészi látásmódod? Vagy inkább egy lap végsö kinézete foglalkoztat?Szívesen pilantanál bele egy igazi szerkesztöség munkájába?\nHa bármelyik kérdésre is igennel válaszoltál, gyere el a workshopunkra!\nidópont: október 2, szerda,\n15:30, 300-as terem",
+        '["workshop"]'
+    ),
+    (
         'A 10. évf. Esztergomban',
         'október 3.',
         '2024-10-03',
@@ -95,7 +104,7 @@ VALUES
         'Ér-e bármit a fenntarthatóság cselekvés nélkül?',
         'október 3. 15:30',
         '2024-10-03 15:30',
-        '2024-10-04',
+        '2023-10-04',
         '/events/fenntarthato.jpg',
         'Szeretettel meghívunk titeket az alábbi előadásra, a Zöld Bizottság idei első programjára.\n\nKovács Szabolcsot (Green Sense) hívtuk az iskolába, ahol meghallgathatjuk az:\n\n\n"Ér-e bármit a fenntarthatóság cselekvés nélkül?"\n\n\ncímű előadását.\n\n\nAz előadás motiváló jellegű, lesz szó arról, hogy mit tehetünk mint egyén, és mint egy közösség a környezetért, továbbá fogunk kapni tippeket, tanácsokat.\n\n\nEgy rövid ismertető az előadóról:\n\n\n“Közgazdász, 13 éves Mastercard karrierjének utolsó 2 évében a magyarországi iroda fenntarthatósági menedzsere volt, rájött, hogy őt ez érdekli igazán, ez motiválja. Munka melletti projektként kezdett el foglalkozni a dolgozók környezettudatos szemléletformálásával, és észrevette, hogy módszereivel tud hatni a kollégákra, akik képesek voltak a zöld gondolatokat, szokásokat beépíteni mindennapjaikba. Ezekből a tapasztalatokból nőtt ki a GreenSense Consulting, és született meg első szolgáltatásuk: a GreenStorm, amely vállalati dolgozóknak tart gyakorlatorientált környezettudatos képzéseket.”\n\n\nAz előadás szeptember 26-án csütörtökön 15:30-tól kezdődik a 202-es teremben.\n\n\nAz alábbi űrlapon tudsz jelentkezni eötvösös email-címmel:\n\n\n<a href="https://forms.gle/6TbYwkLu6v5UpGju5" className="text-selfsecondary-700">https://forms.gle/6TbYwkLu6v5UpGju5</a>\n\n\nVárunk mindenkit szeretettel:\n\nA Zöld Bizottság💚',
         '["fenntarthatóság", "előadás"]'
@@ -110,6 +119,15 @@ VALUES
         '["társasjáték"]'
     ),
     (
+        "Filmklub - INCEPTION",
+        "október 4. 15:30",
+        "2024-10-04 15:30",
+        "2024-10-05",
+        "/groups/filmklub.jpg",
+        "Hello Eötvös népe!\nÖrömmel jelentjük be, hogy ezen a héten pénteken (10.04.) megrendezésre kerül az elsö Filmklub session!\n15:30-tól várunk titeket a HÖKI-ben (Höközpont, alagsor), hogy megtekintsük az általatok kiválasztott filmet - INCEPTION.\nGyertek sokan, mindenkit szeretettel ölelünk!\nFilmklub vezetöség",
+        '["filmklub"]'
+    ),
+    (
         'Eötvös Bazár',
         'október 19.',
         '2024-10-19',
@@ -122,7 +140,7 @@ VALUES
     ,"október 24.",
     "2024-10-24",
     "2024-10-25",
-    "/events/kmt.jpg",
+    "/events/KMT.jpg",
     "Idén is elérkezett az idő, hogy megmutassátok, milyen rejtett tehetségekkel rendelkeztek! Az Eötvös Napok keretein belül megrendezésre kerül a már jól ismert KiMitTud? verseny, amelynek időpontja: október 24.\n\nEz egy fantasztikus lehetőség arra, hogy színpadra lépj, megcsillogtasd képességeidet, és egyúttal szórakoztasd is diáktársaidat! Akár énekelsz, táncolsz, zenélsz, előadói készségeid vannak, vagy valami igazán különlegeset tudsz – itt a helyed! Bármilyen műfajban indulhatsz, a lényeg, hogy merd megmutatni, mire vagy képes.\n\nNe hagyd ki ezt az izgalmas lehetőséget! Jelentkezni október 10-ig tudtok az alábbi linken keresztül, egyéni vagy csoportos produkció előadására:\n\n\n<a href='https://docs.google.com/forms/d/1fQQXcE0NwIF0PPrHfKoHW9bsAumsDOJU8cN4eCC1I6s/edit' className='text-selfsecondary-700'>https://docs.google.com/forms/d/1fQQXcE0NwIF0PPrHfKoHW9bsAumsDOJU8cN4eCC1I6s/edit</a>\n\n\nTedd emlékezetessé az idei Eötvös Napokat – légy te az, akire mindenki emlékezni fog!\n\nVárjuk a jelentkezéseiteket!\n\nÜdvözlettel,\nEötvös DÖ és TechTeam",
     '["vetélkedő"]'
     ),
@@ -140,7 +158,7 @@ VALUES
         'október 26. - november 3.',
         '2024-10-26',
         '2024-11-04',
-        '/events/szunet.jpg',
+        '/events/osziszunet.jpg',
         NULL,
         '[]'
     ),

@@ -40,10 +40,6 @@ export default async function Home() {
 
       <Welcome />
 
-      <Section title="Zene világnapja" dropdownable={true}>
-        <SecialDay />
-      </Section>
-
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section
           title={"Teremcserék"}

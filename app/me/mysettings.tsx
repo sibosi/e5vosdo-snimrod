@@ -261,6 +261,8 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
     }
   }
 
+  console.log("Push permission:", selfUser.push_about_games);
+
   return (
     <>
       <div className="mx-auto max-w-xl gap-3 rounded-2xl border-2 bg-transparent px-5 pb-16 pt-5">
@@ -395,14 +397,31 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             </Switch>
 
             <Switch
-              defaultChecked={selfUser.push_about_games}
+              defaultSelected={selfUser.push_about_games}
               onChange={(e) => {
                 save_settings({
-                  settings: { push_about_games: e.target.checked },
+                  settings: {
+                    ...selfUser,
+                    push_about_games: e.target.checked,
+                  },
                 });
               }}
             >
               Értesítések bajnokságokról (kosár, foci, stb.)
+            </Switch>
+
+            <Switch
+              defaultSelected={selfUser.push_about_timetable}
+              onChange={(e) => {
+                save_settings({
+                  settings: {
+                    ...selfUser,
+                    push_about_timetable: e.target.checked,
+                  },
+                });
+              }}
+            >
+              Értesítések az órarend változásakor (nem elérhető)
             </Switch>
           </div>
         </SettingsSection>

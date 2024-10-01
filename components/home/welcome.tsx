@@ -26,14 +26,17 @@ const Welcome = () => {
         <h1 className="text-4xl font-bold">Üdv a DÖ {siteName}! 🎉🍪</h1>
         <p className="mt-2">Az {siteName} a következő modulok érhetőek el:</p>
         <ul className="mt-2 list-inside list-disc">
-          <li>Órarend</li>
-          <li>Szabad teremkereső</li>
-          <li>Teremcserék</li>
           <li>Helyettesítések</li>
+          <li>Teremcserék</li>
           <li>Menza</li>
           <li>Események</li>
           <li>Klubok és szakkörök</li>
           <li>Visszajelzés a DÖ-nek</li>
+          <li>Órarend (hamarosan)</li>
+          <li>Szabad teremkereső (hamarosan)</li>
+          <li>
+            És még sok más, amit a jövőben tervezünk, vagy éppen fejlesztünk!
+          </li>
         </ul>
 
         <p className="my-2">
@@ -45,7 +48,8 @@ const Welcome = () => {
         <ThemeOptions />
 
         <p className="my-2">
-          Ha bármilyen hibát tapasztalsz, vagy ötleted lenne az alkalmazással
+          Az oldal állandó fejlesztés alatt áll, és új funkciókkal bővül. Ha
+          bármilyen hibát tapasztalsz, vagy ötleted lenne az alkalmazással
           kapcsolatban, kérjük jelezd a{" "}
           <span>
             <Link
@@ -57,6 +61,16 @@ const Welcome = () => {
           </span>{" "}
           keresztül!
         </p>
+        <Button
+          className="mr-2 mt-4 bg-selfprimary-100"
+          onClick={() => {
+            localStorage.setItem("welcome", "false");
+            reinstallServiceWorker();
+            window.location.reload();
+          }}
+        >
+          ❌ Bezárás
+        </Button>
         <Button
           className="mt-4 bg-selfprimary-100"
           onClick={() => {

@@ -24,11 +24,11 @@ interface Group {
 export const clubsOrder: string[] = [
   "Eötvös Podcast",
   "FLC EJG",
+  "Filmklub",
   "Eötvös Diák",
-  "Eötvös Média",
-  "ZöldBiz",
 
-  "Debate Club",
+  "ZöldBiz",
+  "Eötvös Média",
 
   "Elsősegélynyújtó Diákkör",
 
@@ -36,17 +36,19 @@ export const clubsOrder: string[] = [
   "Eötvös Vakondok",
   "Kéktúra-szakkör",
   "TársasTár",
+  "Debate Club",
 
   "Színjátszó",
-  "MUN-Club",
   "Nekünk X",
-  "Sakk - klub",
-  "Sulirádió",
 
   "Technikusi Szervezet",
-
-  "Bimun",
   "Eötvös Alkotó Műhely",
+
+  "MUN-Club",
+  "Bimun",
+
+  "Sulirádió",
+  "Sakk - klub",
 ];
 
 export const clubsConfig: Group[] = [
@@ -432,6 +434,21 @@ export const clubsConfig: Group[] = [
       {
         title: "FLC EJG Instagram",
         value: "https://www.instagram.com/flc_ejg/",
+        type: "instagram",
+      },
+    ],
+    new: true,
+  },
+  {
+    title: "Filmklub",
+    image: "/groups/filmklub.jpg",
+    description: "",
+    details:
+      "Péntekenként, 15:30-tól bombasztikus filmeket nézünk mint egy nagy család és beszélgetünk is róluk.",
+    links: [
+      {
+        title: "Filmklub Instagram",
+        value: "https://www.instagram.com/filmklub.ejg",
         type: "instagram",
       },
     ],

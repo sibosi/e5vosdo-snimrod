@@ -23,7 +23,7 @@ export const siteConfig = {
     },
     {
       label: "Dokumentumok ⤤",
-      href: "https://drive.google.com/drive/u/0/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA",
+      href: "https://drive.google.com/drive/u/0/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA?resourcekey=0-dexBffraBCSqohIM_y4Xiw",
     },
     {
       label: "Események",

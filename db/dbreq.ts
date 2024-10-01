@@ -54,6 +54,7 @@ export interface User {
   service_workers: any[];
   push_perission: boolean;
   push_about_games: boolean;
+  push_about_timetable: boolean;
 }
 
 export type UserType = User;
@@ -528,9 +529,9 @@ export async function editMySettings({
   settings,
 }: {
   settings: {
-    nickname: string;
-    EJG_code: string;
-    food_menu: string;
+    nickname?: string;
+    EJG_code?: string;
+    food_menu?: string;
     push_perission?: boolean;
     push_about_games?: boolean;
   };
@@ -570,10 +571,13 @@ export async function editMySettings({
       } WHERE email = '${email}';`,
     );
 
+  const newNickname = settings.nickname ?? user.nickname;
+  const newFoodMenu = settings.food_menu ?? user.food_menu;
+
   const REQ1 = `UPDATE users SET nickname = '${
-    settings.nickname
+    newNickname
   }', EJG_code = '${valid_EJG_code}', food_menu = ${
-    settings.food_menu == null ? null : "'" + settings.food_menu + "'"
+    newFoodMenu == null ? null : "'" + newFoodMenu + "'"
   } WHERE email = '${email}';`;
 
   requests.push(REQ1);
@@ -785,7 +789,7 @@ export const apireq = {
   getUsersName: { req: getUsersName, perm: ["student"] },
   getUser: { req: getUser, perm: [] },
   getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },
-  getAuth: { req: getAuth, perm: [] },
+  getAuth: { req: getAuth, perm: ["user"] },
   hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
   getEvents: { req: getEvents, perm: [] },
@@ -824,6 +828,7 @@ export type apireqType = (typeof apioptions)[number];
 
 export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getUsers") return await getUsers();
+  else if (req === "getAuth") return await getAuth();
   else if (req === "getPageSettings") return await getPageSettings();
   else if (req === "editPageSettings")
     return await editPageSettings(body.settings);

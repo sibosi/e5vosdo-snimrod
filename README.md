@@ -48,6 +48,8 @@ Licensed under the [MIT license](https://github.com/nextui-org/next-app-template
 
 Acknowledgements
 
+- Ábel for the support
+
 - Lajos for the support
 
 - Zoltán for the support

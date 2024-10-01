@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `hidden_lessons` JSON NOT NULL,
     `default_group` INT,
     `push_permission` BOOLEAN NOT NULL DEFAULT 0,
-    `push_about_games` BOOLEAN NOT NULL DEFAULT 0
+    `push_about_games` BOOLEAN NOT NULL DEFAULT 0,
+    `push_about_timetable` BOOLEAN NOT NULL DEFAULT 0
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 -- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE

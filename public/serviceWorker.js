@@ -62,6 +62,44 @@ async function getStorage(id) {
   });
 }
 
+const CACHE_NAME_BEGINNING = "simple-cache-";
+const CACHE_NAME = async () => {
+  return (
+    CACHE_NAME_BEGINNING +
+    (await fetch("/manifest.json")
+      .then((res) => res.json())
+      .then((data) => data.version))
+  );
+};
+
+const deleteOldCache = async () => {
+  const cacheName = await CACHE_NAME();
+  const cacheNames = await caches.keys();
+
+  await Promise.all(
+    cacheNames.map(async (oldCacheName) => {
+      if (
+        oldCacheName.startsWith(CACHE_NAME_BEGINNING) &&
+        oldCacheName !== cacheName
+      ) {
+        await caches.delete(oldCacheName);
+      }
+    }),
+  );
+};
+
+let lastChecked = 0;
+const CACHE_DURATION = 1000 * 60 * 10; // 10 minutes
+
+function checkForUpdate() {
+  const now = Date.now();
+
+  if (now - lastChecked > CACHE_DURATION) {
+    lastChecked = now;
+    deleteOldCache();
+  }
+}
+
 self.addEventListener("push", function (event) {
   let data = JSON.parse(event.data.text());
   const icon = data.icon ?? "/favicon.ico";
@@ -89,13 +127,11 @@ self.addEventListener("notificationclick", function (event) {
   );
 });
 
-const CACHE_NAME = "simple-cache";
-
 self.addEventListener("install", (event) => {
   caches.keys().then((cacheNames) => {
     return Promise.all(
-      cacheNames.map((cacheName) => {
-        if (cacheName !== CACHE_NAME) {
+      cacheNames.map(async (cacheName) => {
+        if (cacheName !== (await CACHE_NAME())) {
           return caches.delete(cacheName);
         }
       }),
@@ -120,6 +156,7 @@ let cacheMethod = null;
 (async () => (cacheMethod = await getStorage("cacheMethod")))();
 
 self.addEventListener("fetch", (event) => {
+  checkForUpdate();
   if (event.request.method !== "GET") return;
 
   const shouldDisallow = DISALLOWED_URLS.some((disallowedUrl) => {
@@ -170,7 +207,7 @@ self.addEventListener("fetch", (event) => {
           throw error;
         }
       } else {
-        const cache = await caches.open(CACHE_NAME);
+        const cache = await caches.open(await CACHE_NAME());
         const cachedResponse = await cache.match(event.request);
 
         if (cachedResponse) {
@@ -223,38 +260,5 @@ self.addEventListener("message", (event) => {
     );
 
     return;
-
-    event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        // 1. Store cache URLs
-        return cache.keys().then((requests) => {
-          const urlsToReCache = requests.map((request) => request.url);
-
-          // 2. Delete old cache
-          return caches.delete(CACHE_NAME).then(() => {
-            return caches.open(CACHE_NAME).then((newCache) => {
-              // 3. Re-cache URLs
-              return Promise.all(
-                urlsToReCache.map((url) => {
-                  return fetch(url)
-                    .then((response) => {
-                      if (response.ok) {
-                        return newCache.put(url, response);
-                      }
-                      console.warn(`Fetching ${url} failed during re-cache.`);
-                    })
-                    .catch((error) => {
-                      console.error(
-                        `Error fetching ${url} during re-cache:`,
-                        error,
-                      );
-                    });
-                }),
-              );
-            });
-          });
-        });
-      }),
-    );
   }
 });

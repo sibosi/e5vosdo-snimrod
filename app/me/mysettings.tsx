@@ -456,7 +456,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           defaultStatus="closed"
           dropdownable={true}
         >
-          <table className="table gap-y-2">
+          <table className="table my-2 gap-y-2">
             <tbody>
               <tr>
                 <th className="font-semibold">Gyorsítótár használata</th>
@@ -469,42 +469,29 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                     <Radio value="offline">Csak offline</Radio>
                     <Radio value="never">Soha</Radio>
                   </RadioGroup>
-
-                  <Button
-                    color="warning"
-                    onClick={() =>
-                      caches.keys().then((keys) => {
-                        keys.forEach((key) => {
-                          caches.delete(key);
-                        });
-                        alert("A gyorsítótár kiürítve.");
-                      })
-                    }
-                  >
-                    Gyorsítótár kiürítése
-                  </Button>
                 </th>
               </tr>
             </tbody>
           </table>
-          <VersionManager />
 
           <VersionTable />
 
-          <Button
-            className="my-4"
-            color="warning"
-            onClick={() => {
-              caches.keys().then((keys) => {
-                keys.forEach((key) => {
-                  caches.delete(key);
+          <div className="my-2 flex gap-2">
+            <VersionManager />
+            <Button
+              color="warning"
+              onClick={() => {
+                caches.keys().then((keys) => {
+                  keys.forEach((key) => {
+                    caches.delete(key);
+                  });
+                  alert("A gyorsítótár kiürítve.");
                 });
-                alert("A gyorsítótár kiürítve.");
-              });
-            }}
-          >
-            Gyorsítótár kiürítése
-          </Button>
+              }}
+            >
+              Gyorsítótár kiürítése
+            </Button>
+          </div>
 
           <CacheManager />
         </SettingsSection>

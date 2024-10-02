@@ -3,16 +3,15 @@ import { Avatar } from "@nextui-org/react";
 import MySettings from "./mysettings";
 import ToManageButton from "./toManage";
 import IDCard from "./IDCard";
-import RedirectToLogin from "./redirectToLogin";
-import Login from "@/components/LoginForm";
 import PleaseLogin from "./redirectToLogin";
+import TxtLiquid from "@/components/home/txtLiquid";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
   return (
-    <>
+    <div>
       <Avatar
         isBordered
         color="default"
@@ -21,9 +20,9 @@ const AboutPage = async () => {
       />
       <h1 className="pb-5 pt-3 text-center text-4xl font-semibold text-foreground lg:text-5xl">
         Helló{" "}
-        <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
-          {selfUser.nickname}
-        </p>
+        <div className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
+          <TxtLiquid text={selfUser.nickname} />
+        </div>
         !
       </h1>
 
@@ -36,14 +35,12 @@ const AboutPage = async () => {
             <ToManageButton className="my-2 bg-selfsecondary-300" />
           </div>
         </div>
-      ) : (
-        <></>
-      )}
+      ) : null}
 
       <IDCard EJG_code={selfUser.EJG_code} codeType="barcode" center={true} />
 
       <MySettings selfUser={selfUser} />
-    </>
+    </div>
   );
 };
 

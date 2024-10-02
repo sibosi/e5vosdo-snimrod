@@ -101,6 +101,15 @@ VALUES
         '["10. évf", "kirándulás"]'
     ),
     (
+        "FLC előadás a bankkártyák témában",
+        "okt. 3. 15:45 - fsz. földrajz terem",
+        "2024-10-03 15:45",
+        "2024-10-04",
+        "/groups/FLC.jpg",
+        NULL,
+        '["pénzügy", "előadás"]'
+    ),
+    (
         'Ér-e bármit a fenntarthatóság cselekvés nélkül?',
         'október 3. 15:30',
         '2024-10-03 15:30',

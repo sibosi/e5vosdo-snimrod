@@ -60,22 +60,18 @@ export const Events = () => {
                         weekday: "long",
                       })}
                     </Chip>
-                  ) : (
-                    <></>
-                  )}
-                  {event.tags != undefined ? (
-                    event.tags.map((tag, index) => (
-                      <Chip
-                        key={tag + "" + index}
-                        className="bg-selfprimary-200"
-                        size="sm"
-                      >
-                        {tag}
-                      </Chip>
-                    ))
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
+                  {event.tags != undefined
+                    ? event.tags.map((tag, index) => (
+                        <Chip
+                          key={tag + "" + index}
+                          className="bg-selfprimary-200"
+                          size="sm"
+                        >
+                          {tag}
+                        </Chip>
+                      ))
+                    : null}
                   {event.image ? (
                     <Chip size="sm" variant="flat">
                       <Link
@@ -85,15 +81,13 @@ export const Events = () => {
                         Kép forrása
                       </Link>
                     </Chip>
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
                 </div>
               </SideCard>
             </div>
           ),
       )}
-      {!noneEvent ? <p>Nincs esemény</p> : <></>}
+      {!noneEvent ? <p>Nincs esemény</p> : null}
     </div>
   );
 };

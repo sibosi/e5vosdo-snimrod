@@ -55,7 +55,7 @@ function ServiceWorker() {
       interval();
     }
   }, []);
-  return <></>;
+  return null;
 }
 
 export default ServiceWorker;

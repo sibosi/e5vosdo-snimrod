@@ -15,28 +15,14 @@ import FreeRooms from "@/components/freeRooms";
 import Welcome from "@/components/home/welcome";
 import { Alert } from "@/components/home/alert";
 import { ChipBeta } from "@/components/chips";
-import TxtLiquid from "@/components/home/txtLiquid";
 import SecialDay from "@/components/events/specialDay";
+import HelloMessage from "@/components/home/helloMessage";
 
 export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <div className="pb-14 text-center text-foreground">
-        {selfUser ? (
-          <h1 className="inline text-5xl font-semibold lg:text-5xl">
-            Helló <TxtLiquid text={selfUser.nickname} />!
-          </h1>
-        ) : (
-          <div className="inline text-4xl font-semibold lg:text-5xl">
-            Helló{" "}
-            <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
-              Eötvös Népe
-            </p>
-            !
-          </div>
-        )}
-      </div>
+      <HelloMessage selfUser={selfUser} />
 
       <Welcome />
 

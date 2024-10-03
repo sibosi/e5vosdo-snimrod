@@ -20,6 +20,7 @@ import {
   InstagramIcon,
   LinkIcon,
   PhoneIcon,
+  SpotifyIcon,
   YoutubeIcon,
 } from "./icons";
 
@@ -44,6 +45,7 @@ const LinkTypeIcons = {
   website: <LinkIcon size={iconSize} />,
   classroom: <ClassroomIcon size={iconSize} />,
   youtube: <YoutubeIcon size={iconSize} />,
+  spotify: <SpotifyIcon size={iconSize} />,
 };
 
 const navigateToLink = (value: Link) => {

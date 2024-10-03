@@ -8,7 +8,8 @@ export interface Link {
     | "email"
     | "phone"
     | "classroom"
-    | "youtube";
+    | "youtube"
+    | "spotify";
   title: string;
   value: string;
 }
@@ -268,6 +269,11 @@ export const clubsConfig: Group[] = [
         title: "Iskolarádió Instagram",
         value: "https://www.instagram.com/e5vos.suliradio/",
         type: "instagram",
+      },
+      {
+        title: "Iskolarádió Spotify",
+        value: "https://open.spotify.com/playlist/4qsZY2JmKxdsZ7KETT1qbb",
+        type: "spotify",
       },
     ],
   },

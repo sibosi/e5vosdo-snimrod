@@ -14,6 +14,8 @@ type Event = {
   tags: string[];
 };
 
+export type EventType = Event;
+
 export const Events = () => {
   let noneEvent = false;
   const [events, setEvents] = useState<Event[]>([]);

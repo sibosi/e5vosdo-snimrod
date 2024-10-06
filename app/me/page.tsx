@@ -1,7 +1,6 @@
 import { getAuth, hasPermission } from "@/db/dbreq";
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Link } from "@nextui-org/react";
 import MySettings from "./mysettings";
-import ToManageButton from "./toManage";
 import IDCard from "./IDCard";
 import PleaseLogin from "./redirectToLogin";
 import TxtLiquid from "@/components/home/txtLiquid";
@@ -30,9 +29,31 @@ const AboutPage = async () => {
         <div className="my-5">
           <div className="mx-1 rounded-2xl bg-selfprimary-100 bg-gradient-to-r p-3">
             <h2 className="text-2xl font-semibold text-foreground">
-              Adminoknak és tesztelőknek
+              Felhasználók és oldal kezelése
             </h2>
-            <ToManageButton className="my-2 bg-selfsecondary-300" />
+
+            <Link
+              href="/about"
+              className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+            >
+              Az oldal kezelése
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
+      {(await hasPermission(selfUser.email, "updateEvent")) ? (
+        <div className="my-5">
+          <div className="mx-1 rounded-2xl bg-selfprimary-100 bg-gradient-to-r p-3">
+            <h2 className="text-2xl font-semibold text-foreground">
+              Események kezelése
+            </h2>
+            <Link
+              href="/dev"
+              className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+            >
+              Események kezelése
+            </Link>
           </div>
         </div>
       ) : null}

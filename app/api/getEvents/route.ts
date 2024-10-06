@@ -1,8 +1,9 @@
+import { EventType } from "@/components/events";
 import { getEvents } from "@/db/dbreq";
 import { NextResponse } from "next/server";
 
-const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
-let cachedData: any[];
+const CACHE_DURATION = 1000 * 60 * 1; // 1 minute
+let cachedData: EventType[];
 let lastUpdated: number;
 
 export async function GET() {
@@ -12,6 +13,12 @@ export async function GET() {
   }
 
   cachedData = await getEvents();
+  cachedData.sort((a, b) => {
+    if (!a.show_time) return 1;
+    if (!b.show_time) return -1;
+    return new Date(a.show_time).getTime() - new Date(b.show_time).getTime();
+  });
+
   lastUpdated = Date.now();
   return NextResponse.json(cachedData);
 }

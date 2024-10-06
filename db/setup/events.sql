@@ -124,7 +124,7 @@ VALUES
         '2024-10-04',
         '2024-10-05',
         '/groups/tarsastar.jpg',
-        'Örömmel jelentjük be, hogy idei tanévünk első társas délutánja most pénteken (okt. 4-én) kerül megrendezésre.\n\nVárunk minden új és visszatérő diákot péntek 7. óra után a 307-esben!',
+        'Örömmel jelentjük be, hogy idei tanévünk első társas délutánja most pénteken (okt. 4-én) kerül megrendezésre.\n\nVárunk minden új és visszatérő diákot péntek 7. óra után a 201-esben!',
         '["társasjáték"]'
     ),
     (

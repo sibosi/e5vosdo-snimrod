@@ -27,7 +27,8 @@ export const SideCard = ({
   const OptionalButton = (popup: boolean) => {
     if (popup) {
       return (
-        details != undefined && (
+        details != undefined &&
+        details != "" && (
           <PopupButton
             key={undefined}
             title={title}
@@ -52,6 +53,7 @@ export const SideCard = ({
               src={image}
               alt="image"
               priority={true}
+              unoptimized={image.startsWith("http")}
             />
           </figure>
         )}

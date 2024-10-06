@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
+import { EventType } from "@/components/events";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -162,7 +163,17 @@ export async function getUsersEmail() {
 }
 
 export async function getEvents() {
-  return (await dbreq(`SELECT * FROM \`events\``)) as any[];
+  return (await dbreq(`SELECT * FROM \`events\``)) as EventType[];
+}
+
+export async function updateEvent(event: EventType) {
+  console.log(event);
+  if (!event.id) {
+    const REQ1 = `INSERT INTO events (title, time, show_time, hide_time, image, details, tags) VALUES ('${event.title}', '${event.time}', '${event.show_time}', '${event.hide_time}', '${event.image}', '${event.details}', '${event.tags}');`;
+    return await dbreq(REQ1);
+  }
+  const REQ1 = `UPDATE events SET title = '${event.title}', time = '${event.time}', show_time = '${event.show_time}', hide_time = '${event.hide_time}', image = '${event.image}', details = '${event.details}', tags = '${event.tags}' WHERE id = ${event.id};`;
+  return await dbreq(REQ1);
 }
 
 export async function getStudentUsers() {
@@ -793,6 +804,7 @@ export const apireq = {
   hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
   getEvents: { req: getEvents, perm: [] },
+  updateEvent: { req: updateEvent, perm: ["admin"] },
   getStudentUsers: { req: getStudentUsers, perm: ["admin", "tester"] },
   getStudentUsersEmail: { req: getStudentUsersEmail, perm: [] },
   getAdminUsers: { req: getAdminUsers, perm: ["admin", "tester"] },
@@ -836,7 +848,10 @@ export const defaultApiReq = async (req: string, body: any) => {
     return await getAllUsersNameByEmail();
   else if (req === "getUsersName") return await getUsersName();
   else if (req === "getEvents") return await getEvents();
-  else if (req === "getStudentUsers") return await getStudentUsers();
+  else if (req === "updateEvent") {
+    const { event } = body;
+    return await updateEvent(event);
+  } else if (req === "getStudentUsers") return await getStudentUsers();
   else if (req === "getAdminUsers") return await getAdminUsers();
   else if (req === "getUsersEmail") return await getUsersEmail();
   else if (req === "getAdminUsersEmail") return await getAdminUsersEmail();

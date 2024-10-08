@@ -17,6 +17,7 @@ import { Alert } from "@/components/home/alert";
 import { ChipBeta } from "@/components/chips";
 import SecialDay from "@/components/events/specialDay";
 import HelloMessage from "@/components/home/helloMessage";
+import MillioLepes from "@/components/home/milliolepes";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -45,6 +46,10 @@ export default async function Home() {
           <QuickTeachers />
         </Section>
       )}
+
+      <Section title="Millió Lépés" dropdownable={true} defaultStatus="closed">
+        <MillioLepes />
+      </Section>
 
       {siteConfig.pageSections["menza"] != "hidden" && (
         <Section

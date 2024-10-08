@@ -3,7 +3,7 @@ SELECT *
 FROM users;
 --@block
 SELECT *
-FROM logs;
+FROM events;
 --@block
 UPDATE notifications SET message = 'Gratulálok!\nSikeresen beléptél az Eötvös DÖ rendszerébe! Jó szórakozást!\nÜdvözlettel: Nimród, a fejlesztő' WHERE id = 1;
 --@block

@@ -29,10 +29,13 @@ async function update() {
   console.log("Updating the table...");
   console.log(new Date().toISOString());
 
-  const data = (await fetch(URL).then((res) => res.json())) as {
+  const data: {
     board: SchoolData[];
     timestamp: string;
-  };
+  } = await fetch(URL, {
+    method: "GET",
+  }).then((res) => res.json());
+
   console.log("Data fetched");
 
   const { board } = data;
@@ -48,12 +51,13 @@ async function update() {
   const worseSchool = board.filter((d) => d.rank == school.rank + 1);
 
   console.log("Data processed");
-  return {
+  const resp: MillioLepesAPIResponse = {
     worseSchool: worseSchool[0],
     school,
     betterShool: betterShool[0],
     timestamp: data.timestamp,
   };
+  return resp;
 }
 
 export async function GET() {

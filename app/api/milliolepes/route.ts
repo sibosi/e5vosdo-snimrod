@@ -1,7 +1,13 @@
+import { getAuth } from "@/db/dbreq";
 import { NextResponse } from "next/server";
 
 const ISKOLA = "Budapest V. Kerületi Eötvös József Gimnázium";
 const URL = "https://backend.milliolepes.hu/api/v2/comp/7/board/fullorg"; // gives a JSON with all the data
+
+export async function POST() {
+  const selfUser = await getAuth();
+  return NextResponse.json(selfUser?.name + " - This is an unsupported method");
+}
 
 export interface SchoolData {
   rank: number;

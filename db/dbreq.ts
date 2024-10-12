@@ -795,7 +795,7 @@ export async function getFreeRooms(
 export const apireq = {
   getPageSettings: { req: getPageSettings, perm: [] },
   editPageSettings: { req: editPageSettings, perm: ["admin"] },
-  getUsers: { req: getUsers, perm: ["admin", "tester"] },
+  getUsers: { req: getUsers, perm: ["admin"] },
   getUsersName: { req: getUsersName, perm: ["student"] },
   getUser: { req: getUser, perm: [] },
   getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },

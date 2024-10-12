@@ -21,6 +21,7 @@ import GetApp from "../PWA/getApp";
 import { User } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
 import HelloMessage from "../home/helloMessage";
+import { Chip } from "@nextui-org/react";
 
 export const Navbar = ({
   selfUser,
@@ -60,7 +61,7 @@ export const Navbar = ({
     >
       <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
-          {!selfUser?.permissions.includes("admin") ? (
+          {!selfUser?.permissions.includes("tester") ? (
             <NextLink
               className="flex items-center justify-start gap-1"
               href="/"
@@ -69,7 +70,14 @@ export const Navbar = ({
               <p className="block- hidden p-2 font-bold text-foreground">E5</p>
             </NextLink>
           ) : (
-            <HelloMessage selfUser={selfUser} size="sm" padding={false} />
+            <>
+              <HelloMessage selfUser={selfUser} size="sm" padding={false} />
+              {selfUser?.permissions.includes("tester") && (
+                <Chip variant="shadow" className="bg-selfsecondary-300 text-sm">
+                  Tesztverzió
+                </Chip>
+              )}
+            </>
           )}
 
           <GetApp size={isActiveHeadSpace ? "small" : "medium"} />
@@ -93,6 +101,7 @@ export const Navbar = ({
       </NavbarContent>
 
       <NavbarContent justify="start" />
+
       <NavbarContent justify="center" className="md:hidden">
         <LiveScore />
       </NavbarContent>

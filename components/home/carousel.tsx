@@ -1,4 +1,5 @@
 "use client";
+import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 interface CarouselItemProps {
@@ -56,7 +57,7 @@ const CarouselItem = ({
   }, []);
 
   const MEDIUM_IMAGE_WIDTH = largeImageWidth * 0.5;
-  const SMALL_IMAGE_WIDTH = MEDIUM_IMAGE_WIDTH * 0.5;
+  const SMALL_IMAGE_WIDTH = MEDIUM_IMAGE_WIDTH * 0.8; // 0.5
 
   const inputRange = [
     (index - 2) * SMALL_IMAGE_WIDTH,
@@ -67,6 +68,10 @@ const CarouselItem = ({
 
   const isLastItem = dataLength === index + 1;
   const isSecondLastItem = dataLength === index + 2;
+
+  console.log("Small: " + SMALL_IMAGE_WIDTH);
+  console.log("Medium: " + MEDIUM_IMAGE_WIDTH);
+  console.log("Large: " + largeImageWidth);
 
   const getOutputRange = () => {
     if (isLastItem) {
@@ -127,7 +132,7 @@ const CarouselItem = ({
         <div className="fixed bottom-0 m-1 text-base font-semibold text-slate-200">
           {Array.isArray(title) ? (
             <>
-              {title.map((row) => (
+              {[scrollX, animatedWidth].map((row) => (
                 <p className="mx-1 max-w-fit whitespace-nowrap" key={row}>
                   {row}
                 </p>
@@ -149,22 +154,31 @@ export default function Carousel({
   const [clicked, setClicked] = useState<number | null>(null);
 
   const onScroll = (e: any) => {
-    setScrollX(e.target.scrollLeft);
+    setScrollX(e.target.scrollLeft * 0.1);
   };
 
   return (
     <div className="mb-2 p-0 transition-all">
-      <div onScroll={onScroll} className="flex overflow-x-auto scrollbar-hide">
+      <div
+        onScroll={onScroll}
+        className="flex overflow-x-auto scrollbar-default"
+        style={{
+          scrollBehavior: "smooth",
+          scrollSnapType: "x",
+        }}
+      >
         {data.map((item, index: number) => (
           <CarouselItem
             key={index.toString()}
             uri={item.uri}
-            scrollX={scrollX}
+            scrollX={scrollX * 10}
             index={index}
             dataLength={data.length}
             title={item.title}
             onClick={() => {
-              setClicked(clicked === index ? null : index);
+              data[index].description?.startsWith("http")
+                ? redirect(data[index].description)
+                : setClicked(clicked === index ? null : index);
             }}
             width={clicked === index ? "95%" : undefined}
             className={

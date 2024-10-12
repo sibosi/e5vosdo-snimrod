@@ -24,13 +24,13 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      {!selfUser?.permissions.includes("admin") && (
+      {!selfUser?.permissions.includes("tester") && (
         <HelloMessage selfUser={selfUser} />
       )}
 
       <Welcome />
 
-      {selfUser?.permissions.includes("admin") && (
+      {selfUser?.permissions.includes("tester") && (
         <Carousel
           data={[
             {

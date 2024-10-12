@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-interface CarouselItemProps {
+export interface CarouselItemProps {
   title: string | [string, string];
   uri: string;
   description?: string;
@@ -31,6 +31,10 @@ const interpolate = (
   );
 };
 
+async function fetchCarouselData() {
+  return await fetch("/api/getCarousel").then((res) => res.json());
+}
+
 const CarouselItem = ({
   uri,
   scrollX,
@@ -51,6 +55,7 @@ const CarouselItem = ({
   width?: number | string;
 }) => {
   const [largeImageWidth, setLargeImageWidth] = useState(100);
+  const titleLines = Array.isArray(title) ? title : title.split("\n");
 
   useEffect(() => {
     setLargeImageWidth(window.innerWidth * 0.5);
@@ -126,9 +131,9 @@ const CarouselItem = ({
         }}
       >
         <div className="fixed bottom-0 m-1 text-base font-semibold text-slate-200">
-          {Array.isArray(title) ? (
+          {Array.isArray(titleLines) ? (
             <>
-              {title.map((row) => (
+              {titleLines.map((row) => (
                 <p className="mx-1 max-w-fit whitespace-nowrap" key={row}>
                   {row}
                 </p>
@@ -148,10 +153,18 @@ export default function Carousel({
 }: Readonly<{ data: CarouselItemProps[] }>) {
   const [scrollX, setScrollX] = useState(0);
   const [clicked, setClicked] = useState<number | null>(null);
+  const [realData, setRealData] = useState<CarouselItemProps[]>(data);
 
   const onScroll = (e: any) => {
     setScrollX(e.target.scrollLeft * 0.1);
   };
+
+  useEffect(() => {
+    (async () => {
+      const carouselData = await fetchCarouselData();
+      setRealData(carouselData);
+    })();
+  }, []);
 
   return (
     <div className="mb-2 p-0 transition-all">
@@ -163,17 +176,17 @@ export default function Carousel({
           scrollSnapType: "x",
         }}
       >
-        {data.map((item, index: number) => (
+        {realData.map((item, index: number) => (
           <CarouselItem
             key={index.toString()}
             uri={item.uri}
             scrollX={scrollX * 10}
             index={index}
-            dataLength={data.length}
+            dataLength={realData.length}
             title={item.title}
             onClick={() => {
-              data[index].description?.startsWith("http")
-                ? redirect(data[index].description)
+              realData[index].description?.startsWith("http")
+                ? redirect(realData[index].description)
                 : setClicked(clicked === index ? null : index);
             }}
             width={clicked === index ? "95%" : undefined}

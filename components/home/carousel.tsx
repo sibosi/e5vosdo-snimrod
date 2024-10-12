@@ -206,7 +206,7 @@ export default function Carousel({
             borderRadius: 20,
           }}
         >
-          {data[clicked].description}
+          {realData[clicked].description}
         </div>
       )}
     </div>

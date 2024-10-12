@@ -69,10 +69,6 @@ const CarouselItem = ({
   const isLastItem = dataLength === index + 1;
   const isSecondLastItem = dataLength === index + 2;
 
-  console.log("Small: " + SMALL_IMAGE_WIDTH);
-  console.log("Medium: " + MEDIUM_IMAGE_WIDTH);
-  console.log("Large: " + largeImageWidth);
-
   const getOutputRange = () => {
     if (isLastItem) {
       return [
@@ -132,7 +128,7 @@ const CarouselItem = ({
         <div className="fixed bottom-0 m-1 text-base font-semibold text-slate-200">
           {Array.isArray(title) ? (
             <>
-              {[scrollX, animatedWidth].map((row) => (
+              {title.map((row) => (
                 <p className="mx-1 max-w-fit whitespace-nowrap" key={row}>
                   {row}
                 </p>

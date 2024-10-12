@@ -20,6 +20,7 @@ import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
 import { User } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
+import HelloMessage from "../home/helloMessage";
 
 export const Navbar = ({
   selfUser,
@@ -59,10 +60,18 @@ export const Navbar = ({
     >
       <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
-          <NextLink className="flex items-center justify-start gap-1" href="/">
-            <Logo />
-            <p className="block- hidden p-2 font-bold text-foreground">E5</p>
-          </NextLink>
+          {!selfUser?.permissions.includes("admin") ? (
+            <NextLink
+              className="flex items-center justify-start gap-1"
+              href="/"
+            >
+              <Logo />
+              <p className="block- hidden p-2 font-bold text-foreground">E5</p>
+            </NextLink>
+          ) : (
+            <HelloMessage selfUser={selfUser} size="sm" padding={false} />
+          )}
+
           <GetApp size={isActiveHeadSpace ? "small" : "medium"} />
         </NavbarBrand>
         <ul className="ml-2 hidden justify-start gap-4 md:flex">

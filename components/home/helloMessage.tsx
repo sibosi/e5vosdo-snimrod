@@ -2,11 +2,24 @@ import React from "react";
 import TxtLiquid from "./txtLiquid";
 import { UserType } from "@/db/dbreq";
 
-const HelloMessage = ({ selfUser }: { selfUser: UserType | undefined }) => {
+const HelloMessage = ({
+  selfUser,
+  size = "md",
+  padding = true,
+}: {
+  selfUser: UserType | undefined;
+  size?: "md" | "sm";
+  padding?: boolean;
+}) => {
   return (
-    <div className="pb-14 text-center text-foreground">
+    <div className={"text-center text-foreground " + (padding && "pb-14")}>
       {selfUser ? (
-        <h1 className="inline text-5xl font-semibold lg:text-5xl">
+        <h1
+          className={
+            "inline font-semibold " +
+            (size == "md" ? "text-5xl lg:text-5xl" : "text-3xl lg:text-3xl")
+          }
+        >
           Helló <TxtLiquid text={selfUser.nickname} />!
         </h1>
       ) : (

@@ -14,8 +14,7 @@ import { link as linkStyles } from "@nextui-org/theme";
 import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { SearchIcon, InstagramIcon } from "@/components/icons";
-import { Logo } from "@/components/icons";
+import { Logo, SearchIcon, InstagramIcon } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
 import { User } from "@/db/dbreq";
@@ -61,7 +60,7 @@ export const Navbar = ({
     >
       <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
-          {!selfUser?.permissions.includes("tester") ? (
+          {!selfUser?.permissions.includes("user") ? (
             <NextLink
               className="flex items-center justify-start gap-1"
               href="/"

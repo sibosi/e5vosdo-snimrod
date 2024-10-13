@@ -24,13 +24,13 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      {!selfUser?.permissions.includes("tester") && (
+      {!selfUser?.permissions.includes("user") && (
         <HelloMessage selfUser={selfUser} />
       )}
 
       <Welcome />
 
-      {selfUser?.permissions.includes("tester") && <Carousel data={[]} />}
+      {selfUser?.permissions.includes("user") && <Carousel data={[]} />}
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section
@@ -104,7 +104,7 @@ export default async function Home() {
         title="Hamarosan"
         dropdownable={true}
         defaultStatus="closed"
-        className="rounded-2xl bg-gradient-to-r from-selfprimary-50 to-selfprimary-bg"
+        className="hidden rounded-2xl bg-gradient-to-r from-selfprimary-50 to-selfprimary-bg"
       >
         <Section
           title="Órarend"

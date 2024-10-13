@@ -1,5 +1,4 @@
 "use client";
-import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 export interface CarouselItemProps {
@@ -186,7 +185,7 @@ export default function Carousel({
             title={item.title}
             onClick={() => {
               realData[index].description?.startsWith("http")
-                ? redirect(realData[index].description)
+                ? (window.location.href = realData[index].description)
                 : setClicked(clicked === index ? null : index);
             }}
             width={clicked === index ? "95%" : undefined}

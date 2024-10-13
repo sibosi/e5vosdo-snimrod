@@ -14,12 +14,13 @@ import { link as linkStyles } from "@nextui-org/theme";
 import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { SearchIcon, InstagramIcon } from "@/components/icons";
-import { Logo } from "@/components/icons";
+import { Logo, SearchIcon, InstagramIcon } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
 import { User } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
+import HelloMessage from "../home/helloMessage";
+import { Chip } from "@nextui-org/react";
 
 export const Navbar = ({
   selfUser,
@@ -59,10 +60,25 @@ export const Navbar = ({
     >
       <NavbarContent className="fixed basis-1/5 md:basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
-          <NextLink className="flex items-center justify-start gap-1" href="/">
-            <Logo />
-            <p className="block- hidden p-2 font-bold text-foreground">E5</p>
-          </NextLink>
+          {!selfUser?.permissions.includes("user") ? (
+            <NextLink
+              className="flex items-center justify-start gap-1"
+              href="/"
+            >
+              <Logo />
+              <p className="block- hidden p-2 font-bold text-foreground">E5</p>
+            </NextLink>
+          ) : (
+            <>
+              <HelloMessage selfUser={selfUser} size="sm" padding={false} />
+              {selfUser?.permissions.includes("tester") && (
+                <Chip variant="shadow" className="bg-selfsecondary-300 text-sm">
+                  Tesztverzió
+                </Chip>
+              )}
+            </>
+          )}
+
           <GetApp size={isActiveHeadSpace ? "small" : "medium"} />
         </NavbarBrand>
         <ul className="ml-2 hidden justify-start gap-4 md:flex">
@@ -84,6 +100,7 @@ export const Navbar = ({
       </NavbarContent>
 
       <NavbarContent justify="start" />
+
       <NavbarContent justify="center" className="md:hidden">
         <LiveScore />
       </NavbarContent>

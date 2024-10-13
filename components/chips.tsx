@@ -19,11 +19,18 @@ export const ChipUC = () => {
   );
 };
 
-// Beta (hungarian)
 export const ChipBeta = () => {
   return (
     <Chip color="primary" size="sm" variant="shadow">
       Béta
+    </Chip>
+  );
+};
+
+export const ChipCompetition = () => {
+  return (
+    <Chip color="danger" size="sm" variant="shadow">
+      Verseny
     </Chip>
   );
 };

@@ -3,23 +3,13 @@ SELECT *
 FROM users;
 --@block
 SELECT *
-FROM notifications;
+FROM events;
 --@block
 UPDATE notifications SET message = 'Gratulálok!\nSikeresen beléptél az Eötvös DÖ rendszerébe! Jó szórakozást!\nÜdvözlettel: Nimród, a fejlesztő' WHERE id = 1;
 --@block
 SHOW VARIABLES LIKE 'log_bin';
 SHOW VARIABLES LIKE 'log_bin_basename';
 SHOW BINARY LOGS;
---@block
--- Add A food menu to nimrod user
-UPDATE users
-SET EJG_code = '2023C25EJG462'
-WHERE email = 'simon.nimrod.zalan@e5vos.hu';
---@block
--- Add permissions to nimrod user
-UPDATE users
-SET permissions = '["student"]'
-WHERE email = 'illes.gergo@e5vos.hu';
 --@block
 SELECT email,
     permissions

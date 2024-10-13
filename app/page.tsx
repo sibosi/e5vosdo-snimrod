@@ -17,14 +17,20 @@ import { Alert } from "@/components/home/alert";
 import { ChipBeta } from "@/components/chips";
 import SecialDay from "@/components/events/specialDay";
 import HelloMessage from "@/components/home/helloMessage";
+import MillioLepes from "@/components/home/milliolepes";
+import Carousel from "@/components/home/carousel";
 
 export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <HelloMessage selfUser={selfUser} />
+      {!selfUser?.permissions.includes("user") && (
+        <HelloMessage selfUser={selfUser} />
+      )}
 
       <Welcome />
+
+      {selfUser?.permissions.includes("user") && <Carousel data={[]} />}
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section
@@ -45,6 +51,10 @@ export default async function Home() {
           <QuickTeachers />
         </Section>
       )}
+
+      <Section title="Millió Lépés" dropdownable={true} defaultStatus="closed">
+        <MillioLepes />
+      </Section>
 
       {siteConfig.pageSections["menza"] != "hidden" && (
         <Section
@@ -94,7 +104,7 @@ export default async function Home() {
         title="Hamarosan"
         dropdownable={true}
         defaultStatus="closed"
-        className="rounded-2xl bg-gradient-to-r from-selfprimary-50 to-selfprimary-bg"
+        className="hidden rounded-2xl bg-gradient-to-r from-selfprimary-50 to-selfprimary-bg"
       >
         <Section
           title="Órarend"

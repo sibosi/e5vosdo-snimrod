@@ -8,7 +8,6 @@ import {
   Button,
   ModalContent,
   Modal,
-  ButtonGroup,
   Switch,
 } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
@@ -17,14 +16,12 @@ import { Section } from "@/components/home/section";
 import CacheManager from "@/components/PWA/cacheManager";
 import VersionManager from "@/components/PWA/versionManager";
 import {
-  loadPalette,
   ThemeOptions,
-  ThemePickerPrimary,
-  ThemePickerSecondary,
   ThemeTemplatePrimary,
   ThemeTemplateSecondary,
 } from "@/components/themePicker";
 import { Alert } from "@/components/home/alert";
+import { ReinstallServiceWorker } from "@/components/PWA/managesw";
 
 function updateCacheMethod(cacheMethod: "always" | "offline" | "never") {
   const request = indexedDB.open("SW-settings", 1);
@@ -95,12 +92,12 @@ function getCacheMethod() {
       };
 
       getRequest.onerror = (err: any) => {
-        reject(err);
+        reject(new Error(err));
       };
     };
 
     request.onerror = (event: any) => {
-      reject((event.target as IDBRequest).error?.message);
+      reject(new Error((event.target as IDBRequest).error?.message));
     };
   });
 }
@@ -135,15 +132,71 @@ const SettingsSection = ({
 };
 
 const MySettings = ({ selfUser }: { selfUser: User }) => {
-  const [menu, setMenu] = useState<string>(selfUser.food_menu);
-  const [EJG_code, setEJG_code] = useState<string>(selfUser.EJG_code ?? "");
-  const [nickname, setNickname] = useState<string>(selfUser.nickname);
+  const [selfUserPromise, setSelfUserPromise] = useState<User>(selfUser);
+  const [EJG_code, setEJG_code] = useState<string>(
+    selfUserPromise.EJG_code ?? "",
+  );
+  const [nickname, setNickname] = useState<string>(selfUserPromise.nickname);
   const [nicknameError, setNicknameError] = useState<string>("");
   const [EJG_codeError, setEJG_codeError] = useState<string>("");
   const [isMaterialBg, setIsMaterialBg] = useState<boolean>(false);
   const [cacheMethod, setCacheMethod] = useState<
     "always" | "offline" | "never"
   >();
+
+  const [reload, setReload] = useState<boolean>(false);
+  const [isPushEnabled, setIsPushEnabled] = useState<{
+    value: boolean;
+    reason?: string;
+  }>({
+    value: false,
+  });
+
+  useEffect(() => {
+    setIsPushEnabled(
+      ((): {
+        value: boolean;
+        reason?: string;
+      } => {
+        if (typeof window === "undefined") return { value: false };
+
+        if (!("Notification" in window))
+          return {
+            value: false,
+            reason:
+              "A böngésződ nem támogatja az értesítéseket. Használj HTTPS-t!",
+          };
+
+        if (Notification.permission === "denied")
+          return {
+            value: false,
+            reason: "A böngészőben letiltottad az értesítéseket.",
+          };
+
+        if (Notification.permission === "default")
+          return {
+            value: false,
+            reason: "Nem engedélyezted az értesítéseket a böngésződben.",
+          };
+
+        if (!("serviceWorker" in navigator))
+          return {
+            value: false,
+            reason: "A böngésződ nem támogatja a szolgáltató munkásokat.",
+          };
+
+        if (!selfUserPromise.push_permission)
+          return {
+            value: false,
+            reason: "Az értesítések nincsenek engedélyezve a profilodban.",
+          };
+
+        return {
+          value: true,
+        };
+      })(),
+    );
+  }, [selfUserPromise.push_permission]);
 
   useEffect(() => {
     getCacheMethod().then((method) => {
@@ -154,10 +207,24 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
       );
     });
 
-    setIsMaterialBg(
-      localStorage.getItem("materialBg") === "true" ? true : false,
-    );
+    setIsMaterialBg(localStorage.getItem("materialBg") === "true");
   }, []);
+
+  useEffect(() => {
+    if (reload) {
+      setReload(false);
+
+      console.log("Reloading...");
+
+      fetch("api/getAuth")
+        .then((res) => res.json())
+        .then((data) => {
+          setSelfUserPromise(data);
+
+          console.log("Reloaded:", data);
+        });
+    }
+  }, [reload, selfUserPromise.email]);
 
   useEffect(() => {
     if (cacheMethod) {
@@ -173,15 +240,12 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (
-        !(EJG_code &&
+        EJG_code &&
         EJG_code.length === 13 &&
         nickname &&
-        (EJG_code !== selfUser.EJG_code ||
-          nickname !== selfUser.nickname ||
-          menu !== selfUser.food_menu) &&
+        (EJG_code !== selfUserPromise.EJG_code ||
+          nickname !== selfUserPromise.nickname) &&
         !nicknameError
-          ? false
-          : true)
       ) {
         e.preventDefault();
       }
@@ -193,12 +257,11 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
     };
   }, [
     EJG_code,
-    menu,
     nickname,
     nicknameError,
-    selfUser.EJG_code,
-    selfUser.food_menu,
-    selfUser.nickname,
+    selfUserPromise.EJG_code,
+    selfUserPromise.food_menu,
+    selfUserPromise.nickname,
   ]);
 
   const [sureQuestion, setSureQuestion] = useState<boolean>(false);
@@ -227,13 +290,13 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
       },
       body: JSON.stringify({ settings }),
     });
+    setReload(true);
     if (response.status === 200) {
       if (reload) {
         alert("Sikeresen mentetted a beállításaidat!");
         location.reload();
       }
       console.log(JSON.stringify({ settings }));
-      console.log(JSON.stringify(selfUser));
     } else {
       alert("Hiba történt a mentés során.");
     }
@@ -247,7 +310,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
       },
       body: JSON.stringify({
         settings: {
-          food_menu: menu == "?" ? null : menu,
           EJG_code: EJG_code,
           nickname: nickname,
         },
@@ -261,7 +323,8 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
     }
   }
 
-  console.log("Push permission:", selfUser.push_about_games);
+  console.log("Push permission:", selfUserPromise.push_permission);
+  console.log("isPushEnabled:", isPushEnabled);
 
   return (
     <>
@@ -284,7 +347,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             <tbody>
               <tr>
                 <th className="font-semibold">Név:</th>
-                <th>{selfUser.name}</th>
+                <th>{selfUserPromise.name}</th>
               </tr>
               <tr>
                 <th className="font-semibold">Felhasználónév:</th>
@@ -347,7 +410,9 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                         setEJG_codeError("");
                       }
                     }}
-                    isDisabled={!selfUser.tickets.includes("EJG_code_edit")}
+                    isDisabled={
+                      !selfUserPromise.tickets.includes("EJG_code_edit")
+                    }
                   />
                   {EJG_codeError && (
                     <p className="text-danger-600">{EJG_codeError}</p>
@@ -360,9 +425,18 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 </th>
                 <th>
                   <RadioGroup
-                    value={!["A", "B"].includes(menu) ? "?" : menu}
+                    value={
+                      !["A", "B"].includes(selfUserPromise.food_menu)
+                        ? "?"
+                        : selfUserPromise.food_menu
+                    }
                     onChange={(e) => {
-                      setMenu(e.target.value);
+                      save_settings({
+                        settings: {
+                          food_menu:
+                            e.target.value !== "?" ? e.target.value : "?",
+                        },
+                      });
                     }}
                     color="primary"
                   >
@@ -383,25 +457,39 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           dropdownable={true}
           defaultStatus="closed"
         >
+          {isPushEnabled.reason && (
+            <Alert className="border-selfsecondary-400 bg-selfsecondary-200">
+              {isPushEnabled.reason}
+            </Alert>
+          )}
           <div className="grid grid-cols-1 gap-2">
             <Switch
-              defaultChecked={selfUser.push_perission}
-              isDisabled={true}
+              isSelected={isPushEnabled.value}
               onChange={(e) => {
                 if (e.target.checked) {
                   Notification.requestPermission();
-                }
+                  save_settings({
+                    settings: {
+                      push_permission: true,
+                    },
+                  });
+                } else
+                  save_settings({
+                    settings: {
+                      push_permission: false,
+                    },
+                  });
               }}
             >
               Értesítések engedélyezése
             </Switch>
 
             <Switch
-              defaultSelected={selfUser.push_about_games}
+              isSelected={selfUserPromise.push_about_games}
+              isDisabled={!isPushEnabled.value}
               onChange={(e) => {
                 save_settings({
                   settings: {
-                    ...selfUser,
                     push_about_games: e.target.checked,
                   },
                 });
@@ -411,17 +499,18 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             </Switch>
 
             <Switch
-              defaultSelected={selfUser.push_about_timetable}
+              isSelected={selfUserPromise.push_about_timetable}
+              isDisabled={!isPushEnabled.value}
               onChange={(e) => {
                 save_settings({
                   settings: {
-                    ...selfUser,
                     push_about_timetable: e.target.checked,
                   },
                 });
               }}
             >
-              Értesítések az órarend változásakor (nem elérhető)
+              Értesítések az órarend változásakor (a funkció novemberben /
+              decemberben érkezik)
             </Switch>
           </div>
         </SettingsSection>
@@ -491,6 +580,8 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             >
               Gyorsítótár kiürítése
             </Button>
+
+            <ReinstallServiceWorker />
           </div>
 
           <CacheManager />
@@ -499,35 +590,33 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         <div
           className={
             "fixed inset-x-0 z-50 mx-auto flex h-14 w-36 border-2 border-foreground-500 bg-foreground-100 transition-all duration-300 max-md:rounded-b-2xl max-md:border-t-0 xs:w-72 md:rounded-t-2xl md:border-b-0 " +
-            (!(EJG_code &&
+            (EJG_code &&
             EJG_code.length === 13 &&
             nickname &&
-            (EJG_code !== selfUser.EJG_code ||
-              nickname !== selfUser.nickname ||
-              menu !== selfUser.food_menu) &&
+            (EJG_code !== selfUserPromise.EJG_code ||
+              nickname !== selfUserPromise.nickname) &&
             !nicknameError
-              ? false
-              : true)
               ? "max-md:top-0 md:bottom-0"
               : "max-md:-top-16 md:-bottom-16")
           }
         >
           <Button
             onClick={() => {
-              EJG_code !== selfUser.EJG_code ? setSureQuestion(true) : save();
+              EJG_code !== selfUserPromise.EJG_code
+                ? setSureQuestion(true)
+                : save();
             }}
             // make the button to be on the right side
             className="m-auto bg-selfsecondary"
             isDisabled={
-              EJG_code &&
-              EJG_code.length === 13 &&
-              nickname &&
-              (EJG_code !== selfUser.EJG_code ||
-                nickname !== selfUser.nickname ||
-                menu !== selfUser.food_menu) &&
-              !nicknameError // Hozzáadva a hibaellenőrzés
-                ? false
-                : true
+              !(
+                EJG_code &&
+                EJG_code.length === 13 &&
+                nickname &&
+                (EJG_code !== selfUserPromise.EJG_code ||
+                  nickname !== selfUserPromise.nickname) &&
+                !nicknameError
+              )
             }
           >
             Mentés

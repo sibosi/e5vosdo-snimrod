@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
 import { EventType } from "@/components/events";
+import { CarouselItemProps } from "@/components/home/carousel";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -53,7 +54,7 @@ export interface User {
   hidden_lessons: number[];
   default_group: number | null;
   service_workers: any[];
-  push_perission: boolean;
+  push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
 }
@@ -98,7 +99,7 @@ export async function getUsers() {
 
 export async function getUsersName() {
   const response = await dbreq(`SELECT name FROM users;`);
-  return (response as unknown as { name: string }[]).map((user) => user.name);
+  return (response as { name: string }[]).map((user) => user.name);
 }
 
 export async function getUser(email: string | undefined) {
@@ -112,7 +113,7 @@ export async function getUser(email: string | undefined) {
 export async function getAllUsersNameByEmail() {
   const response = await dbreq(`SELECT name, email FROM users;`);
   let users: { [key: string]: string } = {};
-  (response as unknown as []).map((user: User) => {
+  (response as []).map((user: User) => {
     users[user.email] = user.name;
   });
   return users;
@@ -156,9 +157,7 @@ export async function hasPermission(
 export async function getUsersEmail() {
   const response = await dbreq(`SELECT email FROM users;`);
   let emails: string[] = [];
-  (response as unknown as []).map((user: { email: string }) =>
-    emails.push(user.email),
-  );
+  (response as []).map((user: { email: string }) => emails.push(user.email));
   return emails;
 }
 
@@ -231,7 +230,10 @@ export async function updateUser(user: User | undefined) {
     user.email
   }');`;
 
-  return await dbreq(REQ1), await dbreq(REQ2);
+  await dbreq(REQ1);
+  await dbreq(REQ2);
+
+  return null;
 }
 
 export async function addUserPermission(
@@ -543,57 +545,55 @@ export async function editMySettings({
     nickname?: string;
     EJG_code?: string;
     food_menu?: string;
-    push_perission?: boolean;
+    push_permission?: boolean;
     push_about_games?: boolean;
+    push_about_timetable?: boolean;
   };
 }) {
-  const user = await getAuth();
-  if (!user) return "No user";
-  const email = user?.email;
+  const selfUser = await getAuth();
+  if (!selfUser) return "No user";
+  const email = selfUser?.email;
 
   addLog("editMySettings");
 
-  let requests: string[] = [];
+  let request = "UPDATE users SET ";
 
-  const valid_EJG_code = user.tickets.includes("EJG_code_edit")
+  const valid_EJG_code = selfUser.tickets.includes("EJG_code_edit")
     ? settings.EJG_code
-    : user.EJG_code;
+    : selfUser.EJG_code;
 
   if (
-    user.tickets.includes("EJG_code_edit") &&
-    user.EJG_code != settings.EJG_code
+    selfUser.tickets.includes("EJG_code_edit") &&
+    selfUser.EJG_code != settings.EJG_code
   ) {
     await removeTicket("EJG_code_edit");
+    request += `EJG_code = '${valid_EJG_code}', `;
   }
 
   console.log(JSON.stringify(settings));
 
-  if (settings.push_perission !== undefined)
-    requests.push(
-      `UPDATE users SET push_perission = ${
-        settings.push_perission ? 1 : 0
-      } WHERE email = '${email}';`,
-    );
+  if (settings.push_permission !== undefined)
+    request += `push_permission = ${settings.push_permission ? 1 : 0}, `;
 
   if (settings.push_about_games !== undefined)
-    requests.push(
-      `UPDATE users SET push_about_games = ${
-        settings.push_about_games ? 1 : 0
-      } WHERE email = '${email}';`,
-    );
+    request += `push_about_games = ${settings.push_about_games ? 1 : 0}, `;
+  if (settings.push_about_timetable !== undefined)
+    request += `push_about_timetable = ${settings.push_about_timetable ? 1 : 0}, `;
 
-  const newNickname = settings.nickname ?? user.nickname;
-  const newFoodMenu = settings.food_menu ?? user.food_menu;
+  if (settings.nickname) request += `nickname = '${settings.nickname}', `;
+  if (settings.food_menu !== undefined)
+    request += `food_menu = ${
+      ["A", "B"].includes(settings.food_menu)
+        ? "'" + settings.food_menu + "'"
+        : "NULL"
+    }, `;
 
-  const REQ1 = `UPDATE users SET nickname = '${
-    newNickname
-  }', EJG_code = '${valid_EJG_code}', food_menu = ${
-    newFoodMenu == null ? null : "'" + newFoodMenu + "'"
-  } WHERE email = '${email}';`;
+  if (request === "UPDATE users SET ") return "No changes";
+  request = request.slice(0, -2);
+  request += ` WHERE email = '${email}';`;
 
-  requests.push(REQ1);
-  console.log(requests);
-  console.log(await multipledbreq(requests));
+  console.log(request);
+  console.log(await dbreq(request));
 
   return null;
 }
@@ -793,10 +793,14 @@ export async function getFreeRooms(
   return rooms.filter((room) => !occupiedRooms.includes(room));
 }
 
+export async function getCarousel() {
+  return (await dbreq(`SELECT * FROM carousel;`)) as CarouselItemProps[];
+}
+
 export const apireq = {
   getPageSettings: { req: getPageSettings, perm: [] },
   editPageSettings: { req: editPageSettings, perm: ["admin"] },
-  getUsers: { req: getUsers, perm: ["admin", "tester"] },
+  getUsers: { req: getUsers, perm: ["admin"] },
   getUsersName: { req: getUsersName, perm: ["student"] },
   getUser: { req: getUser, perm: [] },
   getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },
@@ -832,6 +836,7 @@ export const apireq = {
   updateMatch: { req: updateMatch, perm: ["admin"] },
   getComingMatch: { req: getComingMatch, perm: ["user"] },
   getUserLogs: { req: getUserLogs, perm: ["admin"] },
+  getCarousel: { req: getCarousel, perm: ["user"] },
 } as const;
 
 export const apioptions = Object.keys(apireq) as (keyof typeof apireq)[];
@@ -855,6 +860,7 @@ export const defaultApiReq = async (req: string, body: any) => {
   else if (req === "getAdminUsers") return await getAdminUsers();
   else if (req === "getUsersEmail") return await getUsersEmail();
   else if (req === "getAdminUsersEmail") return await getAdminUsersEmail();
+  else if (req === "getCarousel") return await getCarousel();
   else if (req === "addUserPermission") {
     const { email, permission } = body;
     const response = await addUserPermission(email, permission);

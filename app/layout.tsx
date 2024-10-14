@@ -59,6 +59,7 @@ export default async function RootLayout({
   const selfUser = await getAuth(session?.user?.email ?? undefined);
 
   const pageSettings = await getPageSettings();
+  if (session?.user?.email) console.log("New user: " + session.user.email);
 
   return (
     <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
@@ -102,6 +103,7 @@ export default async function RootLayout({
           href="android/android-launchericon-192-192.png"
           sizes="192x192"
         />
+        <meta name="darkreader-lock" />
       </head>
 
       <body
@@ -137,29 +139,24 @@ export default async function RootLayout({
             />
 
             <Cookie />
-
-            <>
-              {session?.user?.email &&
-                console.log("New login from " + session.user.email)}
-              <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
-                <OnCSSBug />
-                {children}
-              </main>
-              <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
-                <Link
-                  isExternal
-                  className="flex items-center gap-1 pb-14 text-current"
-                  href={siteConfig.links.mypage}
-                  title="Nimród oldala"
-                >
-                  <span className="text-default-600">Fejlesztette</span>
-                  <p className="text-selfprimary">Simon Nimród</p>
-                  <span className="text-default-600">10.C</span>
-                </Link>
-                <br />
-                <PageNav />
-              </footer>
-            </>
+            <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
+              <OnCSSBug />
+              {children}
+            </main>
+            <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
+              <Link
+                isExternal
+                className="flex items-center gap-1 pb-14 text-current"
+                href={siteConfig.links.mypage}
+                title="Nimród oldala"
+              >
+                <span className="text-default-600">Fejlesztette</span>
+                <p className="text-selfprimary">Simon Nimród</p>
+                <span className="text-default-600">10.C</span>
+              </Link>
+              <br />
+              <PageNav />
+            </footer>
           </div>
         </Providers>
         <GoogleAnalytics measurementId="G-P74RJ9THHS" />

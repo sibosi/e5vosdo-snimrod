@@ -54,6 +54,9 @@ const nextConfig = {
       },
     ],
   },
+  typescript: {
+    ignoreBuildErrors: process.env.IGNORE_BUILD_ERRORS === "true",
+  },
 };
 
 module.exports = withBundleAnalyzer(withPWA(nextConfig));

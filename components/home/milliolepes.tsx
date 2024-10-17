@@ -50,15 +50,12 @@ const MillioLepes = () => {
     <div>
       <div>
         <Alert className="border-selfprimary-300 bg-selfprimary-100 text-xl font-bold">
-          Mi az a Millió Lépés program?
-          <br />
-          <span className="mt-1 text-base font-normal">
-            A Millió Lépés programban az iskolák a tanulók által megtett lépések
-            alapján versenyeznek egymással.{" "}
-            <Link href="https://milliolepes.hu">
-              További információk a programról. ➜
-            </Link>
-          </span>
+          <Link
+            href="https://milliolepes.hu"
+            className="mt-1 text-base font-semibold text-selfprimary-700"
+          >
+            További információk a programról ➜
+          </Link>
         </Alert>
         <div>
           <p>

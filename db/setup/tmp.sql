@@ -1,9 +1,20 @@
+
+--@block
+SELECT service_workers
+FROM users
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- List all push_auths that contains a string
+SELECT *
+FROM push_auths
+WHERE auth LIKE '%Ee5%';
 --@block
 SELECT *
-FROM users;
+FROM push_auths;
 --@block
-SELECT *
-FROM events;
+UPDATE users
+SET service_workers = '[]'
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
 --@block
 UPDATE notifications SET message = 'Gratulálok!\nSikeresen beléptél az Eötvös DÖ rendszerébe! Jó szórakozást!\nÜdvözlettel: Nimród, a fejlesztő' WHERE id = 1;
 --@block

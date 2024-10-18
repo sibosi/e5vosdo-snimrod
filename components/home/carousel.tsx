@@ -167,35 +167,81 @@ export default function Carousel({
 
   return (
     <div className="mb-2 p-0 transition-all">
-      <div
-        onScroll={onScroll}
-        className="flex overflow-x-auto scrollbar-default"
-        style={{
-          scrollBehavior: "smooth",
-          scrollSnapType: "x",
-        }}
-      >
-        {realData.map((item, index: number) => (
-          <CarouselItem
-            key={index.toString()}
-            uri={item.uri}
-            scrollX={scrollX * 10}
-            index={index}
-            dataLength={realData.length}
-            title={item.title}
+      <div className={clicked === null ? "flex" : ""}>
+        {clicked === null && realData.length > 2 && (
+          <button
+            className="bottom-0 top-0 z-10 my-auto -mr-10 ml-2 h-8 w-8 rounded-full bg-selfprimary-50 p-1 text-selfprimary-700 max-md:hidden"
+            title="Vissza"
             onClick={() => {
-              realData[index].description?.startsWith("http")
-                ? (window.location.href = realData[index].description)
-                : setClicked(clicked === index ? null : index);
+              document.querySelector(".scroll-smooth")?.scrollBy(-200, 0);
             }}
-            width={clicked === index ? "95%" : undefined}
-            className={
-              clicked == null || clicked === index ? "mx-auto" : "hidden"
-            }
-          />
-        ))}
-        {clicked !== null ? null : ( // description
-          <div className="min-w-unit-24" />
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="m-auto h-6 w-6 rotate-90"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+        )}
+        <div
+          onScroll={onScroll}
+          className="flex snap-x overflow-x-auto scroll-smooth scrollbar-default"
+        >
+          {realData.map((item, index: number) => (
+            <CarouselItem
+              key={index.toString()}
+              uri={item.uri}
+              scrollX={scrollX * 10}
+              index={index}
+              dataLength={realData.length}
+              title={item.title}
+              onClick={() => {
+                realData[index].description?.startsWith("http")
+                  ? (window.location.href = realData[index].description)
+                  : setClicked(clicked === index ? null : index);
+              }}
+              width={clicked === index ? "95%" : undefined}
+              className={
+                clicked == null || clicked === index ? "mx-auto" : "hidden"
+              }
+            />
+          ))}
+          {clicked !== null ? null : ( // description
+            <div className="min-w-unit-24" />
+          )}
+        </div>
+        {clicked === null && realData.length > 2 && (
+          <button
+            className="bottom-0 top-0 z-10 my-auto -ml-10 mr-2 h-8 w-8 rounded-full bg-selfprimary-50 p-1 text-selfprimary-700 max-md:hidden"
+            title="Tovább"
+            onClick={() => {
+              document.querySelector(".scroll-smooth")?.scrollBy(200, 0);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="m-auto h-6 w-6 -rotate-90"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
         )}
       </div>
       {clicked !== null && (

@@ -385,6 +385,10 @@ export async function checkPushAuth(auth: string) {
   return auths.includes(auth);
 }
 export async function addPushAuth(auth: string) {
+  const isExist =
+    ((await dbreq(`SELECT * FROM push_auths WHERE auth = '${auth}';`)) as any[])
+      .length > 0;
+  if (isExist) return true;
   return await dbreq(`INSERT INTO push_auths (auth) VALUES ('${auth}');`);
 }
 

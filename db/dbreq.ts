@@ -69,6 +69,14 @@ export interface Log {
   message: string;
 }
 
+export interface AlertType {
+  id: number;
+  text: string;
+  className?: string;
+  padding?: boolean;
+  icon?: boolean;
+}
+
 export async function addLog(action: string, message?: string) {
   const email = (await getAuth())?.email;
   return await dbreq(
@@ -799,6 +807,10 @@ export async function getFreeRooms(
 
 export async function getCarousel() {
   return (await dbreq(`SELECT * FROM carousel;`)) as CarouselItemProps[];
+}
+
+export async function getAlerts() {
+  return (await dbreq(`SELECT * FROM alerts;`)) as AlertType[];
 }
 
 export const apireq = {

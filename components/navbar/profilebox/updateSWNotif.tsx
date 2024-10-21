@@ -57,7 +57,7 @@ export const UpdateSWNotif = () => {
               }
             });
           }
-          location.reload();
+          // location.reload();
         })
         .catch((error) => {
           console.error("Error getting service worker registrations:", error);

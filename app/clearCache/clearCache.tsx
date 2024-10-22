@@ -1,14 +1,16 @@
 "use client";
 import { Button } from "@nextui-org/react";
-import React from "react";
+import React, { useEffect } from "react";
 
 const ClearCache = () => {
   const [cacheNames, setCacheNames] = React.useState<string[]>();
-  caches.keys().then((names) => setCacheNames(names));
 
-  caches.keys().then(function (names) {
-    for (let name of names) caches.delete(name);
-  });
+  useEffect(() => {
+    caches.keys().then((names) => setCacheNames(names));
+    caches.keys().then(function (names) {
+      for (let name of names) caches.delete(name);
+    });
+  }, []);
 
   return (
     <div>

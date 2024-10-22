@@ -27,6 +27,7 @@ export const clubsOrder: string[] = [
   "FLC EJG",
   "Filmklub",
   "Eötvös Diák",
+  "EPAS",
 
   "ZöldBiz",
   "Eötvös Média",
@@ -459,5 +460,19 @@ export const clubsConfig: Group[] = [
       },
     ],
     new: true,
+  },
+  {
+    title: "EPAS",
+    image: "/groups/epas.png",
+    description: "",
+    details:
+      "Itt olvashattok a programjaikrol az ev egesze alatt:\nEurópa Nap – március 28. péntek\n- Európa Fórum – Téma: EU Zöld Megállapodás -\n- EPAS (Európa) Bajnokság (12 órás foci) - minden csoport\n\nEurópai Filmklub – Európa Napon, Tavaszi Fesztiválon \n\nEurópa Kvíz - szeptembertől folyamatosan \n\nTavaszi Fesztivál – április \n- Európa Filmklub\n\nBIMUN - részvétel a 0. napon, krízis bizottság \n\nZöld Program – szeptembertől folyamatosan - Zöld Bizottság",
+    links: [
+      {
+        title: "EPAS Instagram",
+        value: "https://www.instagram.com/epas_eotvos/",
+        type: "instagram",
+      },
+    ],
   },
 ];

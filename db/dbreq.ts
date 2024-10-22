@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
 import { EventType } from "@/components/events";
+import { CarouselItemProps } from "@/components/home/carousel";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -53,7 +54,7 @@ export interface User {
   hidden_lessons: number[];
   default_group: number | null;
   service_workers: any[];
-  push_perission: boolean;
+  push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
 }
@@ -66,6 +67,40 @@ export interface Log {
   user: string;
   action: string;
   message: string;
+}
+
+export interface AlertType {
+  id: number;
+  text: string;
+  className?: string;
+  padding?: boolean;
+  icon?: boolean;
+}
+
+export interface PresentationType {
+  id: number;
+  name: string;
+  description: string;
+  slot_id: number;
+  location_id: number;
+  signup_type: string;
+  is_competition: boolean;
+  organiser: string;
+  capacity: number;
+  starts_at: string;
+  ends_at: string;
+  signup_deadline: string;
+  min_team_size: number;
+  max_team_size: number;
+  root_parent: number;
+  direct_child: number;
+  remaining_capacity: number;
+}
+
+export interface SignUpType {
+  email: string;
+  slot_id: number;
+  presentation_id: number;
 }
 
 export async function addLog(action: string, message?: string) {
@@ -98,7 +133,7 @@ export async function getUsers() {
 
 export async function getUsersName() {
   const response = await dbreq(`SELECT name FROM users;`);
-  return (response as unknown as { name: string }[]).map((user) => user.name);
+  return (response as { name: string }[]).map((user) => user.name);
 }
 
 export async function getUser(email: string | undefined) {
@@ -112,7 +147,7 @@ export async function getUser(email: string | undefined) {
 export async function getAllUsersNameByEmail() {
   const response = await dbreq(`SELECT name, email FROM users;`);
   let users: { [key: string]: string } = {};
-  (response as unknown as []).map((user: User) => {
+  (response as []).map((user: User) => {
     users[user.email] = user.name;
   });
   return users;
@@ -156,9 +191,7 @@ export async function hasPermission(
 export async function getUsersEmail() {
   const response = await dbreq(`SELECT email FROM users;`);
   let emails: string[] = [];
-  (response as unknown as []).map((user: { email: string }) =>
-    emails.push(user.email),
-  );
+  (response as []).map((user: { email: string }) => emails.push(user.email));
   return emails;
 }
 
@@ -231,7 +264,10 @@ export async function updateUser(user: User | undefined) {
     user.email
   }');`;
 
-  return await dbreq(REQ1), await dbreq(REQ2);
+  await dbreq(REQ1);
+  await dbreq(REQ2);
+
+  return null;
 }
 
 export async function addUserPermission(
@@ -383,6 +419,10 @@ export async function checkPushAuth(auth: string) {
   return auths.includes(auth);
 }
 export async function addPushAuth(auth: string) {
+  const isExist =
+    ((await dbreq(`SELECT * FROM push_auths WHERE auth = '${auth}';`)) as any[])
+      .length > 0;
+  if (isExist) return true;
   return await dbreq(`INSERT INTO push_auths (auth) VALUES ('${auth}');`);
 }
 
@@ -543,57 +583,55 @@ export async function editMySettings({
     nickname?: string;
     EJG_code?: string;
     food_menu?: string;
-    push_perission?: boolean;
+    push_permission?: boolean;
     push_about_games?: boolean;
+    push_about_timetable?: boolean;
   };
 }) {
-  const user = await getAuth();
-  if (!user) return "No user";
-  const email = user?.email;
+  const selfUser = await getAuth();
+  if (!selfUser) return "No user";
+  const email = selfUser?.email;
 
   addLog("editMySettings");
 
-  let requests: string[] = [];
+  let request = "UPDATE users SET ";
 
-  const valid_EJG_code = user.tickets.includes("EJG_code_edit")
+  const valid_EJG_code = selfUser.tickets.includes("EJG_code_edit")
     ? settings.EJG_code
-    : user.EJG_code;
+    : selfUser.EJG_code;
 
   if (
-    user.tickets.includes("EJG_code_edit") &&
-    user.EJG_code != settings.EJG_code
+    selfUser.tickets.includes("EJG_code_edit") &&
+    selfUser.EJG_code != settings.EJG_code
   ) {
     await removeTicket("EJG_code_edit");
+    request += `EJG_code = '${valid_EJG_code}', `;
   }
 
   console.log(JSON.stringify(settings));
 
-  if (settings.push_perission !== undefined)
-    requests.push(
-      `UPDATE users SET push_perission = ${
-        settings.push_perission ? 1 : 0
-      } WHERE email = '${email}';`,
-    );
+  if (settings.push_permission !== undefined)
+    request += `push_permission = ${settings.push_permission ? 1 : 0}, `;
 
   if (settings.push_about_games !== undefined)
-    requests.push(
-      `UPDATE users SET push_about_games = ${
-        settings.push_about_games ? 1 : 0
-      } WHERE email = '${email}';`,
-    );
+    request += `push_about_games = ${settings.push_about_games ? 1 : 0}, `;
+  if (settings.push_about_timetable !== undefined)
+    request += `push_about_timetable = ${settings.push_about_timetable ? 1 : 0}, `;
 
-  const newNickname = settings.nickname ?? user.nickname;
-  const newFoodMenu = settings.food_menu ?? user.food_menu;
+  if (settings.nickname) request += `nickname = '${settings.nickname}', `;
+  if (settings.food_menu !== undefined)
+    request += `food_menu = ${
+      ["A", "B"].includes(settings.food_menu)
+        ? "'" + settings.food_menu + "'"
+        : "NULL"
+    }, `;
 
-  const REQ1 = `UPDATE users SET nickname = '${
-    newNickname
-  }', EJG_code = '${valid_EJG_code}', food_menu = ${
-    newFoodMenu == null ? null : "'" + newFoodMenu + "'"
-  } WHERE email = '${email}';`;
+  if (request === "UPDATE users SET ") return "No changes";
+  request = request.slice(0, -2);
+  request += ` WHERE email = '${email}';`;
 
-  requests.push(REQ1);
-  console.log(requests);
-  console.log(await multipledbreq(requests));
+  console.log(request);
+  console.log(await dbreq(request));
 
   return null;
 }
@@ -793,10 +831,92 @@ export async function getFreeRooms(
   return rooms.filter((room) => !occupiedRooms.includes(room));
 }
 
+export async function getCarousel() {
+  return (await dbreq(`SELECT * FROM carousel;`)) as CarouselItemProps[];
+}
+
+export async function getAlerts() {
+  return (await dbreq(`SELECT * FROM alerts;`)) as AlertType[];
+}
+
+export async function getPresentations() {
+  return (await dbreq(`SELECT * FROM presentations;`)) as PresentationType[];
+}
+
+export async function signUpForPresentation(
+  slot_id: number,
+  presentation_id: number | "NULL",
+) {
+  const email = (await getAuth())?.email;
+
+  async function checkHasCapacity(presentation_id: number) {
+    const result = (await dbreq(
+      `SELECT remaining_capacity FROM presentations WHERE id = ${presentation_id};`,
+    )) as { remaining_capacity: number }[];
+
+    return result.length > 0 && result[0].remaining_capacity > 0;
+  }
+
+  try {
+    // Ellenőrizzük, hogy a felhasználó már jelentkezett-e
+    const check = (await dbreq(
+      `SELECT * FROM signups WHERE email = '${email}' AND slot_id = ${slot_id};`,
+    )) as SignUpType[];
+
+    if (presentation_id === "NULL") {
+      // Jelentkezés törlése
+      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
+      const REQ2 = `DELETE FROM signups WHERE email = '${email}' AND slot_id = ${slot_id};`;
+
+      const response = await multipledbreq([REQ1, REQ2]);
+      console.log(response);
+      return response;
+    }
+
+    if (check.length > 0) {
+      // Ha már van jelentkezés erre a slotra, előbb növeljük a korábbi előadás kapacitását, majd csökkentjük az új előadásét
+      if (!(await checkHasCapacity(presentation_id))) {
+        return { success: false, message: "Nincs elég kapacitás" };
+      }
+
+      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
+      const REQ2 = `UPDATE signups SET presentation_id = ${presentation_id} WHERE email = '${email}' AND slot_id = ${slot_id};`;
+      const REQ3 = `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ${presentation_id} AND remaining_capacity > 0;`;
+
+      const response = await multipledbreq([REQ1, REQ2, REQ3]);
+      console.log(response);
+      return response;
+    } else {
+      // Új jelentkezés esetén előbb ellenőrizzük a kapacitást
+      if (!(await checkHasCapacity(presentation_id))) {
+        return { success: false, message: "Nincs elég kapacitás" };
+      }
+
+      const REQ1 = `INSERT INTO signups (email, slot_id, presentation_id) VALUES ('${email}', ${slot_id}, ${presentation_id});`;
+      const REQ2 = `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ${presentation_id} AND remaining_capacity > 0;`;
+
+      const response = await multipledbreq([REQ1, REQ2]);
+      console.log(response);
+      return response;
+    }
+  } catch (error) {
+    console.error("SQL hiba történt:", error);
+    return { success: false, message: "SQL hiba történt", error };
+  }
+}
+
+export async function getMyPresentetions() {
+  const email = (await getAuth())?.email;
+  const response = await dbreq(
+    `SELECT * FROM signups WHERE email = '${email}';`,
+  );
+  return response;
+}
+
 export const apireq = {
   getPageSettings: { req: getPageSettings, perm: [] },
   editPageSettings: { req: editPageSettings, perm: ["admin"] },
-  getUsers: { req: getUsers, perm: ["admin", "tester"] },
+  getUsers: { req: getUsers, perm: ["admin"] },
   getUsersName: { req: getUsersName, perm: ["student"] },
   getUser: { req: getUser, perm: [] },
   getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },
@@ -832,6 +952,7 @@ export const apireq = {
   updateMatch: { req: updateMatch, perm: ["admin"] },
   getComingMatch: { req: getComingMatch, perm: ["user"] },
   getUserLogs: { req: getUserLogs, perm: ["admin"] },
+  getCarousel: { req: getCarousel, perm: ["user"] },
 } as const;
 
 export const apioptions = Object.keys(apireq) as (keyof typeof apireq)[];
@@ -855,6 +976,7 @@ export const defaultApiReq = async (req: string, body: any) => {
   else if (req === "getAdminUsers") return await getAdminUsers();
   else if (req === "getUsersEmail") return await getUsersEmail();
   else if (req === "getAdminUsersEmail") return await getAdminUsersEmail();
+  else if (req === "getCarousel") return await getCarousel();
   else if (req === "addUserPermission") {
     const { email, permission } = body;
     const response = await addUserPermission(email, permission);

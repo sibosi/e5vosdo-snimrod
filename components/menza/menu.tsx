@@ -1,7 +1,8 @@
 "use client";
 import { Button } from "@nextui-org/react";
 import nyersMenu from "@/public/storage/mindenkorimenu.json";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { UserType } from "@/db/dbreq";
 
 type MenuType = {
   [x: string]: {
@@ -63,6 +64,15 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
 export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
   const tableData = mindenkorimenu;
   const [date, setDate] = useState(new Date());
+  const [realMenu, setRealMenu] = useState(menu);
+
+  useEffect(() => {
+    fetch("/api/getAuth").then((res) => {
+      res.json().then((data: UserType) => {
+        setRealMenu(data.food_menu as any);
+      });
+    });
+  }, [menu]);
 
   function changeDate(days: number) {
     setDate((prevDate) => {
@@ -91,7 +101,7 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
         </button>
       </p>
       <div className="grid max-w-max grid-cols-2 gap-2 overflow-hidden rounded-xl bg-foreground-100 p-2">
-        {menu !== "B" && (
+        {realMenu !== "B" && (
           <MenuCard
             menu="A"
             items={
@@ -102,7 +112,7 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
           />
         )}
 
-        {menu !== "A" && (
+        {realMenu !== "A" && (
           <MenuCard
             menu="B"
             items={

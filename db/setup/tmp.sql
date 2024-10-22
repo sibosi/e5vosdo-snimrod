@@ -1,25 +1,26 @@
+
+--@block
+SELECT service_workers
+FROM users
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
+--@block
+-- List all push_auths that contains a string
+SELECT *
+FROM push_auths
+WHERE auth LIKE '%Ee5%';
 --@block
 SELECT *
-FROM users;
+FROM push_auths;
 --@block
-SELECT *
-FROM notifications;
+UPDATE users
+SET service_workers = '[]'
+WHERE email = 'simon.nimrod.zalan@e5vos.hu';
 --@block
 UPDATE notifications SET message = 'Gratulálok!\nSikeresen beléptél az Eötvös DÖ rendszerébe! Jó szórakozást!\nÜdvözlettel: Nimród, a fejlesztő' WHERE id = 1;
 --@block
 SHOW VARIABLES LIKE 'log_bin';
 SHOW VARIABLES LIKE 'log_bin_basename';
 SHOW BINARY LOGS;
---@block
--- Add A food menu to nimrod user
-UPDATE users
-SET EJG_code = '2023C25EJG462'
-WHERE email = 'simon.nimrod.zalan@e5vos.hu';
---@block
--- Add permissions to nimrod user
-UPDATE users
-SET permissions = '["student"]'
-WHERE email = 'illes.gergo@e5vos.hu';
 --@block
 SELECT email,
     permissions

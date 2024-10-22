@@ -218,3 +218,7 @@ UPDATE presentations SET remaining_capacity = capacity;
 
 --@block
 SELECT * FROM presentations;
+
+--@block
+UPDATE presentations SET capacity = "30" WHERE id = 100;
+UPDATE presentations SET remaining_capacity = capacity WHERE id = 100;

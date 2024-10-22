@@ -51,6 +51,27 @@ const Table = () => {
     "23": undefined,
   });
 
+  interface PresentationIDK {
+    id: number;
+    email: string;
+    slot_id: number;
+    presentation_id: number;
+  }
+
+  useEffect(() => {
+    (async () => {
+      const resp = await fetch("/api/getpre");
+      const data = (await resp.json()) as PresentationIDK[];
+      setPicked({
+        "11": data.find((x: any) => x.slot_id === 11)?.presentation_id,
+        "12": data.find((x: any) => x.slot_id === 12)?.presentation_id,
+        "21": data.find((x: any) => x.slot_id === 21)?.presentation_id,
+        "22": data.find((x: any) => x.slot_id === 22)?.presentation_id,
+        "23": data.find((x: any) => x.slot_id === 23)?.presentation_id,
+      });
+    })();
+  }, []);
+
   useEffect(() => {
     if (again !== false) {
       const presentation = again;

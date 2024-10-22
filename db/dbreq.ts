@@ -905,6 +905,14 @@ export async function signUpForPresentation(
   }
 }
 
+export async function getMyPresentetions() {
+  const email = (await getAuth())?.email;
+  const response = await dbreq(
+    `SELECT * FROM signups WHERE email = '${email}';`,
+  );
+  return response;
+}
+
 export const apireq = {
   getPageSettings: { req: getPageSettings, perm: [] },
   editPageSettings: { req: editPageSettings, perm: ["admin"] },

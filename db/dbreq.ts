@@ -77,6 +77,32 @@ export interface AlertType {
   icon?: boolean;
 }
 
+export interface PresentationType {
+  id: number;
+  name: string;
+  description: string;
+  slot_id: number;
+  location_id: number;
+  signup_type: string;
+  is_competition: boolean;
+  organiser: string;
+  capacity: number;
+  starts_at: string;
+  ends_at: string;
+  signup_deadline: string;
+  min_team_size: number;
+  max_team_size: number;
+  root_parent: number;
+  direct_child: number;
+  remaining_capacity: number;
+}
+
+export interface SignUpType {
+  email: string;
+  slot_id: number;
+  presentation_id: number;
+}
+
 export async function addLog(action: string, message?: string) {
   const email = (await getAuth())?.email;
   return await dbreq(
@@ -811,6 +837,72 @@ export async function getCarousel() {
 
 export async function getAlerts() {
   return (await dbreq(`SELECT * FROM alerts;`)) as AlertType[];
+}
+
+export async function getPresentations() {
+  return (await dbreq(`SELECT * FROM presentations;`)) as PresentationType[];
+}
+
+export async function signUpForPresentation(
+  slot_id: number,
+  presentation_id: number | "NULL",
+) {
+  const email = (await getAuth())?.email;
+
+  async function checkHasCapacity(presentation_id: number) {
+    const result = (await dbreq(
+      `SELECT remaining_capacity FROM presentations WHERE id = ${presentation_id};`,
+    )) as { remaining_capacity: number }[];
+
+    return result.length > 0 && result[0].remaining_capacity > 0;
+  }
+
+  try {
+    // Ellenőrizzük, hogy a felhasználó már jelentkezett-e
+    const check = (await dbreq(
+      `SELECT * FROM signups WHERE email = '${email}' AND slot_id = ${slot_id};`,
+    )) as SignUpType[];
+
+    if (presentation_id === "NULL") {
+      // Jelentkezés törlése
+      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
+      const REQ2 = `DELETE FROM signups WHERE email = '${email}' AND slot_id = ${slot_id};`;
+
+      const response = await multipledbreq([REQ1, REQ2]);
+      console.log(response);
+      return response;
+    }
+
+    if (check.length > 0) {
+      // Ha már van jelentkezés erre a slotra, előbb növeljük a korábbi előadás kapacitását, majd csökkentjük az új előadásét
+      if (!(await checkHasCapacity(presentation_id))) {
+        return { success: false, message: "Nincs elég kapacitás" };
+      }
+
+      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
+      const REQ2 = `UPDATE signups SET presentation_id = ${presentation_id} WHERE email = '${email}' AND slot_id = ${slot_id};`;
+      const REQ3 = `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ${presentation_id} AND remaining_capacity > 0;`;
+
+      const response = await multipledbreq([REQ1, REQ2, REQ3]);
+      console.log(response);
+      return response;
+    } else {
+      // Új jelentkezés esetén előbb ellenőrizzük a kapacitást
+      if (!(await checkHasCapacity(presentation_id))) {
+        return { success: false, message: "Nincs elég kapacitás" };
+      }
+
+      const REQ1 = `INSERT INTO signups (email, slot_id, presentation_id) VALUES ('${email}', ${slot_id}, ${presentation_id});`;
+      const REQ2 = `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ${presentation_id} AND remaining_capacity > 0;`;
+
+      const response = await multipledbreq([REQ1, REQ2]);
+      console.log(response);
+      return response;
+    }
+  } catch (error) {
+    console.error("SQL hiba történt:", error);
+    return { success: false, message: "SQL hiba történt", error };
+  }
 }
 
 export const apireq = {

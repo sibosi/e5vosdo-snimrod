@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS alerts (
 INSERT INTO alerts (text, className, padding, icon)
 VALUES 
 ("r_edirect=https://e5vosdo.hu", "bg-selfprimary-300 border-selfprimary-400 mx-auto hidden", 1, 0),
-("Kedves Diákok!\nAz előadásjelentkezés 11:15-kor nyílik meg az <a href='https://e5vosdo.hu' className='text-selfsecondary-700'>e5vosdo.hu</a> oldalon.", "hidden bg-selfprimary-300 border-selfprimary-400 mx-auto text-xl", 1, 0);
+("Kedves Diákok!\nAz előadásjelentkezés elkezdődött itt <a href='https://info.e5vosdo.hu/e5n' className='text-selfsecondary-700'>info.e5vosdo.hu/e5n</a> oldalon.", "hidden bg-selfprimary-300 border-selfprimary-400 mx-auto text-xl", 1, 0);

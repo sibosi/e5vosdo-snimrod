@@ -60,15 +60,13 @@ const Table = () => {
           [String(slotId)]: presentation.id,
         });
         await signUp(slotId, presentation.id)
-          .catch(() => alert("Hiba történt a jelentkezés során."))
+          .catch(() => null)
           .then(async () => {
             if (
               presentation.direct_child !== null ||
               presentation.root_parent !== null
             ) {
-              await signUp(slotId, presentation.id).catch(() =>
-                alert("Hiba történt a jelentkezés során."),
-              );
+              await signUp(slotId, presentation.id).catch(() => null);
             }
           });
       })();
@@ -169,7 +167,6 @@ const Table = () => {
       }
     } catch (error) {
       console.error("Jelentkezési hiba:", error);
-      alert("Hiba történt a jelentkezés során. " + error.message);
     }
     fetchTableData().then(setPresentations);
   };
@@ -333,14 +330,14 @@ const Table = () => {
                         [String(slotId)]: presentation.id,
                       });
                       await signUp(slotId, presentation.id)
-                        .catch(() => alert("Hiba történt a jelentkezés során."))
+                        .catch(() => null)
                         .then(async () => {
                           if (
                             presentation.direct_child !== null ||
                             presentation.root_parent !== null
                           ) {
-                            await signUp(slotId, presentation.id).catch(() =>
-                              alert("Hiba történt a jelentkezés során."),
+                            await signUp(slotId, presentation.id).catch(
+                              () => null,
                             );
                           }
                         });

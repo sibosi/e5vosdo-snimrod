@@ -37,6 +37,10 @@ const Field = ({
 const Table = () => {
   const [presentations, setPresentations] = useState<PresentationType[]>();
   const [slotId, setSlotId] = useState<number>(11);
+  const [again, setAgain] = useState<any>(false);
+  const [promisePick, setPromisePick] = useState<{
+    [key: string]: number | undefined;
+  }>();
   const [picked, setPicked] = useState<{
     [key: string]: number | undefined;
   }>({
@@ -47,40 +51,71 @@ const Table = () => {
     "23": undefined,
   });
 
+  useEffect(() => {
+    if (again !== false) {
+      const presentation = again;
+      (async () => {
+        setPromisePick({
+          ...promisePick,
+          [String(slotId)]: presentation.id,
+        });
+        await signUp(slotId, presentation.id)
+          .catch(() => alert("Hiba történt a jelentkezés során."))
+          .then(async () => {
+            if (
+              presentation.direct_child !== null ||
+              presentation.root_parent !== null
+            ) {
+              await signUp(slotId, presentation.id).catch(() =>
+                alert("Hiba történt a jelentkezés során."),
+              );
+            }
+          });
+      })();
+      setAgain(false);
+    }
+  }, [again]);
+
+  useEffect(() => setPromisePick(picked), [picked]);
+
+  function getPair(presentation_id: number | "NULL") {
+    if (presentation_id === "NULL")
+      return { slot_id: undefined, presentation_id: undefined };
+
+    const thisPresentation = presentations?.find(
+      (presentation) => presentation.id === presentation_id,
+    );
+
+    if (thisPresentation?.direct_child !== null) {
+      const pair_id = thisPresentation.direct_child;
+      const pairPresentation = presentations?.find(
+        (presentation) => presentation.id === pair_id,
+      );
+      return {
+        slot_id: pairPresentation?.slot_id,
+        presentation_id: pairPresentation?.id,
+      };
+    } else if (thisPresentation?.root_parent !== null) {
+      const pair_id = thisPresentation.root_parent;
+      const pairPresentation = presentations?.find(
+        (presentation) => presentation.id === pair_id,
+      );
+      return {
+        slot_id: pairPresentation?.slot_id,
+        presentation_id: pairPresentation?.id,
+      };
+    }
+    return {
+      slot_id: undefined,
+      presentation_id: undefined,
+    };
+  }
+
   const signUp = async (
     slot_id: number,
     presentation_id: number | "NULL",
     smart = true,
   ) => {
-    function getPair(slot_id: number, presentation_id: number | "NULL") {
-      const thisPresentation = presentations?.find(
-        (presentation) => presentation.id === presentation_id,
-      );
-
-      if (thisPresentation?.direct_child !== null) {
-        const pair_id = thisPresentation?.direct_child;
-        const pairPresentation = presentations?.find(
-          (presentation) => presentation.id === pair_id,
-        );
-        return {
-          slot_id: pairPresentation?.slot_id,
-          presentation_id: pairPresentation?.id,
-        };
-      } else if (thisPresentation?.root_parent !== null) {
-        const pair_id = thisPresentation?.root_parent;
-        const pairPresentation = presentations?.find(
-          (presentation) => presentation.id === pair_id,
-        );
-        return {
-          slot_id: pairPresentation?.slot_id,
-          presentation_id: pairPresentation?.id,
-        };
-      }
-      return {
-        slot_id: undefined,
-        presentation_id: undefined,
-      };
-    }
     try {
       const response = await fetch("/api/signup", {
         method: "POST",
@@ -88,65 +123,39 @@ const Table = () => {
         body: JSON.stringify({ slot_id, presentation_id }),
       });
 
-      // Ellenőrizzük, hogy sikeres volt-e a válasz
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`Error: ${response.status} - ${errorData.error}`);
       }
 
       if (smart && presentation_id !== "NULL") {
-        if (
-          presentations?.find(
-            (presentation) => presentation.id === picked[String(slotId)],
-          )?.direct_child !== null
-        ) {
-          signUp(
-            getPair(slot_id, picked[String(slotId)])?.slot_id,
-            getPair(slot_id, picked[String(slotId)])?.presentation_id,
-            false,
-          );
-        }
-        if (
-          presentations?.find(
-            (presentation) => presentation.id === picked[String(slotId)],
-          )?.root_parent !== null
-        ) {
-          signUp(
-            getPair(slot_id, picked[String(slotId)])?.slot_id,
-            getPair(slot_id, picked[String(slotId)])?.presentation_id,
-            false,
-          );
+        const pair = getPair(presentation_id);
+        if (pair.slot_id && pair.presentation_id) {
+          await signUp(pair.slot_id, pair.presentation_id, false);
         }
       }
 
       if (smart && presentation_id === "NULL") {
-        if (
-          presentations?.find(
-            (presentation) => presentation.id === picked[String(slotId)],
-          )?.direct_child !== null
-        ) {
-          await signUp(
-            getPair(slot_id, picked[String(slotId)])?.slot_id,
-            "NULL",
-            false,
-          );
+        const currentPresentation = presentations?.find(
+          (presentation) => presentation.id === picked[String(slot_id)],
+        );
+
+        if (currentPresentation?.direct_child !== null) {
+          const pair = getPair(currentPresentation.id);
+          if (pair.slot_id && pair.presentation_id) {
+            await signUp(pair.slot_id, "NULL", false);
+          }
         }
-        if (
-          presentations?.find(
-            (presentation) => presentation.id === picked[String(slotId)],
-          )?.root_parent !== null
-        ) {
-          await signUp(
-            getPair(slot_id, picked[String(slotId)])?.slot_id,
-            "NULL",
-            false,
-          );
+        if (currentPresentation?.root_parent !== null) {
+          const pair = getPair(currentPresentation.id);
+          if (pair.slot_id && pair.presentation_id) {
+            await signUp(pair.slot_id, "NULL", false);
+          }
         }
       }
 
       const data = await response.json();
 
-      // Jelentkezés sikerességének kezelése
       if (presentation_id === "NULL") {
         setPicked((prevPicked) => ({
           ...prevPicked,
@@ -159,7 +168,6 @@ const Table = () => {
         }));
       }
     } catch (error) {
-      // Hibakezelés: alert a felhasználónak és hiba logolása
       console.error("Jelentkezési hiba:", error);
       alert("Hiba történt a jelentkezés során. " + error.message);
     }
@@ -320,6 +328,10 @@ const Table = () => {
                   <Button
                     className="w-full"
                     onClick={async () => {
+                      setPromisePick({
+                        ...promisePick,
+                        [String(slotId)]: presentation.id,
+                      });
                       await signUp(slotId, presentation.id)
                         .catch(() => alert("Hiba történt a jelentkezés során."))
                         .then(async () => {
@@ -332,6 +344,7 @@ const Table = () => {
                             );
                           }
                         });
+                      setAgain(presentation);
                     }}
                   >
                     Jelentkezés

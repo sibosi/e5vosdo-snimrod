@@ -1,4 +1,5 @@
 "use client";
+import teachers from "./teachers.json";
 import { Alert } from "@/components/home/alert";
 import { PresentationType, UserType } from "@/db/dbreq";
 import {
@@ -365,7 +366,8 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
                 </div>
               </Field>
 
-              {selfUser.permissions.includes("organiser") && (
+              {(selfUser.permissions.includes("organiser") ||
+                teachers.includes(selfUser.email)) && (
                 <div className="md:col-span-3">
                   <Field>
                     <Button

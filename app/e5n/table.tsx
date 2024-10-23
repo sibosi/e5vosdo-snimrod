@@ -1,7 +1,14 @@
 "use client";
 import { Alert } from "@/components/home/alert";
-import { PresentationType } from "@/db/dbreq";
-import { Button, ButtonGroup } from "@nextui-org/react";
+import { PresentationType, UserType } from "@/db/dbreq";
+import {
+  Button,
+  ButtonGroup,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+} from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 
 const fetchTableData = async () => {
@@ -9,6 +16,19 @@ const fetchTableData = async () => {
   const data = await response.json();
   return data as PresentationType[];
 };
+
+async function fetchSignupers(presentation_id: number) {
+  const resp = await fetch("/api/getMembersAtPresentation", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ presentation_id }),
+  });
+  console.log(resp);
+  const data = await resp.json();
+  return data;
+}
 
 const nameBySlot = {
   11: "Csütörtök 1.",
@@ -34,10 +54,11 @@ const Field = ({
   );
 };
 
-const Table = () => {
+const Table = ({ selfUser }: { selfUser: UserType }) => {
   const [presentations, setPresentations] = useState<PresentationType[]>();
   const [slotId, setSlotId] = useState<number>(11);
-  const [again, setAgain] = useState<any>(false);
+  const [signupers, setSignupers] = useState<string[]>([]);
+  const [selectedPresentation, setSelectedPresentation] = useState<number>();
   const [promisePick, setPromisePick] = useState<{
     [key: string]: number | undefined;
   }>();
@@ -72,29 +93,6 @@ const Table = () => {
     })();
   }, []);
 
-  useEffect(() => {
-    if (again !== false) {
-      const presentation = again;
-      (async () => {
-        setPromisePick({
-          ...promisePick,
-          [String(slotId)]: presentation.id,
-        });
-        await signUp(slotId, presentation.id)
-          .catch(() => null)
-          .then(async () => {
-            if (
-              presentation.direct_child !== null ||
-              presentation.root_parent !== null
-            ) {
-              await signUp(slotId, presentation.id).catch(() => null);
-            }
-          });
-      })();
-      setAgain(false);
-    }
-  }, [again]);
-
   useEffect(() => setPromisePick(picked), [picked]);
 
   function getPair(presentation_id: number | "NULL") {
@@ -104,8 +102,9 @@ const Table = () => {
     const thisPresentation = presentations?.find(
       (presentation) => presentation.id === presentation_id,
     );
+    if (!thisPresentation) return;
 
-    if (thisPresentation?.direct_child !== null) {
+    if (thisPresentation.direct_child !== null) {
       const pair_id = thisPresentation.direct_child;
       const pairPresentation = presentations?.find(
         (presentation) => presentation.id === pair_id,
@@ -114,7 +113,7 @@ const Table = () => {
         slot_id: pairPresentation?.slot_id,
         presentation_id: pairPresentation?.id,
       };
-    } else if (thisPresentation?.root_parent !== null) {
+    } else if (thisPresentation.root_parent !== null) {
       const pair_id = thisPresentation.root_parent;
       const pairPresentation = presentations?.find(
         (presentation) => presentation.id === pair_id,
@@ -149,6 +148,7 @@ const Table = () => {
 
       if (smart && presentation_id !== "NULL") {
         const pair = getPair(presentation_id);
+        if (!pair) return;
         if (pair.slot_id && pair.presentation_id) {
           await signUp(pair.slot_id, pair.presentation_id, false);
         }
@@ -158,15 +158,18 @@ const Table = () => {
         const currentPresentation = presentations?.find(
           (presentation) => presentation.id === picked[String(slot_id)],
         );
+        if (!currentPresentation) return;
 
         if (currentPresentation?.direct_child !== null) {
           const pair = getPair(currentPresentation.id);
+          if (!pair) return;
           if (pair.slot_id && pair.presentation_id) {
             await signUp(pair.slot_id, "NULL", false);
           }
         }
         if (currentPresentation?.root_parent !== null) {
           const pair = getPair(currentPresentation.id);
+          if (!pair) return;
           if (pair.slot_id && pair.presentation_id) {
             await signUp(pair.slot_id, "NULL", false);
           }
@@ -282,7 +285,11 @@ const Table = () => {
               </Field>
               <Field>
                 <div>
-                  {String(presentation.direct_child)}
+                  <p>
+                    {presentation.id}:{presentation.root_parent}-
+                    {presentation.direct_child}
+                  </p>
+
                   {presentation.description}
                   {presentation.direct_child !== null && (
                     <Alert className="border-selfsecondary-400 bg-selfsecondary-200">
@@ -350,28 +357,59 @@ const Table = () => {
                         ...promisePick,
                         [String(slotId)]: presentation.id,
                       });
-                      await signUp(slotId, presentation.id)
-                        .catch(() => null)
-                        .then(async () => {
-                          if (
-                            presentation.direct_child !== null ||
-                            presentation.root_parent !== null
-                          ) {
-                            await signUp(slotId, presentation.id).catch(
-                              () => null,
-                            );
-                          }
-                        });
-                      setAgain(presentation);
+                      await signUp(slotId, presentation.id);
                     }}
                   >
                     Jelentkezés
                   </Button>
                 </div>
               </Field>
+
+              <div className="col-span-3">
+                <Field>
+                  <Button
+                    onClick={async () => {
+                      setSelectedPresentation(presentation.id);
+                      setSignupers(await fetchSignupers(presentation.id));
+                    }}
+                  >
+                    Jelentkezők
+                  </Button>
+                  {selectedPresentation === presentation.id && (
+                    <ul>
+                      {signupers.map((signuper) => (
+                        <li key={signuper}>{signuper}</li>
+                      ))}
+                    </ul>
+                  )}
+                </Field>
+              </div>
             </div>
           ),
       )}
+
+      <Modal
+        isOpen={selectedPresentation !== undefined}
+        onClose={() => setSelectedPresentation(undefined)}
+        title="Jelentkezők"
+      >
+        <ModalContent>
+          <ModalHeader>Jelenléti ív</ModalHeader>
+          <ModalBody>
+            <div style={{ maxHeight: "50vh", overflowY: "auto" }}>
+              <ul>
+                {signupers
+                  .sort((a, b) => a.localeCompare(b)) // Itt rendezzük a listát
+                  .map((signuper, index) => (
+                    <li key={signuper}>
+                      {index + 1}. {signuper.split("@")[0].split(".").join(" ")}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

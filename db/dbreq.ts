@@ -913,6 +913,23 @@ export async function getMyPresentetions() {
   return response;
 }
 
+export async function getMembersAtPresentation(presentation_id: number) {
+  const response = (await dbreq(
+    `SELECT email FROM signups WHERE presentation_id = ${presentation_id};`,
+  )) as { email: string }[];
+  // Format it
+  const emails = response.map((item: { email: string }) => item.email);
+
+  return emails as string[];
+}
+
+export async function getPresentationsByIds(ids: number[]) {
+  const response = await dbreq(
+    `SELECT * FROM presentations WHERE id IN (${ids.join(", ")});`,
+  );
+  return response;
+}
+
 export const apireq = {
   getPageSettings: { req: getPageSettings, perm: [] },
   editPageSettings: { req: editPageSettings, perm: ["admin"] },

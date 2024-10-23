@@ -155,7 +155,7 @@ const DISALLOWED_URL_BEGINNINGS = ["/api"];
 let cacheMethod = null;
 (async () => (cacheMethod = await getStorage("cacheMethod")))();
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener("nofetch", (event) => {
   checkForUpdate();
   if (event.request.method !== "GET") return;
 

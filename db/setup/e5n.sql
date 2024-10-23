@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS signups (
 
 --@block
 SELECT * FROM signups;
+--@block
+SELECT * FROM presentations;
 
 
 --@block
@@ -218,7 +220,57 @@ UPDATE presentations SET remaining_capacity = capacity;
 
 --@block
 SELECT * FROM presentations;
+--@block
+SELECT * FROM signups;
 
 --@block
-UPDATE presentations SET capacity = "30" WHERE id = 100;
+UPDATE presentations SET capacity = 30 WHERE id = 100;
 UPDATE presentations SET remaining_capacity = capacity WHERE id = 100;
+
+--@block
+UPDATE presentations SET capacity = 35 WHERE slot_id IN (11, 12) AND capacity = 30;
+DELETE FROM signups WHERE email IS NULL OR email = 'undefined';
+DELETE t1 FROM signups t1, signups t2 WHERE t1.email = t2.email AND t1.slot_id = t2.slot_id AND t1.id < t2.id;
+-- Számold ki, hogy egy prezentációra hány jelentkezés van
+UPDATE presentations p
+JOIN (
+    SELECT presentation_id, COUNT(*) AS signup_count
+    FROM signups
+    GROUP BY presentation_id
+) s ON p.id = s.presentation_id
+SET p.remaining_capacity = p.capacity - s.signup_count;
+
+-- Azokra a prezentációkra, ahol nincs jelentkező, állítsd be a teljes kapacitást
+UPDATE presentations p
+LEFT JOIN (
+    SELECT presentation_id, COUNT(*) AS signup_count
+    FROM signups
+    GROUP BY presentation_id
+) s ON p.id = s.presentation_id
+SET p.remaining_capacity = p.capacity
+WHERE s.signup_count IS NULL;
+--@block
+DELETE FROM presentations WHERE id IN (123, 147);
+DELETE FROM signups WHERE presentation_id IN (123, 147);
+--@block
+SELECT 
+    p.slot_id, 
+    p.capacity, 
+    COALESCE(SUM(s.signup_count), 0) AS total_signups, 
+    (p.capacity - COALESCE(SUM(s.signup_count), 0)) AS remaining_capacity
+FROM 
+    presentations p
+LEFT JOIN (
+    SELECT 
+        presentation_id, 
+        COUNT(*) AS signup_count 
+    FROM 
+        signups 
+    GROUP BY 
+        presentation_id
+) s ON p.id = s.presentation_id
+GROUP BY 
+    p.slot_id, p.capacity;
+
+--@block
+SELECT * FROM signups WHERE email = 'undefined';

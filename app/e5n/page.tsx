@@ -1,13 +1,14 @@
-import { addLog, getAuth } from "@/db/dbreq";
+import { getAuth } from "@/db/dbreq";
 import Table from "./table";
+import PleaseLogin from "../me/redirectToLogin";
+import SeeSignupers from "./seeSignupers";
 
 const E5NPage = async () => {
   const selfUser = await getAuth();
-  addLog("clearCache", selfUser?.email ?? "unknown");
 
   return (
     <div className="font-semibold text-foreground">
-      <Table />
+      {selfUser ? <Table selfUser={selfUser} /> : <PleaseLogin />}
     </div>
   );
 };

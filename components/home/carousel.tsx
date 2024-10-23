@@ -196,25 +196,26 @@ export default function Carousel({
           onScroll={onScroll}
           className="flex snap-x overflow-x-auto scroll-smooth scrollbar-default"
         >
-          {realData.map((item, index: number) => (
-            <CarouselItem
-              key={index.toString()}
-              uri={item.uri}
-              scrollX={scrollX * 10}
-              index={index}
-              dataLength={realData.length}
-              title={item.title}
-              onClick={() => {
-                realData[index].description?.startsWith("http")
-                  ? (window.location.href = realData[index].description)
-                  : setClicked(clicked === index ? null : index);
-              }}
-              width={clicked === index ? "95%" : undefined}
-              className={
-                clicked == null || clicked === index ? "mx-auto" : "hidden"
-              }
-            />
-          ))}
+          {realData !== undefined &&
+            realData.map((item, index: number) => (
+              <CarouselItem
+                key={index.toString()}
+                uri={item.uri}
+                scrollX={scrollX * 10}
+                index={index}
+                dataLength={realData.length}
+                title={item.title}
+                onClick={() => {
+                  realData[index].description?.startsWith("http")
+                    ? (window.location.href = realData[index].description)
+                    : setClicked(clicked === index ? null : index);
+                }}
+                width={clicked === index ? "95%" : undefined}
+                className={
+                  clicked == null || clicked === index ? "mx-auto" : "hidden"
+                }
+              />
+            ))}
           {clicked !== null ? null : ( // description
             <div className="min-w-unit-24" />
           )}

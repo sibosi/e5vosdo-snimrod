@@ -365,25 +365,27 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
                 </div>
               </Field>
 
-              <div className="col-span-3">
-                <Field>
-                  <Button
-                    onClick={async () => {
-                      setSelectedPresentation(presentation.id);
-                      setSignupers(await fetchSignupers(presentation.id));
-                    }}
-                  >
-                    Jelentkezők
-                  </Button>
-                  {selectedPresentation === presentation.id && (
-                    <ul>
-                      {signupers.map((signuper) => (
-                        <li key={signuper}>{signuper}</li>
-                      ))}
-                    </ul>
-                  )}
-                </Field>
-              </div>
+              {selfUser.permissions.includes("organiser") && (
+                <div className="md:col-span-3">
+                  <Field>
+                    <Button
+                      onClick={async () => {
+                        setSelectedPresentation(presentation.id);
+                        setSignupers(await fetchSignupers(presentation.id));
+                      }}
+                    >
+                      Jelentkezők
+                    </Button>
+                    {selectedPresentation === presentation.id && (
+                      <ul>
+                        {signupers.map((signuper) => (
+                          <li key={signuper}>{signuper}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </Field>
+                </div>
+              )}
             </div>
           ),
       )}

@@ -95,6 +95,7 @@ export interface PresentationType {
   root_parent: number;
   direct_child: number;
   remaining_capacity: number;
+  room?: string;
 }
 
 export interface SignUpType {
@@ -928,6 +929,27 @@ export async function getPresentationsByIds(ids: number[]) {
     `SELECT * FROM presentations WHERE id IN (${ids.join(", ")});`,
   );
   return response;
+}
+
+export async function getMyPre() {
+  const email = (await getAuth())?.email;
+  const response = (await dbreq(
+    `SELECT * FROM signups_new WHERE email = '${email}';`,
+  )) as SignUpType[];
+
+  /**
+   * goal type: {
+   *  [key: slot_id]: presentation_id[]
+   * }
+   */
+  console.log(JSON.stringify(response));
+  const goal: { [key: number]: number[] } = {};
+  response.forEach((item: { slot_id: number; presentation_id: number }) => {
+    if (goal[item.slot_id]) goal[item.slot_id].push(item.presentation_id);
+    else goal[item.slot_id] = [item.presentation_id];
+  });
+
+  return goal;
 }
 
 export const apireq = {

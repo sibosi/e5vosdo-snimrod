@@ -69,14 +69,14 @@ export const Navbar = ({
               <p className="block- hidden p-2 font-bold text-foreground">E5</p>
             </NextLink>
           ) : (
-            <div className="hidden">
+            <>
               <HelloMessage selfUser={selfUser} size="sm" padding={false} />
               {selfUser?.permissions.includes("tester") && (
                 <Chip variant="shadow" className="bg-selfsecondary-300 text-sm">
                   Tesztverzió
                 </Chip>
               )}
-            </div>
+            </>
           )}
 
           <GetApp size={isActiveHeadSpace ? "small" : "medium"} />

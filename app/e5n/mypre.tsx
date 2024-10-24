@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import presentations_data from "./presentations.json";
 import teachers from "./teachers.json";
 import { PresentationType, UserType } from "@/db/dbreq";
@@ -52,6 +52,10 @@ const MyPre = ({ selfUser }: { selfUser: UserType }) => {
     const data = await resp.json();
     setSignupers(data);
   }
+
+  useEffect(() => {
+    getMyPre();
+  }, []);
 
   return (
     <div>

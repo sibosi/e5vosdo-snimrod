@@ -28,7 +28,7 @@ export default async function Home() {
         <HelloMessage selfUser={selfUser} />
       )}
 
-      <Welcome />
+      {0 && <Welcome />}
 
       {selfUser?.permissions.includes("user") && <Carousel data={[]} />}
 

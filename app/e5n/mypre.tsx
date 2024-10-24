@@ -174,6 +174,7 @@ const MyPre = ({ selfUser }: { selfUser: UserType }) => {
               ) : (
                 <div>Nincs</div>
               )}
+              {myPre === undefined && <div>Előadások betöltése...</div>}
             </div>
           </div>
         )}

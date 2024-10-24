@@ -936,7 +936,7 @@ export async function getPresentationsByIds(ids: number[]) {
 export async function getMyPre() {
   const email = (await getAuth())?.email;
   const response = (await dbreq(
-    `SELECT * FROM signups_new_new WHERE email = '${email}';`,
+    `SELECT * FROM signups_new WHERE email = '${email}';`,
   )) as SignUpType[];
 
   /**

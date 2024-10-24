@@ -956,7 +956,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "200."
   },
   {
     "id": 150,
@@ -975,7 +976,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "101."
   },
   {
     "id": 151,
@@ -994,7 +996,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "306."
   },
   {
     "id": 152,
@@ -1013,7 +1016,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "57."
   },
   {
     "id": 153,
@@ -1032,7 +1036,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "pinceklub / énekterem"
   },
   {
     "id": 154,
@@ -1051,7 +1056,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "földrajz"
   },
   {
     "id": 155,
@@ -1070,7 +1076,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "204."
   },
   {
     "id": 156,
@@ -1089,7 +1096,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "217."
   },
   {
     "id": 157,
@@ -1108,7 +1116,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "Biológia előadó"
   },
   {
     "id": 158,
@@ -1127,7 +1136,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "201."
   },
   {
     "id": 159,
@@ -1146,7 +1156,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "219."
   },
   {
     "id": 160,
@@ -1165,7 +1176,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "58."
   },
   {
     "id": 161,
@@ -1184,7 +1196,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "107."
   },
   {
     "id": 162,
@@ -1203,7 +1216,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "221."
   },
   {
     "id": 163,
@@ -1222,7 +1236,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "117."
   },
   {
     "id": 164,
@@ -1241,7 +1256,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "305."
   },
   {
     "id": 165,
@@ -1260,7 +1276,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "310."
   },
   {
     "id": 166,
@@ -1279,7 +1296,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "222."
   },
   {
     "id": 167,
@@ -1298,7 +1316,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "309."
   },
   {
     "id": 168,
@@ -1317,7 +1336,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "70."
   },
   {
     "id": 169,
@@ -1336,7 +1356,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "202."
   },
   {
     "id": 170,
@@ -1355,7 +1376,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "212."
   },
   {
     "id": 171,
@@ -1374,7 +1396,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "220."
   },
   {
     "id": 172,
@@ -1393,7 +1416,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "216."
   },
   {
     "id": 173,
@@ -1412,7 +1436,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "307."
   },
   {
     "id": 174,
@@ -1431,7 +1456,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "208."
   },
   {
     "id": 175,
@@ -1450,7 +1476,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "308."
   },
   {
     "id": 176,
@@ -1469,7 +1496,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "221."
   },
   {
     "id": 177,
@@ -1488,7 +1516,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "209."
   },
   {
     "id": 178,
@@ -1507,7 +1536,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "215."
   },
   {
     "id": 179,
@@ -1526,7 +1556,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "102."
   },
   {
     "id": 180,
@@ -1545,7 +1576,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 209,
-    "remaining_capacity": -3
+    "remaining_capacity": -3,
+    "room": "Biológia előadó"
   },
   {
     "id": 181,
@@ -1564,7 +1596,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 210,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "200."
   },
   {
     "id": 182,
@@ -1583,7 +1616,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 212,
-    "remaining_capacity": -1
+    "remaining_capacity": -1,
+    "room": "földrajz"
   },
   {
     "id": 183,
@@ -1602,7 +1636,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 213,
-    "remaining_capacity": -6
+    "remaining_capacity": -6,
+    "room": "ELMARAD"
   },
   {
     "id": 184,
@@ -1621,7 +1656,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "222."
   },
   {
     "id": 185,
@@ -1640,7 +1676,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "204."
   },
   {
     "id": 186,
@@ -1659,7 +1696,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 215,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "217."
   },
   {
     "id": 187,
@@ -1678,7 +1716,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 216,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "215."
   },
   {
     "id": 188,
@@ -1697,7 +1736,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "kémia előadó"
   },
   {
     "id": 189,
@@ -1716,7 +1756,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "305."
   },
   {
     "id": 190,
@@ -1735,7 +1776,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "208."
   },
   {
     "id": 191,
@@ -1754,7 +1796,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "101."
   },
   {
     "id": 192,
@@ -1773,7 +1816,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "212."
   },
   {
     "id": 193,
@@ -1792,7 +1836,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 218,
-    "remaining_capacity": -2
+    "remaining_capacity": -2,
+    "room": "306."
   },
   {
     "id": 194,
@@ -1811,7 +1856,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 219,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "216."
   },
   {
     "id": 195,
@@ -1830,7 +1876,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "223."
   },
   {
     "id": 196,
@@ -1849,7 +1896,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "221."
   },
   {
     "id": 197,
@@ -1868,7 +1916,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "219."
   },
   {
     "id": 198,
@@ -1887,7 +1936,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 222,
-    "remaining_capacity": -9
+    "remaining_capacity": -9,
+    "room": "307."
   },
   {
     "id": 199,
@@ -1906,7 +1956,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 223,
-    "remaining_capacity": -2
+    "remaining_capacity": -2,
+    "room": "220."
   },
   {
     "id": 200,
@@ -1925,7 +1976,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "310."
   },
   {
     "id": 201,
@@ -1944,7 +1996,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "102."
   },
   {
     "id": 202,
@@ -1963,7 +2016,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 8
+    "remaining_capacity": 8,
+    "room": "201."
   },
   {
     "id": 203,
@@ -1982,7 +2036,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": 230,
-    "remaining_capacity": -1
+    "remaining_capacity": -1,
+    "room": "15."
   },
   {
     "id": 204,
@@ -2001,7 +2056,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "202."
   },
   {
     "id": 205,
@@ -2020,7 +2076,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 24
+    "remaining_capacity": 24,
+    "room": "107."
   },
   {
     "id": 206,
@@ -2039,7 +2096,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "305."
   },
   {
     "id": 207,
@@ -2058,7 +2116,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "Fizika előadó"
   },
   {
     "id": 208,
@@ -2077,7 +2136,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "202."
   },
   {
     "id": 209,
@@ -2096,7 +2156,8 @@
     "max_team_size": null,
     "root_parent": 180,
     "direct_child": null,
-    "remaining_capacity": -4
+    "remaining_capacity": -4,
+    "room": "Biológia előadó"
   },
   {
     "id": 210,
@@ -2115,7 +2176,8 @@
     "max_team_size": null,
     "root_parent": 181,
     "direct_child": null,
-    "remaining_capacity": -4
+    "remaining_capacity": -4,
+    "room": "200."
   },
   {
     "id": 211,
@@ -2134,7 +2196,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "pinceklub / énekterem"
   },
   {
     "id": 212,
@@ -2153,7 +2216,8 @@
     "max_team_size": null,
     "root_parent": 182,
     "direct_child": null,
-    "remaining_capacity": -5
+    "remaining_capacity": -5,
+    "room": "földrajz"
   },
   {
     "id": 213,
@@ -2172,7 +2236,8 @@
     "max_team_size": null,
     "root_parent": 183,
     "direct_child": null,
-    "remaining_capacity": -6
+    "remaining_capacity": -6,
+    "room": "ELMARAD"
   },
   {
     "id": 214,
@@ -2191,7 +2256,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "201."
   },
   {
     "id": 215,
@@ -2210,7 +2276,8 @@
     "max_team_size": null,
     "root_parent": 186,
     "direct_child": null,
-    "remaining_capacity": -2
+    "remaining_capacity": -2,
+    "room": "217."
   },
   {
     "id": 216,
@@ -2229,7 +2296,8 @@
     "max_team_size": null,
     "root_parent": 187,
     "direct_child": null,
-    "remaining_capacity": 2
+    "remaining_capacity": 2,
+    "room": "215."
   },
   {
     "id": 217,
@@ -2248,7 +2316,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "211."
   },
   {
     "id": 218,
@@ -2267,7 +2336,8 @@
     "max_team_size": null,
     "root_parent": 193,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "306."
   },
   {
     "id": 219,
@@ -2286,7 +2356,8 @@
     "max_team_size": null,
     "root_parent": 194,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "216."
   },
   {
     "id": 220,
@@ -2305,7 +2376,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "102."
   },
   {
     "id": 221,
@@ -2324,7 +2396,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "223."
   },
   {
     "id": 222,
@@ -2343,7 +2416,8 @@
     "max_team_size": null,
     "root_parent": 198,
     "direct_child": null,
-    "remaining_capacity": -10
+    "remaining_capacity": -10,
+    "room": "307."
   },
   {
     "id": 223,
@@ -2362,7 +2436,8 @@
     "max_team_size": null,
     "root_parent": 199,
     "direct_child": null,
-    "remaining_capacity": -3
+    "remaining_capacity": -3,
+    "room": "220."
   },
   {
     "id": 224,
@@ -2381,7 +2456,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 1
+    "remaining_capacity": 1,
+    "room": "310."
   },
   {
     "id": 225,
@@ -2400,7 +2476,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "222."
   },
   {
     "id": 226,
@@ -2419,7 +2496,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "208."
   },
   {
     "id": 227,
@@ -2438,7 +2516,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "101."
   },
   {
     "id": 228,
@@ -2457,7 +2536,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "219."
   },
   {
     "id": 229,
@@ -2476,7 +2556,8 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "221."
   },
   {
     "id": 230,
@@ -2495,7 +2576,8 @@
     "max_team_size": null,
     "root_parent": 203,
     "direct_child": null,
-    "remaining_capacity": -1
+    "remaining_capacity": -1,
+    "room": "15."
   },
   {
     "id": 231,
@@ -2514,6 +2596,7 @@
     "max_team_size": null,
     "root_parent": null,
     "direct_child": null,
-    "remaining_capacity": 0
+    "remaining_capacity": 0,
+    "room": "223."
   }
 ]

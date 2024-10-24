@@ -268,7 +268,7 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
       <div className="grid grid-cols-3 gap-4 text-2xl font-extrabold max-md:hidden">
         <Field>Név és Leírás</Field>
         <Field>Szervező</Field>
-        <Field>Maradék hely</Field>
+        <Field>Jelentkezők</Field>
       </div>
       {presentations === undefined && (
         <div className="text-center">Betöltés...</div>
@@ -334,64 +334,22 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
               </Field>
 
               <Field>
-                <div
-                  className={
-                    "rounded-lg p-4 " +
-                    (presentation.remaining_capacity > 20
-                      ? "bg-green-500"
-                      : presentation.remaining_capacity > 10
-                        ? "bg-yellow-500"
-                        : presentation.remaining_capacity > 0
-                          ? "bg-red-500"
-                          : "bg-purple-500")
-                  }
+                <Button
+                  onClick={async () => {
+                    setSelectedPresentation(presentation.id);
+                    setSignupers(await fetchSignupers(presentation.id));
+                  }}
                 >
-                  <p className="text-center text-2xl font-extrabold">
-                    {picked[String(slotId)] === presentation.id &&
-                      "Kiválasztva"}
-                  </p>
-                  <p className="mx-auto max-w-min text-2xl">
-                    {String(presentation.remaining_capacity)}
-                  </p>
-                  <Button
-                    className="w-full"
-                    isDisabled={true}
-                    onClick={async () => {
-                      return;
-                      setPromisePick({
-                        ...promisePick,
-                        [String(slotId)]: presentation.id,
-                      });
-                      await signUp(slotId, presentation.id);
-                    }}
-                  >
-                    Jelentkezés
-                  </Button>
-                </div>
+                  Jelentkezők
+                </Button>
+                {selectedPresentation === presentation.id && (
+                  <ul>
+                    {signupers.map((signuper) => (
+                      <li key={signuper}>{signuper}</li>
+                    ))}
+                  </ul>
+                )}
               </Field>
-
-              {(selfUser.permissions.includes("organiser") ||
-                teachers.includes(selfUser.email)) && (
-                <div className="md:col-span-3">
-                  <Field>
-                    <Button
-                      onClick={async () => {
-                        setSelectedPresentation(presentation.id);
-                        setSignupers(await fetchSignupers(presentation.id));
-                      }}
-                    >
-                      Jelentkezők
-                    </Button>
-                    {selectedPresentation === presentation.id && (
-                      <ul>
-                        {signupers.map((signuper) => (
-                          <li key={signuper}>{signuper}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </Field>
-                </div>
-              )}
             </div>
           ),
       )}

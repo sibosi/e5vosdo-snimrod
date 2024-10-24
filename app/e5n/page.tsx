@@ -9,15 +9,17 @@ const E5NPage = async () => {
 
   return (
     <div className="font-semibold text-foreground">
-      {selfUser ? <MyPre selfUser={selfUser} /> : <PleaseLogin />}
+      {selfUser ? <Table selfUser={selfUser} /> : <PleaseLogin />}
     </div>
   );
 
   return (
     <div className="font-semibold text-foreground">
-      {selfUser ? <Table selfUser={selfUser} /> : <PleaseLogin />}
+      {selfUser ? <MyPre selfUser={selfUser} /> : <PleaseLogin />}
     </div>
   );
+
+  
 };
 
 export default E5NPage;

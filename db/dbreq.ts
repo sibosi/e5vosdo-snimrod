@@ -861,13 +861,13 @@ export async function signUpForPresentation(
   try {
     // Ellenőrizzük, hogy a felhasználó már jelentkezett-e
     const check = (await dbreq(
-      `SELECT * FROM signups WHERE email = '${email}' AND slot_id = ${slot_id};`,
+      `SELECT * FROM signups_new WHERE email = '${email}' AND slot_id = ${slot_id};`,
     )) as SignUpType[];
 
     if (presentation_id === "NULL") {
       // Jelentkezés törlése
-      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
-      const REQ2 = `DELETE FROM signups WHERE email = '${email}' AND slot_id = ${slot_id};`;
+      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups_new WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
+      const REQ2 = `DELETE FROM signups_new WHERE email = '${email}' AND slot_id = ${slot_id};`;
 
       const response = await multipledbreq([REQ1, REQ2]);
       console.log(response);
@@ -880,8 +880,8 @@ export async function signUpForPresentation(
         return { success: false, message: "Nincs elég kapacitás" };
       }
 
-      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
-      const REQ2 = `UPDATE signups SET presentation_id = ${presentation_id} WHERE email = '${email}' AND slot_id = ${slot_id};`;
+      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups_new WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
+      const REQ2 = `UPDATE signups_new SET presentation_id = ${presentation_id} WHERE email = '${email}' AND slot_id = ${slot_id};`;
       const REQ3 = `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ${presentation_id} AND remaining_capacity > 0;`;
 
       const response = await multipledbreq([REQ1, REQ2, REQ3]);
@@ -893,7 +893,7 @@ export async function signUpForPresentation(
         return { success: false, message: "Nincs elég kapacitás" };
       }
 
-      const REQ1 = `INSERT INTO signups (email, slot_id, presentation_id) VALUES ('${email}', ${slot_id}, ${presentation_id});`;
+      const REQ1 = `INSERT INTO signups_new (email, slot_id, presentation_id) VALUES ('${email}', ${slot_id}, ${presentation_id});`;
       const REQ2 = `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ${presentation_id} AND remaining_capacity > 0;`;
 
       const response = await multipledbreq([REQ1, REQ2]);
@@ -909,19 +909,21 @@ export async function signUpForPresentation(
 export async function getMyPresentetions() {
   const email = (await getAuth())?.email;
   const response = await dbreq(
-    `SELECT * FROM signups WHERE email = '${email}';`,
+    `SELECT * FROM signups_new WHERE email = '${email}';`,
   );
   return response;
 }
 
 export async function getMembersAtPresentation(presentation_id: number) {
   const response = (await dbreq(
-    `SELECT email FROM signups WHERE presentation_id = ${presentation_id};`,
+    `SELECT email FROM signups_new WHERE presentation_id = ${presentation_id};`,
   )) as { email: string }[];
   // Format it
   const emails = response.map((item: { email: string }) => item.email);
 
-  return emails as string[];
+  const uniqueEmails = Array.from(new Set(emails));
+
+  return uniqueEmails as string[];
 }
 
 export async function getPresentationsByIds(ids: number[]) {
@@ -934,7 +936,7 @@ export async function getPresentationsByIds(ids: number[]) {
 export async function getMyPre() {
   const email = (await getAuth())?.email;
   const response = (await dbreq(
-    `SELECT * FROM signups_new WHERE email = '${email}';`,
+    `SELECT * FROM signups_new_new WHERE email = '${email}';`,
   )) as SignUpType[];
 
   /**

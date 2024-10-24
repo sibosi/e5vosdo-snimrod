@@ -253,7 +253,9 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
           }
           <Button
             disabled={!picked}
+            isDisabled={true}
             onClick={async () => {
+              return;
               await signUp(slotId, "NULL");
               await signUp(slotId, "NULL");
             }}
@@ -353,7 +355,9 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
                   </p>
                   <Button
                     className="w-full"
+                    isDisabled={true}
                     onClick={async () => {
+                      return;
                       setPromisePick({
                         ...promisePick,
                         [String(slotId)]: presentation.id,

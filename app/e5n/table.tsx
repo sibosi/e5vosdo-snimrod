@@ -2,6 +2,7 @@
 import teachers from "./teachers.json";
 import { Alert } from "@/components/home/alert";
 import { PresentationType, UserType } from "@/db/dbreq";
+import presentationsData from "./presentations.json";
 import {
   Button,
   ButtonGroup,
@@ -340,7 +341,7 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
                     setSignupers(await fetchSignupers(presentation.id));
                   }}
                 >
-                  Jelentkezők
+                  Jelentkezők megtekintése
                 </Button>
                 {selectedPresentation === presentation.id && (
                   <ul>
@@ -364,6 +365,34 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
           <ModalBody>
             <div style={{ maxHeight: "50vh", overflowY: "auto" }}>
               <ul>
+                <p>
+                  Előadás:{" "}
+                  {
+                    presentationsData.find(
+                      (presentation) =>
+                        presentation.id === selectedPresentation,
+                    )?.name
+                  }
+                </p>
+                <p>
+                  Terem:{" "}
+                  {
+                    presentationsData.find(
+                      (presentation) =>
+                        presentation.id === selectedPresentation,
+                    )?.room
+                  }
+                </p>
+                <p>
+                  Előadó:{" "}
+                  {
+                    presentationsData.find(
+                      (presentation) =>
+                        presentation.id === selectedPresentation,
+                    )?.organiser
+                  }
+                </p>
+                <p>Névsor:</p>
                 {signupers
                   .sort((a, b) => a.localeCompare(b)) // Itt rendezzük a listát
                   .map((signuper, index) => (

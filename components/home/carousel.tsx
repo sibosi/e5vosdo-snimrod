@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import parse from "html-react-parser";
 
 export interface CarouselItemProps {
   title: string | [string, string];
@@ -252,7 +253,7 @@ export default function Carousel({
             borderRadius: 20,
           }}
         >
-          {realData[clicked].description}
+          {<span>{parse(realData[clicked].description)}</span>}
         </div>
       )}
     </div>

@@ -20,6 +20,21 @@ INSERT INTO events (
     )
 VALUES 
     (
+        'Ajánlott programok',
+        'Link: https://info.e5vosdo.hu/api/programok',
+        '2024-10-23',
+        '2024-10-25',
+        '/events/eotvosnapok.jpg',
+        'https://info.e5vosdo.hu/api/programok',
+        '[]'
+
+    ),
+    ('Nerf Csata',' 13:30-16 | 307. terem', '2024-10-23', '2024-10-25', 'https://spartacusbubblesoccer.co.uk/wp-content/uploads/2023/12/Nerf-Guns-and-Ammunition-on-Grass-02-1024x657.jpg', 'Kedves Mindenki, \nHolnap a 307-es teremben az osztályunk nerf csatát rendez, 13:30-16:00-ig. A játék részleteiről majd a helyszínen tájékoztatunk mindenkit, de gyertek a barátaitokkal együtt, max hatan-heten. \nVárunk titeket!\n9.b', '[]'),
+    ('Eötvös Turi',' 108-as teremben', '2024-10-23', '2024-10-25', '/events/turi2.jpg', 'Kedves E5vösösök!\n\nEmlékeztetni szeretnénk Titeket, hogy az E5vös Turi idén is megrendezésre kerül. Továbbra is hozhattok jó állapotú ruhákat, játékokat és ékszereket a 108-as terembe. Mindenkit várunk csütörtökön és pénteken (délután) ezen a hangulatos eseményen!\n\nSzép estét,\na 11.B és a 7.B', '[]'),
+    ('TársasTár',' 14-18 óra között', '2024-10-23', '2024-10-25', '/groups/tarsastar.jpg', 'Tisztelt Eötvös Népe,\n\nÖrömmel jelentjük be, hogy az Eötvös Napok alatt, csütörtökön 14:00-18:00 időpontban bepótoljuk a szeptemberben elmaradt Társas Délutánt. Várunk titeket a 202-es teremben!', '[]'),
+    ('Szabadulószoba', '305-ös teremben', '2024-10-23', '2024-10-25', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRynmwLZGWc0lLT5KTYMezeRJpvLqByliQeiw&s', 'Kedves Eötvös Népe!\n\nÖrömmel jelentjük, hogy a mostani Eötvös - napok keretében szabaduló szobát rendezünk a 305-ös teremben mind a két napon.\nA szabadulószoba témája: Alice csodaországban. \nJelentkezni kb. hat fős csapatokban lehet az alábbi táblázatban. Akiket érdekel, légyszí írják be magukat, hogy minden gördülékenyen menjen.\n\nhttps://docs.google.com/spreadsheets/d/1-qpUYrOgppTGuABqvT8nFlFgn12iHDR54VWWyTwqX3U/edit?usp=drivesdk\n\nVárunk titeket szeretettel!\n11.F', '[]'),
+    ('BIMUN szoba', '14:00-16:00  200-as terem', '2024-10-23', '2024-10-25', '/groups/bimun.jpg', 'Kedves Eötvös népe!\n\nHolnap 14:00-16:00-ig vár minden kedves érdeklődőt a BIMUN szoba, a 200-as teremben! Ha érdekel a BIMUN, és hogy hogyan vehetsz részt egy több száz fős nemzetközi konferencián, akkor mindenképp érdemes ellátogatnod!\nOtt találkozunk, és egy kis finomsággal is készülünk nektek! ✨🧇\n\nÜdvözlettel,\nBIMUN Organisers 🌍', '[]'),
+    (
         'Tanévnyitó ünnepség',
         'szeptember 2. 9:00',
         '2024-09-02',

@@ -194,7 +194,10 @@ export default function Player() {
   useEffect(() => {
     fetch("/api/availablePodcasts")
       .then((res) => res.json())
-      .then((data) => setPodcastNames(data));
+      .then((data) => {
+        setPodcastNames(data);
+        setCurrentPodcast(data[0]);
+      });
   }, []);
 
   useEffect(() => {

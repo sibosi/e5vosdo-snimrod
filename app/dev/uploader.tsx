@@ -35,6 +35,9 @@ export default function FileUploader() {
     console.log(response);
     const result = await response.json();
     console.log(result);
+
+    if (response.ok) alert("Siker");
+    else alert(`Error: ${response.statusText}`);
   };
 
   return (
@@ -69,7 +72,7 @@ export default function FileUploader() {
         </DropdownMenu>
       </Dropdown>
 
-      <button onClick={handleUpload}>Upload File</button>
+      <Button onClick={handleUpload}>Upload File</Button>
     </div>
   );
 }

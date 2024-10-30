@@ -5,6 +5,7 @@ import { getAuth } from "@/db/dbreq";
 
 export async function POST(req: NextRequest) {
   const selfUser = await getAuth();
+  console.log(selfUser?.email + " tried to upload a file");
   if (selfUser?.permissions.includes("admin") === false)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
@@ -13,12 +14,16 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File;
     const directory = formData.get("directory") as string;
 
+    console.log("Fájl neve: ", file.name);
+
     if (!file) {
       return NextResponse.json(
         { message: "No file uploaded" },
         { status: 400 },
       );
     }
+
+    console.log("Fájl mérete: ", file.size);
 
     // Define the path where to save the file
     const filePath = join(
@@ -27,13 +32,19 @@ export async function POST(req: NextRequest) {
       file.name,
     );
 
+    console.log("Fájl mentési helye: ", filePath);
+
     // Create the directory if it doesn't exist
     await mkdir(join(process.cwd(), "/public/uploads/" + directory), {
       recursive: true,
     });
 
+    console.log("Mappa létrehozva: ", directory);
+
     // Convert the file data to ArrayBuffer to save it
     const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+    console.log("Fájl buffer: ", fileBuffer);
 
     // Save the file to the designated path
     await writeFile(filePath, fileBuffer);

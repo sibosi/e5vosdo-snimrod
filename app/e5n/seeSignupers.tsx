@@ -66,7 +66,7 @@ const SeeSignupers = () => {
       <input
         type="number"
         value={presentation_id}
-        onChange={(e) => setPresentation_id(e.target.value)}
+        onChange={(e) => setPresentation_id(Number(e.target.value))}
       />
       <Button
         onClick={async () =>

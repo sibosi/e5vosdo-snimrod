@@ -301,9 +301,10 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
                       <span className="font-extrabold">
                         {
                           nameBySlot[
+                            // @ts-ignore
                             presentations.find(
                               (p) => p.id === presentation.direct_child,
-                            )?.slot_id
+                            )?.slot_id 
                           ]
                         }
                       </span>
@@ -319,6 +320,7 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
                       <span className="font-extrabold">
                         {
                           nameBySlot[
+                            // @ts-ignore
                             presentations.find(
                               (p) => p.id === presentation.root_parent,
                             )?.slot_id

@@ -13,13 +13,8 @@ export async function POST(req: NextRequest) {
 
     const response = await signUpForPresentation(slot_id, presentation_id);
 
-    if (response.success === false) {
-      // SQL hiba történt, és a signUpForPresentation már visszaadta a hibát
-      return NextResponse.json({ error: response.message }, { status: 500 });
-    }
-
     return NextResponse.json(response, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Server-side error:", error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },

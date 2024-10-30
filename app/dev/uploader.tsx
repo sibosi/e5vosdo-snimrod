@@ -12,7 +12,7 @@ export default function FileUploader() {
   const [file, setFile] = useState<File | null>(null);
   const [directory, setDirectory] = useState<string>("semmi");
 
-  const allDirectories = ["uploads", "groups", "events"];
+  const allDirectories = ["uploads", "groups", "events", "../../podcasts"];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {

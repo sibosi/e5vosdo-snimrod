@@ -28,7 +28,9 @@ export default async function Home() {
         <HelloMessage selfUser={selfUser} />
       )}
 
-      {selfUser?.permissions.includes("user") && <Carousel data={[]} />}
+      {selfUser?.permissions.includes("user") && (
+        <Carousel selfUser={selfUser} data={[]} />
+      )}
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section

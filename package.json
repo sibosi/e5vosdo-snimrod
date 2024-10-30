@@ -1,6 +1,6 @@
 {
   "name": "e5vos-do",
-  "version": "0.0.2410.2",
+  "version": "0.0.2410.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -35,6 +35,7 @@
     "dayjs": "^1.11.12",
     "eslint": "8.48.0",
     "eslint-config-next": "14.0.2",
+    "extract-colors": "^4.1.0",
     "framer-motion": "^10.18.0",
     "html-react-parser": "^5.1.14",
     "iconv-lite": "^0.6.3",

@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import parse from "html-react-parser";
+import Player from "@/app/e5podcast/player";
+import { UserType } from "@/db/dbreq";
 
 export interface CarouselItemProps {
   title: string | [string, string];
@@ -150,7 +152,8 @@ const CarouselItem = ({
 
 export default function Carousel({
   data,
-}: Readonly<{ data: CarouselItemProps[] }>) {
+  selfUser,
+}: Readonly<{ data: CarouselItemProps[]; selfUser: UserType }>) {
   const [scrollX, setScrollX] = useState(0);
   const [clicked, setClicked] = useState<number | null>(null);
   const [realData, setRealData] = useState<CarouselItemProps[]>(data);
@@ -198,25 +201,33 @@ export default function Carousel({
           className="flex snap-x overflow-x-auto scroll-smooth scrollbar-default"
         >
           {realData !== undefined &&
-            realData.map((item, index: number) => (
-              <CarouselItem
-                key={index.toString()}
-                uri={item.uri}
-                scrollX={scrollX * 10}
-                index={index}
-                dataLength={realData.length}
-                title={item.title}
-                onClick={() => {
-                  realData[index].description?.startsWith("http")
-                    ? (window.location.href = realData[index].description)
-                    : setClicked(clicked === index ? null : index);
-                }}
-                width={clicked === index ? "95%" : undefined}
-                className={
-                  clicked == null || clicked === index ? "mx-auto" : "hidden"
-                }
-              />
-            ))}
+            realData.map(
+              (item, index: number) =>
+                !(
+                  item.description === "<Player />" &&
+                  !selfUser.permissions.includes("tester")
+                ) && (
+                  <CarouselItem
+                    key={index.toString()}
+                    uri={item.uri}
+                    scrollX={scrollX * 10}
+                    index={index}
+                    dataLength={realData.length}
+                    title={item.title}
+                    onClick={() => {
+                      realData[index].description?.startsWith("http")
+                        ? (window.location.href = realData[index].description)
+                        : setClicked(clicked === index ? null : index);
+                    }}
+                    width={clicked === index ? "95%" : undefined}
+                    className={
+                      clicked == null || clicked === index
+                        ? "mx-auto"
+                        : "hidden"
+                    }
+                  />
+                ),
+            )}
           {clicked !== null ? null : ( // description
             <div className="min-w-unit-24" />
           )}
@@ -253,7 +264,8 @@ export default function Carousel({
             borderRadius: 20,
           }}
         >
-          {<span>{parse(realData[clicked].description)}</span>}
+          {<span>{parse(String(realData[clicked].description))}</span>}
+          {realData[clicked].description === "<Player />" && <Player />}
         </div>
       )}
     </div>

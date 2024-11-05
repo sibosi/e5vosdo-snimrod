@@ -187,11 +187,20 @@ VALUES
         '[]'
     ),
     (
+        'FLC: interaktív beszélgetés vendégünkkel',
+        'nov. 5. csütörtök 15:45',
+        '2024-11-05 15:45',
+        '2024-11-06',
+        '/groups/FLC.jpg',
+        'Az alábbi cikkről fogunk beszélgetni(magyarul) a HOLD Asset Management-től érkező vendégünkkel: <a className="text-selfprimary" href="https://realinvestmentadvice.com/streaks-of-bullish-wins-are-not-sustainable/">realinvestmentadvice.com/streaks-of-bullish-wins-are-not-sustainable/</a>',
+        '["pénzügy", "előadás"]'
+    ),
+    (
         'Szalagavató',
         'november 30.',
         '2024-11-30',
         '2024-12-01',
-        '/events/szalagavato.jpg',
+        'https://www.ejg.hu/wp-content/uploads/DSC_5778-scaled.jpg',
         NULL,
         '[]'
     ),

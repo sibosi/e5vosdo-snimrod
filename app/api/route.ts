@@ -7,7 +7,7 @@ const teacherByName = teacherDataByNames as any;
 import TeachersName from "@/public/storage/teachersName.json";
 const teachersName = TeachersName as { [key: string]: string };
 
-function teacherName(name: string) {
+export function teacherName(name: string) {
   return teachersName[name] ?? name;
 }
 

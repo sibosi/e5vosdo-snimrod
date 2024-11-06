@@ -48,7 +48,7 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus={siteConfig.pageSections["helyettesitesek"]}
         >
-          <QuickTeachers />
+          <QuickTeachers selfUser={selfUser} />
         </Section>
       )}
 

@@ -35,6 +35,10 @@ const nextConfig = {
         port: "",
         pathname: "/wp-content/uploads/**",
       },
+      {
+        hostname: "encrypted-tbn0.gstatic.com",
+        protocol: "https",
+      },
     ],
   },
   typescript: {

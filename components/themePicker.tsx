@@ -64,7 +64,7 @@ export const loadPalette = (
   if (localStorage.getItem("materialBg") === "true") {
     document.documentElement.style.setProperty(
       `--color-${colorName}-bg`,
-      hexFromArgb(Hct.from(colorHue, 6, isDarkMode ? 2 : 98).toInt()),
+      hexFromArgb(Hct.from(colorHue, 6, isDarkMode ? 6 : 97).toInt()),
     );
   }
 };

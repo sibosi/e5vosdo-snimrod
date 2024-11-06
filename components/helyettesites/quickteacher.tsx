@@ -70,7 +70,7 @@ export const QuickTeachers = ({
 }: {
   selfUser: UserType | undefined;
 }) => {
-  const [devMode, setDevMode] = useState(false);
+  const [devMode, setDevMode] = useState(true);
 
   if (selfUser?.permissions?.includes("tester"))
     return (

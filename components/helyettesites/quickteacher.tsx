@@ -11,6 +11,8 @@ import {
   ModalContent,
   ModalBody,
   Switch,
+  ButtonGroup,
+  Button,
 } from "@nextui-org/react";
 import { Change, TeacherChange, teacherName } from "@/app/api/route";
 import { Alert } from "../home/alert";
@@ -76,12 +78,28 @@ export const QuickTeachers = ({
     return (
       <div className="flex flex-col items-center justify-center">
         <div>
-          <Switch
-            checked={devMode}
-            onChange={() => setDevMode(!devMode)}
-            className="mr-2"
-          />
-          Előnézeti verzió
+          <ButtonGroup>
+            <Button
+              onClick={() => setDevMode(false)}
+              className={
+                !devMode
+                  ? "bg-selfprimary-100 text-selfprimary-900"
+                  : "border-1 border-selfprimary-100 bg-transparent text-selfprimary-500"
+              }
+            >
+              Régi nézet
+            </Button>
+            <Button
+              onClick={() => setDevMode(true)}
+              className={
+                devMode
+                  ? "bg-selfprimary-100 text-selfprimary-900"
+                  : "border-1 border-selfprimary-100 bg-transparent text-selfprimary-500"
+              }
+            >
+              Új nézet
+            </Button>
+          </ButtonGroup>
         </div>
         {devMode ? <QuickTeachersDev /> : <QuickTeachersOld />}
       </div>

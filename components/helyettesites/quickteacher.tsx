@@ -67,48 +67,7 @@ function getTeacherChangesByDate(changesByTeacher: TeacherChange[]) {
   return sortedChangesByDate;
 }
 
-export const QuickTeachers = ({
-  selfUser,
-}: {
-  selfUser: UserType | undefined;
-}) => {
-  const [devMode, setDevMode] = useState(true);
-
-  if (selfUser?.permissions?.includes("tester"))
-    return (
-      <div className="flex flex-col items-center justify-center">
-        <div>
-          <ButtonGroup>
-            <Button
-              onClick={() => setDevMode(false)}
-              className={
-                !devMode
-                  ? "bg-selfprimary-100 text-selfprimary-900"
-                  : "border-1 border-selfprimary-100 bg-transparent text-selfprimary-500"
-              }
-            >
-              Régi nézet
-            </Button>
-            <Button
-              onClick={() => setDevMode(true)}
-              className={
-                devMode
-                  ? "bg-selfprimary-100 text-selfprimary-900"
-                  : "border-1 border-selfprimary-100 bg-transparent text-selfprimary-500"
-              }
-            >
-              Új nézet
-            </Button>
-          </ButtonGroup>
-        </div>
-        {devMode ? <QuickTeachersDev /> : <QuickTeachersOld />}
-      </div>
-    );
-
-  return <QuickTeachersOld />;
-};
-
-const QuickTeachersOld = () => {
+export const QuickTeachers = () => {
   const [tableData, setTableData] = useState<TeacherChangesByDate>({});
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -268,7 +227,7 @@ const QuickTeachersOld = () => {
   );
 };
 
-const QuickTeachersDev = () => {
+export const QuickTeachersDev = () => {
   const [tableData, setTableData] = useState<TeacherChangesByDate>({});
   const [isLoaded, setIsLoaded] = useState(false);
 

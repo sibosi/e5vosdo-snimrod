@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import "@/styles/globals.css";
-import { Link } from "@nextui-org/react";
+import { Button, ButtonGroup, Link } from "@nextui-org/react";
 
 type SectionProps = {
   title: string;
@@ -12,6 +12,7 @@ type SectionProps = {
   titleClassName?: string;
   savable?: boolean;
   chip?: React.ReactNode;
+  newVersion?: React.ReactNode;
 };
 
 const loadSectionStatus = (name: string) => {
@@ -38,16 +39,31 @@ export const Section = ({
   titleClassName,
   savable = true,
   chip,
+  newVersion,
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(
     defaultStatus == "closed" ? false : true,
   );
+  const [isNewVersion, setIsNewVersion] = useState(false);
+
+  const updateVersion = (isNewVersion: boolean) => {
+    setIsNewVersion(isNewVersion);
+    if (newVersion !== undefined) {
+      localStorage.setItem(
+        "section_" + title + "_new_version",
+        isNewVersion.toString(),
+      );
+    }
+  };
 
   useEffect(() => {
     setIsOpen(
       (savable ? loadSectionStatus(title) : undefined) ??
         (defaultStatus == "closed" ? false : true),
     );
+    if (newVersion !== undefined) {
+      setIsNewVersion(loadSectionStatus(title + "_new_version") ?? false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -98,13 +114,45 @@ export const Section = ({
         <span className="my-auto ml-2 flex max-h-min justify-center pt-1 align-middle">
           {chip}
         </span>
+        {newVersion !== undefined && isOpen && (
+          <span className="ml-auto pl-2 text-xs text-red-500">
+            <ButtonGroup>
+              <Button
+                onClick={() => updateVersion(false)}
+                size="sm"
+                className={
+                  "border-selfprimary-100 " +
+                  (!isNewVersion
+                    ? "bg-selfprimary-100 text-selfprimary-900"
+                    : "border-1 bg-transparent text-selfprimary-500")
+                }
+              >
+                Régi nézet
+              </Button>
+              <Button
+                onClick={() => updateVersion(true)}
+                size="sm"
+                className={
+                  "border-selfprimary-100 " +
+                  (isNewVersion
+                    ? "bg-selfprimary-100 text-selfprimary-900"
+                    : "border-1 bg-transparent text-selfprimary-500")
+                }
+              >
+                Új nézet
+              </Button>
+            </ButtonGroup>
+          </span>
+        )}
       </div>
       <div
         className={`transition-all duration-1000 ${
           !isOpen ? "max-h-0 overflow-hidden" : "h-auto"
         }`}
       >
-        <div className="transition-none">{children}</div>
+        <div className="transition-none">
+          {isNewVersion ? newVersion : children}
+        </div>
       </div>
     </div>
   );

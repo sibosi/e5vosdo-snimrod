@@ -4,7 +4,10 @@ import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
 
 import clsx from "clsx";
-import { QuickTeachers } from "@/components/helyettesites/quickteacher";
+import {
+  QuickTeachers,
+  QuickTeachersDev,
+} from "@/components/helyettesites/quickteacher";
 import { Menu } from "@/components/menza/menu";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
@@ -47,8 +50,9 @@ export default async function Home() {
           title={"Helyettesítések"}
           dropdownable={true}
           defaultStatus={siteConfig.pageSections["helyettesitesek"]}
+          newVersion={<QuickTeachersDev />}
         >
-          <QuickTeachers selfUser={selfUser} />
+          <QuickTeachers />
         </Section>
       )}
 

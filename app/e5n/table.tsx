@@ -199,9 +199,113 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
   useEffect(() => {
     fetchTableData().then(setPresentations);
   }, []);
+  const [showAllSignupers, setShowAllSignupers] = useState(false);
+
+  const fetchAllSignupers = async () => {
+    const combinedSignupers = async (presentation: PresentationType) => {
+      const signupers = await fetchSignupers(presentation.id);
+      const pair = getPair(presentation.id);
+      if (pair && pair.presentation_id) {
+        const pairSignupers = await fetchSignupers(pair.presentation_id);
+        const signupSet = new Set([...signupers, ...pairSignupers]);
+        const notSortedList = Array.from(signupSet);
+        const sortedList = notSortedList.sort((a, b) => a.localeCompare(b));
+        return sortedList;
+      }
+      return signupers;
+    };
+
+    const allSignupers = await Promise.all(
+      presentations?.map(async (presentation) => {
+        const signupers = await combinedSignupers(presentation);
+        return { presentation, signupers };
+      }) || [],
+    );
+
+    return allSignupers;
+  };
+
+  const [allSignupers, setAllSignupers] = useState<
+    { presentation: PresentationType; signupers: string[] }[]
+  >([]);
+
+  const handleShowAllSignupers = async () => {
+    const data = await fetchAllSignupers();
+    setAllSignupers(data);
+    setShowAllSignupers(true);
+  };
+
+  const [usersByEmail, setUsersByEmail] = useState<{ [key: string]: string }>(
+    {},
+  );
+  useEffect(() => {
+    (async () => {
+      const users = await fetch("/api/getAllUsersNameByEmail");
+      const data = await users.json();
+      setUsersByEmail(data);
+    })();
+  }, []);
+
+  const emailToName = (email: string) => {
+    return usersByEmail[email] || email;
+  };
 
   return (
     <div>
+      <Button onClick={handleShowAllSignupers}>
+        Összes jelentkező megtekintése
+      </Button>
+
+      {showAllSignupers && (
+        <Modal
+          isOpen={showAllSignupers}
+          onClose={() => setShowAllSignupers(false)}
+          title="Összes jelentkező"
+        >
+          <ModalContent>
+            <ModalHeader>Összes jelentkező</ModalHeader>
+            <ModalBody>
+              <Button
+                onClick={async () => {
+                  const modalContent = document.querySelector(".modal-body");
+                  if (modalContent) {
+                    try {
+                      // A tartalom kivonása szövegként
+                      const contentText = modalContent.innerText;
+                      // Szöveg másolása a vágólapra
+                      await navigator.clipboard.writeText(contentText);
+                      alert("Modal content copied to clipboard");
+                    } catch (error) {
+                      console.error("Failed to copy:", error);
+                      alert("Copy failed. Please try again.");
+                    }
+                  }
+                }}
+              >
+                Copy Content
+              </Button>
+              <div style={{ maxHeight: "50vh", overflowY: "auto" }}>
+                {allSignupers.map(({ presentation, signupers }) => (
+                  <div key={presentation.id} className="mb-4">
+                    <h3 className="font-bold">
+                      {presentation.name} - ({nameBySlot[presentation.slot_id]})
+                    </h3>
+                    <ul>
+                      {signupers.map((signuper, index) => (
+                        <li key={signuper}>
+                          {index + 1}. {signuper.split("@")[0]} - (
+                          {emailToName(signuper)})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
+
       <div className="mb-3 grid text-center max-md:gap-3 md:grid-cols-2">
         <div className="grid">
           <p>Válassz előadássávot:</p>

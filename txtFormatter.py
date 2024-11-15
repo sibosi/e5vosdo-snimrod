@@ -1,51 +1,18 @@
 txt = """
-<iframe
-        width="100%"
-        height="166"
-        scrolling="no"
-        frameborder="no"
-        allow="autoplay"
-        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1941990415&color=ff5500"
-      ></iframe>
-      <div
-        style={{
-          fontSize: "10px",
-          color: "#cccccc",
-          lineBreak: "anywhere",
-          wordBreak: "normal",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-          fontFamily:
-            "Interstate, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Garuda, Verdana, Tahoma, sans-serif",
-          fontWeight: 100,
-        }}
-      >
-        <a
-          href="https://soundcloud.com/hvgonline"
-          title="HVG Podcastok"
-          target="_blank"
-          style={{
-            color: "#cccccc",
-            textDecoration: "none",
-          }}
-        >
-          HVG Podcastok
-        </a>{" "}
-        ·{" "}
-        <a
-          href="https://soundcloud.com/hvgonline/nem-vagyunk-versenyistallo-a-hvg-kozepiskolai-rangsoranak-elen-allo-eotvos-igazgatoja-a-fulkeben"
-          title="„Nem vagyunk versenyistálló” – A HVG középiskolai rangsorának élén álló Eötvös igazgatója a Fülkében"
-          target="_blank"
-          style={{
-            color: "#cccccc",
-            textDecoration: "none",
-          }}
-        >
-          „Nem vagyunk versenyistálló” – A HVG középiskolai rangsorának élén
-          álló Eötvös igazgatója a Fülkében
-        </a>
-      </div>
+Kedves Diákok! 
+
+Mint már sokan tudjátok, idén is megrendezésre kerül a Bimun tavasszal az iskolánkban. Mivel mi, az egész organiser csapattal úgy tartjuk, hogy a konferencia egy kihagyhatatlan élmény egy eötvösös diák életében, szeretnénk megismertetni veletek a betölthető pozíciókat és a felejthetetlen hangulatot, ezért holnap várunk titeket sok szeretettel a BIMUN Day-en! 
+
+Nézzetek körül holnap, a 2-5. szünetben a második emeleti folyosókon és ismerjétek meg a szervező csapat tagjait, nézzetek körül az állomásokon, játszatok velünk és persze ha kérdésetek van, tegyétek fel, mert mi nagyon szívesen válaszolunk!
+
+Azok akik az összes állomás játékát teljesítik, a büfénél ínycsiklandó nyereményt is kaphatnak. 
+
+A pozíciókra való jelentkezés holnap megnyílik, az alábbi linken találjátok: https://www.bimun.hu/registration 
+
+Reméljük sokatokkal találkozunk holnap, és átadhatjuk nektek a Bimun hangulatát! Gyertek legyetek részesei Ti is a BIMUN csapatának!
+
+Üdvözlettel,
+Organiser Team
 """
 
 txt = txt[1:][:-1]

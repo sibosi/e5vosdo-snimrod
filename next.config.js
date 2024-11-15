@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
-const { execSync } = require("child_process");
 
 /*
+const { execSync } = require("child_process");
 if (true) {
   const pyOutput = execSync("pip3 install -r requirements.txt", { encoding: "utf-8" });
   console.log(pyOutput);
@@ -23,6 +23,8 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  reactProductionProfiling: true,
   images: {
     remotePatterns: [
       {

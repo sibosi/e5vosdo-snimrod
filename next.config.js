@@ -8,17 +8,10 @@ if (true) {
 }
 */
 
-const withPWAInit = require("next-pwa");
 const isDev = process.env.NODE_ENV !== "production";
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
-});
-
-const withPWA = withPWAInit({
-  dest: "public",
-  disable: isDev,
-  register: true,
 });
 
 /** @type {import('next').NextConfig} */
@@ -48,4 +41,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(withPWA(nextConfig));
+module.exports = withBundleAnalyzer(nextConfig);

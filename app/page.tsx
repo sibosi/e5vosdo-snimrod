@@ -22,6 +22,7 @@ import SecialDay from "@/components/events/specialDay";
 import HelloMessage from "@/components/home/helloMessage";
 import MillioLepes from "@/components/home/milliolepes";
 import Carousel from "@/components/home/carousel";
+import getUserClass from "@/public/getUserClass";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -41,7 +42,7 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus={siteConfig.pageSections["teremcserek"]}
         >
-          <RoomChanges />
+          <RoomChanges selfClass={getUserClass(selfUser) ?? undefined} />
         </Section>
       )}
 

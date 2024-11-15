@@ -70,7 +70,7 @@ export const UpdateSWNotif = () => {
   const registerServiceWorker = async () => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("/serviceWorker.js")
+        .register("/sw.js")
         .then(async (registration) => {
           console.log(
             "Service worker registered with scope:",

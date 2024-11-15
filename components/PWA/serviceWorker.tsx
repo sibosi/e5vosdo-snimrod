@@ -21,7 +21,7 @@ function ServiceWorker() {
       // Service Worker is supported.
       window.addEventListener("load", () => {
         // Service Worker is being registered.
-        navigator.serviceWorker.register("/serviceWorker.js").then(
+        navigator.serviceWorker.register("/sw.js").then(
           (registration) => {
             console.log(
               "ServiceWorker registration successful with scope: ",

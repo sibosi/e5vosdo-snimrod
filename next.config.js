@@ -8,6 +8,9 @@ if (true) {
 }
 */
 
+const fs = require("fs");
+const path = require("path");
+
 const isDev = process.env.NODE_ENV !== "production";
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
@@ -38,6 +41,18 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: process.env.IGNORE_BUILD_ERRORS === "true",
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      const podcastsDir = path.join(__dirname, "podcasts");
+
+      // Check if the 'podcasts' directory exists, if not, create it
+      if (!fs.existsSync(podcastsDir)) {
+        fs.mkdirSync(podcastsDir, { recursive: true });
+        console.log("Podcasts directory created.");
+      }
+    }
+    return config;
   },
 };
 

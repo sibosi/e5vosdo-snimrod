@@ -18,7 +18,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const withPWA = withPWAInit({
   dest: "public",
   disable: isDev,
-  register: false,
+  register: true,
 });
 
 /** @type {import('next').NextConfig} */

@@ -16,6 +16,21 @@ jobs:
       VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
       VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
 
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+      AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      IGNORE_BUILD_ERRORS: ${{ secrets.IGNORE_BUILD_ERRORS }}
+      FAKE_AUTH: ${{ secrets.FAKE_AUTH }}
+
+      MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+      MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
+      PRIVATE_VAPID_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

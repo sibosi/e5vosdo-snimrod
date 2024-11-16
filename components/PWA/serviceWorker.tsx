@@ -46,7 +46,7 @@ function ServiceWorker() {
         chechForUpdate().then((newNeedUpdate) => {
           if (newNeedUpdate.updateRequired) {
             updateVersion().then(() => {
-              window.location.reload();
+              // window.location.reload();
             });
           }
         });

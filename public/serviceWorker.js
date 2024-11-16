@@ -2,66 +2,6 @@
 
 const SW_settings_name = "SW-settings";
 
-function getDb() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(SW_settings_name, 1);
-
-    request.onerror = (event) => {
-      console.error("IndexedDB error:", event);
-      reject(event);
-    };
-
-    request.onsuccess = (event) => {
-      resolve(event.target.result);
-    };
-
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains("settings")) {
-        db.createObjectStore("settings", { keyPath: "id" });
-      }
-    };
-  });
-}
-
-async function writeStorage(id, value) {
-  return await getDb().then((db) => {
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(["settings"], "readwrite");
-      const objectStore = transaction.objectStore("settings");
-      const request = objectStore.put({ id: id, value: value });
-
-      request.onerror = (event) => {
-        console.error("Error writing cache method to IndexedDB:", event);
-        reject(event);
-      };
-
-      request.onsuccess = () => {
-        resolve();
-      };
-    });
-  });
-}
-
-async function getStorage(id) {
-  return await getDb().then((db) => {
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(["settings"], "readonly");
-      const objectStore = transaction.objectStore("settings");
-      const request = objectStore.get(id);
-
-      request.onerror = (event) => {
-        console.error("Error reading data from IndexedDB:", event);
-        reject(event);
-      };
-
-      request.onsuccess = (event) => {
-        resolve(event.target.result ? event.target.result.value : undefined);
-      };
-    });
-  });
-}
-
 const CACHE_NAME_BEGINNING = "simple-cache-";
 const CACHE_NAME = async () => {
   return (
@@ -127,18 +67,6 @@ self.addEventListener("notificationclick", function (event) {
   );
 });
 
-self.addEventListener("install", (event) => {
-  caches.keys().then((cacheNames) => {
-    return Promise.all(
-      cacheNames.map(async (cacheName) => {
-        if (cacheName !== (await CACHE_NAME())) {
-          return caches.delete(cacheName);
-        }
-      }),
-    );
-  });
-});
-
 const DISALLOWED_URLS = [
   "/api",
   "/about",
@@ -147,13 +75,29 @@ const DISALLOWED_URLS = [
   "/manifest.json",
   "/me",
   "/serviceWorker.js",
-  "/sw.js",
 ];
 
 const DISALLOWED_URL_BEGINNINGS = ["/api"];
 
 let cacheMethod = null;
 (async () => (cacheMethod = await getStorage("cacheMethod")))();
+
+self.addEventListener("fetch", (event) => {
+  if (event.request.destination === "image")
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        if (response) return response;
+
+        return fetch(event.request).then((response) => {
+          caches.open("images").then((cache) => {
+            cache.put(event.request, response.clone());
+          });
+
+          return response;
+        });
+      }),
+    );
+});
 
 self.addEventListener("nofetch", (event) => {
   checkForUpdate();

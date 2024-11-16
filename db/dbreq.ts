@@ -219,7 +219,7 @@ export async function getStudentUsers() {
 export async function getStudentUsersEmail() {
   const response = (await dbreq(
     `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"student"', '$')`,
-  )) as Promise<Array<string>>;
+  )) as { email: string }[];
   let emails: string[] = [];
   (response as unknown as []).map((user: { email: string }) =>
     emails.push(user.email),
@@ -228,15 +228,15 @@ export async function getStudentUsersEmail() {
 }
 
 export async function getAdminUsers() {
-  return (await dbreq(
+  return await dbreq(
     `SELECT * FROM users WHERE JSON_CONTAINS(permissions, '"admin"', '$')`,
-  )) as Promise<Array<string>>;
+  );
 }
 
 export async function getAdminUsersEmail() {
-  const response = (await dbreq(
+  const response = await dbreq(
     `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"admin"', '$')`,
-  )) as Promise<Array<string>>;
+  );
   let emails: string[] = [];
   (response as unknown as []).map((user: { email: string }) =>
     emails.push(user.email),

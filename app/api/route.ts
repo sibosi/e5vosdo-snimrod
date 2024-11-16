@@ -3,13 +3,8 @@ import axios from "axios";
 import cheerio from "cheerio";
 const iconv = require("iconv-lite");
 import teacherDataByNames from "@/public/storage/teacherDataByNames.json";
+import teacherName from "./teacherName";
 const teacherByName = teacherDataByNames as any;
-import TeachersName from "@/public/storage/teachersName.json";
-const teachersName = TeachersName as { [key: string]: string };
-
-export function teacherName(name: string) {
-  return teachersName[name] ?? name;
-}
 
 export interface Change {
   date: string;

@@ -22,12 +22,6 @@ export default function ClubsPage() {
       </h1>
 
       <Alert className="border-selfprimary-300 bg-selfprimary-100">
-        <Link href="https://map.barnagoz.com/">
-          Interaktív térképen is megtalálod a klubokat! (Itt)
-        </Link>{" "}
-      </Alert>
-
-      <Alert className="border-selfprimary-300 bg-selfprimary-100">
         A kártyákra kattintva további információkat találsz a klubokról.
       </Alert>
 

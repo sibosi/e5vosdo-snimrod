@@ -90,7 +90,13 @@ self.addEventListener("fetch", (event) => {
 
         return fetch(event.request).then((response) => {
           caches.open("images").then((cache) => {
-            cache.put(event.request, response.clone());
+            const expirationTime = Date.now() + 1000 * 60 * 60 * 24 * 10; // 10 day
+            const responseToCache = response.clone();
+            responseToCache.headers.append(
+              "sw-expiration-time",
+              expirationTime,
+            );
+            cache.put(event.request, responseToCache);
           });
 
           return response;

@@ -14,6 +14,22 @@ type Params = {
 
 export const GET = async (request: Request, context: { params: Params }) => {
   const selfUser = await getAuth();
+  if (request.headers.get("module") === "parlement") {
+    const body = await request.json();
+    const method = context.params.db;
+    const mod = await import("@/db/parlement");
+
+    try {
+      return await (mod as any)[method](body);
+    } catch (error) {
+      console.error("Error in parlement module:", error);
+      return NextResponse.json(
+        { error: "Failed to process request in parlement module" },
+        { status: 500 },
+      );
+    }
+  }
+
   if (!selfUser) {
     return NextResponse.json(
       { error: "Please log in to use this API" },

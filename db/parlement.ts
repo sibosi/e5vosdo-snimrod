@@ -2,41 +2,42 @@ import { dbreq } from "./db";
 import { UserType } from "./dbreq";
 import { gate } from "./permissions";
 
-export interface Parlement {
+export interface Parlament {
   id: number;
   date: string;
   title: string;
 }
 
-export interface ParlementParticipant {
+export interface ParlamentParticipant {
   id: number;
   email: string;
-  parlement_id: number;
+  parlament_id: number;
 }
 
-export async function createParlement(
+export async function createParlament(
   selfUser: UserType,
   date: string,
   title?: string,
 ) {
   gate(selfUser, "head_of_parlament");
+  console.log("createParlament", date, title);
   return dbreq(
-    `INSERT INTO parlements (date, title) VALUES ("${date}", "${title}");`,
+    `INSERT INTO parlaments (date, title) VALUES ("${date}", "${title}");`,
   );
 }
 
-export async function getParlements(selfUser: UserType) {
+export async function getParlaments(selfUser: UserType) {
   gate(selfUser, ["head_of_parlament", "delegate", "delegate_counter"]);
-  return dbreq(`SELECT * FROM parlements;`);
+  return dbreq(`SELECT * FROM parlaments;`);
 }
 
 export async function registerToParlament(
   selfUser: UserType,
   email: string,
-  parlementId: number,
+  parlamentId: number,
 ) {
   gate(selfUser, "delegate_counter");
   return dbreq(
-    `INSERT INTO parlement_participants (email, parlement_id) VALUES ("${email}", ${parlementId});`,
+    `INSERT INTO parlament_participants (email, parlament_id) VALUES ("${email}", ${parlamentId});`,
   );
 }

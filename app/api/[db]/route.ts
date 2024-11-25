@@ -17,10 +17,22 @@ export const GET = async (request: Request, context: { params: Params }) => {
   if (request.headers.get("module") === "parlement") {
     const body = await request.json();
     const method = context.params.db;
-    const mod = await import("@/db/parlement");
 
     try {
-      return await (mod as any)[method](body);
+      const mod = await import("@/db/parlement");
+
+      if (typeof mod[method] === "function") {
+        console.log("body:", body);
+        return NextResponse.json(
+          await mod[method](selfUser, ...Object.values(body)),
+        );
+      } else {
+        console.error(`Invalid method: ${method} is not a function`);
+        return NextResponse.json(
+          { error: `Invalid method: ${method}` },
+          { status: 400 },
+        );
+      }
     } catch (error) {
       console.error("Error in parlement module:", error);
       return NextResponse.json(

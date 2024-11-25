@@ -58,6 +58,22 @@ const AboutPage = async () => {
         </div>
       ) : null}
 
+      {selfUser.permissions.includes("head_of_parlament") ? (
+        <div className="my-5">
+          <div className="mx-1 rounded-2xl bg-selfprimary-100 bg-gradient-to-r p-3">
+            <h2 className="text-2xl font-semibold text-foreground">
+              Parlament modul
+            </h2>
+            <Link
+              href="/parlament"
+              className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+            >
+              Parlamentek kezelése
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
       <IDCard EJG_code={selfUser.EJG_code} codeType="barcode" center={true} />
 
       <MySettings selfUser={selfUser} />

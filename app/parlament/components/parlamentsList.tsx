@@ -1,4 +1,5 @@
 "use client";
+import Tray from "@/components/tray";
 import { Parlament } from "@/db/parlement";
 import React, { useEffect, useState } from "react";
 
@@ -25,39 +26,30 @@ const ParlamentsList = () => {
   }, []);
 
   return (
-    <div className="my-5">
-      <div className="mx-1 rounded-2xl bg-selfprimary-100 bg-gradient-to-r p-3">
-        <h2 className="text-2xl font-semibold text-foreground">
-          Parlamentek listája
-        </h2>
-        <div className="my-2">
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th className="text-foreground">Dátum</th>
-                <th className="text-foreground">Cím</th>
+    <Tray title="Parlamentek listája">
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th className="text-foreground">Dátum</th>
+            <th className="text-foreground">Cím</th>
+          </tr>
+        </thead>
+        <tbody>
+          {parlaments ? (
+            parlaments.map((parlament) => (
+              <tr key={parlament.id}>
+                <td className="text-foreground">{String(parlament.date)}</td>
+                <td className="text-foreground">{parlament.title}</td>
               </tr>
-            </thead>
-            <tbody>
-              {parlaments ? (
-                parlaments.map((parlament) => (
-                  <tr key={parlament.id}>
-                    <td className="text-foreground">
-                      {String(parlament.date)}
-                    </td>
-                    <td className="text-foreground">{parlament.title}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={2}>Betöltés...</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={2}>Betöltés...</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </Tray>
   );
 };
 

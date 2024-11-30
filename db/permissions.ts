@@ -21,10 +21,15 @@ delegate: can see the list of parlements
 delegate_counter: can register delegates to parlements
 */
 
-export function gate(user: UserType, permission: string | string[]) {
+export function gate(
+  user: UserType,
+  permission: string | string[],
+  type?: "boolean" | "throw",
+) {
   if (user.permissions.includes("super_admin")) return;
   if (typeof permission === "string") {
     if (user.permissions.includes(permission)) return;
   } else if (permission.some((p) => user.permissions.includes(p))) return;
+  if (type === "boolean") return false;
   throw new Error("Permission denied");
 }

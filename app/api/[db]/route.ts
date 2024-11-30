@@ -19,7 +19,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
     const method = context.params.db;
 
     try {
-      const mod = await import("@/db/parlement");
+      const mod = await import("@/db/parlament");
 
       if (typeof mod[method] === "function") {
         console.log("body:", body);

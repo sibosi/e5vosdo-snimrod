@@ -4,6 +4,7 @@ import MySettings from "./mysettings";
 import IDCard from "./IDCard";
 import PleaseLogin from "./redirectToLogin";
 import TxtLiquid from "@/components/home/txtLiquid";
+import Tray from "@/components/tray";
 
 const AboutPage = async () => {
   const selfUser = await getAuth();
@@ -26,36 +27,36 @@ const AboutPage = async () => {
       </h1>
 
       {(await hasPermission(selfUser.email, "getUsers")) ? (
-        <div className="my-5">
-          <div className="mx-1 rounded-2xl bg-selfprimary-100 bg-gradient-to-r p-3">
-            <h2 className="text-2xl font-semibold text-foreground">
-              Felhasználók és oldal kezelése
-            </h2>
-
-            <Link
-              href="/about"
-              className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
-            >
-              Az oldal kezelése
-            </Link>
-          </div>
-        </div>
+        <Tray title="Felhasználók és oldal kezelése">
+          <Link
+            href="/about"
+            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+          >
+            Az oldal kezelése
+          </Link>
+        </Tray>
       ) : null}
 
       {(await hasPermission(selfUser.email, "updateEvent")) ? (
-        <div className="my-5">
-          <div className="mx-1 rounded-2xl bg-selfprimary-100 bg-gradient-to-r p-3">
-            <h2 className="text-2xl font-semibold text-foreground">
-              Események kezelése
-            </h2>
-            <Link
-              href="/dev"
-              className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
-            >
-              Események kezelése
-            </Link>
-          </div>
-        </div>
+        <Tray title="Események kezelése">
+          <Link
+            href="/dev"
+            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+          >
+            Események kezelése
+          </Link>
+        </Tray>
+      ) : null}
+
+      {selfUser.permissions.includes("head_of_parlament") ? (
+        <Tray title="Parlamentek kezelése">
+          <Link
+            href="/parlament"
+            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+          >
+            Parlamentek kezelése
+          </Link>
+        </Tray>
       ) : null}
 
       <IDCard EJG_code={selfUser.EJG_code} codeType="barcode" center={true} />

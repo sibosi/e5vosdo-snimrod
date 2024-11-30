@@ -14,6 +14,37 @@ type Params = {
 
 export const GET = async (request: Request, context: { params: Params }) => {
   const selfUser = await getAuth();
+  if (request.headers.get("module") === "parlement") {
+    const body = await request.json();
+    const method = context.params.db;
+
+    try {
+      const mod = await import("@/db/parlament");
+
+      if (typeof (mod as { [key: string]: any })[method] === "function") {
+        console.log("body:", body);
+        return NextResponse.json(
+          await (mod as { [key: string]: any })[method](
+            selfUser,
+            ...Object.values(body),
+          ),
+        );
+      } else {
+        console.error(`Invalid method: ${method} is not a function`);
+        return NextResponse.json(
+          { error: `Invalid method: ${method}` },
+          { status: 400 },
+        );
+      }
+    } catch (error) {
+      console.error("Error in parlement module:", error);
+      return NextResponse.json(
+        { error: "Failed to process request in parlement module" },
+        { status: 500 },
+      );
+    }
+  }
+
   if (!selfUser) {
     return NextResponse.json(
       { error: "Please log in to use this API" },

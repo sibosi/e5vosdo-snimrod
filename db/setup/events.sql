@@ -205,6 +205,15 @@ VALUES
         '[]'
     ),
     (
+        'Társas Délután - November',
+        'november 29. - 7. óra után',
+        '2024-11-29',
+        '2024-11-30',
+        '/groups/tarsastar.jpg',
+        NULL,
+        '["társasjáték"]'
+    ),
+    (
         'Téli szünet',
         'december 21. - január 5.',
         '2024-12-21',

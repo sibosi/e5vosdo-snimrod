@@ -18,8 +18,8 @@ const MagicIcon = (
   </svg>
 );
 
-const ParlamentsList = () => {
-  const [parlaments, setParlaments] = useState<Parlament[]>();
+export default function ParlamentManager() {
+  const [parlamentList, setParlamentList] = useState<Parlament[]>();
   const [selectedParlament, setSelectedParlament] = useState<Parlament>();
   const [usersNameByEmail, setUsersNameByEmail] =
     useState<Record<string, string>>();
@@ -41,8 +41,7 @@ const ParlamentsList = () => {
     }).then((res) => {
       if (res.ok) {
         res.json().then((data: Parlament[]) => {
-          setParlaments(data);
-          console.log(data);
+          setParlamentList(data);
         });
       } else {
         alert("Hiba a parlamentek lekérdezése közben");
@@ -55,7 +54,6 @@ const ParlamentsList = () => {
       if (res.ok) {
         res.json().then((data: Record<string, string>) => {
           setUsersNameByEmail(data);
-          console.log(data);
         });
       } else {
         alert("Hiba a felhasználók lekérdezése közben");
@@ -71,10 +69,11 @@ const ParlamentsList = () => {
         module: "parlement",
       },
     });
-    return await resp.json();
+    return (await resp.json()) as Record<string, string[]>;
   }
 
   useEffect(() => {
+    setSelectedUser({});
     EJG_CLASSES.forEach((group) => {
       setSelectedUser((prev) => ({
         ...prev,
@@ -93,14 +92,13 @@ const ParlamentsList = () => {
         if (res.ok) {
           res.json().then((data: Record<string, string[]>) => {
             setSelectedUser(data);
-            console.log(data);
           });
         } else {
           alert("Hiba a parlamentek lekérdezése közben");
         }
       });
 
-      const previousParlamentId = parlaments?.find(
+      const previousParlamentId = parlamentList?.find(
         (p) => p.id < selectedParlament.id,
       )?.id;
 
@@ -109,7 +107,7 @@ const ParlamentsList = () => {
           setPreviousParlamentDelegates(data);
         });
     }
-  }, [parlaments, selectedParlament]);
+  }, [parlamentList, selectedParlament]);
 
   function deleteParlament(parlamentId: number) {
     fetch("/api/deleteParlament", {
@@ -143,11 +141,10 @@ const ParlamentsList = () => {
       if (res.ok) {
         setSelectedUser((prev) => ({
           ...prev,
-          [group]: [...selectedUser[group], email],
+          [group]: [...(selectedUser[group] ?? []), email],
         }));
-        return true;
       } else {
-        return false;
+        alert("Hiba a regisztráció közben");
       }
     });
   }
@@ -179,8 +176,8 @@ const ParlamentsList = () => {
   if (!selectedParlament)
     return (
       <Tray title="Parlamentek listája">
-        {parlaments ? (
-          parlaments.map((parlament) => (
+        {parlamentList ? (
+          parlamentList.map((parlament) => (
             <Tray
               key={parlament.id}
               title={parlament.title}
@@ -288,6 +285,4 @@ const ParlamentsList = () => {
       </Button>
     </Tray>
   );
-};
-
-export default ParlamentsList;
+}

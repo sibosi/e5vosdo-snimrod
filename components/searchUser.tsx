@@ -1,5 +1,5 @@
 "use client";
-import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
 import { useState } from "react";
 
 export default function SearchUser({
@@ -17,49 +17,51 @@ export default function SearchUser({
 }>) {
   const [searchValue, setSearchValue] = useState("");
   const myFilter = (textValue: string, inputValue: string) => {
-    if (inputValue.length < 2) {
-      return false;
-    }
+    if (inputValue.length < 2) return false;
 
-    // Normalize both strings so we can slice safely
-    // take into account the ignorePunctuation option as well...
-    textValue = textValue.normalize("NFC").toLocaleLowerCase();
-    inputValue = inputValue.normalize("NFC").toLocaleLowerCase();
+    textValue = textValue.toLocaleLowerCase();
+    inputValue = inputValue.toLocaleLowerCase();
 
     return inputValue.split(" ").every((input) => textValue.includes(input));
   };
 
+  const filter = (searchValue: string) => {
+    const elements = Object.keys(usersNameByEmail).filter((email) =>
+      usersNameByEmail[email].toLowerCase().includes(searchValue.toLowerCase()),
+    );
+
+    return elements.slice(0, 6);
+  };
+
   return (
-    <Autocomplete
-      size={size ?? "md"}
-      label={label ?? "Diák keresése"}
-      placeholder={placeholder}
-      className="max-w-xs"
-      allowsEmptyCollection={false}
-      defaultFilter={myFilter}
-      defaultItems={Object.keys(usersNameByEmail).map((email) => ({
-        name: usersNameByEmail[email],
-        email: email,
-      }))}
-      value={searchValue}
-      onChange={(event) => setSearchValue(event.target.value)}
-      onSelectionChange={(name) => {
-        if (name)
-          onSelectEmail(
-            Object.keys(usersNameByEmail).find(
-              (email) => usersNameByEmail[email] === name,
-            ) as string,
-          );
-      }}
-    >
-      {(user) => (
-        <AutocompleteItem key={user.name} textValue={user.name}>
-          <div>
-            <p className="font-bold">{user.name}</p>
-            <p className="text-xs">{user.email}</p>
-          </div>
-        </AutocompleteItem>
+    <>
+      <Input
+        name={label ?? "Diák keresése"}
+        placeholder={placeholder ?? "Diák neve"}
+        size={size}
+        value={searchValue}
+        onChange={(event) => setSearchValue(event.target.value)}
+      ></Input>
+      {searchValue.length > 1 && (
+        <div className="absolute z-50 mt-8 w-unit-80 rounded-md border border-selfprimary-200 bg-selfprimary-bg p-1 text-selfprimary-900 shadow-md">
+          {filter(searchValue).map((email) => {
+            return (
+              <button
+                type="button"
+                key={email}
+                onClick={() => {
+                  onSelectEmail(email);
+                  setSearchValue("");
+                }}
+                className="block w-full rounded-md px-1 py-0.5 text-left hover:bg-selfprimary-200"
+              >
+                <p className="font-bold">{usersNameByEmail[email]}</p>
+                <p className="text-xs font-thin">{email}</p>
+              </button>
+            );
+          })}
+        </div>
       )}
-    </Autocomplete>
+    </>
   );
 }

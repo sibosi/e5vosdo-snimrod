@@ -45,8 +45,8 @@ import json
 from datetime import timedelta, datetime
 import os
 
-CIM = 'TEREMVÁLTOZÁSOK\r\nkisérettségimiatt\r\n2024.szeptember11.szerda'
-KEZDO_DATUM = '2024.09.11'
+CIM = 'TEREMCSERÉKHATÉVFOLYAMOSNYÍLTNAPOKMIATT\r\n2024.november12-13-14.'
+KEZDO_DATUM = '2024.11.14'
 
 with open('public/storage/roomchanges.json', 'r', encoding='utf-8') as outfile:
     regi_cserek = json.loads(outfile.read())

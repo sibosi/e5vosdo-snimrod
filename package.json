@@ -33,6 +33,7 @@
     "chart.js": "^4.4.3",
     "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.0.0",
+    "daisyui": "^4.12.14",
     "dayjs": "^1.11.12",
     "eslint": "8.48.0",
     "eslint-config-next": "14.0.2",

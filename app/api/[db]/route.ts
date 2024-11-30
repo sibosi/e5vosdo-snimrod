@@ -21,10 +21,13 @@ export const GET = async (request: Request, context: { params: Params }) => {
     try {
       const mod = await import("@/db/parlament");
 
-      if (typeof mod[method] === "function") {
+      if (typeof (mod as { [key: string]: any })[method] === "function") {
         console.log("body:", body);
         return NextResponse.json(
-          await mod[method](selfUser, ...Object.values(body)),
+          await (mod as { [key: string]: any })[method](
+            selfUser,
+            ...Object.values(body),
+          ),
         );
       } else {
         console.error(`Invalid method: ${method} is not a function`);

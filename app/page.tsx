@@ -37,7 +37,7 @@ export default async function Home() {
         <Carousel selfUser={selfUser} data={[]} />
       ) : (
         <Tray>
-          <h1 className="text-3xl font-bold md:text-4xl">
+          <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
             Hiányolsz valamit? Netán a híreket?
             <LoginButton />
           </h1>

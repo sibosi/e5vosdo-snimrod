@@ -6,12 +6,12 @@ import React, { useState } from "react";
 const NewParlament = () => {
   const [newParlamentDate, setNewParlamentDate] = useState("");
 
-  function createParlament() {
-    const parlamentTitle = `Parlament - ${newParlamentDate}`;
+  function createParlament(date?: string) {
+    const parlamentTitle = `Parlament - ${date ?? newParlamentDate}`;
     fetch("/api/createParlament", {
       method: "POST",
       body: JSON.stringify({
-        date: newParlamentDate,
+        date: date ?? newParlamentDate,
         title: parlamentTitle,
       }),
       headers: {
@@ -29,6 +29,16 @@ const NewParlament = () => {
 
   return (
     <Tray title="Parlament létrehozása">
+      <Button
+        radius="sm"
+        className="mt-2 bg-selfprimary-200 px-1 text-foreground"
+        onClick={() => {
+          createParlament(new Date().toISOString().split("T")[0]);
+        }}
+      >
+        Mai parlament létrehozása - {new Date().toISOString().split("T")[0]}
+      </Button>
+      <br />
       <label className="text-foreground" htmlFor="newParlamentDate">
         Dátum:
       </label>
@@ -43,7 +53,7 @@ const NewParlament = () => {
       <Button
         radius="sm"
         className="mt-2 bg-selfprimary-200 px-1 text-foreground"
-        onClick={createParlament}
+        onClick={() => createParlament()}
         isDisabled={!newParlamentDate}
       >
         Létrehozás - {newParlamentDate}

@@ -98,9 +98,10 @@ export default function ParlamentManager() {
         }
       });
 
-      const previousParlamentId = parlamentList?.find(
-        (p) => p.id < selectedParlament.id,
-      )?.id;
+      const previousParlamentId = parlamentList
+        ?.sort()
+        .reverse()
+        .find((p) => p.id < selectedParlament.id)?.id;
 
       if (previousParlamentId)
         getParlamentParticipants(previousParlamentId).then((data) => {
@@ -241,16 +242,18 @@ export default function ParlamentManager() {
             <div>
               {previousParlamentDelegates[group]?.length ? (
                 <div>
-                  {previousParlamentDelegates[group].map((email) => (
-                    <Button
-                      key={email}
-                      color="default"
-                      variant="faded"
-                      onClick={() => registerToParlament(email, group)}
-                    >
-                      {MagicIcon} {email}
-                    </Button>
-                  ))}
+                  {previousParlamentDelegates[group]
+                    .filter((email) => !selectedUser[group]?.includes(email))
+                    .map((email) => (
+                      <Button
+                        key={email}
+                        color="default"
+                        variant="faded"
+                        onClick={() => registerToParlament(email, group)}
+                      >
+                        {MagicIcon} {email}
+                      </Button>
+                    ))}
                 </div>
               ) : null}
             </div>

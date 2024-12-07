@@ -132,17 +132,22 @@ const CarouselItem = ({
           justifyContent: "left",
         }}
       >
-        <div className="fixed bottom-0 m-1 text-base font-semibold text-slate-200">
+        <div className="fixed bottom-0 m-1">
           {Array.isArray(titleLines) ? (
             <>
               {titleLines.map((row) => (
-                <p className="mx-1 max-w-fit whitespace-nowrap" key={row}>
+                <p
+                  className="mx-1 max-w-fit whitespace-nowrap text-base font-semibold text-slate-200"
+                  key={row}
+                >
                   {row}
                 </p>
               ))}
             </>
           ) : (
-            <p className="mx-1">{title}</p>
+            <p className="mx-1 text-base font-semibold text-slate-200">
+              {title}
+            </p>
           )}
         </div>
       </div>

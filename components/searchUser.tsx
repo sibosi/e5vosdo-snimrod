@@ -1,6 +1,6 @@
 "use client";
 import { Input } from "@nextui-org/react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function SearchUser({
   usersNameByEmail,
@@ -16,21 +16,60 @@ export default function SearchUser({
   size?: "sm" | "md" | "lg";
 }>) {
   const [searchValue, setSearchValue] = useState("");
-  const myFilter = (textValue: string, inputValue: string) => {
-    if (inputValue.length < 2) return false;
-
-    textValue = textValue.toLocaleLowerCase();
-    inputValue = inputValue.toLocaleLowerCase();
-
-    return inputValue.split(" ").every((input) => textValue.includes(input));
-  };
+  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+  const [filteredEmails, setFilteredEmails] = useState<string[]>([]);
+  const optionsRef = useRef<HTMLButtonElement[]>([]);
 
   const filter = (searchValue: string) => {
     const elements = Object.keys(usersNameByEmail).filter((email) =>
-      usersNameByEmail[email].toLowerCase().includes(searchValue.toLowerCase()),
+      searchValue
+        .toLocaleLowerCase()
+        .split(" ")
+        .every((input) =>
+          usersNameByEmail[email].toLowerCase().includes(input),
+        ),
     );
 
     return elements.slice(0, 6);
+  };
+
+  useEffect(() => {
+    const results = filter(searchValue);
+    setFilteredEmails(results);
+    setHighlightedIndex(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchValue]);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (filteredEmails.length === 0) return;
+
+    switch (event.key) {
+      case "ArrowDown":
+        setHighlightedIndex((prevIndex) =>
+          prevIndex === null || prevIndex === filteredEmails.length - 1
+            ? 0
+            : prevIndex + 1,
+        );
+        break;
+      case "ArrowUp":
+        setHighlightedIndex((prevIndex) =>
+          prevIndex === null || prevIndex === 0
+            ? filteredEmails.length - 1
+            : prevIndex - 1,
+        );
+        break;
+      case "Enter":
+        if (highlightedIndex !== null) {
+          onSelectEmail(filteredEmails[highlightedIndex]);
+          setSearchValue("");
+        }
+        break;
+      case "Escape":
+        setHighlightedIndex(null);
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -41,25 +80,27 @@ export default function SearchUser({
         size={size}
         value={searchValue}
         onChange={(event) => setSearchValue(event.target.value)}
-      ></Input>
+        onKeyDown={handleKeyDown}
+      />
       {searchValue.length > 1 && (
         <div className="absolute z-50 mt-8 w-unit-80 rounded-md border border-selfprimary-200 bg-selfprimary-bg p-1 text-selfprimary-900 shadow-md">
-          {filter(searchValue).map((email) => {
-            return (
-              <button
-                type="button"
-                key={email}
-                onClick={() => {
-                  onSelectEmail(email);
-                  setSearchValue("");
-                }}
-                className="block w-full rounded-md px-1 py-0.5 text-left hover:bg-selfprimary-200"
-              >
-                <p className="font-bold">{usersNameByEmail[email]}</p>
-                <p className="text-xs font-thin">{email}</p>
-              </button>
-            );
-          })}
+          {filteredEmails.map((email, index) => (
+            <button
+              type="button"
+              key={email}
+              onClick={() => {
+                onSelectEmail(email);
+                setSearchValue("");
+              }}
+              ref={(el) => (optionsRef.current[index] = el!)}
+              className={`block w-full rounded-md px-1 py-0.5 text-left hover:bg-selfprimary-200 ${
+                highlightedIndex === index ? "bg-selfprimary-200" : ""
+              }`}
+            >
+              <p className="font-bold">{usersNameByEmail[email]}</p>
+              <p className="text-xs font-thin">{email}</p>
+            </button>
+          ))}
         </div>
       )}
     </>

@@ -84,8 +84,10 @@ def main (path : str):
         
         if sor["KinderF.ésK.Kft."] != None:
             datum = kovetkezo_datum(datum)
-            if het_napja(datum=datum) == 'Saturday':
+            if het_napja(datum=datum) == 'Saturday' and sor["KinderF.ésK.Kft."] != 'Szombat':
                 datum = kovetkezo_datum(datum=datum, lepes=2)
+            elif het_napja(datum=datum) == 'Sunday' and sor["KinderF.ésK.Kft."] != 'Vasárnap':
+                datum = kovetkezo_datum(datum=datum, lepes=1)
 
             havi_menu.update({datum : {'A' : [], 'B' : [], 'nap' : het_napja(datum)}})
         havi_menu[datum]['A'].append(sor[""])

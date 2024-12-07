@@ -22,6 +22,8 @@ import SecialDay from "@/components/events/specialDay";
 import HelloMessage from "@/components/home/helloMessage";
 import MillioLepes from "@/components/home/milliolepes";
 import Carousel from "@/components/home/carousel";
+import Tray from "@/components/tray";
+import LoginButton from "@/components/LoginButton";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -31,8 +33,15 @@ export default async function Home() {
         <HelloMessage selfUser={selfUser} />
       )}
 
-      {selfUser?.permissions.includes("user") && (
+      {selfUser?.permissions.includes("user") ? (
         <Carousel selfUser={selfUser} data={[]} />
+      ) : (
+        <Tray>
+          <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+            Hiányolsz valamit? Netán a híreket?
+            <LoginButton />
+          </h1>
+        </Tray>
       )}
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (

@@ -2,6 +2,11 @@
 
 This is a web application by Nimród Simon for the student government of the Eötvös József Secondary School.
 
+## Plans
+
+- [Feature plan](https://github.com/users/sibosi/projects/3)
+- [Function overview](https://miro.com/app/board/uXjVLCVqNv8=/?share_link_id=134031378556)
+
 ## Authors
 
 - [Simon Nimród](https://www.github.com/sibosi)

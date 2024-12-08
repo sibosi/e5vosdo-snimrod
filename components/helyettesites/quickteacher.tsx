@@ -96,7 +96,7 @@ export const QuickTeachers = () => {
               key={date}
               className="my-2 rounded-lg border-1 border-selfprimary-100 bg-selfprimary-bg p-2 shadow-md"
             >
-              <h2 className="text-center font-bold text-foreground">
+              <h5 className="text-center font-bold text-foreground">
                 {
                   [
                     "Vasárnap",
@@ -109,7 +109,7 @@ export const QuickTeachers = () => {
                   ][new Date(date).getDay()]
                 }{" "}
                 ({date.slice(5, 10).replace("-", "/")})
-              </h2>
+              </h5>
               {tableData[date].map((teacher, rowIndex: number) => (
                 <Dropdown key={rowIndex} className="md: block">
                   <DropdownTrigger>

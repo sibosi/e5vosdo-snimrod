@@ -141,7 +141,7 @@ export default async function RootLayout({
           `}
         </Script>
         <LoadCacheMethod />
-        <OGURL />
+        <OGURL isFakeAuth={process.env.FAKE_AUTH === "true"} />
         <ServiceWorker />
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>

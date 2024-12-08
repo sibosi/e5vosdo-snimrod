@@ -3,9 +3,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function OGURL() {
+export default function OGURL({ isFakeAuth }: { isFakeAuth: boolean }) {
   const router = useRouter();
-  const isFakeAuth = process.env.FAKE_AUTH === "true";
 
   useEffect(() => {
     const allowedDomains = ["info.e5vosdo.hu", "localhost", "192."];

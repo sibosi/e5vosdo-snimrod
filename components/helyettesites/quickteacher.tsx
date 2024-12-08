@@ -126,7 +126,10 @@ export const QuickTeachers = () => {
                     />
                   </DropdownTrigger>
 
-                  <DropdownMenu aria-label="Static Actions">
+                  <DropdownMenu
+                    aria-label="Static Actions"
+                    className="rounded-xl bg-selfprimary-bg"
+                  >
                     {teacher.changes &&
                       teacher.changes.map((event, eventIndex: number) => (
                         <DropdownItem
@@ -180,6 +183,7 @@ export const QuickTeachers = () => {
           <Modal
             isOpen={selectedEvent !== null}
             onClose={() => setSelectedEvent(null)}
+            className="bg-selfprimary-bg"
           >
             <ModalContent>
               <ModalBody className="text-foreground">
@@ -303,7 +307,10 @@ export const QuickTeachersDev = () => {
                         </div>
                       </DropdownTrigger>
 
-                      <DropdownMenu aria-label="Static Actions">
+                      <DropdownMenu
+                        aria-label="Static Actions"
+                        className="rounded-xl bg-selfprimary-bg"
+                      >
                         {teacher.changes &&
                           teacher.changes.map((event, eventIndex: number) => (
                             <DropdownItem
@@ -359,6 +366,7 @@ export const QuickTeachersDev = () => {
           <Modal
             isOpen={selectedEvent !== null}
             onClose={() => setSelectedEvent(null)}
+            className="bg-selfprimary-bg"
           >
             <ModalContent>
               <ModalBody className="text-foreground">

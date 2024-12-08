@@ -5,6 +5,8 @@
 :root {
   --color-primary-hue: 212;
   --color-secondary-hue: 270;
+
+  --zoom: 0.05rem;
 }
 
 :root.light {
@@ -103,8 +105,8 @@
 }
 
 h1 {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: calc(2rem + var(--zoom));
+  font-weight: 600;
   color: hsl(
     0,
     0%,
@@ -113,9 +115,9 @@ h1 {
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: calc(1.5rem + var(--zoom));
   line-height: 2rem;
-  font-weight: 600;
+  font-weight: 500;
   color: hsl(
     0,
     0%,
@@ -124,9 +126,9 @@ h2 {
 }
 
 h3 {
-  font-size: 1.25rem;
+  font-size: calc(1.25rem + var(--zoom));
   line-height: 1.75rem;
-  font-weight: 600;
+  font-weight: 500;
   color: hsl(
     0,
     0%,
@@ -135,8 +137,8 @@ h3 {
 }
 
 h4 {
-  font-size: 1.25rem;
-  font-weight: 400;
+  font-size: calc(1.25rem + var(--zoom));
+  font-weight: 300;
   color: hsl(
     0,
     0%,
@@ -145,8 +147,8 @@ h4 {
 }
 
 p {
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: calc(1rem + var(--zoom));
+  font-weight: 300;
   color: hsl(
     0,
     0%,
@@ -155,8 +157,8 @@ p {
 }
 
 h5 {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: calc(1rem + var(--zoom));
+  font-weight: 600;
   color: hsl(
     0,
     0%,
@@ -165,8 +167,8 @@ h5 {
 }
 
 h6 {
-  font-size: 1rem;
-  font-weight: 300;
+  font-size: calc(1rem + var(--zoom));
+  font-weight: 200;
   color: hsl(
     0,
     0%,
@@ -175,8 +177,8 @@ h6 {
 }
 
 .info {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: calc(0.875rem + var(--zoom));
+  font-weight: 300;
   color: hsl(
     0,
     0%,

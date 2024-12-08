@@ -90,7 +90,7 @@ export const Section = ({
           {dropdownable && (
             <Link
               onClick={toggleDropdown}
-              className="max-w-fit text-selfprimary"
+              className="my-auto max-w-fit text-selfprimary"
             >
               <svg
                 stroke="currentColor"

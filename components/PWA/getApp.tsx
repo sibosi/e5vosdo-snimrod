@@ -108,7 +108,7 @@ const InstallPWAButton = ({ size }: { size?: "small" | "medium" }) => {
 
   return (
     <>
-      {!isVisible ? (
+      {isVisible ? (
         <Chip
           onClick={handleInstallClick}
           className={

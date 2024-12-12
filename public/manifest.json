@@ -8,6 +8,8 @@
   "scope": "/",
   "version": "0.0.2412.1.1",
   "required_sw_version": "0.0.2411.0.12",
+  "version": "0.0.2411.2.0",
+  "required_sw_version": "0.0.2412.0.0",
 
   "start_url": "/",
   "id": "/",

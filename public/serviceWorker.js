@@ -12,6 +12,42 @@ const CACHE_NAME = async () => {
   );
 };
 
+const getStorage = async (key) => {
+  if (window.indexedDB) {
+    return new Promise((resolve, reject) => {
+      const request = window.indexedDB.open(SW_settings_name, 1);
+
+      request.onerror = (event) => {
+        console.error("Error opening indexedDB:", event);
+        reject(event);
+      };
+
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction([SW_settings_name], "readwrite");
+        const objectStore = transaction.objectStore(SW_settings_name);
+        const getRequest = objectStore.get(key);
+
+        getRequest.onerror = (event) => {
+          console.error("Error getting data from indexedDB:", event);
+          reject(event);
+        };
+
+        getRequest.onsuccess = (event) => {
+          resolve(event.target.result?.value);
+        };
+
+        db.close();
+
+        transaction.oncomplete = () => {
+          db.close();
+        };
+      };
+    });
+  }
+  return localStorage.getItem(key);
+};
+
 const deleteOldCache = async () => {
   const cacheName = await CACHE_NAME();
   const cacheNames = await caches.keys();
@@ -89,9 +125,9 @@ self.addEventListener("fetch", (event) => {
         if (response) return response;
 
         return fetch(event.request).then((response) => {
+          const responseToCache = response.clone();
           caches.open("images").then((cache) => {
-            const expirationTime = Date.now() + 1000 * 60 * 60 * 24 * 10; // 10 day
-            const responseToCache = response.clone();
+            const expirationTime = Date.now() + 1000 * 60 * 60 * 24 * 10; // 10 nap
             responseToCache.headers.append(
               "sw-expiration-time",
               expirationTime,

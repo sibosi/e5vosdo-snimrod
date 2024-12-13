@@ -77,9 +77,6 @@ const DISALLOWED_URLS = [
 
 const DISALLOWED_URL_BEGINNINGS = ["/api"];
 
-let cacheMethod = null;
-(async () => (cacheMethod = await getStorage("cacheMethod")))();
-
 self.addEventListener("fetch", (event) => {
   if (event.request.destination === "image")
     event.respondWith(
@@ -104,9 +101,6 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.action === "cacheMethodUpdated") {
-    (async () => (cacheMethod = await getStorage("cacheMethod")))();
-  }
   if (event.data && event.data.action === "reCache") {
     event.waitUntil(
       caches.keys().then((cacheNames) => {

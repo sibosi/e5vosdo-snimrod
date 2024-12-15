@@ -82,43 +82,38 @@ export const Section = ({
         } ` + className
       }
     >
-      <div className="flex">
-        <button
-          className="flex max-w-fit py-1 text-2xl font-medium"
-          onClick={toggleDropdown}
-        >
-          {dropdownable && (
-            <Link
-              onClick={toggleDropdown}
-              className="my-auto max-w-fit text-selfprimary"
+      <div
+        className="flex max-w-fit py-1 text-2xl font-medium"
+        onClick={toggleDropdown}
+      >
+        {dropdownable && (
+          <Link onClick={toggleDropdown} className="max-w-fit text-selfprimary">
+            <svg
+              stroke="currentColor"
+              fill="currentColor"
+              strokeWidth="0"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+              className={`inline h-6 w-6 shrink-0 ${
+                isOpen ? `rotate-0` : `rotate-180 fill-gray-400`
+              }`}
+              data-testid="flowbite-accordion-arrow"
+              height="1em"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                stroke="currentColor"
-                fill="currentColor"
-                strokeWidth="0"
-                viewBox="0 0 20 20"
-                aria-hidden="true"
-                className={`inline h-6 w-6 shrink-0 ${
-                  isOpen ? `rotate-0` : `rotate-180 fill-gray-400`
-                }`}
-                data-testid="flowbite-accordion-arrow"
-                height="1em"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-            </Link>
-          )}
-          <h2 className={titleClassName}>{title}</h2>
-          <span className="my-auto ml-2 flex max-h-min justify-center pt-1 align-middle">
-            {chip}
-          </span>
-        </button>
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              ></path>
+            </svg>
+          </Link>
+        )}
+        <span className={titleClassName}>{title}</span>
+        <span className="my-auto ml-2 flex max-h-min justify-center pt-1 align-middle">
+          {chip}
+        </span>
         {newVersion !== undefined && isOpen && (
           <span className="ml-auto pl-2 text-xs text-red-500">
             <ButtonGroup>

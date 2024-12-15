@@ -96,7 +96,7 @@ export const QuickTeachers = () => {
               key={date}
               className="my-2 rounded-lg border-1 border-selfprimary-100 bg-selfprimary-bg p-2 shadow-md"
             >
-              <h5 className="text-center font-bold text-foreground">
+              <h2 className="text-center font-bold text-foreground">
                 {
                   [
                     "Vasárnap",
@@ -109,7 +109,7 @@ export const QuickTeachers = () => {
                   ][new Date(date).getDay()]
                 }{" "}
                 ({date.slice(5, 10).replace("-", "/")})
-              </h5>
+              </h2>
               {tableData[date].map((teacher, rowIndex: number) => (
                 <Dropdown key={rowIndex} className="md: block">
                   <DropdownTrigger>
@@ -126,10 +126,7 @@ export const QuickTeachers = () => {
                     />
                   </DropdownTrigger>
 
-                  <DropdownMenu
-                    aria-label="Static Actions"
-                    className="rounded-xl bg-selfprimary-bg"
-                  >
+                  <DropdownMenu aria-label="Static Actions">
                     {teacher.changes &&
                       teacher.changes.map((event, eventIndex: number) => (
                         <DropdownItem
@@ -183,7 +180,6 @@ export const QuickTeachers = () => {
           <Modal
             isOpen={selectedEvent !== null}
             onClose={() => setSelectedEvent(null)}
-            className="bg-selfprimary-bg"
           >
             <ModalContent>
               <ModalBody className="text-foreground">
@@ -307,10 +303,7 @@ export const QuickTeachersDev = () => {
                         </div>
                       </DropdownTrigger>
 
-                      <DropdownMenu
-                        aria-label="Static Actions"
-                        className="rounded-xl bg-selfprimary-bg"
-                      >
+                      <DropdownMenu aria-label="Static Actions">
                         {teacher.changes &&
                           teacher.changes.map((event, eventIndex: number) => (
                             <DropdownItem
@@ -366,7 +359,6 @@ export const QuickTeachersDev = () => {
           <Modal
             isOpen={selectedEvent !== null}
             onClose={() => setSelectedEvent(null)}
-            className="bg-selfprimary-bg"
           >
             <ModalContent>
               <ModalBody className="text-foreground">

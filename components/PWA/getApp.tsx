@@ -13,10 +13,10 @@ import { useEffect, useState } from "react";
 const InstallIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
+    width="20"
+    height="20"
     fill="currentColor"
-    className="bi bi-download my-auto"
+    className="bi bi-download"
     viewBox="0 0 16 16"
   >
     <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
@@ -111,18 +111,9 @@ const InstallPWAButton = ({ size }: { size?: "small" | "medium" }) => {
       {isVisible ? (
         <Chip
           onClick={handleInstallClick}
-          className={
-            "bg-selfsecondary-300 align-middle " +
-            (size == "small" ? "p-0" : "")
-          }
+          className={"fill-selfprimary " + (size == "small" ? "p-0" : "")}
         >
-          {size == "small" ? (
-            InstallIcon
-          ) : (
-            <span className="inline-flex gap-1 align-middle">
-              {InstallIcon} App{" "}
-            </span>
-          )}
+          {size == "small" ? InstallIcon : "App letöltése"}
         </Chip>
       ) : (
         isIOSDevice && (

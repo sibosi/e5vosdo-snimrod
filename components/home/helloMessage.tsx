@@ -16,15 +16,17 @@ const HelloMessage = ({
       {selfUser ? (
         <h1
           className={
-            "inline font-semibold " +
+            "w-min-max no-wrap inline-flex items-center font-semibold " +
             (size == "md" ? "text-5xl lg:text-5xl" : "text-3xl lg:text-3xl")
           }
         >
-          Helló <TxtLiquid text={selfUser.nickname} />!
+          Helló&nbsp;
+          <TxtLiquid text={selfUser.nickname} />
+          <span>!</span>
         </h1>
       ) : (
         <div className="inline text-4xl font-semibold lg:text-5xl">
-          Helló{" "}
+          Helló&nbsp;
           <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
             Eötvös Népe
           </p>

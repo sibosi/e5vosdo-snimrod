@@ -132,22 +132,17 @@ const CarouselItem = ({
           justifyContent: "left",
         }}
       >
-        <div className="fixed bottom-0 m-1">
+        <div className="fixed bottom-0 m-1 text-base font-semibold text-slate-200">
           {Array.isArray(titleLines) ? (
             <>
               {titleLines.map((row) => (
-                <p
-                  className="mx-1 max-w-fit whitespace-nowrap text-base font-semibold text-slate-200"
-                  key={row}
-                >
+                <p className="mx-1 max-w-fit whitespace-nowrap" key={row}>
                   {row}
                 </p>
               ))}
             </>
           ) : (
-            <p className="mx-1 text-base font-semibold text-slate-200">
-              {title}
-            </p>
+            <p className="mx-1">{title}</p>
           )}
         </div>
       </div>
@@ -203,33 +198,36 @@ export default function Carousel({
         )}
         <div
           onScroll={onScroll}
-          className="flex snap-x overflow-x-auto scroll-smooth scrollbar-hide"
+          className="flex snap-x overflow-x-auto scroll-smooth scrollbar-default"
         >
-          {realData?.map(
-            (item, index: number) =>
-              !(
-                item.description === "<Player />" &&
-                !selfUser.permissions.includes("tester")
-              ) && (
-                <CarouselItem
-                  key={index.toString()}
-                  uri={item.uri}
-                  scrollX={scrollX * 10}
-                  index={index}
-                  dataLength={realData.length}
-                  title={item.title}
-                  onClick={() => {
-                    realData[index].description?.startsWith("http")
-                      ? (window.location.href = realData[index].description)
-                      : setClicked(clicked === index ? null : index);
-                  }}
-                  width={clicked === index ? "95%" : undefined}
-                  className={
-                    clicked == null || clicked === index ? "mx-auto" : "hidden"
-                  }
-                />
-              ),
-          )}
+          {realData !== undefined &&
+            realData.map(
+              (item, index: number) =>
+                !(
+                  item.description === "<Player />" &&
+                  !selfUser.permissions.includes("tester")
+                ) && (
+                  <CarouselItem
+                    key={index.toString()}
+                    uri={item.uri}
+                    scrollX={scrollX * 10}
+                    index={index}
+                    dataLength={realData.length}
+                    title={item.title}
+                    onClick={() => {
+                      realData[index].description?.startsWith("http")
+                        ? (window.location.href = realData[index].description)
+                        : setClicked(clicked === index ? null : index);
+                    }}
+                    width={clicked === index ? "95%" : undefined}
+                    className={
+                      clicked == null || clicked === index
+                        ? "mx-auto"
+                        : "hidden"
+                    }
+                  />
+                ),
+            )}
           {clicked !== null ? null : ( // description
             <div className="min-w-unit-24" />
           )}

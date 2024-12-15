@@ -1,8 +1,11 @@
 "use client";
 import { useEffect } from "react";
 import { chechForUpdate, updateVersion } from "./version";
+import { useRouter } from "next/navigation";
 
 function ServiceWorker() {
+  const router = useRouter();
+
   useEffect(() => {
     // Service Worker is going to be registered.
     if ("serviceWorker" in navigator) {

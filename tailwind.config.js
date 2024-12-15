@@ -14,7 +14,7 @@ module.exports = {
         selfprimary: {
           DEFAULT: "var(--color-primary)",
           bg: "var(--color-primary-bg)",
-          cont: "var(--color-primary-cont)",
+          0: "var(--color-primary-0)",
           20: "var(--color-primary-20)",
           50: "var(--color-primary-50)",
           100: "var(--color-primary-100)",
@@ -29,7 +29,7 @@ module.exports = {
         },
         selfsecondary: {
           DEFAULT: "var(--color-secondary)",
-          bg: "var(--color-secondary-bg)",
+          0: "var(--color-secondary-0)",
           20: "var(--color-secondary-20)",
           50: "var(--color-secondary-50)",
           100: "var(--color-secondary-100)",

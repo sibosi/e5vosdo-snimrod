@@ -28,11 +28,6 @@ function getAuth() {
           },
         }),
       ],
-      callbacks: {
-        async redirect({ url, baseUrl }) {
-          return url.startsWith(baseUrl) ? url : baseUrl;
-        },
-      },
       secret: process.env.AUTH_SECRET,
       basePath: "/api/auth",
     });

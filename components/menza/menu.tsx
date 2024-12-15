@@ -14,6 +14,10 @@ type MenuType = {
 
 const mindenkorimenu = nyersMenu as unknown as MenuType;
 
+function padTo2Digits(num: number) {
+  return num.toString().padStart(2, "0");
+}
+
 const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
   return (
     <div
@@ -37,7 +41,7 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
               <div
                 key={`fogas-${rowIndex}`}
                 className={
-                  "info p-1 " +
+                  "p-1 " +
                   (rowIndex !== 0 ? "border-t-1 border-foreground-400" : "")
                 }
               >
@@ -96,7 +100,7 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
           {">"}
         </button>
       </p>
-      <div className="grid max-w-max grid-cols-2 gap-2 overflow-hidden rounded-xl">
+      <div className="grid max-w-max grid-cols-2 gap-2 overflow-hidden rounded-xl bg-foreground-100 p-2">
         {realMenu !== "B" && (
           <MenuCard
             menu="A"

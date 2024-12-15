@@ -17,12 +17,19 @@ export async function dbreq(query: string) {
   try {
     connection = await pool.getConnection();
 
-    const [result] = await connection.execute(query);
-
-    return result;
+    try {
+      const [result] = await connection.execute(query);
+      return result;
+    } catch (error: any) {
+      console.log("Retrying query after connection issue:", error.message);
+      connection.destroy();
+      connection = await pool.getConnection();
+      const [result] = await connection.execute(query);
+      return result;
+    }
   } catch (error) {
     console.log(error);
-    throw new Error("Failed to execute query.");
+    throw new Error("Failed to execute query. bug #71");
   } finally {
     if (connection) connection.release();
   }
@@ -34,19 +41,38 @@ export async function multipledbreq(dbreqs: string[]) {
   try {
     connection = await pool.getConnection();
 
-    await connection.beginTransaction();
+    try {
+      await connection.beginTransaction();
 
-    const results = [];
-    for (const query of dbreqs) {
-      const [result] = await connection.execute(query);
-      results.push(result);
+      const results = [];
+      for (const query of dbreqs) {
+        const [result] = await connection.execute(query);
+        results.push(result);
+      }
+
+      await connection.commit();
+      return results;
+    } catch (error: any) {
+      console.log(
+        "Retrying transaction after connection issue:",
+        error.message,
+      );
+      if (connection) await connection.rollback();
+      connection.destroy();
+      connection = await pool.getConnection();
+
+      await connection.beginTransaction();
+
+      const results = [];
+      for (const query of dbreqs) {
+        const [result] = await connection.execute(query);
+        results.push(result);
+      }
+
+      await connection.commit();
+      return results;
     }
-
-    await connection.commit();
-
-    return results;
   } catch (error) {
-    if (connection) await connection.rollback();
     console.log(error);
     throw new Error("Transaction failed.");
   } finally {

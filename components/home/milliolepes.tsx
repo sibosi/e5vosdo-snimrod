@@ -16,17 +16,23 @@ const SchoolCard = ({
   className?: string;
 }) => {
   return (
-    <div className={"my-2 flex gap-2 rounded-lg border-1 text-xl " + className}>
-      <div className="my-auto p-2 font-bold">
-        <p>#{school.rank}</p>
+    <div
+      className={
+        "my-2 flex gap-2 rounded-lg border-0 text-xl font-bold " + className
+      }
+    >
+      <div className="my-auto p-2">
+        <h3>#{school.rank}</h3>
       </div>
       <div>
-        <p className="my-1">
+        <h4 className="my-1">
           {school.points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} lépés
-          - {school.headcount} fő
-        </p>
+        </h4>
         <div className="my-1 text-base">
-          <p>{school.name}</p>
+          <h6 className="">
+            {school.name}{" "}
+            <span className="">&middot; {school.headcount} fő</span>
+          </h6>
         </div>
       </div>
     </div>
@@ -54,7 +60,7 @@ const MillioLepes = () => {
             href="https://milliolepes.hu"
             className="mt-1 text-base font-semibold text-selfprimary-700"
           >
-            További információk a programról ➜
+            Továbbiak a programról ➜
           </Link>
         </Alert>
         <div>
@@ -94,7 +100,7 @@ const MillioLepes = () => {
           className="border-foreground-300 bg-foreground-200"
         />
       </div>
-      <p className="text-right text-sm">
+      <p className="info text-right">
         Frissítve: {new Date(data.timestamp).toLocaleDateString("hu-HU")}
         {"  "}
         {new Date(data.timestamp).toLocaleTimeString("hu-HU")}

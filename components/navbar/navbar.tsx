@@ -17,7 +17,7 @@ import clsx from "clsx";
 import { Logo, SearchIcon, InstagramIcon } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
-import { User } from "@/db/dbreq";
+import { PossibleUserType } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
 import HelloMessage from "../home/helloMessage";
 import { Chip } from "@nextui-org/react";
@@ -27,7 +27,7 @@ export const Navbar = ({
   isActiveHeadSpace,
   className,
 }: {
-  selfUser: User | undefined;
+  selfUser: PossibleUserType;
   isActiveHeadSpace: boolean;
   className?: string;
 }) => {

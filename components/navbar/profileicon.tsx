@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Avatar, Badge, Link, Navbar, NavbarContent } from "@nextui-org/react";
 import Login from "@/components/LoginForm";
 import { LogoutIcon } from "@/components/LogOut";
-import { User } from "@/db/dbreq";
+import { PossibleUserType } from "@/db/dbreq";
 import dynamic from "next/dynamic";
 import { Notification } from "./profilebox/notification";
 import InstallAppNotif from "./profilebox/installAppNotif";
@@ -105,7 +105,7 @@ interface NotificationsIds {
   newAndSent: number[];
 }
 
-export const ProfileIcon = ({ selfUser }: { selfUser: User | undefined }) => {
+export const ProfileIcon = ({ selfUser }: { selfUser: PossibleUserType }) => {
   const [showButtons, setShowButtons] = useState(false);
   const [hideSentAndRead, setHideSentAndRead] = useState(false);
 

@@ -33,16 +33,28 @@ export default async function Home() {
         <HelloMessage selfUser={selfUser} />
       )}
 
-      {selfUser?.permissions.includes("user") ? (
-        <Carousel selfUser={selfUser} data={[]} />
-      ) : (
-        <Tray>
-          <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-            Hiányolsz valamit? Netán a híreket?
-            <LoginButton />
-          </h1>
-        </Tray>
-      )}
+      {(() => {
+        if (selfUser?.permissions.includes("user")) {
+          return <Carousel selfUser={selfUser} data={[]} />;
+        } else if (selfUser === null) {
+          return (
+            <Tray>
+              <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+                Sajnáljuk, valamilyen hiba történt. Kérjük, próbáld újra később!
+              </h1>
+            </Tray>
+          );
+        } else {
+          return (
+            <Tray>
+              <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+                Hiányolsz valamit? Netán a híreket?
+                <LoginButton />
+              </h1>
+            </Tray>
+          );
+        }
+      })()}
 
       {siteConfig.pageSections["teremcserek"] != "hidden" && (
         <Section

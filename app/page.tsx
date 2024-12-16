@@ -170,11 +170,11 @@ export default async function Home() {
         <div className="bgcolor hero-overlay"></div>
         <div className="hero-content text-center text-neutral-content">
           <div className="max-w-md rounded-lg bg-danger-foreground bg-opacity-70 p-4 text-black backdrop-blur-sm">
-            <h1 className={clsx("mb-5 text-4xl font-bold")}>
+            <h1 className="mb-5 text-4xl font-bold text-black">
               Helló Eötvös népe!
               <br />
             </h1>
-            <p className={clsx("mb-5 w-auto text-lg lg:text-lg")}>
+            <p className="mb-5 w-auto text-lg text-black lg:text-lg">
               A DÖ kötelessége a diákok érdekeinek eleget tenni. Az űrlapon
               megoszthatjátok észrevételeiteket, javaslataitokat és esetleges
               problémáitokat.

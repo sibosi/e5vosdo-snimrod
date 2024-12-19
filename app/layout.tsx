@@ -25,6 +25,7 @@ import OGURL from "./ogurl";
 import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
+import Footer from "@/components/footer";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });
@@ -157,6 +158,7 @@ export default async function RootLayout({
             <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
               <OnCSSBug />
               {children}
+              <Footer />
             </main>
             <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
               <Link

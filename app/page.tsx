@@ -29,40 +29,48 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      {!selfUser?.permissions.includes("user") && (
-        <HelloMessage selfUser={selfUser} />
-      )}
-
-      {selfUser?.permissions.includes("user") ? (
-        <Carousel selfUser={selfUser} data={[]} />
+      {true ? (
+        <h1 className="py-12 text-center text-3xl font-bold text-selfprimary-900 md:text-4xl">
+          🎄 Áldott, békés ünnepeket kívánunk! 🎄
+        </h1>
       ) : (
-        <Tray>
-          <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-            Hiányolsz valamit? Netán a híreket?
-            <LoginButton />
-          </h1>
-        </Tray>
-      )}
+        <>
+          {!selfUser?.permissions.includes("user") && (
+            <HelloMessage selfUser={selfUser} />
+          )}
 
-      {siteConfig.pageSections["teremcserek"] != "hidden" && (
-        <Section
-          title={"Teremcserék"}
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["teremcserek"]}
-        >
-          <RoomChanges />
-        </Section>
-      )}
+          {selfUser?.permissions.includes("user") ? (
+            <Carousel selfUser={selfUser} data={[]} />
+          ) : (
+            <Tray>
+              <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+                Hiányolsz valamit? Netán a híreket?
+                <LoginButton />
+              </h1>
+            </Tray>
+          )}
 
-      {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
-        <Section
-          title={"Helyettesítések"}
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["helyettesitesek"]}
-          newVersion={<QuickTeachersDev />}
-        >
-          <QuickTeachers />
-        </Section>
+          {siteConfig.pageSections["teremcserek"] != "hidden" && (
+            <Section
+              title={"Teremcserék"}
+              dropdownable={true}
+              defaultStatus={siteConfig.pageSections["teremcserek"]}
+            >
+              <RoomChanges />
+            </Section>
+          )}
+
+          {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
+            <Section
+              title={"Helyettesítések"}
+              dropdownable={true}
+              defaultStatus={siteConfig.pageSections["helyettesitesek"]}
+              newVersion={<QuickTeachersDev />}
+            >
+              <QuickTeachers />
+            </Section>
+          )}
+        </>
       )}
 
       <Section title="Millió Lépés" dropdownable={true} defaultStatus="closed">

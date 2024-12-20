@@ -29,53 +29,10 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      {!selfUser?.permissions.includes("user") && (
-        <HelloMessage selfUser={selfUser} />
-      )}
-
-      {(() => {
-        if (selfUser?.permissions.includes("user")) {
-          return <Carousel selfUser={selfUser} data={[]} />;
-        } else if (selfUser === null) {
-          return (
-            <Tray>
-              <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-                Sajnáljuk, valamilyen hiba történt. Kérjük, próbáld újra később!
-              </h1>
-            </Tray>
-          );
-        } else {
-          return (
-            <Tray>
-              <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-                Hiányolsz valamit? Netán a híreket?
-                <LoginButton />
-              </h1>
-            </Tray>
-          );
-        }
-      })()}
-
-      {siteConfig.pageSections["teremcserek"] != "hidden" && (
-        <Section
-          title={"Teremcserék"}
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["teremcserek"]}
-        >
-          <RoomChanges />
-        </Section>
-      )}
-
-      {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
-        <Section
-          title={"Helyettesítések"}
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["helyettesitesek"]}
-          newVersion={<QuickTeachersDev />}
-        >
-          <QuickTeachers />
-        </Section>
-      )}
+      <h1 className="flex items-center py-12 text-center text-3xl font-bold text-selfprimary-900 md:text-4xl">
+        🎄🎄🎄 <div className="w-full">Áldott, békés ünnepeket kívánunk!</div>
+        🎄🎄🎄
+      </h1>
 
       <Section title="Millió Lépés" dropdownable={true} defaultStatus="closed">
         <MillioLepes />

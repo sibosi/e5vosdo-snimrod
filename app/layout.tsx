@@ -52,11 +52,15 @@ export const viewport = {
 
 export default async function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const session = await auth();
-  session?.user ? await updateUser(session?.user as User) : null;
+  try {
+    if (session?.user) await updateUser(session?.user as User);
+  } catch (e) {
+    console.log(e);
+  }
   const selfUser = await getAuth(session?.user?.email ?? undefined);
 
   const pageSettings = await getPageSettings();

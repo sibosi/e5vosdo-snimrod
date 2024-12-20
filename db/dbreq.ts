@@ -60,6 +60,7 @@ export interface User {
 }
 
 export type UserType = User;
+export type PossibleUserType = User | undefined | null;
 
 export interface Log {
   id?: number;
@@ -155,22 +156,27 @@ export async function getAllUsersNameByEmail() {
 }
 
 export async function getAuth(email?: string | undefined) {
-  if (!email) {
-    const session = await auth();
-    if (!session?.user) return;
-    const authEmail = session.user.email;
+  try {
+    if (!email) {
+      const session = await auth();
+      if (!session?.user) return;
+      const authEmail = session.user.email;
 
-    const response = (await dbreq(
-      `SELECT * FROM \`users\` WHERE email = '${authEmail}'`,
-    )) as User[];
+      const response = (await dbreq(
+        `SELECT * FROM \`users\` WHERE email = '${authEmail}'`,
+      )) as User[];
 
-    return response[0];
-  } else {
-    const response = (await dbreq(
-      `SELECT * FROM \`users\` WHERE email = '${email}'`,
-    )) as User[];
+      return response[0];
+    } else {
+      const response = (await dbreq(
+        `SELECT * FROM \`users\` WHERE email = '${email}'`,
+      )) as User[];
 
-    return response[0];
+      return response[0];
+    }
+  } catch (e) {
+    console.log(e);
+    return null;
   }
 }
 
@@ -638,9 +644,19 @@ export async function editMySettings({
 }
 
 export async function getPageSettings() {
-  return (
-    (await dbreq(`SELECT * FROM settings WHERE name = "now";`)) as any
-  )[0] as PageSettingsType;
+  try {
+    return (
+      (await dbreq(`SELECT * FROM settings WHERE name = "now";`)) as any
+    )[0] as PageSettingsType;
+  } catch (e) {
+    console.log(e);
+    return {
+      id: 0,
+      name: "now",
+      headspace: 0,
+      livescore: 0,
+    };
+  }
 }
 
 export async function editPageSettings(settings: PageSettingsType) {

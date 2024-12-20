@@ -96,7 +96,7 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
           {">"}
         </button>
       </p>
-      <div className="grid max-w-max grid-cols-2 gap-2 overflow-hidden rounded-xl">
+      <div className="grid md:max-w-max grid-cols-2 gap-2 overflow-hidden rounded-xl">
         {realMenu !== "B" && (
           <MenuCard
             menu="A"

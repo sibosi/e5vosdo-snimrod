@@ -182,7 +182,7 @@ h6 {
   color: hsl(
     0,
     0%,
-    calc(max(var(--lightness-cont) - 40%, -1 * (var(--lightness-cont) - 40%)))
+    calc(max(var(--lightness-cont) - 25%, -1 * (var(--lightness-cont) - 25%)))
   );
 }
 

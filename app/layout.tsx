@@ -25,6 +25,7 @@ import OGURL from "./ogurl";
 import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
+import Footer from "@/components/footer";
 const PushManager = dynamic(() => import("../components/PWA/push"), {
   ssr: false,
 });

@@ -24,6 +24,7 @@ import MillioLepes from "@/components/home/milliolepes";
 import Carousel from "@/components/home/carousel";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
+import Footer from "@/components/footer";
 
 export default async function Home() {
   const selfUser = await getAuth();
@@ -107,94 +108,9 @@ export default async function Home() {
         </Section>
       )}
 
-      <Section title="Keresel valamit?" className="max-w-xs">
-        <Link href={"/clubs"} className="block max-w-fit text-selfprimary">
-          Klubok és szakkörök ➜
-        </Link>
-        <Link href={"/events"} className="block max-w-fit text-selfprimary">
-          Összes esemény ➜
-        </Link>
-        <Link href={"/me"} className="block max-w-fit text-selfprimary">
-          Saját beállítások ➜
-        </Link>
-        <Link
-          href={"/clearCacke"}
-          className="hidden max-w-fit text-selfprimary"
-        >
-          Gyorsítótár törlése ➜
-        </Link>
+      <Section title="Keresel valamit?" dropdownable={false}>
+        <Footer />
       </Section>
-
-      <Section
-        title="Hamarosan"
-        dropdownable={true}
-        defaultStatus="closed"
-        className="hidden rounded-2xl bg-gradient-to-r from-selfprimary-50 to-selfprimary-bg"
-      >
-        <Section
-          title="Órarend"
-          dropdownable={false}
-          defaultStatus="closed"
-          className="mx-3 rounded-xl pl-3"
-        >
-          {0 ? (
-            selfUser ? (
-              <TimetableDay selfUser={selfUser} />
-            ) : (
-              <p>Bejelentkezés után láthatod az órarended!</p>
-            )
-          ) : (
-            <p>
-              Jelenleg nem elérhető az órarended. Kérjük, nézz vissza később!
-            </p>
-          )}
-        </Section>
-
-        <Section
-          title="Szabad teremkereső"
-          dropdownable={true}
-          defaultStatus="closed"
-          chip={<ChipBeta />}
-        >
-          {0 ? (
-            <FreeRooms />
-          ) : (
-            <p>
-              Jelenleg nem elérhető a teremkereső. Kérjük, nézz vissza később!
-            </p>
-          )}
-        </Section>
-      </Section>
-
-      <div className="hero bg-[url('/opinion.png')]">
-        <div className="bgcolor hero-overlay"></div>
-        <div className="hero-content text-center text-neutral-content">
-          <div className="max-w-md rounded-lg bg-danger-foreground bg-opacity-70 p-4 text-black backdrop-blur-sm">
-            <h1 className="mb-5 text-4xl font-bold text-black">
-              Helló Eötvös népe!
-              <br />
-            </h1>
-            <p className="mb-5 w-auto text-lg text-black lg:text-lg">
-              A DÖ kötelessége a diákok érdekeinek eleget tenni. Az űrlapon
-              megoszthatjátok észrevételeiteket, javaslataitokat és esetleges
-              problémáitokat.
-              <br />
-            </p>
-            <Link
-              href={siteConfig.links.feedback}
-              className={clsx(
-                buttonStyles({
-                  radius: "full",
-                  variant: "solid",
-                }),
-                "bg-selfsecondary-200",
-              )}
-            >
-              Irány az űrlap!
-            </Link>
-          </div>
-        </div>
-      </div>
 
       <div className="hidden">
         {

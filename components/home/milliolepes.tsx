@@ -42,10 +42,18 @@ const SchoolCard = ({
 const MillioLepes = () => {
   const [data, setData] = useState<MillioLepesAPIResponse>();
 
+  const fetcher = async () => {
+    try {
+      await fetch("/api/milliolepes")
+        .then((res) => res.json())
+        .then(setData);
+    } catch {
+      return;
+    }
+  };
+
   useEffect(() => {
-    fetch("/api/milliolepes")
-      .then((res) => res.json())
-      .then(setData);
+    fetcher();
   }, []);
 
   if (!data) {

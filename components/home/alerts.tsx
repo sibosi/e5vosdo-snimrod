@@ -5,8 +5,8 @@ import { Alert } from "./alert";
 import { AlertType } from "@/db/dbreq";
 import parse from "html-react-parser";
 
-function getAlerts() {
-  return fetch("/api/alerts").then((res) => res.json());
+async function getAlerts() {
+  return await fetch("/api/alerts").then((res) => res.json());
 }
 
 const Alerts = () => {

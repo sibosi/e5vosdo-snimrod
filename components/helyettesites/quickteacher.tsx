@@ -10,14 +10,9 @@ import {
   Modal,
   ModalContent,
   ModalBody,
-  Switch,
-  ButtonGroup,
-  Button,
 } from "@nextui-org/react";
 import { Change, TeacherChange } from "@/app/api/route";
-import { Alert } from "../home/alert";
 import Image from "next/image";
-import { UserType } from "@/db/dbreq";
 import teacherName from "@/app/api/teacherName";
 
 const fetcher = async (url: string) => {

@@ -77,10 +77,6 @@ export default async function Home() {
         </Section>
       )}
 
-      <Section title="Millió Lépés" dropdownable={true} defaultStatus="closed">
-        <MillioLepes />
-      </Section>
-
       {siteConfig.pageSections["menza"] != "hidden" && (
         <Section
           title="Mi a mai menü?"

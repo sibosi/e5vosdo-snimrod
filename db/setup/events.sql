@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS events (
     show_time DATE,
     hide_time DATE NOT NULL,
     image VARCHAR(255),
-    details TEXT,
+    description TEXT,
     tags JSON
 );
 INSERT INTO events (
@@ -15,7 +15,7 @@ INSERT INTO events (
         show_time,
         hide_time,
         image,
-        details,
+        description,
         tags
     )
 VALUES 

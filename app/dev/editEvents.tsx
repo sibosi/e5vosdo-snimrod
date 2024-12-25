@@ -1,5 +1,5 @@
 "use client";
-import { EventType } from "@/components/events";
+import { EventType } from "@/db/event";
 import React, { useEffect, useState } from "react";
 
 const EditEvents = () => {
@@ -40,13 +40,14 @@ const EditEvents = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        module: "event",
       },
       body: JSON.stringify({ event: event }),
     });
   }
 
   useEffect(() => {
-    fetch("/api/getEvents")
+    fetch("/api/getEvents", { headers: { module: "event" } })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

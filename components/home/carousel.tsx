@@ -80,7 +80,7 @@ const CarouselItem = ({
     if (isLastItem) {
       return [
         SMALL_IMAGE_WIDTH,
-        largeImageWidth,
+        MEDIUM_IMAGE_WIDTH,
         largeImageWidth,
         largeImageWidth,
       ];
@@ -114,7 +114,7 @@ const CarouselItem = ({
         backgroundPosition: "center",
         width: width ?? animatedWidth,
         marginRight: 8,
-        borderRadius: 20,
+        borderRadius: 24,
         height: 150,
         minHeight: 150,
         minWidth: width ?? animatedWidth,
@@ -132,7 +132,7 @@ const CarouselItem = ({
           justifyContent: "left",
         }}
       >
-        <div className="fixed bottom-0 m-1">
+        <div className="fixed bottom-0 m-1.5">
           {Array.isArray(titleLines) ? (
             <>
               {titleLines.map((row) => (
@@ -230,8 +230,29 @@ export default function Carousel({
                 />
               ),
           )}
-          {clicked !== null ? null : ( // description
-            <div className="min-w-unit-24" />
+          {clicked !== null ? (
+            <></>
+          ) : (
+            <button
+              title="add item"
+              type="button"
+              className="grid min-w-[100px] items-center justify-center rounded-3xl bg-selfprimary-100"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="m-auto h-6 w-6 text-selfprimary-700"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={4}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
           )}
         </div>
         {clicked === null && realData.length > 2 && (
@@ -260,12 +281,7 @@ export default function Carousel({
         )}
       </div>
       {clicked !== null && (
-        <div
-          className="blocked mt-2 whitespace-pre-wrap bg-selfprimary-50 p-4 text-foreground"
-          style={{
-            borderRadius: 20,
-          }}
-        >
+        <div className="blocked mt-2 whitespace-pre-wrap rounded-3xl bg-selfprimary-50 p-4 text-foreground">
           {<span>{parse(String(realData[clicked].description))}</span>}
           {realData[clicked].description === "<Player />" && <Player />}
         </div>

@@ -12,14 +12,20 @@ type Params = {
   db: string;
 };
 
+const modules = {
+  parlament: import("@/db/parlament"),
+  event: import("@/db/event"),
+};
+
 export const GET = async (request: Request, context: { params: Params }) => {
   const selfUser = await getAuth();
-  if (request.headers.get("module") === "parlement") {
+  const requestedModule = request.headers.get("module") ?? "";
+  if (Object.keys(modules).includes(requestedModule)) {
     const body = await request.json();
     const method = context.params.db;
 
     try {
-      const mod = await import("@/db/parlament");
+      const mod = await modules[requestedModule as keyof typeof modules];
 
       if (typeof (mod as { [key: string]: any })[method] === "function") {
         console.log("body:", body);
@@ -37,9 +43,9 @@ export const GET = async (request: Request, context: { params: Params }) => {
         );
       }
     } catch (error) {
-      console.error("Error in parlement module:", error);
+      console.error(`Error in ${requestedModule} module: ${error}`);
       return NextResponse.json(
-        { error: "Failed to process request in parlement module" },
+        { error: `Failed to process request in ${requestedModule} module` },
         { status: 500 },
       );
     }

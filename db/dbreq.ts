@@ -202,10 +202,12 @@ export async function getUsersEmail() {
   return emails;
 }
 
+// redundant
 export async function getEvents() {
   return (await dbreq(`SELECT * FROM \`events\``)) as EventType[];
 }
 
+// redundant
 export async function updateEvent(event: EventType) {
   console.log(event);
   if (!event.id) {

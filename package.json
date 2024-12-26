@@ -39,7 +39,7 @@
     "eslint": "8.48.0",
     "eslint-config-next": "14.0.2",
     "extract-colors": "^4.1.0",
-    "framer-motion": "^10.18.0",
+    "framer-motion": "^11.5.6",
     "html-react-parser": "^5.1.14",
     "iconv-lite": "^0.6.3",
     "jsbarcode": "^3.11.6",

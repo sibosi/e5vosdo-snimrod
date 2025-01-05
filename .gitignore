@@ -54,3 +54,4 @@ public/workbox-07a7b4f2.js
 /db/setup/local/
 
 docker-compose.yml
+Dockerfile

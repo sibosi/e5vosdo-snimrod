@@ -1,4 +1,4 @@
-name: Build on Push
+name: Build on Push & Deploy on Master
 
 on:
   push:
@@ -45,3 +45,23 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/e5vosdo-snimrod/
+            git pull origin master
+            docker-compose down
+            docker-compose up -d --build

@@ -47,6 +47,7 @@ jobs:
         run: npm run build
 
   deploy:
+    needs: build
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
@@ -61,7 +62,5 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/e5vosdo-snimrod/
-            git pull origin master
-            docker-compose down
-            docker-compose up -d --build
+            cd ~
+            bash update.sh

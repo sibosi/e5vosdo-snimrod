@@ -66,6 +66,11 @@ export const loadPalette = (
       `--color-${colorName}-bg`,
       hexFromArgb(Hct.from(colorHue, 6, isDarkMode ? 6 : 97).toInt()),
     );
+
+    document.documentElement.style.setProperty(
+      `--color-${colorName}-cont`,
+      hexFromArgb(Hct.from(colorHue, 6, isDarkMode ? 97 : 6).toInt()),
+    );
   }
 };
 

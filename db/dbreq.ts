@@ -758,10 +758,9 @@ export async function updateMatch(id: number, match: Match) {
     const oldMatch = await getMatch(id);
     const VERB = "kosarat dobott"; // gólt lőtt
     const TITLE = "KOSÁR!"; // GÓL!
-    const notificationPermission = "tester";
-    const receiving_emails = await getUsersEmailByPermission(
-      notificationPermission,
-    );
+    // const notificationPermission = "tester";
+    const receiving_emails = await getUsersEmailWherePushAboutGames();
+    // await getUsersEmailByPermission(notificationPermission);
 
     if (match.id !== oldMatch.id) return await dbreq(REQ1);
     if (match.status === "Finished" && oldMatch.status !== "Finished") {

@@ -13,21 +13,22 @@ import clsx from "clsx";
 import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
-import { PossibleUserType } from "@/db/dbreq";
+import { getPageSettings, PossibleUserType } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
 import HelloMessage from "../home/helloMessage";
 import { Chip } from "@nextui-org/react";
 import ChangingComponent from "./changingComponent";
+import { headers } from "next/headers";
 
-export const Navbar = ({
+export const Navbar = async ({
   selfUser,
-  isActiveHeadSpace,
   className,
 }: {
   selfUser: PossibleUserType;
-  isActiveHeadSpace: boolean;
   className?: string;
 }) => {
+  const _ = headers();
+  const isActiveHeadSpace = (await getPageSettings()).headspace === 1;
   const phoneView = (
     <NextUINavbar
       maxWidth="xl"

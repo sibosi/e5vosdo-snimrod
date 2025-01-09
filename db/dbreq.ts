@@ -140,7 +140,6 @@ export async function getUsersName() {
 
 export async function getUser(email: string | undefined) {
   if (!email) return;
-  // addLog("getUser", email);
   return (
     (await dbreq(`SELECT * FROM \`users\` WHERE email = '${email}'`)) as User[]
   )[0];
@@ -315,6 +314,15 @@ export async function getUsersEmailByPermission(permission: string) {
   return emails;
 }
 
+export async function getUsersEmailWherePushAboutGames() {
+  const response = (await dbreq(
+    `SELECT email FROM users WHERE push_about_games = 1`,
+  )) as any;
+  let emails: string[] = [];
+  response.map((user: { email: string }) => emails.push(user.email));
+  return emails;
+}
+
 export async function getNotificationById(id: number) {
   const response = (await dbreq(
     `SELECT * FROM notifications WHERE id = ${id}`,
@@ -405,7 +413,7 @@ export async function getServiceWorkersByPermission(permission: string) {
     `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`,
   )) as any;
   let service_workers: any[] = [];
-  users_service_workers.map((user: { service_workers: [] }) =>
+  users_service_workers.forEach((user: { service_workers: [] }) =>
     user.service_workers.map((sw: any) => service_workers.push(sw)),
   );
 
@@ -467,7 +475,7 @@ export async function markAsRead(id: number) {
 
   const REQ2 = `UPDATE users SET notifications = JSON_SET(notifications, '$.read', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.read'), '$', ${id})) WHERE email = '${email}';`;
 
-  return await dbreq(REQ1), await dbreq(REQ2);
+  return [await dbreq(REQ1), await dbreq(REQ2)];
 }
 
 export async function newNotificationByEmails(
@@ -501,9 +509,9 @@ export async function newNotificationByEmails(
 
   const MAINRRQ = [REQ1, REQ2, REQ3, REQ4, REQ5];
 
-  const response = await multipledbreq(MAINRRQ);
+  await multipledbreq(MAINRRQ);
 
-  valid_receiving_emails.map(async (email) => {
+  valid_receiving_emails.forEach(async (email) => {
     if (payload !== "") {
       await newPush(email, payload);
     } else {
@@ -529,6 +537,7 @@ export async function newNotificationByNames(
   receiving_names: string[],
 ) {
   const sender_email = (await getAuth())?.email;
+  addLog("newNotificationByNames", sender_email + " " + title + " " + message);
   let receiving_emails: string[] = [];
   let valid_receiving_emails: string[] = [];
 
@@ -536,11 +545,11 @@ export async function newNotificationByNames(
     (await dbreq(`SELECT name, email FROM users`)) as any;
 
   const usersNameAndEmailDict: { [key: string]: string } = {};
-  usersNameAndEmail.map((user: { name: string; email: string }) => {
+  usersNameAndEmail.forEach((user: { name: string; email: string }) => {
     usersNameAndEmailDict[user.name] = user.email;
   });
 
-  receiving_names.map((name) => {
+  receiving_names.forEach((name) => {
     receiving_emails.push(usersNameAndEmailDict[name] ?? name);
   });
 
@@ -747,15 +756,20 @@ export async function updateMatch(id: number, match: Match) {
   if (sendNotification) {
     console.log("Sending notification");
     const oldMatch = await getMatch(id);
+    const VERB = "kosarat dobott"; // gólt lőtt
+    const TITLE = "KOSÁR!"; // GÓL!
     const notificationPermission = "tester";
+    const receiving_emails = await getUsersEmailByPermission(
+      notificationPermission,
+    );
+
+    if (match.id !== oldMatch.id) return await dbreq(REQ1);
     if (match.status === "Finished" && oldMatch.status !== "Finished") {
       console.log("Sending notification - Game finished");
       const title = `${match.team_short1} - ${match.team_short2}`;
       const message = `A meccsnek vége. Az eredmény: ${match.team_short1} ${match.score1} - ${match.score2} ${match.team_short2}`;
-      const receiving_emails = await getUsersEmailByPermission(
-        notificationPermission,
-      );
-      receiving_emails.map(async (email) => {
+
+      receiving_emails.forEach(async (email) => {
         await newPush(
           email,
           JSON.stringify({
@@ -771,10 +785,8 @@ export async function updateMatch(id: number, match: Match) {
       console.log("Sending notification - Game started");
       const title = `${match.team_short1} - ${match.team_short2}`;
       const message = `A meccs elkezdődött! ${match.team1} vs ${match.team2}`;
-      const receiving_emails = await getUsersEmailByPermission(
-        notificationPermission,
-      );
-      receiving_emails.map(async (email) => {
+
+      receiving_emails.forEach(async (email) => {
         await newPush(
           email,
           JSON.stringify({
@@ -788,12 +800,10 @@ export async function updateMatch(id: number, match: Match) {
       console.log("Notification sent - Game started");
     } else if (match.score1 !== oldMatch.score1) {
       console.log("Sending notification - Goal");
-      const title = `Gól! | ${match.team_short1} - ${match.team_short2}`;
-      const message = `${match.team1} gólt lőtt! Az aktuális állás: ${match.team_short1} ${match.score1} - ${match.score2} ${match.team_short2}`;
-      const receiving_emails = await getUsersEmailByPermission(
-        notificationPermission,
-      );
-      receiving_emails.map(async (email) => {
+      const title = `${TITLE}! | ${match.team_short1} - ${match.team_short2}`;
+      const message = `${match.team1} ${VERB}! Az aktuális állás: ${match.team_short1} ${match.score1} - ${match.score2} ${match.team_short2}`;
+
+      receiving_emails.forEach(async (email) => {
         await newPush(
           email,
           JSON.stringify({
@@ -807,13 +817,10 @@ export async function updateMatch(id: number, match: Match) {
       console.log("Notification sent - Goal");
     } else if (match.score2 !== oldMatch.score2) {
       console.log("Sending notification - Goal");
-      const title = `Gól! | ${match.team_short1} - ${match.team_short2}`;
-      const message = `${match.team2} gólt lőtt! Az aktuális állás: ${match.team_short1} ${match.score1} - ${match.score2} ${match.team_short2}`;
-      const receiving_emails = await getUsersEmailByPermission(
-        notificationPermission,
-      );
+      const title = `${TITLE}! | ${match.team_short1} - ${match.team_short2}`;
+      const message = `${match.team2} ${VERB}! Az aktuális állás: ${match.team_short1} ${match.score1} - ${match.score2} ${match.team_short2}`;
 
-      receiving_emails.map(async (email) => {
+      receiving_emails.forEach(async (email) => {
         await newPush(
           email,
           JSON.stringify({
@@ -939,7 +946,7 @@ export async function getMembersAtPresentation(presentation_id: number) {
 
   const uniqueEmails = Array.from(new Set(emails));
 
-  return uniqueEmails as string[];
+  return uniqueEmails;
 }
 
 export async function getPresentationsByIds(ids: number[]) {

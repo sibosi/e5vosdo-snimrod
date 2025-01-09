@@ -36,7 +36,7 @@ export const Navbar = ({
     >
       <NavbarContent className="flex" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
-          <GetApp size={isActiveHeadSpace ? "small" : "small"} />
+          <GetApp size="small" />
         </NavbarBrand>
       </NavbarContent>
 
@@ -46,18 +46,21 @@ export const Navbar = ({
             <HelloMessage selfUser={selfUser} size="sm" padding={false} />
           }
           endComponent={
-            <NextLink
-              className="flex items-center justify-start gap-1"
-              href="/"
-            >
-              <Logo />
-              <h1 className="p-2 text-3xl font-bold text-foreground">
-                E5vös&nbsp;DÖ
-              </h1>
-            </NextLink>
+            isActiveHeadSpace ? (
+              <LiveScore />
+            ) : (
+              <NextLink
+                className="flex items-center justify-start gap-1"
+                href="/"
+              >
+                <Logo />
+                <h1 className="p-2 text-3xl font-bold text-foreground">
+                  E5vös&nbsp;DÖ
+                </h1>
+              </NextLink>
+            )
           }
         />
-        <LiveScore />
       </NavbarContent>
 
       <NavbarContent className="gap-2" justify="end">

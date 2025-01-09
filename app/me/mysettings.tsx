@@ -23,85 +23,6 @@ import {
 import { Alert } from "@/components/home/alert";
 import { ReinstallServiceWorker } from "@/components/PWA/managesw";
 
-function updateCacheMethod(cacheMethod: "always" | "offline" | "never") {
-  const request = indexedDB.open("SW-settings", 1);
-
-  console.log("2/2 Cache method is updating to:", cacheMethod);
-
-  request.onupgradeneeded = (event: any) => {
-    const db = (event.target as IDBRequest).result;
-    if (!db.objectStoreNames.contains("settings")) {
-      db.createObjectStore("settings", { keyPath: "id" });
-    }
-  };
-
-  console.log("2/3 Cache method is updating to:", cacheMethod);
-
-  request.onsuccess = (event) => {
-    console.log(event);
-    const db = (event.target as IDBRequest).result;
-
-    console.log(db);
-
-    console.log("2/4 Cache method is updating to:", cacheMethod);
-
-    const transaction = db.transaction(["settings"], "readwrite");
-    const store = transaction.objectStore("settings");
-
-    console.log(transaction, store);
-
-    const data = {
-      id: "cacheMethod",
-      value: cacheMethod,
-    };
-
-    const putRequest = store.put(data);
-
-    console.log("2/5 Cache method is updating to:", cacheMethod);
-
-    putRequest.onsuccess = () => {
-      console.log("Cache method updated in IndexedDB:", cacheMethod);
-    };
-
-    putRequest.onerror = (err: any) => {
-      console.error("Error updating cache method:", err);
-    };
-  };
-
-  request.onerror = (event: any) => {
-    console.error(
-      "IndexedDB error:",
-      (event.target as IDBRequest).error?.message,
-    );
-  };
-}
-
-function getCacheMethod() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("SW-settings", 1);
-
-    request.onsuccess = (event: any) => {
-      const db = (event.target as IDBRequest).result;
-      const transaction = db.transaction(["settings"], "readonly");
-      const store = transaction.objectStore("settings");
-
-      const getRequest = store.get("cacheMethod");
-
-      getRequest.onsuccess = () => {
-        resolve(getRequest.result ? getRequest.result.value : null);
-      };
-
-      getRequest.onerror = (err: any) => {
-        reject(new Error(err));
-      };
-    };
-
-    request.onerror = (event: any) => {
-      reject(new Error((event.target as IDBRequest).error?.message));
-    };
-  });
-}
-
 const SettingsSection = ({
   title,
   children,
@@ -140,9 +61,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [nicknameError, setNicknameError] = useState<string>("");
   const [EJG_codeError, setEJG_codeError] = useState<string>("");
   const [isMaterialBg, setIsMaterialBg] = useState<boolean>(false);
-  const [cacheMethod, setCacheMethod] = useState<
-    "always" | "offline" | "never"
-  >();
 
   const [reload, setReload] = useState<boolean>(false);
   const [isPushEnabled, setIsPushEnabled] = useState<{
@@ -199,14 +117,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
   }, [selfUserPromise.push_permission]);
 
   useEffect(() => {
-    getCacheMethod().then((method) => {
-      setCacheMethod(
-        method === "always" || method === "offline" || method === "never"
-          ? method
-          : "always",
-      );
-    });
-
     setIsMaterialBg(localStorage.getItem("materialBg") === "true");
   }, []);
 
@@ -225,17 +135,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         });
     }
   }, [reload, selfUserPromise.email]);
-
-  useEffect(() => {
-    if (cacheMethod) {
-      updateCacheMethod(cacheMethod as any);
-      console.log("Cache method updated3:", cacheMethod);
-      // send a message to the service worker
-      navigator.serviceWorker.controller?.postMessage({
-        type: "cacheMethodUpdated",
-      });
-    }
-  }, [cacheMethod]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -509,8 +408,8 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 });
               }}
             >
-              Értesítések az órarend változásakor (a funkció novemberben /
-              decemberben érkezik)
+              Értesítések az órarend változásakor (a funkció előreláthatólag nem
+              fog megvalósulni)
             </Switch>
           </div>
         </SettingsSection>
@@ -545,24 +444,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           defaultStatus="closed"
           dropdownable={true}
         >
-          <table className="table my-2 gap-y-2">
-            <tbody>
-              <tr>
-                <th className="font-semibold">Gyorsítótár használata</th>
-                <th>
-                  <RadioGroup
-                    value={cacheMethod}
-                    onChange={(e) => setCacheMethod(e.target.value as any)}
-                  >
-                    <Radio value="always">Mindig</Radio>
-                    <Radio value="offline">Csak offline</Radio>
-                    <Radio value="never">Soha</Radio>
-                  </RadioGroup>
-                </th>
-              </tr>
-            </tbody>
-          </table>
-
           <VersionTable />
 
           <div className="my-2 flex gap-2">

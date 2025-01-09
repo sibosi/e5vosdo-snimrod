@@ -118,9 +118,7 @@ const PageSettings = () => {
                 })
               }
             >
-              {newSettings.headspace
-                ? "Headspace bekapcsolva"
-                : "Headspace kikapcsolva"}
+              {newSettings.headspace ? "Bekapcsolva" : "Kikapcsolva"}
             </Button>
             <Input
               title="livescore"

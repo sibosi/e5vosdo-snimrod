@@ -233,9 +233,9 @@ export default function Carousel({
           {clicked !== null ? (
             <></>
           ) : (
-            <button
+            <a
               title="add item"
-              type="button"
+              href="/creator/"
               className="grid min-w-[100px] items-center justify-center rounded-3xl bg-selfprimary-100"
             >
               <svg
@@ -252,7 +252,7 @@ export default function Carousel({
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-            </button>
+            </a>
           )}
         </div>
         {clicked === null && realData.length > 2 && (

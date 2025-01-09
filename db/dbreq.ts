@@ -762,7 +762,8 @@ export async function updateMatch(id: number, match: Match) {
     const receiving_emails = await getUsersEmailWherePushAboutGames();
     // await getUsersEmailByPermission(notificationPermission);
 
-    if (match.id !== oldMatch.id) return await dbreq(REQ1);
+    if (match.id !== oldMatch.id || match.status === "Upcoming")
+      return await dbreq(REQ1);
     if (match.status === "Finished" && oldMatch.status !== "Finished") {
       console.log("Sending notification - Game finished");
       const title = `${match.team_short1} - ${match.team_short2}`;

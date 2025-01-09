@@ -198,9 +198,12 @@ const PageSettings = () => {
             onClick={() => {
               updateMatch(newMatch).then((data) => {
                 if (data.status === 200) {
-                  setNewMatch({} as Match);
                   getMatches().then((data) => {
                     setMatches(data);
+                    setNewMatch(
+                      data.find((match) => match.id === newMatch.id) as Match,
+                    );
+                    alert("Sikeres frissítés!");
                   });
                 }
               });

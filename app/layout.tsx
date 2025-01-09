@@ -8,17 +8,10 @@ import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { auth } from "@/auth";
-import Access from "@/components/account/access";
 import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
-import {
-  getAuth,
-  getPageSettings,
-  getStudentUsersEmail,
-  updateUser,
-  User,
-} from "@/db/dbreq";
+import { getAuth, updateUser, User } from "@/db/dbreq";
 import dynamic from "next/dynamic";
 import Cookie from "@/components/cookie";
 import OGURL from "./ogurl";
@@ -62,8 +55,6 @@ export default async function RootLayout({
     console.log(e);
   }
   const selfUser = await getAuth(session?.user?.email ?? undefined);
-
-  const pageSettings = await getPageSettings();
   if (session?.user?.email) console.log("New user: " + session.user.email);
 
   return (
@@ -150,11 +141,7 @@ export default async function RootLayout({
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">
-            <Navbar
-              selfUser={selfUser}
-              isActiveHeadSpace={pageSettings.headspace === 1}
-              className="bg-selfprimary-bg"
-            />
+            <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
 
             <Cookie />
             <Alerts />

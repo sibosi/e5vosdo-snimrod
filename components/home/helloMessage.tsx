@@ -31,11 +31,11 @@ const HelloMessage = ({
     return (
       <div className={"text-center text-foreground " + (padding && "pb-14")}>
         <div className="inline text-4xl font-semibold lg:text-5xl">
-          Helló&nbsp;
-          <p className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
+          <span>Helló&nbsp;</span>
+          <span className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
             Eötvös Népe
-          </p>
-          !
+          </span>
+          <span>!</span>
         </div>
       </div>
     );

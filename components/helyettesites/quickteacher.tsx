@@ -79,107 +79,17 @@ export const QuickTeachers = () => {
   const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
   return (
-    <React.Fragment>
-      {!isLoaded && <p>Loading...</p>}
-      {isLoaded && tableData && Object.keys(tableData).length ? (
-        Object.keys(tableData).map((date) => (
-          <div
-            key={date}
-            className="my-2 rounded-lg border-1 border-selfprimary-100 bg-selfprimary-bg p-2 shadow-md"
-          >
-            <h5 className="text-center font-bold text-foreground">
-              {
-                [
-                  "Vasárnap",
-                  "Hétfő",
-                  "Kedd",
-                  "Szerda",
-                  "Csütörtök",
-                  "Péntek",
-                  "Szombat",
-                ][new Date(date).getDay()]
-              }{" "}
-              ({date.slice(5, 10).replace("-", "/")})
-            </h5>
-            {tableData[date].map((teacher, rowIndex: number) => (
-              <Dropdown key={rowIndex} className="md: block">
-                <DropdownTrigger>
-                  <User
-                    as="button"
-                    type="button"
-                    avatarProps={{
-                      isBordered: true,
-                      src: teacher.photoUrl,
-                    }}
-                    className="p-2 transition-transform"
-                    description={teacher.subjects}
-                    name={teacher.name}
-                  />
-                </DropdownTrigger>
-
-                <DropdownMenu
-                  aria-label="Static Actions"
-                  className="rounded-xl bg-selfprimary-bg"
-                >
-                  {teacher.changes &&
-                    teacher.changes.map((event, eventIndex: number) => (
-                      <DropdownItem
-                        key={eventIndex}
-                        className="text-foreground"
-                        onClick={() => setSelectedEvent(event)}
-                      >
-                        <p>
-                          {"🕒 " +
-                            [
-                              "Vasárnap",
-                              "Hétfő",
-                              "Kedd",
-                              "Szerda",
-                              "Csütörtök",
-                              "Péntek",
-                              "Szombat",
-                            ][new Date(event.date).getDay()] +
-                            " " +
-                            event.hour +
-                            ". ó"}
-                          &nbsp;
-                          {" 📍" + // Replace &nbsp; with nothing
-                            (event.room.replace(" ", "").length !== 0
-                              ? event.room
-                              : "???")}{" "}
-                          &nbsp;
-                          {"  📔" + event.subject}
-                        </p>
-                        <p>
-                          {"   🧑🏼‍🏫 " +
-                            (event.replacementTeacher.replace(" ", "")
-                              .length !== 0
-                              ? event.replacementTeacher
-                              : "???")}{" "}
-                          &nbsp;
-                          {" 📝" + event.comment}
-                        </p>
-                      </DropdownItem>
-                    ))}
-                </DropdownMenu>
-              </Dropdown>
-            ))}
-          </div>
-        ))
-      ) : (
-        <p>Nincs információ</p>
-      )}
-
-      {selectedEvent !== null && (
-        <Modal
-          isOpen={selectedEvent !== null}
-          onClose={() => setSelectedEvent(null)}
-          className="bg-selfprimary-bg"
-        >
-          <ModalContent>
-            <ModalBody className="text-foreground">
-              <p>
-                {"🕒 " +
+    <Skeleton isLoaded={isLoaded} className="rounded-lg">
+      <React.Fragment>
+        {!isLoaded && <p>Loading...</p>}
+        {isLoaded && tableData && Object.keys(tableData).length ? (
+          Object.keys(tableData).map((date) => (
+            <div
+              key={date}
+              className="my-2 rounded-lg border-1 border-selfprimary-100 bg-selfprimary-bg p-2 shadow-md"
+            >
+              <h5 className="text-center font-bold text-foreground">
+                {
                   [
                     "Vasárnap",
                     "Hétfő",
@@ -188,37 +98,129 @@ export const QuickTeachers = () => {
                     "Csütörtök",
                     "Péntek",
                     "Szombat",
-                  ][new Date(selectedEvent.date).getDay()] +
-                  " " +
-                  selectedEvent.hour +
-                  ". ó"}
-                &nbsp;
-                {" 📍" +
-                  (selectedEvent.room.replace(" ", "").length !== 0
-                    ? selectedEvent.room
-                    : "???")}{" "}
-                &nbsp;
-                {"  📔" + selectedEvent.subject}
-              </p>
-              <p>{"Hiányzó tanár: " + selectedEvent.missingTeacher}</p>
-              <p>
-                {"Helyettesítő tanár: " +
-                  (selectedEvent.replacementTeacher.replace(" ", "").length !==
-                  0
-                    ? selectedEvent.replacementTeacher
-                    : "???")}
-              </p>
-              <p>
-                {"Megjegyzés: " +
-                  (selectedEvent.comment.replace(" ", "").length !== 0
-                    ? selectedEvent.comment
-                    : "Nincs")}
-              </p>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      )}
-    </React.Fragment>
+                  ][new Date(date).getDay()]
+                }{" "}
+                ({date.slice(5, 10).replace("-", "/")})
+              </h5>
+              {tableData[date].map((teacher, rowIndex: number) => (
+                <Dropdown key={rowIndex} className="md: block">
+                  <DropdownTrigger>
+                    <User
+                      as="button"
+                      type="button"
+                      avatarProps={{
+                        isBordered: true,
+                        src: teacher.photoUrl,
+                      }}
+                      className="p-2 transition-transform"
+                      description={teacher.subjects}
+                      name={teacher.name}
+                    />
+                  </DropdownTrigger>
+
+                  <DropdownMenu
+                    aria-label="Static Actions"
+                    className="rounded-xl bg-selfprimary-bg"
+                  >
+                    {teacher.changes &&
+                      teacher.changes.map((event, eventIndex: number) => (
+                        <DropdownItem
+                          key={eventIndex}
+                          className="text-foreground"
+                          onPress={() => setSelectedEvent(event)}
+                        >
+                          <p>
+                            {"🕒 " +
+                              [
+                                "Vasárnap",
+                                "Hétfő",
+                                "Kedd",
+                                "Szerda",
+                                "Csütörtök",
+                                "Péntek",
+                                "Szombat",
+                              ][new Date(event.date).getDay()] +
+                              " " +
+                              event.hour +
+                              ". ó"}
+                            &nbsp;
+                            {" 📍" + // Replace &nbsp; with nothing
+                              (event.room.replace(" ", "").length !== 0
+                                ? event.room
+                                : "???")}{" "}
+                            &nbsp;
+                            {"  📔" + event.subject}
+                          </p>
+                          <p>
+                            {"   🧑🏼‍🏫 " +
+                              (event.replacementTeacher.replace(" ", "")
+                                .length !== 0
+                                ? event.replacementTeacher
+                                : "???")}{" "}
+                            &nbsp;
+                            {" 📝" + event.comment}
+                          </p>
+                        </DropdownItem>
+                      ))}
+                  </DropdownMenu>
+                </Dropdown>
+              ))}
+            </div>
+          ))
+        ) : (
+          <p>Nincs információ</p>
+        )}
+
+        {selectedEvent !== null && (
+          <Modal
+            isOpen={selectedEvent !== null}
+            onClose={() => setSelectedEvent(null)}
+            className="bg-selfprimary-bg"
+          >
+            <ModalContent>
+              <ModalBody className="text-foreground">
+                <p>
+                  {"🕒 " +
+                    [
+                      "Vasárnap",
+                      "Hétfő",
+                      "Kedd",
+                      "Szerda",
+                      "Csütörtök",
+                      "Péntek",
+                      "Szombat",
+                    ][new Date(selectedEvent.date).getDay()] +
+                    " " +
+                    selectedEvent.hour +
+                    ". ó"}
+                  &nbsp;
+                  {" 📍" +
+                    (selectedEvent.room.replace(" ", "").length !== 0
+                      ? selectedEvent.room
+                      : "???")}{" "}
+                  &nbsp;
+                  {"  📔" + selectedEvent.subject}
+                </p>
+                <p>{"Hiányzó tanár: " + selectedEvent.missingTeacher}</p>
+                <p>
+                  {"Helyettesítő tanár: " +
+                    (selectedEvent.replacementTeacher.replace(" ", "")
+                      .length !== 0
+                      ? selectedEvent.replacementTeacher
+                      : "???")}
+                </p>
+                <p>
+                  {"Megjegyzés: " +
+                    (selectedEvent.comment.replace(" ", "").length !== 0
+                      ? selectedEvent.comment
+                      : "Nincs")}
+                </p>
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        )}
+      </React.Fragment>
+    </Skeleton>
   );
 };
 
@@ -300,7 +302,7 @@ export const QuickTeachersDev = () => {
                         <DropdownItem
                           key={eventIndex}
                           className="text-foreground"
-                          onClick={() => setSelectedEvent(event)}
+                          onPress={() => setSelectedEvent(event)}
                         >
                           <p>
                             {"🕒 " +

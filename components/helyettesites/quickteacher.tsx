@@ -79,10 +79,7 @@ export const QuickTeachers = () => {
   const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
   return (
-    <Skeleton
-      isLoaded={isLoaded}
-      className="h-auto w-auto rounded-lg text-foreground"
-    >
+    <Skeleton isLoaded={isLoaded} className="rounded-lg">
       <React.Fragment>
         {!isLoaded && <p>Loading...</p>}
         {isLoaded && tableData && Object.keys(tableData).length ? (

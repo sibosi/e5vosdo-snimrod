@@ -243,10 +243,7 @@ export const QuickTeachersDev = () => {
   const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
   return (
-    <Skeleton
-      isLoaded={isLoaded}
-      className="h-auto w-auto rounded-lg text-foreground"
-    >
+    <>
       {!isLoaded && <p>Loading...</p>}
       {isLoaded && tableData && Object.keys(tableData).length ? (
         Object.keys(tableData).map((date) => (
@@ -402,6 +399,6 @@ export const QuickTeachersDev = () => {
           </ModalContent>
         )}
       </Modal>
-    </Skeleton>
+    </>
   );
 };

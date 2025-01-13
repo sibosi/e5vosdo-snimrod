@@ -1,8 +1,8 @@
 import axios from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import NodeCache from "node-cache";
-import { getComingMatch, getPageSettings, updateMatch } from "@/db/dbreq";
+import { getComingMatch, updateMatch } from "@/db/dbreq";
 
 const cache = new NodeCache();
 
@@ -88,7 +88,7 @@ const fetchSoccerData = async () => {
   }
 };
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET() {
   // Check if data is cached
   const cachedData = cache.get("soccerData");
   if (cachedData) {
@@ -102,7 +102,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   return NextResponse.json(soccerData);
 }
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST() {
   return NextResponse.json({
     status: 500,
     message: "POST requests are not supported",

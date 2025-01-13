@@ -12,15 +12,12 @@ import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
 import { getAuth, updateUser, User } from "@/db/dbreq";
-import dynamic from "next/dynamic";
 import Cookie from "@/components/cookie";
 import OGURL from "./ogurl";
 import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
-const PushManager = dynamic(() => import("../components/PWA/push"), {
-  ssr: false,
-});
+import PushManager from "@/components/PWA/push";
 
 export const metadata: Metadata = {
   title: {

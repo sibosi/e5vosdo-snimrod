@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import cheerio from "cheerio";
+import { load } from "cheerio";
 const iconv = require("iconv-lite");
 import teacherDataByNames from "@/public/storage/teacherDataByNames.json";
 import teacherName from "./teacherName";
@@ -43,7 +43,7 @@ async function update() {
     const response = await axios.get(url, { responseType: "arraybuffer" });
     const html_content = iconv.decode(response.data, "iso-8859-1");
 
-    const $ = cheerio.load(html_content);
+    const $ = load(html_content);
 
     const data: any[][] = [];
     $("tr").each((i, row) => {

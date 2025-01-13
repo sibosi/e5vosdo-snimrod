@@ -9,7 +9,10 @@ type Params = {
   file: string;
 };
 
-export const GET = async (request: Request, { params }: { params: Params }) => {
+export const GET = async (
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) => {
   const selfUser = await getAuth();
   if (!selfUser) {
     return NextResponse.json(
@@ -18,7 +21,7 @@ export const GET = async (request: Request, { params }: { params: Params }) => {
     );
   }
 
-  const filename = params.file;
+  const filename = (await params).slug;
 
   if (!filename) {
     return NextResponse.json(
@@ -55,6 +58,9 @@ export const GET = async (request: Request, { params }: { params: Params }) => {
   }
 };
 
-export const POST = async (request: Request, context: { params: Params }) => {
-  return await GET(request, context);
+export const POST = async (
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) => {
+  return await GET(request, { params });
 };

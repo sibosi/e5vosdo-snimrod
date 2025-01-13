@@ -1,10 +1,10 @@
 import React from "react";
-import QRCode from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 
 const QrCodeGenerator = ({ value }: { value: string }) => {
   return (
     <div className="flex items-center justify-center">
-      <QRCode value={value} size={256} />
+      <QRCodeSVG value={value} size={256} />
     </div>
   );
 };

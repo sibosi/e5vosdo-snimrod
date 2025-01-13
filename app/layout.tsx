@@ -19,6 +19,8 @@ import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
 import PushManager from "@/components/PWA/push";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,

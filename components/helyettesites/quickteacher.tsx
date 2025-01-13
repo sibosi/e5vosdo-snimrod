@@ -163,37 +163,49 @@ export const QuickTeachers = ({
                       className="text-foreground"
                       onPress={() => setSelectedEvent(event)}
                     >
-                      <p>
-                        {"🕒 " +
-                          [
-                            "Vasárnap",
-                            "Hétfő",
-                            "Kedd",
-                            "Szerda",
-                            "Csütörtök",
-                            "Péntek",
-                            "Szombat",
-                          ][new Date(event.date).getDay()] +
-                          " " +
-                          event.hour +
-                          ". ó"}
-                        &nbsp;
-                        {" 📍" +
-                          (event.room.replace(" ", "").length !== 0
-                            ? event.room
-                            : "???")}{" "}
-                        &nbsp;
-                        {"  📔" + event.subject}
-                      </p>
-                      <p>
-                        {"   🧑🏼‍🏫 " +
-                          (event.replacementTeacher.replace(" ", "").length !==
-                          0
-                            ? event.replacementTeacher
-                            : "???")}{" "}
-                        &nbsp;
-                        {" 📝" + event.comment}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <Image
+                          className="h-10 w-10 rounded-full border-2 border-foreground-200 object-cover"
+                          width={40}
+                          height={40}
+                          src={event.replacementTeacherPhotoUrl}
+                          alt={event.replacementTeacher}
+                          unoptimized={true}
+                        />
+                        <div>
+                          <p>
+                            {"🕒 " +
+                              [
+                                "Vasárnap",
+                                "Hétfő",
+                                "Kedd",
+                                "Szerda",
+                                "Csütörtök",
+                                "Péntek",
+                                "Szombat",
+                              ][new Date(event.date).getDay()] +
+                              " " +
+                              event.hour +
+                              ". ó"}
+                            &nbsp;
+                            {" 📍" +
+                              (event.room.replace(" ", "").length !== 0
+                                ? event.room
+                                : "???")}{" "}
+                            &nbsp;
+                            {"  📔" + event.subject}
+                          </p>
+                          <p>
+                            {"   🧑🏼‍🏫 " +
+                              (event.replacementTeacher.replace(" ", "")
+                                .length !== 0
+                                ? event.replacementTeacher
+                                : "???")}{" "}
+                            &nbsp;
+                            {" 📝" + event.comment}
+                          </p>
+                        </div>
+                      </div>
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
@@ -213,42 +225,54 @@ export const QuickTeachers = ({
         >
           <ModalContent>
             <ModalBody className="text-foreground">
-              <p>
-                {"🕒 " +
-                  [
-                    "Vasárnap",
-                    "Hétfő",
-                    "Kedd",
-                    "Szerda",
-                    "Csütörtök",
-                    "Péntek",
-                    "Szombat",
-                  ][new Date(selectedEvent.date).getDay()] +
-                  " " +
-                  selectedEvent.hour +
-                  ". ó"}
-                &nbsp;
-                {" 📍" +
-                  (selectedEvent.room.replace(" ", "").length !== 0
-                    ? selectedEvent.room
-                    : "???")}{" "}
-                &nbsp;
-                {"  📔" + selectedEvent.subject}
-              </p>
-              <p>{"Hiányzó tanár: " + selectedEvent.missingTeacher}</p>
-              <p>
-                {"Helyettesítő tanár: " +
-                  (selectedEvent.replacementTeacher.replace(" ", "").length !==
-                  0
-                    ? selectedEvent.replacementTeacher
-                    : "???")}
-              </p>
-              <p>
-                {"Megjegyzés: " +
-                  (selectedEvent.comment.replace(" ", "").length !== 0
-                    ? selectedEvent.comment
-                    : "Nincs")}
-              </p>
+              <div className="flex items-center gap-2">
+                <Image
+                  className="h-28 w-28 rounded-full border-2 border-foreground-200 object-cover text-foreground"
+                  width={112}
+                  height={112}
+                  src={selectedEvent.replacementTeacherPhotoUrl}
+                  alt={selectedEvent.replacementTeacher}
+                  unoptimized={true}
+                />
+                <div>
+                  <p>
+                    {"🕒 " +
+                      [
+                        "Vasárnap",
+                        "Hétfő",
+                        "Kedd",
+                        "Szerda",
+                        "Csütörtök",
+                        "Péntek",
+                        "Szombat",
+                      ][new Date(selectedEvent.date).getDay()] +
+                      " " +
+                      selectedEvent.hour +
+                      ". ó"}
+                    &nbsp;
+                    {" 📍" +
+                      (selectedEvent.room.replace(" ", "").length !== 0
+                        ? selectedEvent.room
+                        : "???")}{" "}
+                    &nbsp;
+                    {"  📔" + selectedEvent.subject}
+                  </p>
+                  <p>{"Hiányzó tanár: " + selectedEvent.missingTeacher}</p>
+                  <p>
+                    {"Helyettesítő tanár: " +
+                      (selectedEvent.replacementTeacher.replace(" ", "")
+                        .length !== 0
+                        ? selectedEvent.replacementTeacher
+                        : "???")}
+                  </p>
+                  <p>
+                    {"Megjegyzés: " +
+                      (selectedEvent.comment.replace(" ", "").length !== 0
+                        ? selectedEvent.comment
+                        : "Nincs")}
+                  </p>
+                </div>
+              </div>
             </ModalBody>
           </ModalContent>
         </Modal>

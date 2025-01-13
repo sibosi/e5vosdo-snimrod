@@ -6,6 +6,7 @@ import {
   DropdownMenu,
   DropdownItem,
   User,
+  Skeleton,
   Modal,
   ModalContent,
   ModalBody,
@@ -78,7 +79,10 @@ export const QuickTeachers = () => {
   const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
   return (
-    <React.Fragment>
+    <Skeleton
+      isLoaded={isLoaded}
+      className="h-auto w-auto rounded-lg text-foreground"
+    >
       {!isLoaded && <p>Loading...</p>}
       {isLoaded && tableData && Object.keys(tableData).length ? (
         Object.keys(tableData).map((date) => (
@@ -120,46 +124,45 @@ export const QuickTeachers = () => {
                   aria-label="Static Actions"
                   className="rounded-xl bg-selfprimary-bg"
                 >
-                  {teacher.changes &&
-                    teacher.changes.map((event, eventIndex: number) => (
-                      <DropdownItem
-                        key={eventIndex}
-                        className="text-foreground"
-                        onPress={() => setSelectedEvent(event)}
-                      >
-                        <p>
-                          {"🕒 " +
-                            [
-                              "Vasárnap",
-                              "Hétfő",
-                              "Kedd",
-                              "Szerda",
-                              "Csütörtök",
-                              "Péntek",
-                              "Szombat",
-                            ][new Date(event.date).getDay()] +
-                            " " +
-                            event.hour +
-                            ". ó"}
-                          &nbsp;
-                          {" 📍" + // Replace &nbsp; with nothing
-                            (event.room.replace(" ", "").length !== 0
-                              ? event.room
-                              : "???")}{" "}
-                          &nbsp;
-                          {"  📔" + event.subject}
-                        </p>
-                        <p>
-                          {"   🧑🏼‍🏫 " +
-                            (event.replacementTeacher.replace(" ", "")
-                              .length !== 0
-                              ? event.replacementTeacher
-                              : "???")}{" "}
-                          &nbsp;
-                          {" 📝" + event.comment}
-                        </p>
-                      </DropdownItem>
-                    ))}
+                  {teacher.changes?.map((event, eventIndex: number) => (
+                    <DropdownItem
+                      key={eventIndex}
+                      className="text-foreground"
+                      onPress={() => setSelectedEvent(event)}
+                    >
+                      <p>
+                        {"🕒 " +
+                          [
+                            "Vasárnap",
+                            "Hétfő",
+                            "Kedd",
+                            "Szerda",
+                            "Csütörtök",
+                            "Péntek",
+                            "Szombat",
+                          ][new Date(event.date).getDay()] +
+                          " " +
+                          event.hour +
+                          ". ó"}
+                        &nbsp;
+                        {" 📍" + // Replace &nbsp; with nothing
+                          (event.room.replace(" ", "").length !== 0
+                            ? event.room
+                            : "???")}{" "}
+                        &nbsp;
+                        {"  📔" + event.subject}
+                      </p>
+                      <p>
+                        {"   🧑🏼‍🏫 " +
+                          (event.replacementTeacher.replace(" ", "").length !==
+                          0
+                            ? event.replacementTeacher
+                            : "???")}{" "}
+                        &nbsp;
+                        {" 📝" + event.comment}
+                      </p>
+                    </DropdownItem>
+                  ))}
                 </DropdownMenu>
               </Dropdown>
             ))}
@@ -217,7 +220,7 @@ export const QuickTeachers = () => {
           </ModalContent>
         </Modal>
       )}
-    </React.Fragment>
+    </Skeleton>
   );
 };
 
@@ -237,7 +240,10 @@ export const QuickTeachersDev = () => {
   const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
   return (
-    <>
+    <Skeleton
+      isLoaded={isLoaded}
+      className="h-auto w-auto rounded-lg text-foreground"
+    >
       {!isLoaded && <p>Loading...</p>}
       {isLoaded && tableData && Object.keys(tableData).length ? (
         Object.keys(tableData).map((date) => (
@@ -267,6 +273,7 @@ export const QuickTeachersDev = () => {
                 >
                   <Dropdown key={rowIndex} className="mx-2 flex">
                     <DropdownTrigger>
+                      {/* A simple card with the teacher's image and under it their name*/}
                       <div className="flex w-24 flex-col items-center justify-start rounded-lg bg-selfprimary-50">
                         {teacher.photoUrl ? (
                           <Image
@@ -295,7 +302,7 @@ export const QuickTeachersDev = () => {
                       aria-label="Static Actions"
                       className="rounded-xl bg-selfprimary-bg"
                     >
-                      {teacher?.changes.map((event, eventIndex: number) => (
+                      {teacher.changes?.map((event, eventIndex: number) => (
                         <DropdownItem
                           key={eventIndex}
                           className="text-foreground"
@@ -316,7 +323,7 @@ export const QuickTeachersDev = () => {
                               event.hour +
                               ". ó"}
                             &nbsp;
-                            {" 📍" +
+                            {" 📍" + // Replace &nbsp; with nothing
                               (event.room.replace(" ", "").length !== 0
                                 ? event.room
                                 : "???")}{" "}
@@ -345,12 +352,12 @@ export const QuickTeachersDev = () => {
         <p>Nincs információ</p>
       )}
 
-      <Modal
-        isOpen={selectedEvent !== null}
-        onClose={() => setSelectedEvent(null)}
-        className="bg-selfprimary-bg"
-      >
-        {selectedEvent !== null && (
+      {selectedEvent !== null && (
+        <Modal
+          isOpen={selectedEvent !== null}
+          onClose={() => setSelectedEvent(null)}
+          className="bg-selfprimary-bg"
+        >
           <ModalContent>
             <ModalBody className="text-foreground">
               <p>
@@ -391,8 +398,8 @@ export const QuickTeachersDev = () => {
               </p>
             </ModalBody>
           </ModalContent>
-        )}
-      </Modal>
-    </>
+        </Modal>
+      )}
+    </Skeleton>
   );
 };

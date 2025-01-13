@@ -8,16 +8,12 @@ import {
   getUser,
 } from "@/db/dbreq";
 
-type Params = {
-  db: string;
-};
-
 async function main(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ db: string }> },
 ) {
   const selfUser = await getAuth();
-  const method = (await params).slug;
+  const method = (await params).db;
 
   if (request.headers.get("module") === "parlement") {
     const body = await request.json();
@@ -104,14 +100,14 @@ async function main(
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ db: string }> },
 ) {
   return await main(request, { params });
 }
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ db: string }> },
 ) {
   return await main(request, { params });
 }

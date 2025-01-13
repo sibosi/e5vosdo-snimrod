@@ -63,9 +63,14 @@ function getTeacherChangesByDate(changesByTeacher: TeacherChange[]) {
   return sortedChangesByDate;
 }
 
-export const QuickTeachers = () => {
+export const QuickTeachers = ({
+  isNewView = false,
+}: {
+  isNewView: boolean;
+}) => {
   const [tableData, setTableData] = useState<TeacherChangesByDate>({});
   const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
 
   useEffect(() => {
     fetcher("/api/")
@@ -76,14 +81,54 @@ export const QuickTeachers = () => {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
+  const oldViewLayout = (teacher: TeacherChange, rowIndex: number) => (
+    <DropdownTrigger>
+      <User
+        as="button"
+        type="button"
+        avatarProps={{
+          isBordered: true,
+          src: teacher.photoUrl,
+        }}
+        className="p-2 transition-transform"
+        description={teacher.subjects}
+        name={teacher.name}
+      />
+    </DropdownTrigger>
+  );
+
+  const newViewLayout = (teacher: TeacherChange, rowIndex: number) => (
+    <DropdownTrigger>
+      <div className="flex w-24 flex-col items-center justify-start rounded-lg bg-selfprimary-50">
+        {teacher.photoUrl ? (
+          <Image
+            src={teacher.photoUrl}
+            alt={teacher.name}
+            width={96}
+            height={96}
+            className="rounded-lg"
+            unoptimized={true}
+            style={{
+              objectFit: "cover",
+              width: "96px",
+              height: "96px",
+            }}
+          />
+        ) : (
+          <div className="h-24 w-24 rounded-lg bg-selfprimary-100"></div>
+        )}
+        <p className="p-2 text-center">{teacherName(teacher.name)}</p>
+      </div>
+    </DropdownTrigger>
+  );
+
+  const usedLayout = isNewView ? newViewLayout : oldViewLayout;
 
   return (
     <Skeleton
       isLoaded={isLoaded}
       className="h-auto w-auto rounded-lg text-foreground"
     >
-      {!isLoaded && <p>Loading...</p>}
       {isLoaded && tableData && Object.keys(tableData).length ? (
         Object.keys(tableData).map((date) => (
           <div
@@ -106,19 +151,7 @@ export const QuickTeachers = () => {
             </h5>
             {tableData[date].map((teacher, rowIndex: number) => (
               <Dropdown key={rowIndex} className="md: block">
-                <DropdownTrigger>
-                  <User
-                    as="button"
-                    type="button"
-                    avatarProps={{
-                      isBordered: true,
-                      src: teacher.photoUrl,
-                    }}
-                    className="p-2 transition-transform"
-                    description={teacher.subjects}
-                    name={teacher.name}
-                  />
-                </DropdownTrigger>
+                {usedLayout(teacher, rowIndex)}
 
                 <DropdownMenu
                   aria-label="Static Actions"
@@ -145,7 +178,7 @@ export const QuickTeachers = () => {
                           event.hour +
                           ". ó"}
                         &nbsp;
-                        {" 📍" + // Replace &nbsp; with nothing
+                        {" 📍" +
                           (event.room.replace(" ", "").length !== 0
                             ? event.room
                             : "???")}{" "}
@@ -225,181 +258,5 @@ export const QuickTeachers = () => {
 };
 
 export const QuickTeachersDev = () => {
-  const [tableData, setTableData] = useState<TeacherChangesByDate>({});
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    fetcher("/api/")
-      .then((data: TeacherChange[]) => {
-        setTableData(getTeacherChangesByDate(data));
-        setIsLoaded(true);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
-
-  const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
-
-  return (
-    <Skeleton
-      isLoaded={isLoaded}
-      className="h-auto w-auto rounded-lg text-foreground"
-    >
-      {!isLoaded && <p>Loading...</p>}
-      {isLoaded && tableData && Object.keys(tableData).length ? (
-        Object.keys(tableData).map((date) => (
-          <div
-            key={date}
-            className="my-2 rounded-lg border-1 border-selfprimary-100 bg-selfprimary-bg p-2 shadow-md"
-          >
-            <h2 className="text-center font-bold text-foreground">
-              {
-                [
-                  "Vasárnap",
-                  "Hétfő",
-                  "Kedd",
-                  "Szerda",
-                  "Csütörtök",
-                  "Péntek",
-                  "Szombat",
-                ][new Date(date).getDay()]
-              }{" "}
-              ({date.slice(5, 10).replace("-", "/")})
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {tableData[date].map((teacher, rowIndex: number) => (
-                <div
-                  key={rowIndex}
-                  className="mx-auto my-1 flex flex-wrap gap-2"
-                >
-                  <Dropdown key={rowIndex} className="mx-2 flex">
-                    <DropdownTrigger>
-                      {/* A simple card with the teacher's image and under it their name*/}
-                      <div className="flex w-24 flex-col items-center justify-start rounded-lg bg-selfprimary-50">
-                        {teacher.photoUrl ? (
-                          <Image
-                            src={teacher.photoUrl}
-                            alt={teacher.name}
-                            width={96}
-                            height={96}
-                            className="rounded-lg"
-                            unoptimized={true}
-                            style={{
-                              objectFit: "cover",
-                              width: "96px",
-                              height: "96px",
-                            }}
-                          />
-                        ) : (
-                          <div className="h-24 w-24 rounded-lg bg-selfprimary-100"></div>
-                        )}
-                        <p className="p-2 text-center">
-                          {teacherName(teacher.name)}
-                        </p>
-                      </div>
-                    </DropdownTrigger>
-
-                    <DropdownMenu
-                      aria-label="Static Actions"
-                      className="rounded-xl bg-selfprimary-bg"
-                    >
-                      {teacher.changes?.map((event, eventIndex: number) => (
-                        <DropdownItem
-                          key={eventIndex}
-                          className="text-foreground"
-                          onPress={() => setSelectedEvent(event)}
-                        >
-                          <p>
-                            {"🕒 " +
-                              [
-                                "Vasárnap",
-                                "Hétfő",
-                                "Kedd",
-                                "Szerda",
-                                "Csütörtök",
-                                "Péntek",
-                                "Szombat",
-                              ][new Date(event.date).getDay()] +
-                              " " +
-                              event.hour +
-                              ". ó"}
-                            &nbsp;
-                            {" 📍" + // Replace &nbsp; with nothing
-                              (event.room.replace(" ", "").length !== 0
-                                ? event.room
-                                : "???")}{" "}
-                            &nbsp;
-                            {"  📔" + event.subject}
-                          </p>
-                          <p>
-                            {"   🧑🏼‍🏫 " +
-                              (event.replacementTeacher.replace(" ", "")
-                                .length !== 0
-                                ? event.replacementTeacher
-                                : "???")}{" "}
-                            &nbsp;
-                            {" 📝" + event.comment}
-                          </p>
-                        </DropdownItem>
-                      ))}
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))
-      ) : (
-        <p>Nincs információ</p>
-      )}
-
-      {selectedEvent !== null && (
-        <Modal
-          isOpen={selectedEvent !== null}
-          onClose={() => setSelectedEvent(null)}
-          className="bg-selfprimary-bg"
-        >
-          <ModalContent>
-            <ModalBody className="text-foreground">
-              <p>
-                {"🕒 " +
-                  [
-                    "Vasárnap",
-                    "Hétfő",
-                    "Kedd",
-                    "Szerda",
-                    "Csütörtök",
-                    "Péntek",
-                    "Szombat",
-                  ][new Date(selectedEvent.date).getDay()] +
-                  " " +
-                  selectedEvent.hour +
-                  ". ó"}
-                &nbsp;
-                {" 📍" +
-                  (selectedEvent.room.replace(" ", "").length !== 0
-                    ? selectedEvent.room
-                    : "???")}{" "}
-                &nbsp;
-                {"  📔" + selectedEvent.subject}
-              </p>
-              <p>{"Hiányzó tanár: " + selectedEvent.missingTeacher}</p>
-              <p>
-                {"Helyettesítő tanár: " +
-                  (selectedEvent.replacementTeacher.replace(" ", "").length !==
-                  0
-                    ? selectedEvent.replacementTeacher
-                    : "???")}
-              </p>
-              <p>
-                {"Megjegyzés: " +
-                  (selectedEvent.comment.replace(" ", "").length !== 0
-                    ? selectedEvent.comment
-                    : "Nincs")}
-              </p>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      )}
-    </Skeleton>
-  );
+  return <QuickTeachers isNewView={true} />;
 };

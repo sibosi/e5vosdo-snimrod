@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@/styles/globals.css";
 import { Button, ButtonGroup, Link } from "@nextui-org/react";
 
@@ -41,37 +41,31 @@ export const Section = ({
   chip,
   newVersion,
 }: SectionProps) => {
-  const [isOpen, setIsOpen] = useState(
-    defaultStatus == "closed" ? false : true,
-  );
+  const [isOpen, setIsOpen] = useState(defaultStatus != "closed");
   const [isNewVersion, setIsNewVersion] = useState(false);
 
   const updateVersion = (isNewVersion: boolean) => {
     setIsNewVersion(isNewVersion);
-    if (newVersion !== undefined) {
+    if (newVersion !== undefined)
       localStorage.setItem(
         "section_" + title + "_new_version",
         isNewVersion.toString(),
       );
-    }
   };
 
   useEffect(() => {
     setIsOpen(
       (savable ? loadSectionStatus(title) : undefined) ??
-        (defaultStatus == "closed" ? false : true),
+        defaultStatus != "closed",
     );
-    if (newVersion !== undefined) {
+    if (newVersion !== undefined)
       setIsNewVersion(loadSectionStatus(title + "_new_version") ?? false);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleDropdown = () => {
-    if (dropdownable) {
-      if (savable) setSectionStatus(title, !isOpen);
-      setIsOpen(!isOpen);
-    }
+    if (dropdownable) if (savable) setSectionStatus(title, !isOpen);
+    setIsOpen(!isOpen);
   };
 
   return (
@@ -89,7 +83,7 @@ export const Section = ({
         >
           {dropdownable && (
             <Link
-              onClick={toggleDropdown}
+              onPress={toggleDropdown}
               className="my-auto max-w-fit text-selfprimary"
             >
               <svg
@@ -123,7 +117,7 @@ export const Section = ({
           <span className="ml-auto pl-2 text-xs text-red-500">
             <ButtonGroup>
               <Button
-                onClick={() => updateVersion(false)}
+                onPress={() => updateVersion(false)}
                 size="sm"
                 className={
                   "border-selfprimary-100 " +
@@ -135,7 +129,7 @@ export const Section = ({
                 Régi nézet
               </Button>
               <Button
-                onClick={() => updateVersion(true)}
+                onPress={() => updateVersion(true)}
                 size="sm"
                 className={
                   "border-selfprimary-100 " +

@@ -83,7 +83,7 @@ export default function SearchUser({
         onKeyDown={handleKeyDown}
       />
       {searchValue.length > 1 && (
-        <div className="absolute z-50 mt-8 w-unit-80 rounded-md border border-selfprimary-200 bg-selfprimary-bg p-1 text-selfprimary-900 shadow-md">
+        <div className="w-unit-80 absolute z-50 mt-8 rounded-md border border-selfprimary-200 bg-selfprimary-bg p-1 text-selfprimary-900 shadow-md">
           {filteredEmails.map((email, index) => (
             <button
               type="button"
@@ -92,7 +92,9 @@ export default function SearchUser({
                 onSelectEmail(email);
                 setSearchValue("");
               }}
-              ref={(el) => (optionsRef.current[index] = el!)}
+              ref={(el) => {
+                optionsRef.current[index] = el!;
+              }}
               className={`block w-full rounded-md px-1 py-0.5 text-left hover:bg-selfprimary-200 ${
                 highlightedIndex === index ? "bg-selfprimary-200" : ""
               }`}

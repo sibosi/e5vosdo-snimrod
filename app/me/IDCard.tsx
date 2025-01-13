@@ -31,7 +31,7 @@ const IDCard = ({
 
   return (
     <div className={"flex max-w-min p-4 " + (center ? "mx-auto" : "")}>
-      <Button onClick={handleGenerate} className="w-full bg-selfprimary-200">
+      <Button onPress={handleGenerate} className="w-full bg-selfprimary-200">
         {codeType === "both"
           ? "QR kód és vonalkód"
           : codeType === "qr"
@@ -66,7 +66,7 @@ const IDCard = ({
             {showBarcode && <BarcodeGenerator value={EJG_code} />}
           </ModalBody>
           <ModalFooter>
-            <Button className="bg-selfprimary-200" onClick={handleGenerate}>
+            <Button className="bg-selfprimary-200" onPress={handleGenerate}>
               Bezárás
             </Button>
           </ModalFooter>

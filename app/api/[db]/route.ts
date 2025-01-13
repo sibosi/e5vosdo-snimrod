@@ -8,15 +8,15 @@ import {
   getUser,
 } from "@/db/dbreq";
 
-type Params = {
-  db: string;
-};
-
-export const GET = async (request: Request, context: { params: Params }) => {
+async function main(
+  request: Request,
+  { params }: { params: Promise<{ db: string }> },
+) {
   const selfUser = await getAuth();
+  const method = (await params).db;
+
   if (request.headers.get("module") === "parlement") {
     const body = await request.json();
-    const method = context.params.db;
 
     try {
       const mod = await import("@/db/parlament");
@@ -52,8 +52,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
     );
   }
 
-  const gate = context.params.db;
-  if (apioptions.includes(gate as any) === false) {
+  if (apioptions.includes(method as any) === false) {
     return NextResponse.json(
       { error: "Invalid API endpoint" },
       { status: 400 },
@@ -66,10 +65,10 @@ export const GET = async (request: Request, context: { params: Params }) => {
   }
 
   const userPermissionsSet = new Set(user.permissions);
-  const gatePermissions = new Set(apireq[gate as apireqType].perm);
+  const gatePermissions = new Set(apireq[method as apireqType].perm);
 
   if (
-    apireq[gate as apireqType].perm != null &&
+    apireq[method as apireqType].perm != null &&
     !Array.from(gatePermissions).some((item) => userPermissionsSet.has(item))
   ) {
     return NextResponse.json(
@@ -80,7 +79,6 @@ export const GET = async (request: Request, context: { params: Params }) => {
     );
   }
 
-  // const bodyData = streamToString(request.body);
   let bodyData: string | Promise<string>;
   try {
     bodyData = JSON.parse(await request.text());
@@ -89,7 +87,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
   }
 
   try {
-    const data = await defaultApiReq(gate as apireqType, bodyData);
+    const data = await defaultApiReq(method as apireqType, bodyData);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -98,8 +96,18 @@ export const GET = async (request: Request, context: { params: Params }) => {
       { status: 500 },
     );
   }
-};
+}
 
-export const POST = async (request: Request, context: { params: Params }) => {
-  return await GET(request, context);
-};
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ db: string }> },
+) {
+  return await main(request, { params });
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ db: string }> },
+) {
+  return await main(request, { params });
+}

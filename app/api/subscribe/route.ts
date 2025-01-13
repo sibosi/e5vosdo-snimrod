@@ -11,7 +11,7 @@ webPush.setVapidDetails(
   privateVapidKey,
 );
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   const { value: subscription } = (await req.body?.getReader().read()) as {
     value: Uint8Array;
   };
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   });
 }
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   return NextResponse.json({
     message: "GET requests are not supported",
   });

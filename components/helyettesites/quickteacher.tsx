@@ -66,7 +66,7 @@ function getTeacherChangesByDate(changesByTeacher: TeacherChange[]) {
 export const QuickTeachers = ({
   isNewView = false,
 }: {
-  isNewView: boolean;
+  isNewView?: boolean;
 }) => {
   const [tableData, setTableData] = useState<TeacherChangesByDate>({});
   const [isLoaded, setIsLoaded] = useState(false);

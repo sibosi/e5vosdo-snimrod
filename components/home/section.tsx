@@ -60,6 +60,7 @@ export const Section = ({
     );
     if (newVersion !== undefined)
       setIsNewVersion(loadSectionStatus(title + "_new_version") ?? false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleDropdown = () => {

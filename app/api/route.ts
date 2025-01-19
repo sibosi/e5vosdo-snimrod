@@ -29,7 +29,7 @@ export interface TeacherChange {
 
 let cachedData: TeacherChange[] | null = null;
 let lastUpdated: number | null = null;
-const CACHE_DURATION = (3600 * 1000) / 2; // Cache duration in milliseconds (1 hour)
+const CACHE_DURATION = 15 * 60 * 1000; // Cache duration in milliseconds (15 minutes)
 
 async function update() {
   console.log("Updating the table...");

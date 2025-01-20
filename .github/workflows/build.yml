@@ -1,4 +1,4 @@
-name: Build on Push & Deploy on Master
+name: Build on Push
 
 on:
   push:
@@ -45,22 +45,3 @@ jobs:
 
       - name: Run build
         run: npm run build
-
-  deploy:
-    needs: build
-    if: github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Deploy to DigitalOcean
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd ~
-            bash update.sh

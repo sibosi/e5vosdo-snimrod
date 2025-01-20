@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS carousel (
     title VARCHAR(255) NOT NULL,
     description TEXT
 );
+--@block
 INSERT INTO carousel (uri, title, description)
 VALUES
 --    ('/events/osziszunet.jpg', 'Boldog őszi szünetet!', 'Találkozunk november 4-én!'),

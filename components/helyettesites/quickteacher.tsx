@@ -98,7 +98,7 @@ export const QuickTeachers = ({
   );
 
   const newViewLayout = (teacher: TeacherChange, rowIndex: number) => (
-    <DropdownTrigger>
+    <DropdownTrigger className="flex items-center gap-2">
       <div className="flex w-24 flex-col items-center justify-start rounded-lg bg-selfprimary-50">
         {teacher.photoUrl ? (
           <Image
@@ -149,68 +149,72 @@ export const QuickTeachers = ({
               }{" "}
               ({date.slice(5, 10).replace("-", "/")})
             </h5>
-            {tableData[date].map((teacher, rowIndex: number) => (
-              <Dropdown key={rowIndex} className="md: block">
-                {usedLayout(teacher, rowIndex)}
+            <div
+              className={isNewView ? "flex flex-wrap justify-around gap-4" : ""}
+            >
+              {tableData[date].map((teacher, rowIndex: number) => (
+                <Dropdown key={rowIndex} className="md:block">
+                  {usedLayout(teacher, rowIndex)}
 
-                <DropdownMenu
-                  aria-label="Static Actions"
-                  className="rounded-xl bg-selfprimary-bg"
-                >
-                  {teacher.changes?.map((event, eventIndex: number) => (
-                    <DropdownItem
-                      key={eventIndex}
-                      className="text-foreground"
-                      onPress={() => setSelectedEvent(event)}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Image
-                          className="h-10 w-10 rounded-full border-2 border-foreground-200 object-cover"
-                          width={40}
-                          height={40}
-                          src={event.replacementTeacherPhotoUrl}
-                          alt={event.replacementTeacher}
-                          unoptimized={true}
-                        />
-                        <div>
-                          <p>
-                            {"🕒 " +
-                              [
-                                "Vasárnap",
-                                "Hétfő",
-                                "Kedd",
-                                "Szerda",
-                                "Csütörtök",
-                                "Péntek",
-                                "Szombat",
-                              ][new Date(event.date).getDay()] +
-                              " " +
-                              event.hour +
-                              ". ó"}
-                            &nbsp;
-                            {" 📍" +
-                              (event.room.replace(" ", "").length !== 0
-                                ? event.room
-                                : "???")}{" "}
-                            &nbsp;
-                            {"  📔" + event.subject}
-                          </p>
-                          <p>
-                            {"   🧑🏼‍🏫 " +
-                              (event.replacementTeacher.replace(" ", "")
-                                .length !== 0
-                                ? event.replacementTeacher
-                                : "???")}{" "}
-                            &nbsp;
-                            {" 📝" + event.comment}
-                          </p>
+                  <DropdownMenu
+                    aria-label="Static Actions"
+                    className="rounded-xl bg-selfprimary-bg"
+                  >
+                    {teacher.changes?.map((event, eventIndex: number) => (
+                      <DropdownItem
+                        key={eventIndex}
+                        className="text-foreground"
+                        onPress={() => setSelectedEvent(event)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Image
+                            className="h-10 w-10 rounded-full border-2 border-foreground-200 object-cover"
+                            width={40}
+                            height={40}
+                            src={event.replacementTeacherPhotoUrl}
+                            alt={event.replacementTeacher}
+                            unoptimized={true}
+                          />
+                          <div>
+                            <p>
+                              {"🕒 " +
+                                [
+                                  "Vasárnap",
+                                  "Hétfő",
+                                  "Kedd",
+                                  "Szerda",
+                                  "Csütörtök",
+                                  "Péntek",
+                                  "Szombat",
+                                ][new Date(event.date).getDay()] +
+                                " " +
+                                event.hour +
+                                ". ó"}
+                              &nbsp;
+                              {" 📍" +
+                                (event.room.replace(" ", "").length !== 0
+                                  ? event.room
+                                  : "???")}{" "}
+                              &nbsp;
+                              {"  📔" + event.subject}
+                            </p>
+                            <p>
+                              {"   🧑🏼‍🏫 " +
+                                (event.replacementTeacher.replace(" ", "")
+                                  .length !== 0
+                                  ? event.replacementTeacher
+                                  : "???")}{" "}
+                              &nbsp;
+                              {" 📝" + event.comment}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
-            ))}
+                      </DropdownItem>
+                    ))}
+                  </DropdownMenu>
+                </Dropdown>
+              ))}
+            </div>
           </div>
         ))
       ) : (

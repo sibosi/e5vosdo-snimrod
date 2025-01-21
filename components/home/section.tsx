@@ -13,6 +13,8 @@ type SectionProps = {
   savable?: boolean;
   chip?: React.ReactNode;
   newVersion?: React.ReactNode;
+  oldVersionName?: string;
+  newVersionName?: string;
 };
 
 const loadSectionStatus = (name: string) => {
@@ -40,6 +42,8 @@ export const Section = ({
   savable = true,
   chip,
   newVersion,
+  oldVersionName = "Régi nézet",
+  newVersionName = "Új nézet",
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(defaultStatus != "closed");
   const [isNewVersion, setIsNewVersion] = useState(false);
@@ -126,7 +130,7 @@ export const Section = ({
                     : "border-1 bg-transparent text-selfprimary-500")
                 }
               >
-                Régi nézet
+                {oldVersionName}
               </Button>
               <Button
                 onPress={() => updateVersion(true)}
@@ -138,7 +142,7 @@ export const Section = ({
                     : "border-1 bg-transparent text-selfprimary-500")
                 }
               >
-                Új nézet
+                {newVersionName}
               </Button>
             </ButtonGroup>
           </span>

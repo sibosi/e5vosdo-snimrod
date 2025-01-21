@@ -72,6 +72,8 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus={siteConfig.pageSections["helyettesitesek"]}
           newVersion={<QuickTeachersDev />}
+          oldVersionName="Lista"
+          newVersionName="Rács"
         >
           <QuickTeachers />
         </Section>

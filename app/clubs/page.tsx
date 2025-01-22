@@ -1,7 +1,6 @@
 import { clubsConfig, clubsOrder } from "@/config/groups";
 import PopupCards from "@/components/popupcards";
 import { Alert } from "@/components/home/alert";
-import { Link } from "@nextui-org/react";
 
 function sortClubs() {
   const sortedClubs = new Set();

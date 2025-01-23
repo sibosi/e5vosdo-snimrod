@@ -35,7 +35,7 @@ type CardProps = {
   new?: boolean;
 };
 
-const iconSize = 20; // Icon size in pixels
+const iconSize = 20;
 const LinkTypeIcons = {
   github: <GithubIcon size={iconSize} />,
   instagram: <InstagramIcon size={iconSize} />,
@@ -75,20 +75,22 @@ const PopupCards = ({
         {cards.map((card, index) => (
           <div
             key={"CardList" + index}
-            className="card mb-2 h-auto w-40 border-1 border-selfprimary-200 bg-selfprimary-bg text-foreground shadow-md sm:w-60"
-            onClick={() =>
-              typeof card.details === "string" &&
-              showingCard === null &&
-              setShowingCard(card)
-            }
+            className="card mb-2 h-auto w-40 overflow-hidden border-1 border-selfprimary-200 bg-selfprimary-bg text-foreground shadow-md sm:w-60"
           >
             {typeof card.image === "string" && (
-              <figure className="h-unit-40 sm:h-unit-60 relative w-40 sm:w-60">
+              <button
+                type="button"
+                className="relative h-40 sm:h-60"
+                onClick={() =>
+                  typeof card.details === "string" &&
+                  showingCard === null &&
+                  setShowingCard(card)
+                }
+              >
                 <Image
                   fill={true}
-                  sizes="100vw"
-                  className="h-auto rounded-md object-contain"
-                  src={card.image} // Ensure image is always a string here
+                  className="rounded-md object-contain"
+                  src={card.image}
                   alt="image"
                   priority={true}
                 />
@@ -97,7 +99,7 @@ const PopupCards = ({
                     Új
                   </Chip>
                 )}
-              </figure>
+              </button>
             )}
 
             <div className="card-body flex p-2">
@@ -114,7 +116,6 @@ const PopupCards = ({
                   >
                     {card.links.map(
                       (link, index) =>
-                        // If there is multiple links with the same type show only once the icon
                         card.links &&
                         (card.links?.filter((l) => l.type === link.type)
                           .length === 1 ||
@@ -122,17 +123,18 @@ const PopupCards = ({
                             card.links?.filter(
                               (l) => l.type === link.type,
                             )[0]) && (
-                          <div
+                          <button
+                            type="button"
                             key={"CardLink" + index}
                             onClick={(e) => {
                               e.stopPropagation();
-                              openedLink === link
-                                ? setOpenedLink(null)
-                                : card.links?.filter(
-                                      (l) => l.type === link.type,
-                                    ).length === 1
-                                  ? navigateToLink(link)
-                                  : setOpenedLink(link);
+                              if (openedLink === link) setOpenedLink(null);
+                              else if (
+                                card.links?.filter((l) => l.type === link.type)
+                                  .length === 1
+                              )
+                                navigateToLink(link);
+                              else setOpenedLink(link);
                             }}
                             className={
                               "w-full justify-center self-center rounded-t-lg py-1 text-center " +
@@ -148,7 +150,7 @@ const PopupCards = ({
                                   ]
                                 : link.title}
                             </p>
-                          </div>
+                          </button>
                         ),
                     )}
                   </div>
@@ -165,13 +167,14 @@ const PopupCards = ({
                       {card.links.map(
                         (link, index) =>
                           link.type == openedLink?.type && (
-                            <p
+                            <button
+                              type="button"
                               key={"CardLink" + index}
                               className="m-auto my-1 max-w-fit cursor-pointer rounded-lg bg-selfprimary-200 p-1"
                               onClick={() => navigateToLink(link)}
                             >
                               {link.title}
-                            </p>
+                            </button>
                           ),
                       )}
                     </div>

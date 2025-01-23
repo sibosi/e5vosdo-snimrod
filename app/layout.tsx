@@ -11,12 +11,14 @@ import { auth } from "@/auth";
 import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
-import { getAuth, getPageSettings, updateUser, User } from "@/db/dbreq";
+import { getAuth, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/cookie";
 import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
 import PushManager from "@/components/PWA/push";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {
@@ -51,8 +53,6 @@ export default async function RootLayout({
     console.log(e);
   }
   const selfUser = await getAuth(session?.user?.email ?? undefined);
-
-  const pageSettings = await getPageSettings();
   if (session?.user?.email) console.log("New user: " + session.user.email);
 
   return (
@@ -138,11 +138,7 @@ export default async function RootLayout({
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">
-            <Navbar
-              selfUser={selfUser}
-              isActiveHeadSpace={pageSettings.headspace === 1}
-              className="bg-selfprimary-bg"
-            />
+            <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
 
             <Cookie />
             <Alerts />

@@ -13,6 +13,8 @@ type SectionProps = {
   savable?: boolean;
   chip?: React.ReactNode;
   newVersion?: React.ReactNode;
+  oldVersionName?: string;
+  newVersionName?: string;
 };
 
 const loadSectionStatus = (name: string) => {
@@ -40,38 +42,34 @@ export const Section = ({
   savable = true,
   chip,
   newVersion,
+  oldVersionName = "Régi nézet",
+  newVersionName = "Új nézet",
 }: SectionProps) => {
-  const [isOpen, setIsOpen] = useState(
-    defaultStatus == "closed" ? false : true,
-  );
+  const [isOpen, setIsOpen] = useState(defaultStatus != "closed");
   const [isNewVersion, setIsNewVersion] = useState(false);
 
   const updateVersion = (isNewVersion: boolean) => {
     setIsNewVersion(isNewVersion);
-    if (newVersion !== undefined) {
+    if (newVersion !== undefined)
       localStorage.setItem(
         "section_" + title + "_new_version",
         isNewVersion.toString(),
       );
-    }
   };
 
   useEffect(() => {
     setIsOpen(
       (savable ? loadSectionStatus(title) : undefined) ??
-        (defaultStatus == "closed" ? false : true),
+        defaultStatus != "closed",
     );
-    if (newVersion !== undefined) {
+    if (newVersion !== undefined)
       setIsNewVersion(loadSectionStatus(title + "_new_version") ?? false);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleDropdown = () => {
-    if (dropdownable) {
-      if (savable) setSectionStatus(title, !isOpen);
-      setIsOpen(!isOpen);
-    }
+    if (dropdownable) if (savable) setSectionStatus(title, !isOpen);
+    setIsOpen(!isOpen);
   };
 
   return (
@@ -132,7 +130,7 @@ export const Section = ({
                     : "border-1 bg-transparent text-selfprimary-500")
                 }
               >
-                Régi nézet
+                {oldVersionName}
               </Button>
               <Button
                 onPress={() => updateVersion(true)}
@@ -144,7 +142,7 @@ export const Section = ({
                     : "border-1 bg-transparent text-selfprimary-500")
                 }
               >
-                Új nézet
+                {newVersionName}
               </Button>
             </ButtonGroup>
           </span>

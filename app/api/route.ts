@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import cheerio from "cheerio";
+import { load } from "cheerio";
 const iconv = require("iconv-lite");
 import teacherDataByNames from "@/public/storage/teacherDataByNames.json";
 import teacherName from "./teacherName";
@@ -13,6 +13,7 @@ export interface Change {
   group: string;
   subject: string;
   replacementTeacher: string;
+  replacementTeacherPhotoUrl: string;
   comment: string;
   day: string;
   hour: string;
@@ -28,14 +29,14 @@ export interface TeacherChange {
 
 let cachedData: TeacherChange[] | null = null;
 let lastUpdated: number | null = null;
-const CACHE_DURATION = (3600 * 1000) / 2; // Cache duration in milliseconds (1 hour)
+const CACHE_DURATION = 15 * 60 * 1000; // Cache duration in milliseconds (15 minutes)
 
 async function update() {
   console.log("Updating the table...");
   console.log(new Date().toISOString());
 
-  const TEACHER_AVATAR =
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcOsfFbgyCMm_frzL_cdUQfSjOJD1RSWhHFKKUKZWhaQ&s";
+  const TEACHER_AVATAR = "/question-mark.svg";
+  // https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcOsfFbgyCMm_frzL_cdUQfSjOJD1RSWhHFKKUKZWhaQ&s
 
   const url = "https://suli.ejg.hu/intranet/helyettes/refresh.php";
 
@@ -43,7 +44,7 @@ async function update() {
     const response = await axios.get(url, { responseType: "arraybuffer" });
     const html_content = iconv.decode(response.data, "iso-8859-1");
 
-    const $ = cheerio.load(html_content);
+    const $ = load(html_content);
 
     const data: any[][] = [];
     $("tr").each((i, row) => {
@@ -133,7 +134,10 @@ async function update() {
         const hourRoom = event[2];
         const group = event[3];
         const subject = event[4];
-        const replacementTeacher = event[5];
+        const replacementTeacher = event[5].trimEnd();
+        const replacementTeacherPhotoUrl =
+          teacherByName[teacherName(replacementTeacher)]?.Photo ||
+          TEACHER_AVATAR;
         const comment = event[6];
         const day = event[7];
         const hour = event[8];
@@ -146,6 +150,7 @@ async function update() {
           group,
           subject,
           replacementTeacher,
+          replacementTeacherPhotoUrl,
           comment,
           day,
           hour,

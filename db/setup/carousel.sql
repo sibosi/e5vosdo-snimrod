@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS carousel (
     title VARCHAR(255) NOT NULL,
     description TEXT
 );
+--@block
 INSERT INTO carousel (uri, title, description)
 VALUES
     ('/groups/kosar.jpeg', "Eötvös - Fazekas meccs", "Kedves Eötvös Diákok!\n\nJövő hét pénteken, január 10-én, 15:30-tól egy izgalmas kosárlabdamérkőzésre kerül sor, ahol az E5vös Basketball Team csap össze a Fazekas csapatával a nagy tesiteremben.\nHozd magaddal a barátaidat, és töltsük meg a lelátót hangos szurkolással! Tegyük emlékezetessé ezt a délutánt, és mutassuk meg, hogy mi vagyunk a legösszetartóbb közösség!\n\nA meccs alatt popcornt fogunk osztani, már csak ezért is érdemes eljönni!\n\n📅 Időpont:\n\n2025. január 10., péntek\n\n15:30-tól 16:30-ig\n\n📍 Helyszín:\nNagy tesiterem\n\n\nÜdvözlettel,\n\nDÖ és E5vös Basketball Team");

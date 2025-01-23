@@ -73,14 +73,12 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus={siteConfig.pageSections["helyettesitesek"]}
           newVersion={<QuickTeachersDev />}
+          oldVersionName="Lista"
+          newVersionName="Rács"
         >
           <QuickTeachers />
         </Section>
       )}
-
-      <Section title="Millió Lépés" dropdownable={true} defaultStatus="closed">
-        <MillioLepes />
-      </Section>
 
       {siteConfig.pageSections["menza"] != "hidden" && (
         <Section

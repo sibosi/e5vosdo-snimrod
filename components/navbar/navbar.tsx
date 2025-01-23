@@ -13,21 +13,22 @@ import clsx from "clsx";
 import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
-import { PossibleUserType } from "@/db/dbreq";
+import { getPageSettings, PossibleUserType } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
 import HelloMessage from "../home/helloMessage";
 import { Chip } from "@nextui-org/react";
 import ChangingComponent from "./changingComponent";
+import { headers } from "next/headers";
 
-export const Navbar = ({
+export const Navbar = async ({
   selfUser,
-  isActiveHeadSpace,
   className,
 }: {
   selfUser: PossibleUserType;
-  isActiveHeadSpace: boolean;
   className?: string;
 }) => {
+  const _ = headers();
+  const isActiveHeadSpace = (await getPageSettings()).headspace === 1;
   const phoneView = (
     <NextUINavbar
       maxWidth="xl"
@@ -36,7 +37,7 @@ export const Navbar = ({
     >
       <NavbarContent className="flex" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
-          <GetApp size={isActiveHeadSpace ? "small" : "small"} />
+          <GetApp size="small" />
         </NavbarBrand>
       </NavbarContent>
 
@@ -46,18 +47,21 @@ export const Navbar = ({
             <HelloMessage selfUser={selfUser} size="sm" padding={false} />
           }
           endComponent={
-            <NextLink
-              className="flex items-center justify-start gap-1"
-              href="/"
-            >
-              <Logo />
-              <h1 className="p-2 text-3xl font-bold text-foreground">
-                E5vös&nbsp;DÖ
-              </h1>
-            </NextLink>
+            isActiveHeadSpace ? (
+              <LiveScore />
+            ) : (
+              <NextLink
+                className="flex items-center justify-start gap-1"
+                href="/"
+              >
+                <Logo />
+                <h1 className="p-2 text-3xl font-bold text-foreground">
+                  E5vös&nbsp;DÖ
+                </h1>
+              </NextLink>
+            )
           }
         />
-        <LiveScore />
       </NavbarContent>
 
       <NavbarContent className="gap-2" justify="end">

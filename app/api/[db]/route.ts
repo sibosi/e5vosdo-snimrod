@@ -19,7 +19,7 @@ async function main(
     const body = await request.json();
 
     try {
-      const mod = await modules[requestedModule as keyof typeof modules];
+      const mod = await import("@/db/parlament");
 
       if (typeof (mod as { [key: string]: any })[method] === "function") {
         console.log("body:", body);
@@ -37,9 +37,9 @@ async function main(
         );
       }
     } catch (error) {
-      console.error(`Error in ${requestedModule} module: ${error}`);
+      console.error("Error in parlement module:", error);
       return NextResponse.json(
-        { error: `Failed to process request in ${requestedModule} module` },
+        { error: "Failed to process request in parlement module" },
         { status: 500 },
       );
     }

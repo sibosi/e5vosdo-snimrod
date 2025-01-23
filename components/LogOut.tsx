@@ -17,7 +17,7 @@ export const LogoutButton = ({ className, size }: LogoutProps) => {
         name="action"
         value="google"
         size={size ? size : "sm"}
-        onClick={resetCache}
+        onPress={resetCache}
         className={"rounded-badge fill-selfprimary " + className}
       >
         Kijelentkezés

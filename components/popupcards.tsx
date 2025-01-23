@@ -83,7 +83,7 @@ const PopupCards = ({
             }
           >
             {typeof card.image === "string" && (
-              <figure className="relative h-unit-40 w-40 sm:h-unit-60 sm:w-60">
+              <figure className="h-unit-40 sm:h-unit-60 relative w-40 sm:w-60">
                 <Image
                   fill={true}
                   sizes="100vw"
@@ -219,7 +219,7 @@ const PopupCards = ({
           <ModalFooter>
             <Button
               className="bg-selfprimary-300"
-              onClick={() => setShowingCard(null)}
+              onPress={() => setShowingCard(null)}
             >
               Ok
             </Button>

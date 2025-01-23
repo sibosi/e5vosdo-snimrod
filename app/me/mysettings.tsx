@@ -524,7 +524,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           <ThemeTemplateSecondary />
 
           <Button
-            onClick={() => {
+            onPress={() => {
               localStorage.setItem(
                 "materialBg",
                 isMaterialBg ? "false" : "true",
@@ -569,7 +569,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             <VersionManager />
             <Button
               color="warning"
-              onClick={() => {
+              onPress={() => {
                 caches.keys().then((keys) => {
                   keys.forEach((key) => {
                     caches.delete(key);
@@ -601,7 +601,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           }
         >
           <Button
-            onClick={() => {
+            onPress={() => {
               EJG_code !== selfUserPromise.EJG_code
                 ? setSureQuestion(true)
                 : save();
@@ -650,7 +650,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           <div className="grid grid-cols-2 gap-2 pt-2">
             <Button
               color="danger"
-              onClick={() => {
+              onPress={() => {
                 setSureQuestion(false);
               }}
             >
@@ -658,7 +658,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
             </Button>
             <Button
               color="success"
-              onClick={() => {
+              onPress={() => {
                 setSureQuestion(false);
                 save();
               }}

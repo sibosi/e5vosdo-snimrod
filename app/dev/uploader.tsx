@@ -72,7 +72,7 @@ export default function FileUploader() {
         </DropdownMenu>
       </Dropdown>
 
-      <Button onClick={handleUpload}>Upload File</Button>
+      <Button onPress={handleUpload}>Upload File</Button>
     </div>
   );
 }

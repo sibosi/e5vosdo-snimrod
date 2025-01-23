@@ -47,7 +47,7 @@ const SeeSignupers = () => {
         </ul>
         <div>
           <Button
-            onClick={async () =>
+            onPress={async () =>
               setPresentations(await fetchPresentationsByIds(my_ids))
             }
           >
@@ -69,7 +69,7 @@ const SeeSignupers = () => {
         onChange={(e) => setPresentation_id(Number(e.target.value))}
       />
       <Button
-        onClick={async () =>
+        onPress={async () =>
           setSignupers(await fetchSignupers(presentation_id))
         }
       >

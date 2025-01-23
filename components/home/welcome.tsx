@@ -63,7 +63,7 @@ const Welcome = () => {
         </p>
         <Button
           className="mr-2 mt-4 bg-selfprimary-100"
-          onClick={() => {
+          onPress={() => {
             localStorage.setItem("welcome", "false");
             reinstallServiceWorker();
             window.location.reload();
@@ -73,7 +73,7 @@ const Welcome = () => {
         </Button>
         <Button
           className="mt-4 bg-selfprimary-100"
-          onClick={() => {
+          onPress={() => {
             localStorage.setItem("welcome", "false");
             reinstallServiceWorker();
             window.location.reload();

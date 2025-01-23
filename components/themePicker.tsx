@@ -119,7 +119,7 @@ export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
           onChange={(e) => setColorHue(Number(e.target.value))}
         />
         <Button
-          onClick={updateColors}
+          onPress={updateColors}
           style={{ backgroundColor: `hsl(${colorHue}, 100%, 50%)` }}
         >
           Apply Colors
@@ -197,7 +197,7 @@ export const ThemeTemplate = ({
           color={color}
           size="sm"
           className="my-auto ml-2"
-          onClick={() => {
+          onPress={() => {
             localStorage.removeItem(`${color}Hue`);
             location.reload();
           }}

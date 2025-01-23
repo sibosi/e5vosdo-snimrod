@@ -130,7 +130,7 @@ export const QuickTeachers = () => {
                         <DropdownItem
                           key={eventIndex}
                           className="text-foreground"
-                          onClick={() => setSelectedEvent(event)}
+                          onPress={() => setSelectedEvent(event)}
                         >
                           <p>
                             {"🕒 " +
@@ -311,7 +311,7 @@ export const QuickTeachersDev = () => {
                             <DropdownItem
                               key={eventIndex}
                               className="text-foreground"
-                              onClick={() => setSelectedEvent(event)}
+                              onPress={() => setSelectedEvent(event)}
                             >
                               <p>
                                 {"🕒 " +

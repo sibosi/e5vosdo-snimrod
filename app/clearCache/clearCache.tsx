@@ -18,7 +18,7 @@ const ClearCache = () => {
       <ul>{cacheNames?.map((name) => <li key={name}>{name}</li>)}</ul>
       {cacheNames?.length === 0 && <p>Nincs elérhető gyorsítótár.</p>}
       <Button
-        onClick={() => {
+        onPress={() => {
           window.location.href = "/";
         }}
       >

@@ -30,7 +30,7 @@ export const ServiceWorkerDetails = () => {
         <p>{JSON.stringify(subscription)}</p>
 
         <Button
-          onClick={() => {
+          onPress={() => {
             navigator.clipboard.writeText(JSON.stringify(subscription));
           }}
         >
@@ -188,7 +188,7 @@ export const ReinstallServiceWorker = ({
   return (
     <Button
       color={color ?? (isServiceWorkerRegistered ? "success" : "danger")}
-      onClick={async () => {
+      onPress={async () => {
         await deleteServiceWorker();
         await registerServiceWorker();
         location.reload();

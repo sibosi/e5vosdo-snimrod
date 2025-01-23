@@ -19,7 +19,7 @@ const VersionManager = () => {
     <div>
       <Button
         color={needUpdate?.updateRequired ? "danger" : "default"}
-        onClick={async () => {
+        onPress={async () => {
           if (needUpdate?.updateRequired) {
             await updateVersion();
             window.location.reload();

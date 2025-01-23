@@ -96,7 +96,7 @@ export const LineChartLogin1h = ({
   return (
     <div>
       <Button
-        onClick={() => setUniquePerMinute(!uniquePerMinute)}
+        onPress={() => setUniquePerMinute(!uniquePerMinute)}
         className="mb-4 px-4 py-2"
       >
         {uniquePerMinute

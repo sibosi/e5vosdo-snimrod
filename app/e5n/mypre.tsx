@@ -85,7 +85,7 @@ const MyPre = ({ selfUser }: { selfUser: UserType }) => {
                   <p className="m-1">{pre.description}</p>
                   {(selfUser.permissions.includes("organiser") ||
                     teachers.includes(selfUser.email)) && (
-                    <Button onClick={() => fetchSignupers(pre.id)}>
+                    <Button onPress={() => fetchSignupers(pre.id)}>
                       Jelentkezők lekérése
                     </Button>
                   )}
@@ -94,36 +94,36 @@ const MyPre = ({ selfUser }: { selfUser: UserType }) => {
         </div>
       </div>
       <h1>Saját előadások</h1>
-      <Button onClick={getMyPre}>Előadásaim lekérése</Button>
+      <Button onPress={getMyPre}>Előadásaim lekérése</Button>
       <div>
         <ButtonGroup className="flex flex-wrap">
           <Button
             className={selectedSlot === 11 ? "bg-primary-500" : ""}
-            onClick={() => setSelectedSlot(11)}
+            onPress={() => setSelectedSlot(11)}
           >
             Csütörtök 1. sáv
           </Button>
           <Button
             className={selectedSlot === 12 ? "bg-primary-500" : ""}
-            onClick={() => setSelectedSlot(12)}
+            onPress={() => setSelectedSlot(12)}
           >
             Csütörtök 2. sáv
           </Button>
           <Button
             className={selectedSlot === 21 ? "bg-primary-500" : ""}
-            onClick={() => setSelectedSlot(21)}
+            onPress={() => setSelectedSlot(21)}
           >
             Péntek 1. sáv
           </Button>
           <Button
             className={selectedSlot === 22 ? "bg-primary-500" : ""}
-            onClick={() => setSelectedSlot(22)}
+            onPress={() => setSelectedSlot(22)}
           >
             Péntek 2. sáv
           </Button>
           <Button
             className={selectedSlot === 23 ? "bg-primary-500" : ""}
-            onClick={() => setSelectedSlot(23)}
+            onPress={() => setSelectedSlot(23)}
           >
             Péntek 3. sáv
           </Button>
@@ -165,7 +165,7 @@ const MyPre = ({ selfUser }: { selfUser: UserType }) => {
                     )}
                     {(selfUser.permissions.includes("organiser") ||
                       teachers.includes(selfUser.email)) && (
-                      <Button onClick={() => fetchSignupers(preId)}>
+                      <Button onPress={() => fetchSignupers(preId)}>
                         Jelentkezők lekérése
                       </Button>
                     )}

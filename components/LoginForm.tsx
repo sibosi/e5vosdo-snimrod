@@ -13,7 +13,7 @@ const Login = () => {
         name="action"
         value="google"
         size="sm"
-        onClick={resetCache}
+        onPress={resetCache}
         className="w-full rounded-badge bg-selfprimary-300"
       >
         Bejelentkezés

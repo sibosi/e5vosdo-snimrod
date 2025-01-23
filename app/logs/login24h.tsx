@@ -93,7 +93,7 @@ export const LineChartLogin24 = ({ logs }: { logs: Log[] }) => {
   return (
     <div>
       <Button
-        onClick={() => setUniquePerHour(!uniquePerHour)}
+        onPress={() => setUniquePerHour(!uniquePerHour)}
         className="mb-4 fill-selfprimary px-4 py-2"
       >
         {uniquePerHour

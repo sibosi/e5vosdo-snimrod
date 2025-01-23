@@ -58,7 +58,7 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
     return (
       <div className="flex flex-col justify-center rounded-lg bg-selfprimary-50">
         <Button
-          onClick={() => setSelectedImage(null)}
+          onPress={() => setSelectedImage(null)}
           className="bg-selfprimary-300"
         >
           Másik kép kiválasztása
@@ -81,7 +81,7 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
     <>
       <div className="flex h-24 justify-center rounded-lg bg-selfprimary-50">
         <Button
-          onClick={() => setSelectedImage(null)}
+          onPress={() => setSelectedImage(null)}
           className="bg-selfprimary-300"
         >
           Kép kiválasztása

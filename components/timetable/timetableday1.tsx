@@ -508,7 +508,7 @@ function TimetableDay({ selfUser }: { readonly selfUser: UserType }) {
 
             <Button
               className={showSettings ? "bg-selfsecondary-400" : "bg-default"}
-              onClick={() => setShowSettings(!showSettings)}
+              onPress={() => setShowSettings(!showSettings)}
             >
               <FilterIcon />
             </Button>
@@ -571,7 +571,7 @@ function TimetableDay({ selfUser }: { readonly selfUser: UserType }) {
             </Dropdown>
 
             <Button
-              onClick={() => {
+              onPress={() => {
                 hideLessons([], [], [], setHiddenLessons);
               }}
             >
@@ -884,7 +884,7 @@ function TimetableDay({ selfUser }: { readonly selfUser: UserType }) {
                 <div className="pt-2">
                   <Button
                     className="fill-selfprimary"
-                    onClick={() => {
+                    onPress={() => {
                       setSelectedLesson(undefined);
                     }}
                   >

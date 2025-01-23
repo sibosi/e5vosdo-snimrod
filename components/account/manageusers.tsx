@@ -140,7 +140,7 @@ const ManageUsers = ({
               <Button
                 size="sm"
                 color="default"
-                onClick={() => {
+                onPress={() => {
                   setSelectedUser(user);
                   setSelectedUserLogs([]);
                 }}
@@ -164,7 +164,7 @@ const ManageUsers = ({
                     key={permission + " enable"}
                     size="sm"
                     color="success"
-                    onClick={() => removeUserPermission(user.email, permission)}
+                    onPress={() => removeUserPermission(user.email, permission)}
                   >
                     {permission}
                   </Button>
@@ -173,7 +173,7 @@ const ManageUsers = ({
                     key={permission + " disable"}
                     size="sm"
                     color="default"
-                    onClick={() => addUserPermission(user.email, permission)}
+                    onPress={() => addUserPermission(user.email, permission)}
                   >
                     {permission}
                   </Button>
@@ -294,7 +294,7 @@ const ManageUsers = ({
                 <h3>Get users logs</h3>
 
                 <Button
-                  onClick={() => {
+                  onPress={() => {
                     fetch("api/getUserLogs", {
                       method: "POST",
                       headers: {
@@ -331,7 +331,7 @@ const ManageUsers = ({
                     placeholder="Permission"
                   />
                   <Button
-                    onClick={() => {
+                    onPress={() => {
                       addUserPermission(selectedUser?.email, newPermission);
                       setNewPermission("");
                     }}
@@ -363,7 +363,7 @@ const ManageUsers = ({
                     placeholder="Ticket"
                   />
                   <Button
-                    onClick={() => {
+                    onPress={() => {
                       addTicket(selectedUser?.email, newTicket);
                       setNewTicket("");
                     }}
@@ -379,7 +379,7 @@ const ManageUsers = ({
                       color="success"
                       className="m-1"
                       size="sm"
-                      onClick={() => deleteTicket(selectedUser?.email, ticket)}
+                      onPress={() => deleteTicket(selectedUser?.email, ticket)}
                     >
                       {ticket}
                     </Button>
@@ -387,7 +387,7 @@ const ManageUsers = ({
                 </div>
               </div>
               <Button
-                onClick={() => setSelectedUser(null)}
+                onPress={() => setSelectedUser(null)}
                 className="ml-auto mt-2 flex fill-selfprimary"
               >
                 Rendben

@@ -111,7 +111,7 @@ const PageSettings = () => {
             <Button
               size="lg"
               className="w-full"
-              onClick={() =>
+              onPress={() =>
                 setNewSettings({
                   ...newSettings,
                   headspace: newSettings.headspace ? 0 : 1,
@@ -140,7 +140,7 @@ const PageSettings = () => {
 
           <Button
             size="sm"
-            onClick={() => {
+            onPress={() => {
               editPageSettings(newSettings);
               setSettings(newSettings);
             }}
@@ -197,7 +197,7 @@ const PageSettings = () => {
                 ? "bg-selfprimary-300"
                 : "bg-selfsecondary-200"
             }
-            onClick={() => {
+            onPress={() => {
               updateMatch(newMatch).then((data) => {
                 if (data.status === 200) {
                   setNewMatch({} as Match);
@@ -228,7 +228,7 @@ const PageSettings = () => {
               <Button
                 size="lg"
                 className="w-14 bg-selfsecondary-200 p-0"
-                onClick={() =>
+                onPress={() =>
                   setNewMatch({
                     ...newMatch,
                     score1: (newMatch?.score1 || 0) + 1,
@@ -255,7 +255,7 @@ const PageSettings = () => {
               <Button
                 size="lg"
                 className="w-14 bg-selfsecondary-200 p-0"
-                onClick={() =>
+                onPress={() =>
                   setNewMatch({
                     ...newMatch,
                     score2: (newMatch?.score2 || 0) + 1,
@@ -326,7 +326,7 @@ const PageSettings = () => {
           <ButtonGroup>
             <Button
               size="sm"
-              onClick={() => setNewMatch({ ...newMatch, status: "Upcoming" })}
+              onPress={() => setNewMatch({ ...newMatch, status: "Upcoming" })}
               className={
                 newMatch?.status === "Upcoming" ? "bg-selfsecondary-200" : ""
               }
@@ -335,7 +335,7 @@ const PageSettings = () => {
             </Button>
             <Button
               size="sm"
-              onClick={() => setNewMatch({ ...newMatch, status: "Live" })}
+              onPress={() => setNewMatch({ ...newMatch, status: "Live" })}
               className={
                 newMatch?.status === "Live" ? "bg-selfsecondary-200" : ""
               }
@@ -344,7 +344,7 @@ const PageSettings = () => {
             </Button>
             <Button
               size="sm"
-              onClick={() => setNewMatch({ ...newMatch, status: "Finished" })}
+              onPress={() => setNewMatch({ ...newMatch, status: "Finished" })}
               className={
                 newMatch?.status === "Finished" ? "bg-selfsecondary-200" : ""
               }

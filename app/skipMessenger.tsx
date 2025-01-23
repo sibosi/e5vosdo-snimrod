@@ -22,7 +22,7 @@ export function checkMessengerBrowser() {
 export const CopyUrlButton = ({ props }: { props: any }) => {
   return (
     <Button
-      onClick={() => {
+      onPress={() => {
         navigator.clipboard.writeText(siteConfig.links.home);
         redirect(window.location.href);
       }}
@@ -44,7 +44,7 @@ export const RedirectUrlButton = ({
 }) => {
   return (
     <Button
-      onClick={() => {
+      onPress={() => {
         redirect(url);
       }}
       {...props}
@@ -66,7 +66,7 @@ export const SkipMessengerModal = ({ isOpen }: { isOpen: boolean }) => {
         </p>
         <p className="tegt-xl font-bold text-selfprimary">info.e5vosdo.hu</p>
         <Button
-          onClick={() => {
+          onPress={() => {
             navigator.clipboard.writeText("info.e5vosdo.hu");
             redirect(window.location.href);
           }}
@@ -100,7 +100,7 @@ const SkipMessenger: React.FC = () => {
               info.e5vosdo.hu
             </p>
             <Button
-              onClick={() => {
+              onPress={() => {
                 navigator.clipboard.writeText("info.e5vosdo.hu");
                 redirect(window.location.href);
               }}

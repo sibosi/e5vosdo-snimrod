@@ -89,7 +89,7 @@ export const Section = ({
         >
           {dropdownable && (
             <Link
-              onClick={toggleDropdown}
+              onPress={toggleDropdown}
               className="my-auto max-w-fit text-selfprimary"
             >
               <svg
@@ -123,7 +123,7 @@ export const Section = ({
           <span className="ml-auto pl-2 text-xs text-red-500">
             <ButtonGroup>
               <Button
-                onClick={() => updateVersion(false)}
+                onPress={() => updateVersion(false)}
                 size="sm"
                 className={
                   "border-selfprimary-100 " +
@@ -135,7 +135,7 @@ export const Section = ({
                 Régi nézet
               </Button>
               <Button
-                onClick={() => updateVersion(true)}
+                onPress={() => updateVersion(true)}
                 size="sm"
                 className={
                   "border-selfprimary-100 " +

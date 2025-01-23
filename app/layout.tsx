@@ -8,27 +8,15 @@ import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { auth } from "@/auth";
-import Access from "@/components/account/access";
 import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
-import {
-  getAuth,
-  getPageSettings,
-  getStudentUsersEmail,
-  updateUser,
-  User,
-} from "@/db/dbreq";
-import dynamic from "next/dynamic";
+import { getAuth, getPageSettings, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/cookie";
-import OGURL from "./ogurl";
 import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
-import Footer from "@/components/footer";
-const PushManager = dynamic(() => import("../components/PWA/push"), {
-  ssr: false,
-});
+import PushManager from "@/components/PWA/push";
 
 export const metadata: Metadata = {
   title: {
@@ -146,7 +134,6 @@ export default async function RootLayout({
           `}
         </Script>
         <LoadCacheMethod />
-        <OGURL isFakeAuth={process.env.FAKE_AUTH === "true"} />
         <ServiceWorker />
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>

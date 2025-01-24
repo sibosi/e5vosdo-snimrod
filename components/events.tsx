@@ -5,8 +5,7 @@ import { useState, useEffect } from "react";
 import { EventType } from "@/db/event";
 
 export const Events = ({ all = false }: { all?: boolean }) => {
-  let noneEvent = false;
-  const [events, setEvents] = useState<EventType[]>([]);
+  const [events, setEvents] = useState<EventType[]>();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -24,7 +23,6 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
   const checkVisibility = (event: EventType) => {
     if (all) return true;
-    console.log(new Date(event.hide_time) < new Date());
     if (new Date(event.hide_time) < new Date()) return false;
     if (event.show_time == undefined) return true;
     if (
@@ -37,12 +35,10 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
   return (
     <div className="grid grid-cols-1 items-start gap-2 border-b-8 border-transparent pb-5 text-left md:grid-cols-2 lg:grid-cols-3">
-      {events.map((event, index) =>
+      {events?.map((event) =>
         checkVisibility(event) ? (
-          <div key={index + 100} className="pb-4">
-            {(noneEvent = true)}
+          <div key={`event-${event.id}`} className="pb-4">
             <SideCard
-              key={index}
               title={
                 typeof event.title === "object"
                   ? event.title.join(" ")
@@ -58,7 +54,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
               <div className="flex gap-2">
                 {event.show_time ? (
                   <Chip
-                    key={"day of week"}
+                    key={`day-of-week-${event.id}`}
                     size="sm"
                     className="bg-selfsecondary-200"
                   >
@@ -68,9 +64,9 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                   </Chip>
                 ) : null}
                 {event.tags != undefined
-                  ? event.tags.map((tag, index) => (
+                  ? event.tags.map((tag, tagIndex) => (
                       <Chip
-                        key={tag + "" + index}
+                        key={`tag-${event.id}-${tagIndex}`}
                         className="bg-selfprimary-200"
                         size="sm"
                       >
@@ -91,11 +87,9 @@ export const Events = ({ all = false }: { all?: boolean }) => {
               </div>
             </SideCard>
           </div>
-        ) : (
-          <></>
-        ),
+        ) : null,
       )}
-      {!noneEvent ? <p>Nincs esemény</p> : null}
+      {events?.length == 0 ? <p>Nincs esemény</p> : null}
     </div>
   );
 };

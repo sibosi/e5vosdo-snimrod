@@ -17,12 +17,12 @@ const modules = {
   event: import("@/db/event"),
 };
 
-export const GET = async (request: Request, context: { params: Params }) => {
+export const GET = async (request: Request, context: { params: Promise<Params> }) => {
   const selfUser = await getAuth();
   const requestedModule = request.headers.get("module") ?? "";
   if (Object.keys(modules).includes(requestedModule)) {
     const body = request.method === "POST" ? await request.json() : {};
-    const method = context.params.db;
+    const method = (await context.params).db;
 
     try {
       const mod = await modules[requestedModule as keyof typeof modules];
@@ -58,7 +58,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
     );
   }
 
-  const gate = context.params.db;
+  const gate = (await context.params).db;
   if (apioptions.includes(gate as any) === false) {
     return NextResponse.json(
       { error: "Invalid API endpoint" },
@@ -106,6 +106,7 @@ export const GET = async (request: Request, context: { params: Params }) => {
   }
 };
 
-export const POST = async (request: Request, context: { params: Params }) => {
-  return await GET(request, context);
+export const POST = async (request: Request, context: { params: Promise<Params> }) => {
+  return await GET(request, /* @next-codemod-error 'context' is passed as an argument. Any asynchronous properties of 'props' must be awaited when accessed. */
+  context);
 };

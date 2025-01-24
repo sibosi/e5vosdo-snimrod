@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "@/db/dbreq";
-import uploadImage from "@/db/uploadToSupabase";
+import { uploadImage } from "@/db/supabaseStorage";
 
 export async function POST(req: NextRequest) {
   const selfUser = await getAuth();
@@ -28,8 +28,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const response = uploadImage(file, "uploads", `${directory}/${file.name}`);
-    return NextResponse.json(response, { status: 200 });
+    return uploadImage(file, "uploads", directory);
   } catch (error) {
     console.error("Error while uploading file:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });

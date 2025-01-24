@@ -37,6 +37,10 @@ const nextConfig = {
         hostname: "encrypted-tbn0.gstatic.com",
         protocol: "https",
       },
+      {
+        hostname: process.env.NEXT_PUBLIC_SUPABASE_URL.replace("https://", ""),
+        protocol: "https",
+      },
     ],
   },
   typescript: {

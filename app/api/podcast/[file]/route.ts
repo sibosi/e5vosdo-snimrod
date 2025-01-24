@@ -63,5 +63,5 @@ export const POST = async (
   props: { params: Promise<{ slug: string }> },
 ) => {
   const params = await props.params;
-  return await GET(request, { params });
+  return await GET(request, { params: Promise.resolve(params) });
 };

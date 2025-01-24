@@ -15,9 +15,13 @@ type Params = {
 const modules = {
   parlament: import("@/db/parlament"),
   event: import("@/db/event"),
+  supabaseStorage: import("@/db/supabaseStorage"),
 };
 
-export const GET = async (request: Request, context: { params: Promise<Params> }) => {
+export const GET = async (
+  request: Request,
+  context: { params: Promise<Params> },
+) => {
   const selfUser = await getAuth();
   const requestedModule = request.headers.get("module") ?? "";
   if (Object.keys(modules).includes(requestedModule)) {
@@ -106,7 +110,9 @@ export const GET = async (request: Request, context: { params: Promise<Params> }
   }
 };
 
-export const POST = async (request: Request, context: { params: Promise<Params> }) => {
-  return await GET(request, /* @next-codemod-error 'context' is passed as an argument. Any asynchronous properties of 'props' must be awaited when accessed. */
-  context);
+export const POST = async (
+  request: Request,
+  context: { params: Promise<Params> },
+) => {
+  return await GET(request, context);
 };

@@ -1,13 +1,14 @@
 "use client";
 import { Alert } from "@/components/home/alert";
 import { siteConfig } from "@/config/site";
+import { ImageData } from "@/db/supabaseStorage";
 import { Button, Modal, ModalContent, ModalHeader } from "@nextui-org/react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<ImageData[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,13 +24,13 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
     formData.append("directory", "images");
 
     try {
-      // Példa fetch hívás (illeszd a saját endpointodat):
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
       if (!response.ok) throw new Error("Upload failed");
       alert("Sikeres feltöltés!");
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
@@ -37,7 +38,9 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
 
   const loadImages = async () => {
     try {
-      const response = await fetch("/api/getImages");
+      const response = await fetch("/api/getImages", {
+        headers: { module: "supabaseStorage" },
+      });
       if (!response.ok) throw new Error("Fetch error");
       const data = await response.json();
       setImages(data);
@@ -105,16 +108,16 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
                 )}
                 {images.map((image) => (
                   <button
-                    key={image}
+                    key={image.name}
                     className="m-1"
-                    title={image}
-                    onClick={() => setSelectedImage(image)}
+                    title={image.name}
+                    onClick={() => setSelectedImage(image.url)}
                   >
                     <Image
-                      src={image}
+                      src={image.url}
                       width={200}
                       height={200}
-                      alt={image}
+                      alt={image.name}
                       className="object-cover"
                     />
                   </button>

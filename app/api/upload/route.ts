@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises"; // FS module for saving files
-import { join } from "path"; // To handle paths
 import { getAuth } from "@/db/dbreq";
+import uploadImage from "@/db/uploadToSupabase";
 
 export async function POST(req: NextRequest) {
   const selfUser = await getAuth();
@@ -29,16 +28,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const uploadPath = join(process.cwd(), "/public/uploads/", directory);
-    await mkdir(uploadPath, { recursive: true });
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const filePath = join(uploadPath, file.name);
-
-    await writeFile(filePath, new Uint8Array(fileBuffer));
-    return NextResponse.json({
-      message: "File uploaded successfully",
-      file: file.name,
-    });
+    const response = uploadImage(file, "uploads", `${directory}/${file.name}`);
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error("Error while uploading file:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });

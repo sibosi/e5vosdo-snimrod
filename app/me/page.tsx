@@ -37,7 +37,7 @@ const AboutPage = async () => {
         </Tray>
       ) : null}
 
-      {(await hasPermission(selfUser.email, "updateEvent")) ? (
+      {selfUser.permissions.includes("admin") ? (
         <Tray title="Események kezelése">
           <Link
             href="/dev"

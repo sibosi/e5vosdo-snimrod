@@ -18,6 +18,11 @@ export async function getEvents() {
   return (await dbreq("SELECT * FROM events_active")) as EventType[];
 }
 
+export async function getPreviewEvents(selfUser: UserType) {
+  gate(selfUser, "admin");
+  return (await dbreq("SELECT * FROM events_preview")) as EventType[];
+}
+
 export async function rollbackEvent(selfUser: UserType, id: number) {
   gate(selfUser, "admin");
   return await multipledbreq([

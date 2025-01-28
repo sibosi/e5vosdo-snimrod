@@ -185,7 +185,7 @@ export async function hasPermission(
   if (!email) return false;
   const user = (await getUser(email)) as User;
   const userPermissionsSet = new Set(user.permissions);
-  const functionPermissions = new Set(apireq[functionname as apireqType].perm);
+  const functionPermissions = new Set(apireq[functionname as apireqType]?.perm);
 
   const response = Array.from(functionPermissions).some((item) =>
     userPermissionsSet.has(item),

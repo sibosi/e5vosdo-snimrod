@@ -3,9 +3,14 @@ import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { hexFromArgb, Hct } from "@material/material-color-utilities";
 
-const defaultHues = {
-  primary: 255,
-  secondary: 300,
+const defaultHues: { [key: string]: number } = {
+  primary: 240, // 267
+  secondary: 45, // 305
+};
+
+const defaultChromas: { [key: string]: number } = {
+  primary: 30, // 71
+  secondary: 50, // 87
 };
 
 const versions = [
@@ -26,19 +31,32 @@ export const loadPalette = (
   colorName: string,
   theme?: "light" | "dark" | "system",
 ) => {
-  const colorHue = (() => {
-    if (Number(localStorage.getItem(`${colorName}Hue`)))
-      return Number(localStorage.getItem(`${colorName}Hue`));
-    else if (colorName === "primary") return defaultHues.primary;
-    else return defaultHues.secondary;
-  })();
+  const colorHue =
+    Number(localStorage.getItem(`${colorName}Hue`)) ||
+    defaultHues[colorName] ||
+    255;
 
-  const colorChroma = Number(localStorage.getItem(`${colorName}Chroma`)) || 50;
+  const colorChroma =
+    Number(localStorage.getItem(`${colorName}Chroma`)) ||
+    defaultChromas[colorName] ||
+    50;
 
   document.documentElement.style.setProperty(
     `--color-${colorName}`,
     hexFromArgb(Hct.from(colorHue, colorChroma, 50).toInt()),
   );
+
+  if (colorName === "primary")
+    document.documentElement.style.setProperty(
+      "--primary",
+      hexFromArgb(Hct.from(colorHue, colorChroma, 50).toInt()),
+    );
+
+  if (colorName === "secondary")
+    document.documentElement.style.setProperty(
+      "--secondary",
+      hexFromArgb(Hct.from(colorHue, colorChroma, 50).toInt()),
+    );
 
   const isDarkMode = (() => {
     if ((theme || localStorage.getItem("theme")) === "dark") return true;
@@ -187,7 +205,7 @@ export const ThemeTemplate = ({
     <div
       className={
         "mb-4 rounded-3xl p-3 text-foreground " +
-        (color === "primary" ? "bg-selfprimary-300" : "bg-selfsecondary-300")
+        (color === "primary" ? "bg-primary-300" : "bg-secondary-300")
       }
     >
       {color}: {selectedHue}/{selectedChroma}
@@ -276,8 +294,8 @@ export const ThemeOptions = () => {
   const templates = [
     {
       name: "Default",
-      primary: [267, 71],
-      secondary: [305, 87],
+      primary: [defaultHues.primary, defaultChromas.primary],
+      secondary: [defaultHues.secondary, defaultChromas.secondary],
     },
     {
       // Coral, Olive
@@ -335,7 +353,7 @@ export const ThemeOptions = () => {
         <button
           type="button"
           key={template.name}
-          className="max-w-min rounded-lg bg-selfprimary-100 p-2 text-center hover:bg-selfprimary-200"
+          className="max-w-min rounded-lg bg-primary-100 p-2 text-center hover:bg-primary-200"
           onClick={() => {
             localStorage.setItem("primaryHue", String(template.primary[0]));
             localStorage.setItem("primaryChroma", String(template.primary[1]));

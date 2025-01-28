@@ -49,6 +49,6 @@ export async function editEvent(selfUser: UserType, event: EventType) {
 export async function createEvent(selfUser: UserType, event: EventType) {
   gate(selfUser, "user");
   return await dbreq(
-    `INSERT INTO events_preview (title, time, show_time, hide_time, image, description, tags) VALUES ('${event.title}', '${event.time}', '${event.show_time}', '${event.hide_time}', '${event.image}', '${event.description}', '${event.tags}');`,
+    `INSERT INTO events_preview (title, time, show_time, hide_time, image, description, tags) VALUES ('${event.title}', '${event.time}', '${event.show_time}', '${event.hide_time}', '${event.image}', '${event.description}', '${JSON.stringify(event.tags)}');`,
   );
 }

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuth } from "@/db/dbreq";
+import { addLog, getAuth } from "@/db/dbreq";
 import { uploadImage } from "@/db/supabaseStorage";
 
 export async function POST(req: NextRequest) {
   const selfUser = await getAuth();
   if (!selfUser)
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  addLog("upload", selfUser.email);
 
   try {
     const formData = await req.formData();

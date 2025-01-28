@@ -3,7 +3,7 @@ import Input from "@/components/Input";
 import React, { useState } from "react";
 import SelectImage from "./SelectImage";
 import { EventType } from "@/db/event";
-import { Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
+import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
 import { UserType } from "@/db/dbreq";
 
 const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
@@ -15,6 +15,43 @@ const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
   >();
   const [eventDate, setEventDate] = useState<string>();
   const [showAuthor, setShowAuthor] = useState(true);
+
+  const handleCreateEvent = async () => {
+    if (!eventImage || !eventName || !eventDescription || !eventDate)
+      return alert("Minden mezőt ki kell tölteni!");
+
+    const event: EventType = {
+      id: 0,
+      title: eventName,
+      description: eventDescription,
+      image: eventImage,
+      show_time: new Date().toISOString(),
+      hide_time: eventDate,
+      tags: [],
+      time: eventDate,
+    };
+
+    fetch("/api/createEvent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        module: "event",
+      },
+      body: JSON.stringify({
+        event: event,
+      }),
+    }).then((res) => {
+      if (res.ok) {
+        alert("Esemény létrehozva!");
+        setEventName("");
+        setEventDescription("");
+        setEventImage(undefined);
+        setEventDate(undefined);
+      } else {
+        alert("Hiba történt az esemény létrehozása közben.");
+      }
+    });
+  };
 
   return (
     <div className="space-y-2">
@@ -32,12 +69,15 @@ const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
         className="h-32 w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
       />
 
-      <Input
-        label="Esemény dátuma"
-        value={eventDate ?? ""}
-        onChange={setEventDate}
-        type="datetime-local"
-      />
+      <div className="text-sm text-selfprimary-500">
+        <p>Esemény dátuma:</p>
+        <Input
+          label="Esemény dátuma"
+          value={eventDate ?? ""}
+          onChange={setEventDate}
+          type="datetime-local"
+        />
+      </div>
 
       <CheckboxGroup
         value={(() => {
@@ -54,12 +94,8 @@ const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
         }}
       >
         Hol jelenjen meg az esemény?
-        <Checkbox value="carousel" color="default">
-          Főoldal tetején
-        </Checkbox>
-        <Checkbox value="events" color="default">
-          Események fül alatt
-        </Checkbox>
+        <Checkbox value="carousel">Főoldal tetején</Checkbox>
+        <Checkbox value="events">Események fül alatt</Checkbox>
       </CheckboxGroup>
 
       <div>
@@ -67,11 +103,14 @@ const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
         <Switch
           isSelected={showAuthor}
           onChange={() => setShowAuthor((prev) => !prev)}
-          color="default"
         >
           Szerző megjelenítése
         </Switch>
       </div>
+
+      <Button color="primary" onPress={handleCreateEvent}>
+        Létrehozás
+      </Button>
     </div>
   );
 };

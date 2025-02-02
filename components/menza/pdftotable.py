@@ -84,9 +84,7 @@ def main (path : str):
     datum = kovetkezo_datum(datum, lepes=-1)
     for sor in nyers_menu:
 
-        if (sor['1'] == 'B menü' and sor[''] == 'A menü'): continue
-        if sor['1'] == sor['2'] == sor[""] == None: continue
-        if sor[KINDERF_KFT] == "Gimnázium" or sor[""] == "Gimnázium": continue
+        if (sor['1'] == 'B menü' and sor[''] == 'A menü') or (sor['1'] == sor['2'] == sor[""] == None) or (sor[KINDERF_KFT] == "Gimnázium" or sor[""] == "Gimnázium"): continue
         
         if sor[KINDERF_KFT] != None:
             datum = kovetkezo_datum(datum)

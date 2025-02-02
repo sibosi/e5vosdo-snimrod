@@ -9,7 +9,9 @@ https://www.ejg.hu/kat/etkezessel-kapcsolatos-informaciok/
 https://smallpdf.com/pdf-to-excel#r=convert-to-excel
 
 
-3. A kapott xlsx fájl átalakítása JSON formátumba
+3. Az xlsx fájl tábláit egy táblába (tab-ba) összefűzni
+
+4. A kapott xlsx fájl átalakítása JSON formátumba
 https://excel2json.io/editor
 
 A kapott fájl valahogy így néz ki:
@@ -44,6 +46,8 @@ CÉL az alábbi formátum elérése:
 import json
 from datetime import timedelta, datetime
 import os
+
+KINDERF_KFT = "KinderF.ésK.Kft."
 
 def main (path : str):
     with open(path, 'r', encoding='utf-8') as outfile:
@@ -80,13 +84,15 @@ def main (path : str):
     datum = kovetkezo_datum(datum, lepes=-1)
     for sor in nyers_menu:
 
-        if sor['1'] == None or sor['1'] == 'B menü': continue
+        if (sor['1'] == 'B menü' and sor[''] == 'A menü'): continue
+        if sor['1'] == sor['2'] == sor[""] == None: continue
+        if sor[KINDERF_KFT] == "Gimnázium" or sor[""] == "Gimnázium": continue
         
-        if sor["KinderF.ésK.Kft."] != None:
+        if sor[KINDERF_KFT] != None:
             datum = kovetkezo_datum(datum)
-            if het_napja(datum=datum) == 'Saturday' and sor["KinderF.ésK.Kft."] != 'Szombat':
+            if het_napja(datum=datum) == 'Saturday' and sor[KINDERF_KFT] != 'Szombat':
                 datum = kovetkezo_datum(datum=datum, lepes=2)
-            elif het_napja(datum=datum) == 'Sunday' and sor["KinderF.ésK.Kft."] != 'Vasárnap':
+            elif het_napja(datum=datum) == 'Sunday' and sor[KINDERF_KFT] != 'Vasárnap':
                 datum = kovetkezo_datum(datum=datum, lepes=1)
 
             havi_menu.update({datum : {'A' : [], 'B' : [], 'nap' : het_napja(datum)}})

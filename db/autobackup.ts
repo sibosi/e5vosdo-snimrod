@@ -107,7 +107,7 @@ async function backupAndUpload(): Promise<void> {
     // Például itt készítenéd a mysqldump backupot
     const dumpFileName = `backup-${Date.now()}.sql`;
     const dumpFilePath = path.join(__dirname, dumpFileName);
-    const dumpCommand = `mysqldump -h ${process.env.MYSQL_HOST} -u ${process.env.MYSQL_USER} -p${process.env.MYSQL_PASSWORD} ${process.env.MYSQL_DATABASE} > ${dumpFilePath}`;
+    const dumpCommand = `mysqldump --ssl-mode=DISABLED -h ${process.env.MYSQL_HOST} -u ${process.env.MYSQL_USER} -p${process.env.MYSQL_PASSWORD} ${process.env.MYSQL_DATABASE} > ${dumpFilePath}`;
 
     // A mysqldump futtatása
     const { exec } = require("child_process");

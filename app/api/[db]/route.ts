@@ -8,18 +8,27 @@ import {
   getUser,
 } from "@/db/dbreq";
 
-async function main(
-  request: Request,
-  { params }: { params: Promise<{ db: string }> },
-) {
-  const selfUser = await getAuth();
-  const method = (await params).db;
+type Params = {
+  db: string;
+};
 
-  if (request.headers.get("module") === "parlement") {
-    const body = await request.json();
+const modules = {
+  parlament: import("@/db/parlament"),
+  autobackup: import("@/db/autobackup"),
+};
+
+export const GET = async (
+  request: Request,
+  context: { params: Promise<Params> },
+) => {
+  const selfUser = await getAuth();
+  const requestedModule = request.headers.get("module") ?? "";
+  if (Object.keys(modules).includes(requestedModule)) {
+    const body = request.method === "POST" ? await request.json() : {};
+    const method = (await context.params).db;
 
     try {
-      const mod = await import("@/db/parlament");
+      const mod = await modules[requestedModule as keyof typeof modules];
 
       if (typeof (mod as { [key: string]: any })[method] === "function") {
         console.log("body:", body);
@@ -37,9 +46,9 @@ async function main(
         );
       }
     } catch (error) {
-      console.error("Error in parlement module:", error);
+      console.error(`Error in ${requestedModule} module: ${error}`);
       return NextResponse.json(
-        { error: "Failed to process request in parlement module" },
+        { error: `Failed to process request in ${requestedModule} module` },
         { status: 500 },
       );
     }
@@ -52,7 +61,8 @@ async function main(
     );
   }
 
-  if (apioptions.includes(method as any) === false) {
+  const gate = (await context.params).db;
+  if (apioptions.includes(gate as any) === false) {
     return NextResponse.json(
       { error: "Invalid API endpoint" },
       { status: 400 },
@@ -65,10 +75,10 @@ async function main(
   }
 
   const userPermissionsSet = new Set(user.permissions);
-  const gatePermissions = new Set(apireq[method as apireqType].perm);
+  const gatePermissions = new Set(apireq[gate as apireqType].perm);
 
   if (
-    apireq[method as apireqType].perm != null &&
+    apireq[gate as apireqType].perm != null &&
     !Array.from(gatePermissions).some((item) => userPermissionsSet.has(item))
   ) {
     return NextResponse.json(
@@ -79,6 +89,7 @@ async function main(
     );
   }
 
+  // const bodyData = streamToString(request.body);
   let bodyData: string | Promise<string>;
   try {
     bodyData = JSON.parse(await request.text());
@@ -87,7 +98,7 @@ async function main(
   }
 
   try {
-    const data = await defaultApiReq(method as apireqType, bodyData);
+    const data = await defaultApiReq(gate as apireqType, bodyData);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -96,18 +107,11 @@ async function main(
       { status: 500 },
     );
   }
-}
+};
 
-export async function GET(
+export const POST = async (
   request: Request,
-  { params }: { params: Promise<{ db: string }> },
-) {
-  return await main(request, { params });
-}
-
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ db: string }> },
-) {
-  return await main(request, { params });
-}
+  context: { params: Promise<Params> },
+) => {
+  return await GET(request, context);
+};

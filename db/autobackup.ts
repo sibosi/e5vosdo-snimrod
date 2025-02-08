@@ -3,20 +3,20 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
-// A service account fájl elérési útja környezeti változóból
-const SERVICE_ACCOUNT_KEY_PATH = process.env.SERVICE_ACCOUNT_KEY_PATH;
-
-if (!SERVICE_ACCOUNT_KEY_PATH || !fs.existsSync(SERVICE_ACCOUNT_KEY_PATH)) {
-  throw new Error(
-    "A service account fájl nem található. Ellenőrizd a SERVICE_ACCOUNT_KEY_PATH környezeti változót.",
-  );
-}
-
-const serviceAccount = JSON.parse(
-  fs.readFileSync(SERVICE_ACCOUNT_KEY_PATH, "utf8"),
-);
-
 function getDriveClient() {
+  // A service account fájl elérési útja környezeti változóból
+  const SERVICE_ACCOUNT_KEY_PATH = process.env.SERVICE_ACCOUNT_KEY_PATH;
+
+  if (!SERVICE_ACCOUNT_KEY_PATH || !fs.existsSync(SERVICE_ACCOUNT_KEY_PATH)) {
+    throw new Error(
+      "A service account fájl nem található. Ellenőrizd a SERVICE_ACCOUNT_KEY_PATH környezeti változót.",
+    );
+  }
+
+  const serviceAccount = JSON.parse(
+    fs.readFileSync(SERVICE_ACCOUNT_KEY_PATH, "utf8"),
+  );
+
   const auth = new google.auth.JWT(
     serviceAccount.client_email,
     undefined,

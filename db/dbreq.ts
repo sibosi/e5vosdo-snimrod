@@ -977,6 +977,10 @@ export async function getMyPre() {
   return goal;
 }
 
+export async function backup() {
+  return await backup();
+}
+
 export const apireq = {
   getPageSettings: { req: getPageSettings, perm: [] },
   editPageSettings: { req: editPageSettings, perm: ["admin"] },

@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - "*--builddocker*"
 
 jobs:
   build:
@@ -36,6 +39,7 @@ jobs:
             AUTH_TRUST_HOST=${{ secrets.AUTH_TRUST_HOST }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            SERVICE_ACCOUNT_KEY_PATH=${{ secrets.SERVICE_ACCOUNT_KEY_PATH }}
             IGNORE_BUILD_ERRORS=${{ secrets.IGNORE_BUILD_ERRORS }}
             FAKE_AUTH=${{ secrets.FAKE_AUTH }}
             MYSQL_HOST=${{ secrets.MYSQL_HOST }}

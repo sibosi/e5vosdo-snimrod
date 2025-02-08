@@ -110,7 +110,7 @@ async function backupAndUpload() {
     // 1. Adatbázis backup készítése
     const dumpFileName = `backup-${timestamp}.sql`;
     const dumpFilePath = path.join(__dirname, dumpFileName);
-    const dumpCommand = `/usr/bin/mariadb-dump --ssl-mode=DISABLED -h ${process.env.MYSQL_HOST} -u ${process.env.MYSQL_USER} -p${process.env.MYSQL_PASSWORD} ${process.env.MYSQL_DATABASE} > ${dumpFilePath}`;
+    const dumpCommand = `/usr/bin/mariadb-dump -h ${process.env.MYSQL_HOST} -u ${process.env.MYSQL_USER} -p${process.env.MYSQL_PASSWORD} ${process.env.MYSQL_DATABASE} > ${dumpFilePath}`;
 
     const { exec } = require("child_process");
     const util = require("util");

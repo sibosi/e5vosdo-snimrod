@@ -10,6 +10,8 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [images, setImages] = useState<ImageData[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>();
+  const [currentFolder, setCurrentFolder] = useState("");
+  const [showedFolders, setShowedFolders] = useState<string[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -39,7 +41,7 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
   const loadImages = async () => {
     try {
       const response = await fetch("/api/getImages", {
-        headers: { module: "supabaseStorage" },
+        headers: { module: "images" },
       });
       if (!response.ok) throw new Error("Fetch error");
       const data = await response.json();
@@ -56,6 +58,16 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
   useEffect(() => {
     if (typeof selectedImage === "string") onChange(selectedImage);
   }, [onChange, selectedImage]);
+
+  useEffect(() => {
+    if (!currentFolder) {
+      setShowedFolders(
+        Array.from(
+          new Set(images.map((image) => image.folder ?? "")).values(),
+        ).filter((folder) => folder !== ""),
+      );
+    }
+  }, [currentFolder, images]);
 
   if (selectedImage) {
     return (
@@ -106,22 +118,43 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
                     <p className="text-foreground-100">Képek betöltése...</p>
                   </div>
                 )}
-                {images.map((image) => (
+                {!currentFolder ? (
+                  showedFolders.map((folder) => (
+                    <button
+                      key={folder}
+                      className="m-1 h-48 w-48 rounded-lg bg-selfprimary-300 text-selfprimary-900"
+                      onClick={() => setCurrentFolder(folder)}
+                    >
+                      {folder}
+                    </button>
+                  ))
+                ) : (
                   <button
-                    key={image.name}
-                    className="m-1"
-                    title={image.name}
-                    onClick={() => setSelectedImage(image.url)}
+                    className="m-1 h-48 w-48 rounded-lg bg-selfprimary-300 text-selfprimary-900"
+                    onClick={() => setCurrentFolder("")}
                   >
-                    <Image
-                      src={image.url}
-                      width={200}
-                      height={200}
-                      alt={image.name}
-                      className="object-cover"
-                    />
+                    Vissza
                   </button>
-                ))}
+                )}
+                {images.map(
+                  (image) =>
+                    (image.folder ?? "") === currentFolder && (
+                      <button
+                        key={image.url}
+                        className="m-1"
+                        title={image.name}
+                        onClick={() => setSelectedImage(image.url)}
+                      >
+                        <Image
+                          src={image.url}
+                          width={192}
+                          height={192}
+                          alt={image.name}
+                          className="object-cover"
+                        />
+                      </button>
+                    ),
+                )}
               </div>
             </div>
             <div>

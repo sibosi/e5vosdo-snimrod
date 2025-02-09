@@ -1008,77 +1008,88 @@ export type apireqType = (typeof apioptions)[number];
 
 export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getUsers") return await getUsers();
-  else if (req === "getAuth") return await getAuth();
-  else if (req === "getPageSettings") return await getPageSettings();
-  else if (req === "editPageSettings")
-    return await editPageSettings(body.settings);
-  else if (req === "getAllUsersNameByEmail")
-    return await getAllUsersNameByEmail();
-  else if (req === "getUsersName") return await getUsersName();
-  else if (req === "getStudentUsers") return await getStudentUsers();
-  else if (req === "getAdminUsers") return await getAdminUsers();
-  else if (req === "getUsersEmail") return await getUsersEmail();
-  else if (req === "getAdminUsersEmail") return await getAdminUsersEmail();
-  else if (req === "getCarousel") return await getCarousel();
-  else if (req === "addUserPermission") {
+  if (req === "getAuth") return await getAuth();
+  if (req === "getPageSettings") return await getPageSettings();
+  if (req === "editPageSettings") return await editPageSettings(body.settings);
+  if (req === "getAllUsersNameByEmail") return await getAllUsersNameByEmail();
+  if (req === "getUsersName") return await getUsersName();
+  if (req === "getStudentUsers") return await getStudentUsers();
+  if (req === "getAdminUsers") return await getAdminUsers();
+  if (req === "getUsersEmail") return await getUsersEmail();
+  if (req === "getAdminUsersEmail") return await getAdminUsersEmail();
+  if (req === "getCarousel") return await getCarousel();
+  if (req === "addUserPermission") {
     const { email, permission } = body;
     const response = await addUserPermission(email, permission);
     return "MyResponse: " + String(response);
-  } else if (req === "removeUserPermissions") {
+  }
+  if (req === "removeUserPermissions") {
     const { email, permission } = body;
     return await removeUserPermissions(email, permission);
-  } else if (req === "getNotificationById")
-    return await getNotificationById(body);
-  else if (req === "getUserNotificationsIds")
-    return await getUserNotificationsIds();
-  else if (req === "getUserNotifications") return await getUserNotifications();
-  else if (req === "markAsRead") {
+  }
+  if (req === "getNotificationById") return await getNotificationById(body);
+  if (req === "getUserNotificationsIds") return await getUserNotificationsIds();
+  if (req === "getUserNotifications") return await getUserNotifications();
+  if (req === "markAsRead") {
     const { id } = body;
     return await markAsRead(id);
-  } else if (req === "newNotificationByEmails") {
+  }
+  if (req === "newNotificationByEmails") {
     const { title, message, receiving_emails } = body;
     return await newNotificationByEmails(title, message, receiving_emails);
-  } else if (req === "newNotificationByNames") {
+  }
+  if (req === "newNotificationByNames") {
     const { title, message, receiving_names } = body;
     return await newNotificationByNames(title, message, receiving_names);
-  } else if (req === "checkPushAuth") {
+  }
+  if (req === "checkPushAuth") {
     const { auth } = body;
     return await checkPushAuth(auth);
-  } else if (req === "editMySettings") {
+  }
+  if (req === "editMySettings") {
     const { settings } = body;
     return await editMySettings({ settings });
-  } else if (req === "getMyClassTimetable") {
+  }
+  if (req === "getMyClassTimetable") {
     const { EJG_class } = body;
     return await getMyClassTimetable(EJG_class);
-  } else if (req === "setHiddenLessons") {
+  }
+  if (req === "setHiddenLessons") {
     const { lessonsId } = body;
     return await setHiddenLessons(lessonsId);
-  } else if (req === "getDefaultGroup") {
+  }
+  if (req === "getDefaultGroup") {
     return await getDefaultGroup();
-  } else if (req === "editDefaultGroup") {
+  }
+  if (req === "editDefaultGroup") {
     const { group } = body;
     return await editDefaultGroup(group);
-  } else if (req === "addTicket") {
+  }
+  if (req === "addTicket") {
     const { email, ticket } = body;
     return await addTicket(email, ticket);
-  } else if (req === "deleteTicket") {
+  }
+  if (req === "deleteTicket") {
     const { email, ticket } = body;
     return await deleteTicket(email, ticket);
-  } else if (req === "getFreeRooms") {
+  }
+  if (req === "getFreeRooms") {
     const { day, time } = body;
     return await getFreeRooms(day, time);
-  } else if (req === "getMatch") {
+  }
+  if (req === "getMatch") {
     const { id } = body;
     return await getMatch(id);
-  } else if (req === "getMatches") {
-    return await getMatches();
-  } else if (req === "updateMatch") {
+  }
+  if (req === "getMatches") return await getMatches();
+  if (req === "updateMatch") {
     const { id, match } = body;
     return await updateMatch(id, match);
-  } else if (req === "getComingMatch") {
-    return await getComingMatch();
-  } else if (req === "getUserLogs") {
+  }
+  if (req === "getComingMatch") return await getComingMatch();
+  if (req === "getUserLogs") {
     const { email } = body;
     return await getUserLogs(email);
-  } else return "No such request";
+  }
+  return "No such request";
 };

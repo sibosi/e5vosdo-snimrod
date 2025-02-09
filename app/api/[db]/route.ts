@@ -16,6 +16,7 @@ const modules = {
   parlament: import("@/db/parlament"),
   event: import("@/db/event"),
   supabaseStorage: import("@/db/supabaseStorage"),
+  images: import("@/db/images"),
 };
 
 export const GET = async (

@@ -8,6 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export interface ImageData {
   name: string;
   url: string;
+  folder?: string;
 }
 
 const sanitizeFileName = (fileName: string) => {

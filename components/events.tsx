@@ -9,7 +9,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const response = await fetch("/api/getEvents", {
+      const response = await fetch("/api/getEventEvents", {
         headers: {
           module: "event",
         },

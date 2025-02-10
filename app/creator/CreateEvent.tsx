@@ -1,19 +1,24 @@
 "use client";
 import Input from "@/components/Input";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SelectImage from "./SelectImage";
 import { EventType } from "@/db/event";
 import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
 import { UserType } from "@/db/dbreq";
 
-const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
+const CreateEvent = ({
+  selfUser,
+  id = undefined,
+}: {
+  selfUser: UserType;
+  id?: number;
+}) => {
   const [eventName, setEventName] = useState("");
   const [eventDescription, setEventDescription] = useState("");
-  const [eventImage, setEventImage] = useState<string>();
-  const [eventPlaceOnSite, setEventPlaceOnSite] = useState<
-    "carousel" | "events" | "everywhere"
-  >();
-  const [eventDate, setEventDate] = useState<string>();
+  const [eventImage, setEventImage] = useState<string>(""); // módosítva
+  const [showAtCarousel, setShowAtCarousel] = useState(false);
+  const [showAtEvents, setShowAtEvents] = useState(false);
+  const [eventDate, setEventDate] = useState<string>(""); // módosítva
   const [showAuthor, setShowAuthor] = useState(true);
 
   const handleCreateEvent = async () => {
@@ -29,6 +34,9 @@ const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
       hide_time: eventDate,
       tags: [],
       time: eventDate,
+      show_author: showAuthor,
+      show_at_carousel: showAtCarousel,
+      show_at_events: showAtEvents,
     };
 
     fetch("/api/createEvent", {
@@ -45,23 +53,57 @@ const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
         alert("Esemény létrehozva!");
         setEventName("");
         setEventDescription("");
-        setEventImage(undefined);
-        setEventDate(undefined);
+        setEventImage("");
+        setEventDate("");
       } else {
         alert("Hiba történt az esemény létrehozása közben.");
       }
     });
   };
 
+  useEffect(() => {
+    if (id) {
+      fetch("/api/getPreviewEvent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          module: "event",
+        },
+        body: JSON.stringify({ id }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setEventName(data.title ?? "");
+          setEventDescription(data.description ?? "");
+          setEventImage(data.image ?? "");
+          setEventDate(data.hide_time ?? "");
+          setShowAuthor(data.show_author);
+          setShowAtCarousel(data.show_at_carousel);
+          setShowAtEvents(data.show_at_events);
+        });
+    }
+  }, [id]);
+
   return (
     <div className="space-y-2">
-      <SelectImage onChange={setEventImage} />
-      <Input
-        label="Esemény neve"
-        value={eventName}
-        onChange={setEventName}
-        placeholder="Az esemény / bejegyzés neve"
-      />
+      <SelectImage onChange={setEventImage} value={eventImage} />
+      <div className="grid grid-cols-2 gap-x-2">
+        <p>Az esemény neve</p>
+        <p>Az esemény dátuma</p>
+        <Input
+          label="Esemény neve"
+          value={eventName}
+          onChange={setEventName}
+          placeholder="Az esemény / bejegyzés neve"
+        />
+        <Input
+          label="Esemény dátuma"
+          value={eventDate}
+          onChange={setEventDate}
+          type="datetime-local"
+        />
+      </div>
+
       <textarea
         value={eventDescription}
         onChange={(e) => setEventDescription(e.target.value)}
@@ -69,28 +111,16 @@ const CreateEvent = ({ selfUser }: { selfUser: UserType }) => {
         className="h-32 w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
       />
 
-      <div className="text-sm text-selfprimary-500">
-        <p>Esemény dátuma:</p>
-        <Input
-          label="Esemény dátuma"
-          value={eventDate ?? ""}
-          onChange={setEventDate}
-          type="datetime-local"
-        />
-      </div>
-
       <CheckboxGroup
         value={(() => {
-          if (eventPlaceOnSite === "everywhere") return ["carousel", "events"];
-          if (eventPlaceOnSite === "carousel") return ["carousel"];
-          if (eventPlaceOnSite === "events") return ["events"];
+          if (showAtCarousel && showAtEvents) return ["carousel", "events"];
+          if (showAtCarousel) return ["carousel"];
+          if (showAtEvents) return ["events"];
           return [];
         })()}
         onValueChange={(value: string[]) => {
-          if (value.length === 0) setEventPlaceOnSite(undefined);
-          else if (value.length === 2) setEventPlaceOnSite("everywhere");
-          else if (value[0] === "carousel") setEventPlaceOnSite("carousel");
-          else setEventPlaceOnSite("events");
+          setShowAtCarousel(value.includes("carousel"));
+          setShowAtEvents(value.includes("events"));
         }}
       >
         Hol jelenjen meg az esemény?

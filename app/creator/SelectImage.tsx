@@ -6,10 +6,22 @@ import { Button, Modal, ModalContent, ModalHeader } from "@nextui-org/react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
+const SelectImage = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [images, setImages] = useState<ImageData[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>();
+  const [selectedImage, setSelectedImage] = useState<string | null | undefined>(
+    value,
+  );
+
+  React.useEffect(() => {
+    setSelectedImage(value);
+  }, [value]);
   const [currentFolder, setCurrentFolder] = useState("");
   const [showedFolders, setShowedFolders] = useState<string[]>([]);
 
@@ -71,7 +83,7 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
 
   if (selectedImage) {
     return (
-      <div className="flex flex-col justify-center rounded-lg bg-selfprimary-50">
+      <div className="flex flex-col justify-center rounded-xl bg-selfprimary-50">
         <Button
           onPress={() => setSelectedImage(null)}
           className="bg-selfprimary-300"
@@ -94,7 +106,7 @@ const SelectImage = ({ onChange }: { onChange: (value: string) => void }) => {
 
   return (
     <>
-      <div className="flex h-24 justify-center rounded-lg bg-selfprimary-50">
+      <div className="grid h-24 content-around justify-center rounded-xl bg-selfprimary-50">
         <Button
           onPress={() => setSelectedImage(null)}
           className="bg-selfprimary-300"

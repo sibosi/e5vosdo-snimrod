@@ -3,12 +3,7 @@ import React, { useEffect, useState } from "react";
 import parse from "html-react-parser";
 import Player from "@/app/e5podcast/player";
 import { UserType } from "@/db/dbreq";
-
-export interface CarouselItemProps {
-  title: string | [string, string];
-  uri: string;
-  description?: string;
-}
+import { EventType } from "@/db/event";
 
 const interpolate = (
   value: number,
@@ -34,7 +29,10 @@ const interpolate = (
 };
 
 async function fetchCarouselData() {
-  return await fetch("/api/getCarousel").then((res) => res.json());
+  const resp = await fetch("/api/getCarouselEvents", {
+    headers: { module: "event" },
+  });
+  return (await resp.json()) as EventType[];
 }
 
 const CarouselItem = ({
@@ -51,7 +49,7 @@ const CarouselItem = ({
   scrollX: number;
   index: number;
   dataLength: number;
-  title: string | [string, string];
+  title: string | string[];
   onClick?: () => void;
   className?: string;
   width?: number | string;
@@ -158,10 +156,10 @@ const CarouselItem = ({
 export default function Carousel({
   data,
   selfUser,
-}: Readonly<{ data: CarouselItemProps[]; selfUser: UserType }>) {
+}: Readonly<{ data: EventType[]; selfUser: UserType }>) {
   const [scrollX, setScrollX] = useState(0);
   const [clicked, setClicked] = useState<number | null>(null);
-  const [realData, setRealData] = useState<CarouselItemProps[]>(data);
+  const [realData, setRealData] = useState<EventType[]>(data);
 
   const onScroll = (e: any) => {
     setScrollX(e.target.scrollLeft * 0.1);
@@ -213,15 +211,17 @@ export default function Carousel({
               ) && (
                 <CarouselItem
                   key={index.toString()}
-                  uri={item.uri}
+                  uri={item.image ?? ""}
                   scrollX={scrollX * 10}
                   index={index}
                   dataLength={realData.length}
                   title={item.title}
                   onClick={() => {
-                    realData[index].description?.startsWith("http")
-                      ? (window.location.href = realData[index].description)
-                      : setClicked(clicked === index ? null : index);
+                    if (realData[index].description?.startsWith("http")) {
+                      window.location.href = realData[index].description;
+                    } else {
+                      setClicked(clicked === index ? null : index);
+                    }
                   }}
                   width={clicked === index ? "95%" : undefined}
                   className={
@@ -236,7 +236,7 @@ export default function Carousel({
             <a
               title="add item"
               href="/creator/"
-              className="grid min-w-[100px] items-center justify-center rounded-3xl bg-selfprimary-100"
+              className="grid min-w-[100px] grid-rows-1 content-around rounded-3xl bg-selfprimary-100"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -252,6 +252,9 @@ export default function Carousel({
                   d="M12 4v16m8-8H4"
                 />
               </svg>
+              {realData && realData.length == 0 && (
+                <span className="mx-2">Esemény feltöltése</span>
+              )}
             </a>
           )}
         </div>

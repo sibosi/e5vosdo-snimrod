@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS events_preview;
+-- DROP TABLE IF EXISTS events_preview;
 CREATE TABLE IF NOT EXISTS events_preview (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -7,7 +7,11 @@ CREATE TABLE IF NOT EXISTS events_preview (
     hide_time VARCHAR(255) NOT NULL,
     image VARCHAR(255),
     description TEXT,
-    tags JSON
+    tags JSON,
+    author VARCHAR(255) NOT NULL DEFAULT '',
+    show_author BOOLEAN NOT NULL DEFAULT FALSE,
+    show_at_carousel BOOLEAN NOT NULL DEFAULT FALSE,
+    show_at_events BOOLEAN NOT NULL DEFAULT FALSE
 );
 --@block
 SELECT * FROM events_preview;

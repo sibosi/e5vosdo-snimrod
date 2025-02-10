@@ -1,4 +1,4 @@
-# E5vosDo Site
+# e5vosdo-snimrod
 
 This is a web application by Nimród Simon for the student government of the Eötvös József Secondary School.
 
@@ -49,20 +49,12 @@ The project or any part of the project may be distributed or used only with the 
 
 Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
 
-##
-
-Acknowledgements
+## Acknowledgements
 
 - Ábel for the support
-
 - Lajos for the support
-
 - Zoltán for the support
-
 - Barnabás for the support
-
 - Zsolt for the support
-
 - Vince for the testing
-
 - Timi for the testing

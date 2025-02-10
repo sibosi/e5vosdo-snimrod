@@ -1,5 +1,8 @@
 import { getAuth } from "@/db/dbreq";
-import EventManager from "@/app/about/eventManager";
+import {
+  ManageActiveEvents,
+  ManagePreviewEvents,
+} from "@/app/about/eventManager";
 import PleaseLogin from "../me/redirectToLogin";
 
 const AboutPage = async () => {
@@ -11,7 +14,8 @@ const AboutPage = async () => {
       <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
         🚧 Dev 🚧
       </h1>
-      <EventManager selfUser={selfUser} />
+      <ManagePreviewEvents selfUser={selfUser} />
+      <ManageActiveEvents selfUser={selfUser} />
     </>
   );
 };

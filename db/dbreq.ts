@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
-import { CarouselItemProps } from "@/components/home/carousel";
+import { backup } from "./autobackup";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -840,10 +840,6 @@ export async function getFreeRooms(
   return rooms.filter((room) => !occupiedRooms.includes(room));
 }
 
-export async function getCarousel() {
-  return (await dbreq(`SELECT * FROM carousel;`)) as CarouselItemProps[];
-}
-
 export async function getAlerts() {
   return (await dbreq(`SELECT * FROM alerts;`)) as AlertType[];
 }
@@ -999,7 +995,7 @@ export const apireq = {
   updateMatch: { req: updateMatch, perm: ["admin"] },
   getComingMatch: { req: getComingMatch, perm: ["user"] },
   getUserLogs: { req: getUserLogs, perm: ["admin"] },
-  getCarousel: { req: getCarousel, perm: ["user"] },
+  backup: { req: backup, perm: ["admin", "backup"] },
 } as const;
 
 export const apioptions = Object.keys(apireq) as (keyof typeof apireq)[];
@@ -1017,7 +1013,6 @@ export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getAdminUsers") return await getAdminUsers();
   if (req === "getUsersEmail") return await getUsersEmail();
   if (req === "getAdminUsersEmail") return await getAdminUsersEmail();
-  if (req === "getCarousel") return await getCarousel();
   if (req === "addUserPermission") {
     const { email, permission } = body;
     const response = await addUserPermission(email, permission);
@@ -1090,6 +1085,7 @@ export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getUserLogs") {
     const { email } = body;
     return await getUserLogs(email);
-  }
-  return "No such request";
+  } else if (req === "backup") {
+    return await backup();
+  } else return "No such request";
 };

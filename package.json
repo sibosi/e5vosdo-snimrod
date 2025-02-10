@@ -34,6 +34,8 @@
     "eslint-config-next": "15.1.4",
     "extract-colors": "^4.1.1",
     "framer-motion": "^11.17.0",
+    "google-auth-library": "^9.15.1",
+    "googleapis": "^144.0.0",
     "html-react-parser": "^5.2.2",
     "iconv-lite": "^0.6.3",
     "jsbarcode": "^3.11.6",

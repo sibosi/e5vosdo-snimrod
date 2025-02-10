@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - "*--builddocker*"
 
 jobs:
   build:
@@ -30,12 +31,13 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/e5vosdo-snimrod:latest
           build-args: |
-            PUBLIC_VAPID_KEY=${{ secrets.PUBLIC_VAPID_KEY }}
-            PRIVATE_VAPID_KEY=${{ secrets.PRIVATE_VAPID_KEY }}
             AUTH_SECRET=${{ secrets.AUTH_SECRET }}
             AUTH_TRUST_HOST=${{ secrets.AUTH_TRUST_HOST }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }}
+            SERVICE_ACCOUNT_KEY_PATH=${{ secrets.SERVICE_ACCOUNT_KEY_PATH }}
+            BACKUP_FOLDER_ID=${{ secrets.BACKUP_FOLDER_ID }}
             IGNORE_BUILD_ERRORS=${{ secrets.IGNORE_BUILD_ERRORS }}
             FAKE_AUTH=${{ secrets.FAKE_AUTH }}
             MYSQL_HOST=${{ secrets.MYSQL_HOST }}
@@ -43,9 +45,12 @@ jobs:
             MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            ENCRYPTION_PASSWORD: ${{ secrets.ENCRYPTION_PASSWORD }}
+            NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            PUBLIC_VAPID_KEY=${{ secrets.PUBLIC_VAPID_KEY }}
+            PRIVATE_VAPID_KEY=${{ secrets.PRIVATE_VAPID_KEY }}
 
       - name: Log out from GHCR
         run: docker logout ghcr.io

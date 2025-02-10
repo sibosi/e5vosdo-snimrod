@@ -4,22 +4,19 @@ on:
   push:
     branches:
       - "*"
-  pull_request:
-    branches:
-      - "*"
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     env:
-      VAPID_PUBLIC_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
-      VAPID_PRIVATE_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
-
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+      SERVICE_ACCOUNT_KEY_PATH: ${{ secrets.SERVICE_ACCOUNT_KEY_PATH }}
+      BACKUP_FOLDER_ID: ${{ secrets.BACKUP_FOLDER_ID }}
       IGNORE_BUILD_ERRORS: ${{ secrets.IGNORE_BUILD_ERRORS }}
       FAKE_AUTH: ${{ secrets.FAKE_AUTH }}
 
@@ -28,11 +25,14 @@ jobs:
       MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-      PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
-      PRIVATE_VAPID_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
+      ENCRYPTION_PASSWORD: ${{ secrets.ENCRYPTION_PASSWORD }}
+
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
+      PRIVATE_VAPID_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
 
     steps:
       - name: Checkout code

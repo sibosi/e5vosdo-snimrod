@@ -24,20 +24,13 @@ export const GET = async (
   request: Request,
   context: { params: Promise<Params> },
 ) => {
-  context: { params: Promise<Params> },
-) => {
   const selfUser = await getAuth();
-  const requestedModule = request.headers.get("module") ?? "";
-  if (Object.keys(modules).includes(requestedModule)) {
-    const body = request.method === "POST" ? await request.json() : {};
-    const method = (await context.params).db;
   const requestedModule = request.headers.get("module") ?? "";
   if (Object.keys(modules).includes(requestedModule)) {
     const body = request.method === "POST" ? await request.json() : {};
     const method = (await context.params).db;
 
     try {
-      const mod = await modules[requestedModule as keyof typeof modules];
       const mod = await modules[requestedModule as keyof typeof modules];
 
       if (typeof (mod as { [key: string]: any })[method] === "function") {
@@ -57,9 +50,7 @@ export const GET = async (
       }
     } catch (error) {
       console.error(`Error in ${requestedModule} module: ${error}`);
-      console.error(`Error in ${requestedModule} module: ${error}`);
       return NextResponse.json(
-        { error: `Failed to process request in ${requestedModule} module` },
         { error: `Failed to process request in ${requestedModule} module` },
         { status: 500 },
       );
@@ -75,8 +66,6 @@ export const GET = async (
 
   const gate = (await context.params).db;
   if (apioptions.includes(gate as any) === false) {
-  const gate = (await context.params).db;
-  if (apioptions.includes(gate as any) === false) {
     return NextResponse.json(
       { error: "Invalid API endpoint" },
       { status: 400 },
@@ -90,10 +79,8 @@ export const GET = async (
 
   const userPermissionsSet = new Set(user.permissions);
   const gatePermissions = new Set(apireq[gate as apireqType].perm);
-  const gatePermissions = new Set(apireq[gate as apireqType].perm);
 
   if (
-    apireq[gate as apireqType].perm != null &&
     apireq[gate as apireqType].perm != null &&
     !Array.from(gatePermissions).some((item) => userPermissionsSet.has(item))
   ) {
@@ -106,7 +93,6 @@ export const GET = async (
   }
 
   // const bodyData = streamToString(request.body);
-  // const bodyData = streamToString(request.body);
   let bodyData: string | Promise<string>;
   try {
     bodyData = JSON.parse(await request.text());
@@ -115,7 +101,6 @@ export const GET = async (
   }
 
   try {
-    const data = await defaultApiReq(gate as apireqType, bodyData);
     const data = await defaultApiReq(gate as apireqType, bodyData);
     return NextResponse.json(data);
   } catch (error) {
@@ -126,15 +111,9 @@ export const GET = async (
     );
   }
 };
-};
 
 export const POST = async (
-export const POST = async (
   request: Request,
-  context: { params: Promise<Params> },
-) => {
-  return await GET(request, context);
-};
   context: { params: Promise<Params> },
 ) => {
   return await GET(request, context);

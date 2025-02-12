@@ -2,10 +2,14 @@ export default function Tray({
   title,
   children,
   colorVariant,
+  padding = true,
+  className,
 }: Readonly<{
   title?: string;
   children: React.ReactNode;
   colorVariant?: "light" | "medium" | "dark";
+  padding?: boolean;
+  className?: string;
 }>) {
   const getColorVariantClass = () => {
     if (colorVariant === "light") return "bg-selfprimary-50";
@@ -14,14 +18,18 @@ export default function Tray({
     return "bg-selfprimary-100";
   };
 
+  className += " my-2";
+
   return (
-    <div className="my-5">
-      <div className={"mx-1 rounded-2xl p-3 " + getColorVariantClass()}>
-        {title && (
-          <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
-        )}
-        <div className="my-2">{children}</div>
-      </div>
+    <div
+      className={
+        "mx-1 rounded-2xl " + getColorVariantClass() + (padding ? " p-3" : "")
+      }
+    >
+      {title && (
+        <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
+      )}
+      <div className={className}>{children}</div>
     </div>
   );
 }

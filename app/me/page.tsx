@@ -1,69 +1,71 @@
 import { getAuth, hasPermission } from "@/db/dbreq";
-import { Avatar, Link } from "@nextui-org/react";
+import { Avatar, Button, Link } from "@nextui-org/react";
 import MySettings from "./mysettings";
 import IDCard from "./IDCard";
 import PleaseLogin from "./redirectToLogin";
-import TxtLiquid from "@/components/home/txtLiquid";
 import Tray from "@/components/tray";
+import Settings from "./Settings";
 
-const AboutPage = async () => {
+const MePage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
   return (
-    <div>
-      <Avatar
-        isBordered
-        color="default"
-        className="mx-auto h-32 w-32"
-        src={selfUser.image}
-      />
-      <h1 className="pb-5 pt-3 text-center text-4xl font-semibold text-foreground lg:text-5xl">
-        Helló{" "}
-        <div className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
-          <TxtLiquid text={selfUser.nickname} />
+    <div className="space-y-4">
+      <div className="flex content-start items-center gap-4">
+        <Avatar
+          isBordered
+          color="default"
+          className="h-20 w-20"
+          src={selfUser.image}
+        />
+        <div className="text-foreground">
+          <h1 className="text-2xl font-semibold lg:text-5xl">
+            {selfUser.name}
+          </h1>
+          <h2 className="text-lg font-light lg:text-2xl">{selfUser.email}</h2>
         </div>
-        !
-      </h1>
+      </div>
 
-      {(await hasPermission(selfUser.email, "getUsers")) ? (
-        <Tray title="Felhasználók és oldal kezelése">
-          <Link
-            href="/about"
-            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
-          >
-            Az oldal kezelése
-          </Link>
-        </Tray>
-      ) : null}
+      <Tray title="Kezelési lehetőségek" className="text-lg">
+        <div className="flex flex-wrap justify-between">
+          {(await hasPermission(selfUser.email, "getUsers")) ? (
+            <a href="/about">
+              <Button className="bg-selfsecondary-300">
+                Felhasználók és oldal
+              </Button>
+            </a>
+          ) : null}
 
-      {selfUser.permissions.includes("admin") ? (
-        <Tray title="Események kezelése">
-          <Link
-            href="/dev"
-            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
-          >
-            Események kezelése
-          </Link>
-        </Tray>
-      ) : null}
+          {selfUser.permissions.includes("admin") ? (
+            <Link
+              href="/dev"
+              className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+            >
+              Események
+            </Link>
+          ) : null}
 
-      {selfUser.permissions.includes("head_of_parlament") ? (
-        <Tray title="Parlamentek kezelése">
-          <Link
-            href="/parlament"
-            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
-          >
-            Parlamentek kezelése
-          </Link>
-        </Tray>
-      ) : null}
+          {selfUser.permissions.includes("head_of_parlament") ? (
+            <Link
+              href="/parlament"
+              className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+            >
+              Parlamentek
+            </Link>
+          ) : null}
+        </div>
+      </Tray>
 
-      <IDCard EJG_code={selfUser.EJG_code} codeType="barcode" center={true} />
+      <Settings selfUser={selfUser} />
 
-      <MySettings selfUser={selfUser} />
+      <div className="hidden">
+        <IDCard EJG_code={selfUser.EJG_code} codeType="barcode" center={true} />
+
+        <MySettings selfUser={selfUser} />
+      </div>
     </div>
   );
 };
 
-export default AboutPage;
+export default MePage;

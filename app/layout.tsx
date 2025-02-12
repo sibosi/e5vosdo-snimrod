@@ -2,7 +2,6 @@ import "@/styles/globals.css";
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar/navbar";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
@@ -56,7 +55,7 @@ export default async function RootLayout({
   if (session?.user?.email) console.log("New user: " + session.user.email);
 
   return (
-    <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
+    <html lang="hu" className="bg-selfprimary-bg">
       <head>
         <link rel="canonical" href={siteConfig.links.home} />
         <link rel="alternative" href={siteConfig.links.alternative} />
@@ -112,9 +111,8 @@ export default async function RootLayout({
 
       <body
         className={clsx(
-          "min-h-screen bg-background bg-selfprimary-bg font-sans antialiased",
+          "min-h-screen bg-selfprimary-bg font-sans antialiased",
           fontSans.variable,
-          "light:bg-white",
         )}
         style={{
           fontFamily: "Outfit, sans-serif",
@@ -136,32 +134,30 @@ export default async function RootLayout({
         <LoadCacheMethod />
         <ServiceWorker />
         <PushManager />
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="relative flex h-screen flex-col bg-selfprimary-bg">
-            <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
+        <div className="relative flex h-screen flex-col bg-selfprimary-bg">
+          <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
 
-            <Cookie />
-            <Alerts />
-            <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
-              <OnCSSBug />
-              {children}
-            </main>
-            <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 pb-14 text-current"
-                href={siteConfig.links.mypage}
-                title="Nimród oldala"
-              >
-                <span className="text-default-600">Fejlesztette</span>
-                <p className="text-selfprimary">Simon Nimród</p>
-                <span className="text-default-600">10.C</span>
-              </Link>
-              <br />
-              <PageNav />
-            </footer>
-          </div>
-        </Providers>
+          <Cookie />
+          <Alerts />
+          <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
+            <OnCSSBug />
+            {children}
+          </main>
+          <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
+            <Link
+              isExternal
+              className="flex items-center gap-1 pb-14 text-current"
+              href={siteConfig.links.mypage}
+              title="Nimród oldala"
+            >
+              <span className="text-default-600">Fejlesztette</span>
+              <p className="text-selfprimary">Simon Nimród</p>
+              <span className="text-default-600">10.C</span>
+            </Link>
+            <br />
+            <PageNav />
+          </footer>
+        </div>
         <GoogleAnalytics measurementId="G-P74RJ9THHS" />
       </body>
     </html>

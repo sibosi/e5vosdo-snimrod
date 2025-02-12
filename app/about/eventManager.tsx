@@ -1,6 +1,7 @@
 "use client";
 import { EventType } from "@/db/event";
 import { Button, Link } from "@nextui-org/react";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 interface UserType {
@@ -120,7 +121,7 @@ export function ManagePreviewEvents({
             className="rounded-xl border border-selfprimary-300 bg-selfprimary-100 p-4"
           >
             {event.image && (
-              <img
+              <Image
                 src={event.image}
                 alt={
                   typeof event.title === "string"

@@ -4,6 +4,7 @@ import parse from "html-react-parser";
 import Player from "@/app/e5podcast/player";
 import { UserType } from "@/db/dbreq";
 import { EventType } from "@/db/event";
+import Link from "next/link";
 
 const interpolate = (
   value: number,
@@ -233,7 +234,7 @@ export default function Carousel({
           {clicked !== null ? (
             <></>
           ) : (
-            <a
+            <Link
               title="add item"
               href="/creator/"
               className="grid min-w-[100px] grid-rows-1 content-around rounded-3xl bg-selfprimary-100"
@@ -255,7 +256,7 @@ export default function Carousel({
               {realData && realData.length == 0 && (
                 <span className="mx-2">Esemény feltöltése</span>
               )}
-            </a>
+            </Link>
           )}
         </div>
         {clicked === null && realData.length > 2 && (

@@ -56,7 +56,7 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
         {sections.map((section, index) => (
           <button
             key={section.title}
-            className="flex items-center justify-between p-2"
+            className="flex items-center justify-between p-3"
             onClick={
               activeSection === index
                 ? () => setActiveSection(null)

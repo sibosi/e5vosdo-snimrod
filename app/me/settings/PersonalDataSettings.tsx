@@ -145,8 +145,8 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
                 color="primary"
               >
                 <Radio value="?">Mindkettő</Radio>
-                <Radio value="A">"A" menü</Radio>
-                <Radio value="B">"B" menü</Radio>
+                <Radio value="A">A menü</Radio>
+                <Radio value="B">B menü</Radio>
               </RadioGroup>
             </td>
           </tr>

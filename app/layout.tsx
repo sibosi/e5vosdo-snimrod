@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
+import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar/navbar";
 import { Link } from "@nextui-org/link";
 import clsx from "clsx";
@@ -16,6 +17,7 @@ import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
 import PushManager from "@/components/PWA/push";
+import { Alert } from "@/components/home/alert";
 
 export const dynamic = "force-dynamic";
 
@@ -54,8 +56,18 @@ export default async function RootLayout({
   const selfUser = await getAuth(session?.user?.email ?? undefined);
   if (session?.user?.email) console.log("New user: " + session.user.email);
 
+  // TODO: Remove
+  if (!selfUser?.permissions.includes("admin"))
+    children = (
+      <div>
+        <Alert className="border-selfprimary-400 bg-selfprimary-100 text-selfprimary-900">
+          Az oldal jelenleg karbantartás alatt van. Kérjük nézz vissza később.
+        </Alert>
+      </div>
+    );
+
   return (
-    <html lang="hu" className="bg-selfprimary-bg">
+    <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
       <head>
         <link rel="canonical" href={siteConfig.links.home} />
         <link rel="alternative" href={siteConfig.links.alternative} />
@@ -111,8 +123,9 @@ export default async function RootLayout({
 
       <body
         className={clsx(
-          "min-h-screen bg-selfprimary-bg font-sans antialiased",
+          "min-h-screen bg-background bg-selfprimary-bg font-sans antialiased",
           fontSans.variable,
+          "light:bg-white",
         )}
         style={{
           fontFamily: "Outfit, sans-serif",
@@ -134,30 +147,32 @@ export default async function RootLayout({
         <LoadCacheMethod />
         <ServiceWorker />
         <PushManager />
-        <div className="relative flex h-screen flex-col bg-selfprimary-bg">
-          <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+          <div className="relative flex h-screen flex-col bg-selfprimary-bg">
+            <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
 
-          <Cookie />
-          <Alerts />
-          <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
-            <OnCSSBug />
-            {children}
-          </main>
-          <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
-            <Link
-              isExternal
-              className="flex items-center gap-1 pb-14 text-current"
-              href={siteConfig.links.mypage}
-              title="Nimród oldala"
-            >
-              <span className="text-default-600">Fejlesztette</span>
-              <p className="text-selfprimary">Simon Nimród</p>
-              <span className="text-default-600">10.C</span>
-            </Link>
-            <br />
-            <PageNav />
-          </footer>
-        </div>
+            <Cookie />
+            <Alerts />
+            <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
+              <OnCSSBug />
+              {children}
+            </main>
+            <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
+              <Link
+                isExternal
+                className="flex items-center gap-1 pb-14 text-current"
+                href={siteConfig.links.mypage}
+                title="Nimród oldala"
+              >
+                <span className="text-default-600">Fejlesztette</span>
+                <p className="text-selfprimary">Simon Nimród</p>
+                <span className="text-default-600">10.C</span>
+              </Link>
+              <br />
+              <PageNav />
+            </footer>
+          </div>
+        </Providers>
         <GoogleAnalytics measurementId="G-P74RJ9THHS" />
       </body>
     </html>

@@ -35,7 +35,7 @@ export const Alert = ({
           <circle
             cx="1"
             cy="1"
-            r="1"
+            r="0.75"
             transform="matrix(1 0 0 -1 11 9)"
             fill="currentColor"
           />

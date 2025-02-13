@@ -21,7 +21,7 @@ const SVGAttributes = {
 
 const Footer = () => {
   const STYLES =
-    "flex gap-0.5 p-2 flex-col items-center justify-center rounded-lg bg-selfprimary-bg text-center text-sm text-selfprimary-900 hover:text-selfprimary-700";
+    "flex gap-0.5 p-2 flex-col items-center justify-center rounded-lg bg-selfprimary-bg text-center text-sm text-foreground hover:text-selfprimary-900";
 
   return (
     <div className="mb-2 rounded-lg border-selfprimary-300 bg-selfprimary-100 p-2">
@@ -66,7 +66,7 @@ const Footer = () => {
           </svg>
           Küldj visszajelzést a DÖ-nek vagy a fejlesztőnek! (hibák, ötletek,
           stb.)
-          <h5 className="rounded-full bg-selfsecondary-200 px-3 py-1 mt-1">
+          <h5 className="mt-1 rounded-full bg-selfsecondary-200 px-3 py-1">
             Irány az űrlap!
           </h5>
         </a>

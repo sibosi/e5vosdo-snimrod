@@ -87,15 +87,15 @@ const CreateEvent = ({
   return (
     <div className="space-y-2">
       <SelectImage onChange={setEventImage} value={eventImage} />
-      <div className="grid grid-cols-2 gap-x-2">
+      <div>
         <p>Az esemény neve</p>
-        <p>Az esemény dátuma</p>
         <Input
           label="Esemény neve"
           value={eventName}
           onChange={setEventName}
           placeholder="Az esemény / bejegyzés neve"
         />
+        <p>Az esemény dátuma</p>
         <Input
           label="Esemény dátuma"
           value={eventDate}

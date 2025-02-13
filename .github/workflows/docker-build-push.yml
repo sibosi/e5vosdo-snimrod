@@ -5,11 +5,17 @@ on:
     branches:
       - master
       - "*--builddocker*"
+  issue_comment:
+    types: [created]
 
 jobs:
   build:
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'issue_comment' &&
+       contains(github.event.comment.body, 'run docker-build') &&
+       github.event.issue.pull_request != null)
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3

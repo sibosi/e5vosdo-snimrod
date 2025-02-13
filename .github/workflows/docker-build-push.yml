@@ -12,12 +12,27 @@ jobs:
   build:
     if: >
       github.event_name == 'push' ||
-      (github.event_name == 'issue_comment' &&
-       contains(github.event.comment.body, 'run docker-build') &&
-       github.event.issue.pull_request != null)
+      (
+        github.event_name == 'issue_comment' &&
+        contains(github.event.comment.body, 'run docker-build') &&
+        github.event.issue.pull_request != null
+      )
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Determine PR number
+        if: github.event_name == 'issue_comment'
+        id: get_pr_number
+        run: |
+          echo "pr_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+
+      - name: Checkout PR code
+        if: github.event_name == 'issue_comment'
+        uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ steps.get_pr_number.outputs.pr_number }}/head
+
+      - name: Checkout push code
+        if: github.event_name == 'push'
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
@@ -51,10 +66,10 @@ jobs:
             MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-            ENCRYPTION_PASSWORD: ${{ secrets.ENCRYPTION_PASSWORD }}
-            NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            ENCRYPTION_PASSWORD=${{ secrets.ENCRYPTION_PASSWORD }}
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             PUBLIC_VAPID_KEY=${{ secrets.PUBLIC_VAPID_KEY }}
             PRIVATE_VAPID_KEY=${{ secrets.PRIVATE_VAPID_KEY }}
 

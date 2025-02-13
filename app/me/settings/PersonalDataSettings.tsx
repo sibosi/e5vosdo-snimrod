@@ -16,7 +16,6 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
     /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/.test(username);
   const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]+$/.test(code);
 
-  // Define the save callback using useCallback to have stable identity
   const handleSave = useCallback(() => {
     if (nicknameError || studentCodeError) return;
     if (
@@ -44,7 +43,6 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
     selfUser.food_menu,
   ]);
 
-  // Register the save callback after render completes
   useEffect(() => {
     setSaveSettings(() => handleSave);
   }, [handleSave, setSaveSettings]);

@@ -2,10 +2,10 @@ import { getAuth } from "@/db/dbreq";
 import {
   ManageActiveEvents,
   ManagePreviewEvents,
-} from "@/app/about/eventManager";
+} from "@/app/users/eventManager";
 import PleaseLogin from "../me/redirectToLogin";
 
-const AboutPage = async () => {
+const DevPage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
@@ -20,4 +20,4 @@ const AboutPage = async () => {
   );
 };
 
-export default AboutPage;
+export default DevPage;

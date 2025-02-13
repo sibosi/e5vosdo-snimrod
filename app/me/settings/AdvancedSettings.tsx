@@ -1,11 +1,10 @@
-// components/AdvancedSettings.tsx
 "use client";
 import React from "react";
 import { Button } from "@nextui-org/react";
 import VersionTable from "../versionTable";
 import VersionManager from "@/components/PWA/versionManager";
 import CacheManager from "@/components/PWA/cacheManager";
-import { ReinstallServiceWorker } from "@/components/PWA/managesw";
+import { ManageSW, ReinstallServiceWorker } from "@/components/PWA/managesw";
 
 const AdvancedSettings = () => {
   return (
@@ -27,6 +26,7 @@ const AdvancedSettings = () => {
           Gyorsítótár kiürítése
         </Button>
         <ReinstallServiceWorker />
+        <ManageSW />
       </div>
       <CacheManager />
     </div>

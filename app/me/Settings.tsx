@@ -14,11 +14,9 @@ import AppearanceSettings from "./settings/AppearanceSettings";
 import NotificationSettings from "./settings/NotificationSettings";
 import PersonalDataSettings from "./settings/PersonalDataSettings";
 import { UserType } from "@/db/dbreq";
-import { SettingsProps } from "./settings/saveSettings";
 
 const Settings = ({ selfUser }: { selfUser: UserType }) => {
   const [activeSection, setActiveSection] = useState<number | null>(null);
-  // This state holds the save callback function that the "Mentés" button will call.
   const [saveSettingsCallback, setSaveSettingsCallback] =
     useState<() => void>();
 

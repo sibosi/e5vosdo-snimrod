@@ -1,10 +1,11 @@
 import { getAuth, hasPermission } from "@/db/dbreq";
-import { Avatar, Button, Link } from "@nextui-org/react";
-import MySettings from "./mysettings";
+import { Avatar, Link } from "@nextui-org/react";
 import IDCard from "./IDCard";
 import PleaseLogin from "./redirectToLogin";
 import Tray from "@/components/tray";
 import Settings from "./Settings";
+import { LogoutBadge } from "@/components/LogOut";
+import { ManageSW } from "@/components/PWA/managesw";
 
 const MePage = async () => {
   const selfUser = await getAuth();
@@ -23,18 +24,24 @@ const MePage = async () => {
           <h1 className="text-2xl font-semibold lg:text-5xl">
             {selfUser.name}
           </h1>
-          <h2 className="text-lg font-light lg:text-2xl">{selfUser.email}</h2>
+          <h2 className="flex items-center gap-2 text-lg font-light lg:text-2xl">
+            <LogoutBadge />
+            {selfUser.EJG_code && (
+              <IDCard codeType="barcode" EJG_code={selfUser.EJG_code} />
+            )}
+          </h2>
         </div>
       </div>
 
       <Tray title="Kezelési lehetőségek" className="text-lg">
         <div className="flex flex-wrap justify-between">
           {(await hasPermission(selfUser.email, "getUsers")) ? (
-            <a href="/about">
-              <Button className="bg-selfsecondary-300">
-                Felhasználók és oldal
-              </Button>
-            </a>
+            <Link
+              href="/users"
+              className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+            >
+              Felhasználók és oldal
+            </Link>
           ) : null}
 
           {selfUser.permissions.includes("admin") ? (
@@ -58,12 +65,6 @@ const MePage = async () => {
       </Tray>
 
       <Settings selfUser={selfUser} />
-
-      <div className="hidden">
-        <IDCard EJG_code={selfUser.EJG_code} codeType="barcode" center={true} />
-
-        <MySettings selfUser={selfUser} />
-      </div>
     </div>
   );
 };

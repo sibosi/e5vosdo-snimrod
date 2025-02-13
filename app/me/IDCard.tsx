@@ -4,6 +4,7 @@ import QrCodeGenerator from "./QRCode";
 import BarcodeGenerator from "./BarCode";
 import {
   Button,
+  Chip,
   Modal,
   ModalBody,
   ModalContent,
@@ -15,11 +16,9 @@ import { Alert } from "@/components/home/alert";
 const IDCard = ({
   EJG_code,
   codeType,
-  center,
 }: {
   EJG_code: string;
   codeType?: "qr" | "barcode" | "both";
-  center?: boolean;
 }) => {
   const [showQr, setShowQr] = useState(false);
   const [showBarcode, setShowBarcode] = useState(false);
@@ -30,15 +29,19 @@ const IDCard = ({
   };
 
   return (
-    <div className={"flex max-w-min p-4 " + (center ? "mx-auto" : "")}>
-      <Button onPress={handleGenerate} className="w-full bg-selfprimary-200">
-        {codeType === "both"
-          ? "QR kód és vonalkód"
-          : codeType === "qr"
-            ? "QR kód"
-            : "Vonalkód"}{" "}
-        megjelenítése
-      </Button>
+    <>
+      <button
+        onClick={handleGenerate}
+        className="relative box-border inline-flex h-6 min-w-min max-w-fit items-center justify-between whitespace-nowrap rounded-full bg-selfprimary-100 px-1 text-tiny text-foreground-800"
+      >
+        <span className="flex-1 px-1 pl-0.5 font-normal text-inherit">
+          {(() => {
+            if (codeType === "both") return "QR kód és vonalkód megjelenítése";
+            if (codeType === "qr") return "QR kód megjelenítése";
+            return "Vonalkód megjelenítése";
+          })()}
+        </span>
+      </button>
 
       <Modal
         isOpen={showQr || showBarcode}
@@ -72,7 +75,7 @@ const IDCard = ({
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </>
   );
 };
 

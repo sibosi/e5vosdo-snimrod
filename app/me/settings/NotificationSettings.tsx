@@ -1,4 +1,3 @@
-// components/NotificationSettings.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import { Alert, Switch } from "@nextui-org/react";

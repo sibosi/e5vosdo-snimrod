@@ -3,7 +3,7 @@ import PleaseLogin from "../me/redirectToLogin";
 import { Alert } from "@/components/home/alert";
 import CreateEvent from "./CreateEvent";
 
-const AboutPage = async ({ id = undefined }: { id?: number }) => {
+const CreatorPage = async ({ id = undefined }: { id?: number }) => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
@@ -23,4 +23,4 @@ const AboutPage = async ({ id = undefined }: { id?: number }) => {
   );
 };
 
-export default AboutPage;
+export default CreatorPage;

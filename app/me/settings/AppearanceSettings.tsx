@@ -1,4 +1,3 @@
-// components/AppearanceSettings.tsx
 "use client";
 import React, { useState } from "react";
 import { Button } from "@nextui-org/react";

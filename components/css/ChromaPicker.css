@@ -3,14 +3,16 @@
   width: 300px;
   height: 30px;
   border-radius: 6px;
-  outline: none;
-  border: none;
-  cursor: pointer;
+
   background: linear-gradient(
     to right,
     hsl(--primary-hue, 0%, 50%),
     hsl(--primary-hue, 100%, 50%)
   );
+
+  outline: none;
+  border: none;
+  cursor: pointer;
 }
 
 /* Remove default slider thumb appearance - WebKit */

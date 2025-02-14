@@ -160,22 +160,21 @@ export default function ThemePicker({ colorName }: { colorName: string }) {
         >
           {chroma}
         </div>
-        <div className="my-3 flex items-center gap-4">
-          <input
-            title="Hue picker"
-            type="range"
-            min="0"
-            max="100"
-            value={chroma}
-            onChange={(e) => setChroma(Number(e.target.value))}
-            className="chroma-slider"
-            style={{
-              background: `linear-gradient(to right, ${hexFromArgb(
-                Hct.from(hue, 0, 50).toInt(),
-              )}, ${hexFromArgb(Hct.from(hue, 100, 50).toInt())})`,
-            }}
-          />
-        </div>
+
+        <input
+          title="Hue picker"
+          type="range"
+          min="0"
+          max="100"
+          value={chroma}
+          onChange={(e) => setChroma(Number(e.target.value))}
+          className="chroma-slider"
+          style={{
+            background: `linear-gradient(to right, ${hexFromArgb(
+              Hct.from(hue, 0, 50).toInt(),
+            )}, ${hexFromArgb(Hct.from(hue, 100, 50).toInt())})`,
+          }}
+        />
       </div>
     </div>
   );

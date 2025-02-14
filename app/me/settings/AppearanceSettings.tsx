@@ -1,15 +1,31 @@
 "use client";
 import React, { useState } from "react";
-import { Switch } from "@nextui-org/react";
+import { Radio, RadioGroup, Switch } from "@nextui-org/react";
 import ThemePicker, { ThemeOptions } from "@/components/themePicker";
 
 const AppearanceSettings = () => {
+  const [theme, setTheme] = useState<string>(
+    localStorage.getItem("theme") || "system",
+  );
   const [isMaterialBg, setIsMaterialBg] = useState<boolean>(
     localStorage.getItem("materialBg") === "true",
   );
 
   return (
     <div className="space-y-4">
+      <RadioGroup
+        value={theme}
+        onChange={(e) => {
+          localStorage.setItem("theme", e.target.value);
+          setTheme(e.target.value);
+          location.reload();
+        }}
+      >
+        <Radio value="system">Rendszer</Radio>
+        <Radio value="light">Világos</Radio>
+        <Radio value="dark">Sötét</Radio>
+      </RadioGroup>
+
       <ThemeOptions />
       <ThemePicker colorName="primary" />
       <ThemePicker colorName="secondary" />

@@ -58,6 +58,12 @@ const nextConfig = {
     }
     return config;
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins: [process.env.NEXTAUTH_URL + "/api/upload"],
+      bodySizeLimit: 1024 * 1024 * 10, // 10MB
+    },
+  },
 };
 
 module.exports = withBundleAnalyzer(nextConfig);

@@ -45,7 +45,14 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                   : event.title
               }
               details={event.description ?? undefined}
-              description={event.time}
+              description={
+                new Date(event.time).toLocaleDateString("hu-HU", {
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                }) ?? ""
+              }
               image={event.image ?? "/events/default.jpg"}
               popup={true}
               button_size="sm"
@@ -58,7 +65,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                     size="sm"
                     className="bg-selfsecondary-200"
                   >
-                    {new Date(event.show_time).toLocaleDateString("hu-HU", {
+                    {new Date(event.time).toLocaleDateString("hu-HU", {
                       weekday: "long",
                     })}
                   </Chip>

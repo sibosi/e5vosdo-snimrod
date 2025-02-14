@@ -2,7 +2,13 @@
 import { Alert } from "@/components/home/alert";
 import { siteConfig } from "@/config/site";
 import { ImageData } from "@/db/supabaseStorage";
-import { Button, Modal, ModalContent, ModalHeader } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalContent,
+  ModalHeader,
+} from "@nextui-org/react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -186,21 +192,17 @@ const SelectImage = ({
                 </a>
                 <span>.</span>
               </Alert>
-              <input
+              <Input
                 title="file"
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
+                color="default"
               />
               {selectedFile && (
-                <div className="mt-2">
-                  <Button
-                    onPress={handleUpload}
-                    className="rounded bg-blue-500 px-3 py-1 text-white"
-                  >
-                    Feltöltés
-                  </Button>
-                </div>
+                <Button onPress={handleUpload} className="mt-2" color="primary">
+                  Feltöltés
+                </Button>
               )}
             </div>
           </div>

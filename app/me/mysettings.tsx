@@ -15,11 +15,7 @@ import VersionTable from "./versionTable";
 import { Section } from "@/components/home/section";
 import CacheManager from "@/components/PWA/cacheManager";
 import VersionManager from "@/components/PWA/versionManager";
-import {
-  ThemeOptions,
-  ThemeTemplatePrimary,
-  ThemeTemplateSecondary,
-} from "@/components/themePicker";
+import { ThemeOptions, ThemeTemplate } from "@/components/themePicker";
 import { Alert } from "@/components/home/alert";
 import { ReinstallServiceWorker } from "@/components/PWA/managesw";
 
@@ -419,8 +415,8 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           defaultStatus="closed"
           dropdownable={true}
         >
-          <ThemeTemplatePrimary />
-          <ThemeTemplateSecondary />
+          <ThemeTemplate color="primary" />
+          <ThemeTemplate color="secondary" />
 
           <Button
             onPress={() => {

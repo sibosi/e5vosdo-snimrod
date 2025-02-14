@@ -1,11 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@nextui-org/react";
-import {
-  ThemeOptions,
-  ThemeTemplatePrimary,
-  ThemeTemplateSecondary,
-} from "@/components/themePicker";
+import ThemePicker, { ThemeOptions } from "@/components/themePicker";
 
 const AppearanceSettings = () => {
   const [isMaterialBg, setIsMaterialBg] = useState<boolean>(
@@ -13,10 +9,10 @@ const AppearanceSettings = () => {
   );
 
   return (
-    <div>
+    <div className="space-y-4">
       <ThemeOptions />
-      <ThemeTemplatePrimary />
-      <ThemeTemplateSecondary />
+      <ThemePicker colorName="primary" />
+      <ThemePicker colorName="secondary" />
       <Button
         onPress={() => {
           localStorage.setItem("materialBg", isMaterialBg ? "false" : "true");

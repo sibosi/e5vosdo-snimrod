@@ -5,14 +5,13 @@ import PleaseLogin from "./redirectToLogin";
 import Tray from "@/components/tray";
 import Settings from "./Settings";
 import { LogoutBadge } from "@/components/LogOut";
-import { ManageSW } from "@/components/PWA/managesw";
 
 const MePage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 lg:max-w-[50vw]">
       <div className="flex content-start items-center gap-4">
         <Avatar
           isBordered

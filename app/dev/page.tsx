@@ -12,7 +12,7 @@ const DevPage = async () => {
   return (
     <>
       <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
-        🚧 Dev 🚧
+        Események kezelése
       </h1>
       <ManagePreviewEvents selfUser={selfUser} />
       <ManageActiveEvents selfUser={selfUser} />

@@ -1,8 +1,16 @@
 "use client";
-import { EventType } from "@/db/event";
-import { Button, Link } from "@nextui-org/react";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { EventType } from "@/db/event";
+import {
+  Button,
+  Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+} from "@nextui-org/react";
+import Image from "next/image";
 
 interface UserType {
   permissions: string[];
@@ -14,8 +22,19 @@ export function ManagePreviewEvents({
   const [previewEvents, setPreviewEvents] = useState<EventType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch preview events from the server
+  const openModal = (event: EventType) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedEvent(null);
+    setIsModalOpen(false);
+  };
+
   const fetchPreviewEvents = async () => {
     try {
       setIsLoading(true);
@@ -39,7 +58,6 @@ export function ManagePreviewEvents({
     }
   };
 
-  // Approve an event
   const approvePreviewEvent = async (id: number) => {
     try {
       setIsLoading(true);
@@ -55,7 +73,6 @@ export function ManagePreviewEvents({
       });
       if (!res.ok) throw new Error("Failed to approve event");
 
-      // Refresh the preview list after approving
       await fetchPreviewEvents();
     } catch (err) {
       console.error(err);
@@ -65,7 +82,6 @@ export function ManagePreviewEvents({
     }
   };
 
-  // Reject an event
   const rejectPreviewEvent = async (id: number) => {
     try {
       setIsLoading(true);
@@ -81,7 +97,6 @@ export function ManagePreviewEvents({
       });
       if (!res.ok) throw new Error("Failed to reject event");
 
-      // Refresh the preview list after rejecting
       await fetchPreviewEvents();
     } catch (err) {
       console.error(err);
@@ -92,7 +107,6 @@ export function ManagePreviewEvents({
   };
 
   useEffect(() => {
-    // Only load events if the user is admin
     if (selfUser.permissions.includes("admin")) {
       fetchPreviewEvents();
     }
@@ -121,41 +135,29 @@ export function ManagePreviewEvents({
             className="rounded-xl border border-selfprimary-300 bg-selfprimary-100 p-4"
           >
             {event.image && (
-              <Image
-                src={event.image}
-                alt={
-                  typeof event.title === "string"
-                    ? event.title
-                    : event.title.join(" ")
-                }
-                style={{
-                  width: "100%",
-                  borderRadius: "4px",
-                  marginBottom: "0.5rem",
-                }}
-              />
+              <div className="relative h-56">
+                <Image
+                  src={event.image}
+                  alt={
+                    typeof event.title === "string"
+                      ? event.title
+                      : event.title.join(" ")
+                  }
+                  fill={true}
+                  className="mb-0.5 rounded-md object-cover"
+                />
+              </div>
             )}
             <h3>
               {Array.isArray(event.title)
                 ? event.title.join(" / ")
                 : event.title}
             </h3>
-            <p>Description: {event.description || "N/A"}</p>
-            <p>Time: {new Date(event.time).toLocaleString()}</p>
-            {event.show_time && (
-              <p>Show Time: {new Date(event.show_time).toLocaleString()}</p>
-            )}
-            <p>Hide Time: {new Date(event.hide_time).toLocaleString()}</p>
-            <p>Tags: {event.tags.join(", ")}</p>
-            <p>Author: {event.author ?? "N/A"}</p>
-            <p>Show Author: {event.show_author ? "Yes" : "No"}</p>
-            <p>Show at Carousel: {event.show_at_carousel ? "Yes" : "No"}</p>
-            <p>Show at Events: {event.show_at_events ? "Yes" : "No"}</p>
-            <p>ID: {event.id}</p>
 
-            <div
-              style={{ marginTop: "0.5rem", display: "flex", gap: "0.5rem" }}
-            >
+            <div className="flex flex-wrap gap-4">
+              <Button onPress={() => openModal(event)} disabled={isLoading}>
+                Részletek
+              </Button>
               <Button
                 onPress={() => approvePreviewEvent(event.id)}
                 disabled={isLoading}
@@ -175,6 +177,52 @@ export function ManagePreviewEvents({
           </div>
         ))}
       </div>
+
+      <Modal isOpen={isModalOpen} onClose={closeModal} size="5xl">
+        <ModalContent>
+          <ModalHeader>
+            {selectedEvent
+              ? Array.isArray(selectedEvent.title)
+                ? selectedEvent.title.join(" / ")
+                : selectedEvent.title
+              : "Event Details"}
+          </ModalHeader>
+          <ModalBody>
+            {selectedEvent && (
+              <>
+                <p>Description: {selectedEvent.description || "N/A"}</p>
+                <p>Time: {new Date(selectedEvent.time).toLocaleString()}</p>
+                {selectedEvent.show_time && (
+                  <p>
+                    Show Time:{" "}
+                    {new Date(selectedEvent.show_time).toLocaleString()}
+                  </p>
+                )}
+                <p>
+                  Hide Time:{" "}
+                  {new Date(selectedEvent.hide_time).toLocaleString()}
+                </p>
+                <p>Tags: {selectedEvent.tags.join(", ")}</p>
+                <p>Author: {selectedEvent.author ?? "N/A"}</p>
+                <p>Show Author: {selectedEvent.show_author ? "Yes" : "No"}</p>
+                <p>
+                  Show at Carousel:{" "}
+                  {selectedEvent.show_at_carousel ? "Yes" : "No"}
+                </p>
+                <p>
+                  Show at Events: {selectedEvent.show_at_events ? "Yes" : "No"}
+                </p>
+                <p>ID: {selectedEvent.id}</p>
+              </>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={closeModal}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
@@ -185,8 +233,19 @@ export function ManageActiveEvents({
   const [activeEvents, setActiveEvents] = useState<EventType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch active events from the server
+  const openModal = (event: EventType) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedEvent(null);
+    setIsModalOpen(false);
+  };
+
   const fetchActiveEvents = async () => {
     try {
       setIsLoading(true);
@@ -225,7 +284,6 @@ export function ManageActiveEvents({
       });
       if (!res.ok) throw new Error("Failed to rollback event");
 
-      // Refresh the active list after rollback
       await fetchActiveEvents();
     } catch (err) {
       console.error(err);
@@ -236,7 +294,6 @@ export function ManageActiveEvents({
   };
 
   useEffect(() => {
-    // Only load events if the user is admin
     if (selfUser.permissions.includes("admin")) {
       fetchActiveEvents();
     }
@@ -265,41 +322,29 @@ export function ManageActiveEvents({
             className="rounded-xl border border-selfprimary-300 bg-selfprimary-100 p-4"
           >
             {event.image && (
-              <img
-                src={event.image}
-                alt={
-                  typeof event.title === "string"
-                    ? event.title
-                    : event.title.join(" ")
-                }
-                style={{
-                  width: "100%",
-                  borderRadius: "4px",
-                  marginBottom: "0.5rem",
-                }}
-              />
+              <div className="relative h-56">
+                <Image
+                  src={event.image}
+                  alt={
+                    typeof event.title === "string"
+                      ? event.title
+                      : event.title.join(" ")
+                  }
+                  fill={true}
+                  className="mb-0.5 rounded-md object-cover"
+                />
+              </div>
             )}
             <h3>
               {Array.isArray(event.title)
                 ? event.title.join(" / ")
                 : event.title}
             </h3>
-            <p>Description: {event.description || "N/A"}</p>
-            <p>Time: {new Date(event.time).toLocaleString()}</p>
-            {event.show_time && (
-              <p>Show Time: {new Date(event.show_time).toLocaleString()}</p>
-            )}
-            <p>Hide Time: {new Date(event.hide_time).toLocaleString()}</p>
-            <p>Tags: {event.tags.join(", ")}</p>
-            <p>Author: {event.author ?? "N/A"}</p>
-            <p>Show Author: {event.show_author ? "Yes" : "No"}</p>
-            <p>Show at Carousel: {event.show_at_carousel ? "Yes" : "No"}</p>
-            <p>Show at Events: {event.show_at_events ? "Yes" : "No"}</p>
-            <p>ID: {event.id}</p>
 
-            <div
-              style={{ marginTop: "0.5rem", display: "flex", gap: "0.5rem" }}
-            >
+            <div className="flex flex-wrap gap-4">
+              <Button onPress={() => openModal(event)} disabled={isLoading}>
+                Részletek
+              </Button>
               <Button
                 onPress={() => rollbackEvent(event.id)}
                 disabled={isLoading}
@@ -310,6 +355,52 @@ export function ManageActiveEvents({
           </div>
         ))}
       </div>
+
+      <Modal isOpen={isModalOpen} onClose={closeModal} size="5xl">
+        <ModalContent>
+          <ModalHeader>
+            {selectedEvent
+              ? Array.isArray(selectedEvent.title)
+                ? selectedEvent.title.join(" / ")
+                : selectedEvent.title
+              : "Event Details"}
+          </ModalHeader>
+          <ModalBody>
+            {selectedEvent && (
+              <>
+                <p>Description: {selectedEvent.description || "N/A"}</p>
+                <p>Time: {new Date(selectedEvent.time).toLocaleString()}</p>
+                {selectedEvent.show_time && (
+                  <p>
+                    Show Time:{" "}
+                    {new Date(selectedEvent.show_time).toLocaleString()}
+                  </p>
+                )}
+                <p>
+                  Hide Time:{" "}
+                  {new Date(selectedEvent.hide_time).toLocaleString()}
+                </p>
+                <p>Tags: {selectedEvent.tags.join(", ")}</p>
+                <p>Author: {selectedEvent.author ?? "N/A"}</p>
+                <p>Show Author: {selectedEvent.show_author ? "Yes" : "No"}</p>
+                <p>
+                  Show at Carousel:{" "}
+                  {selectedEvent.show_at_carousel ? "Yes" : "No"}
+                </p>
+                <p>
+                  Show at Events: {selectedEvent.show_at_events ? "Yes" : "No"}
+                </p>
+                <p>ID: {selectedEvent.id}</p>
+              </>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={closeModal}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

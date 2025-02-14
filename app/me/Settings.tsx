@@ -84,7 +84,12 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
       <Drawer
         isOpen={activeSection !== null}
         onOpenChange={(open) => !open && setActiveSection(null)}
-        size="full"
+        size={
+          typeof window !== "undefined" && window.innerWidth >= 1024
+            ? "md"
+            : "full"
+        }
+        backdrop="transparent"
         onClose={() => {
           setActiveSection(null);
           setSaveSettingsCallback(undefined);

@@ -47,6 +47,7 @@ const SelectImage = ({
       window.location.reload();
     } catch (error) {
       console.error(error);
+      alert("Hiba történt! A fájl mérete nem lehet nagyobb, mint 1MB.");
     }
   };
 
@@ -193,12 +194,12 @@ const SelectImage = ({
               />
               {selectedFile && (
                 <div className="mt-2">
-                  <button
-                    onClick={handleUpload}
+                  <Button
+                    onPress={handleUpload}
                     className="rounded bg-blue-500 px-3 py-1 text-white"
                   >
                     Feltöltés
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>

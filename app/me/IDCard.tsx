@@ -28,6 +28,8 @@ const IDCard = ({
     if (codeType !== "qr") setShowBarcode(!showBarcode);
   };
 
+  if (["null", "undefined", ""].includes(EJG_code)) return <></>;
+
   return (
     <>
       <button

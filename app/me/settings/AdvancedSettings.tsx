@@ -25,7 +25,7 @@ const AdvancedSettings = () => {
         >
           Gyorsítótár kiürítése
         </Button>
-        <ReinstallServiceWorker />
+
         <ManageSW />
       </div>
       <CacheManager />

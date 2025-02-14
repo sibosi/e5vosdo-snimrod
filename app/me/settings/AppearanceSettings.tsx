@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button } from "@nextui-org/react";
+import { Switch } from "@nextui-org/react";
 import ThemePicker, { ThemeOptions } from "@/components/themePicker";
 
 const AppearanceSettings = () => {
@@ -13,18 +13,17 @@ const AppearanceSettings = () => {
       <ThemeOptions />
       <ThemePicker colorName="primary" />
       <ThemePicker colorName="secondary" />
-      <Button
-        onPress={() => {
+
+      <Switch
+        isSelected={isMaterialBg}
+        onChange={() => {
           localStorage.setItem("materialBg", isMaterialBg ? "false" : "true");
           setIsMaterialBg(!isMaterialBg);
           location.reload();
         }}
-        className="fill-selfprimary"
       >
-        {isMaterialBg
-          ? "Színes háttér kikapcsolása"
-          : "Színes háttér bekapcsolása"}
-      </Button>
+        Színes háttér
+      </Switch>
     </div>
   );
 };

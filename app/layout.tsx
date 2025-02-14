@@ -57,7 +57,7 @@ export default async function RootLayout({
   if (session?.user?.email) console.log("New user: " + session.user.email);
 
   // TODO: Remove
-  if (!selfUser?.permissions.includes("admin"))
+  if (!selfUser?.permissions.includes("tester") &&selfUser?.permissions.includes("admin"))
     children = (
       <div>
         <Alert className="border-selfprimary-400 bg-selfprimary-100 text-selfprimary-900">

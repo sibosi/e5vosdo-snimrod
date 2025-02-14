@@ -1,4 +1,4 @@
-export default function UsersLayout({
+export default function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

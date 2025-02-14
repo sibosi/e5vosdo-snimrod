@@ -34,7 +34,6 @@ export const GET = async (
       const mod = await modules[requestedModule as keyof typeof modules];
 
       if (typeof (mod as { [key: string]: any })[method] === "function") {
-        console.log("body:", body);
         return NextResponse.json(
           await (mod as { [key: string]: any })[method](
             selfUser,

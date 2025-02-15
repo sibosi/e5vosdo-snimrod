@@ -54,7 +54,6 @@ export const SideCard = ({
               src={image}
               alt="image"
               priority={true}
-              unoptimized={image.startsWith("http")}
             />
           </figure>
         )}

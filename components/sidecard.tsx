@@ -58,7 +58,7 @@ export const SideCard = ({
             />
           </figure>
         )}
-        <div className="card-body -mx-2 bg-neutral-200 bg-opacity-10 dark:bg-opacity-0 dark:bg-none">
+        <div className="card-body -mx-2 bg-neutral-200 bg-opacity-15 dark:bg-opacity-0 dark:bg-none">
           <div className="flex justify-between">
             <h2 className="card-title rounded-md bg-selfprimary-20 px-2 text-foreground">
               {title}

@@ -58,12 +58,12 @@ export const PopupButton: React.FC<CardProps> = ({
                 {title}
               </ModalHeader>
               <ModalBody>
-                <div className="overflow-auto sm:flex">
-                  <div className="relative w-auto justify-center p-14 sm:w-56 sm:justify-normal sm:p-28">
+                <div className="overflow-auto">
+                  <div className="relative h-56 w-full sm:p-12">
                     {typeof image === "string" && (
                       <Image
                         fill={true}
-                        className="max-h-fit rounded-md object-contain"
+                        className="max-h-fit rounded-md object-cover"
                         src={image}
                         alt="image"
                         priority={true}

@@ -45,6 +45,8 @@ export const PopupButton: React.FC<CardProps> = ({
         size={button_size == undefined ? "md" : button_size}
         onPress={() => handleOpen()}
         className={className}
+        color="primary"
+        radius="lg"
       >
         Részletek
       </Button>
@@ -78,7 +80,7 @@ export const PopupButton: React.FC<CardProps> = ({
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button className="fill-selfprimary" onPress={onClose}>
+                <Button color="primary" onPress={onClose}>
                   Ok
                 </Button>
               </ModalFooter>

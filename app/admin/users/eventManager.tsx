@@ -132,7 +132,7 @@ export function ManagePreviewEvents({
         {previewEvents.map((event) => (
           <div
             key={event.id}
-            className="rounded-xl border border-selfprimary-300 bg-selfprimary-100 p-4"
+            className="space-y-2 rounded-xl bg-selfprimary-100 p-4"
           >
             {event.image && (
               <div className="relative h-56">
@@ -148,31 +148,42 @@ export function ManagePreviewEvents({
                 />
               </div>
             )}
-            <h3>
+            <h3 className="font-semibold">
               {Array.isArray(event.title)
                 ? event.title.join(" / ")
                 : event.title}
             </h3>
 
             <div className="flex flex-wrap gap-4">
-              <Button onPress={() => openModal(event)} disabled={isLoading}>
+              <Button
+                onPress={() => openModal(event)}
+                disabled={isLoading}
+                className="bg-selfprimary-300"
+              >
                 Részletek
               </Button>
+              <Link
+                href={`/creator/${event.id}`}
+                className="rounded-xl bg-selfprimary-300 px-4 py-2.5 text-sm text-foreground"
+              >
+                Szerkesztés
+              </Link>
               <Button
                 onPress={() => approvePreviewEvent(event.id)}
                 disabled={isLoading}
+                color="success"
+                variant="flat"
               >
-                Approve
+                Jóváhagyás
               </Button>
               <Button
                 onPress={() => rejectPreviewEvent(event.id)}
                 disabled={isLoading}
+                color="danger"
+                variant="flat"
               >
-                Reject
+                Elutasítás
               </Button>
-              <a href={`/creator/${event.id}`}>
-                <Button>View</Button>
-              </a>
             </div>
           </div>
         ))}
@@ -319,7 +330,7 @@ export function ManageActiveEvents({
         {activeEvents.map((event) => (
           <div
             key={event.id}
-            className="rounded-xl border border-selfprimary-300 bg-selfprimary-100 p-4"
+            className="space-y-2 rounded-xl bg-selfprimary-100 p-4"
           >
             {event.image && (
               <div className="relative h-56">
@@ -335,19 +346,24 @@ export function ManageActiveEvents({
                 />
               </div>
             )}
-            <h3>
+            <h3 className="font-semibold">
               {Array.isArray(event.title)
                 ? event.title.join(" / ")
                 : event.title}
             </h3>
 
             <div className="flex flex-wrap gap-4">
-              <Button onPress={() => openModal(event)} disabled={isLoading}>
+              <Button
+                onPress={() => openModal(event)}
+                disabled={isLoading}
+                className="bg-selfprimary-300"
+              >
                 Részletek
               </Button>
               <Button
                 onPress={() => rollbackEvent(event.id)}
                 disabled={isLoading}
+                className="bg-selfsecondary-300"
               >
                 Rollback
               </Button>

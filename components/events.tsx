@@ -63,7 +63,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                   <Chip
                     key={`day-of-week-${event.id}`}
                     size="sm"
-                    className="bg-selfsecondary-200"
+                    className="bg-selfsecondary-50"
                   >
                     {new Date(event.time).toLocaleDateString("hu-HU", {
                       weekday: "long",

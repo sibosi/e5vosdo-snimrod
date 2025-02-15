@@ -36,6 +36,7 @@ export const SideCard = ({
             button_size={button_size}
             details={details}
             makeStringToHTML={makeStringToHTML}
+            className="text-sm"
           />
         )
       );
@@ -57,12 +58,17 @@ export const SideCard = ({
             />
           </figure>
         )}
-        <div className="card-body bg-neutral-200 bg-opacity-50 dark:bg-opacity-0 dark:bg-none">
-          <div className="flex">
-            <h2 className="card-title w-full text-foreground">{title}</h2>
+        <div className="card-body -mx-2 bg-neutral-200 bg-opacity-10 dark:bg-opacity-0 dark:bg-none">
+          <div className="flex justify-between">
+            <h2 className="card-title rounded-md bg-selfprimary-20 px-2 text-foreground">
+              {title}
+            </h2>
+
             <div>{OptionalButton(popup)}</div>
           </div>
-          <p className="text-foreground">{description}</p>
+          <p className="w-fit rounded-md bg-selfprimary-20 px-2 text-foreground">
+            {description}
+          </p>
           {children}
         </div>
       </div>

@@ -433,7 +433,7 @@ export const clubsConfig: Group[] = [
   },
   {
     title: "FLC EJG",
-    image: "/groups/FLC.jpg",
+    image: "/groups/FLC.png",
     description: "",
     details:
       "FLC: Nálunk betekintést nyerhetsz a pénzügyek világába, miközben fejlesztheted üzleti, marketing és értékesítési készségeidet. Különböző szakemberek által tartott előadásokon és csoportos foglalkozásokon vehetsz részt, ahol valódi pénzügyi kérdésekkel foglalkozhatsz, és tanulhatsz a modern gazdaságról. Ha még nem vagy jártas a témában, tapasztalt mentorok segítenek neked. Szeretettel várunk minden jelentkezőt!",

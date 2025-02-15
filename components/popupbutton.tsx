@@ -45,6 +45,8 @@ export const PopupButton: React.FC<CardProps> = ({
         size={button_size == undefined ? "md" : button_size}
         onPress={() => handleOpen()}
         className={className}
+        color="primary"
+        radius="lg"
       >
         Részletek
       </Button>
@@ -56,12 +58,12 @@ export const PopupButton: React.FC<CardProps> = ({
                 {title}
               </ModalHeader>
               <ModalBody>
-                <div className="overflow-auto sm:flex">
-                  <div className="relative w-auto justify-center p-14 sm:w-56 sm:justify-normal sm:p-28">
+                <div className="overflow-auto">
+                  <div className="relative h-56 w-full sm:p-12">
                     {typeof image === "string" && (
                       <Image
                         fill={true}
-                        className="max-h-fit rounded-md object-contain"
+                        className="max-h-fit rounded-md object-cover"
                         src={image}
                         alt="image"
                         priority={true}
@@ -78,7 +80,7 @@ export const PopupButton: React.FC<CardProps> = ({
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button className="fill-selfprimary" onPress={onClose}>
+                <Button color="primary" onPress={onClose}>
                   Ok
                 </Button>
               </ModalFooter>

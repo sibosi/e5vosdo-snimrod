@@ -5,9 +5,9 @@ const idk = [
   "/groups/bimun.jpg",
   "/groups/debate.png",
   "/groups/diak.jpg",
-  "/groups/FLC.jpg",
-  "/groups/FLC.jpg",
-  "/groups/FLC.jpg",
+  "/groups/FLC.png",
+  "/groups/FLC.png",
+  "/groups/FLC.png",
 ];
 
 const sampleData = idk.map((uri, index) => ({

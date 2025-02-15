@@ -110,7 +110,7 @@ export default function ThemePicker({ colorName }: { colorName: string }) {
   useEffect(() => {
     loadPalette(colorName, undefined, hue, chroma);
     savePalette(colorName, hue, chroma);
-  }, [hue, chroma]);
+  }, [hue, chroma, colorName]);
 
   return (
     <div

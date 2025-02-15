@@ -112,7 +112,7 @@ const TimetableWeek = () => {
       />
 
       <Button
-        onClick={() =>
+        onPress={() =>
           fetchTimetable(EJG_class, setTimetable, setTimetableWeak)
         }
       >

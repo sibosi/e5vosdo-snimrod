@@ -2,7 +2,7 @@
 import { Button } from "@nextui-org/react";
 import nyersMenu from "@/public/storage/mindenkorimenu.json";
 import { useEffect, useState } from "react";
-import { UserType } from "@/db/dbreq";
+import { PossibleUserType } from "@/db/dbreq";
 
 type MenuType = {
   [x: string]: {
@@ -64,7 +64,8 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
 
   useEffect(() => {
     fetch("/api/getAuth").then((res) => {
-      res.json().then((data: UserType) => {
+      res.json().then((data: PossibleUserType) => {
+        if (!data) return;
         setRealMenu(data.food_menu as any);
       });
     });
@@ -96,27 +97,13 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
           {">"}
         </button>
       </p>
-      <div className="grid max-w-max grid-cols-2 gap-2 overflow-hidden rounded-xl">
+      <div className="grid grid-cols-2 gap-2 overflow-hidden rounded-xl md:max-w-max">
         {realMenu !== "B" && (
-          <MenuCard
-            menu="A"
-            items={
-              tableData[formatDate()] && tableData[formatDate()].A
-                ? tableData[formatDate()].A
-                : []
-            }
-          />
+          <MenuCard menu="A" items={tableData[formatDate()]?.A ?? []} />
         )}
 
         {realMenu !== "A" && (
-          <MenuCard
-            menu="B"
-            items={
-              tableData[formatDate()] && tableData[formatDate()].B
-                ? tableData[formatDate()].B
-                : []
-            }
-          />
+          <MenuCard menu="B" items={tableData[formatDate()]?.B ?? []} />
         )}
       </div>
     </div>

@@ -2,10 +2,17 @@
 import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { hexFromArgb, Hct } from "@material/material-color-utilities";
+import "./css/HuePicker.css";
+import "./css/ChromaPicker.css";
 
-const defaultHues = {
-  primary: 255,
-  secondary: 300,
+const defaultHues: { [key: string]: number } = {
+  primary: 240, // 267
+  secondary: 45, // 305
+};
+
+const defaultChromas: { [key: string]: number } = {
+  primary: 30, // 71
+  secondary: 50, // 87
 };
 
 const versions = [
@@ -25,18 +32,28 @@ const versions = [
 export const loadPalette = (
   colorName: string,
   theme?: "light" | "dark" | "system",
+  hue?: number,
+  chroma?: number,
 ) => {
-  const colorHue = (() => {
-    if (Number(localStorage.getItem(`${colorName}Hue`)))
-      return Number(localStorage.getItem(`${colorName}Hue`));
-    else if (colorName === "primary") return defaultHues.primary;
-    else return defaultHues.secondary;
-  })();
+  const colorHue =
+    hue ||
+    Number(localStorage.getItem(`${colorName}Hue`)) ||
+    defaultHues[colorName] ||
+    255;
 
-  const colorChroma = Number(localStorage.getItem(`${colorName}Chroma`)) || 50;
+  const colorChroma =
+    chroma ||
+    Number(localStorage.getItem(`${colorName}Chroma`)) ||
+    defaultChromas[colorName] ||
+    50;
 
   document.documentElement.style.setProperty(
     `--color-${colorName}`,
+    hexFromArgb(Hct.from(colorHue, colorChroma, 50).toInt()),
+  );
+
+  document.documentElement.style.setProperty(
+    "--" + colorName,
     hexFromArgb(Hct.from(colorHue, colorChroma, 50).toInt()),
   );
 
@@ -74,96 +91,94 @@ export const loadPalette = (
   }
 };
 
-export const ThemePicker = ({ color }: { color: "primary" | "secondary" }) => {
-  const defaultHue =
-    color === "primary" ? defaultHues.primary : defaultHues.secondary;
-  const [colorHue, setColorHue] = useState(defaultHue);
+const savePalette = (colorName: string, hue: number, chroma: number) => {
+  localStorage.setItem(`${colorName}Hue`, String(hue));
+  localStorage.setItem(`${colorName}Chroma`, String(chroma));
+};
 
-  const updateColors = () => {
-    const savedColorHue = Number(localStorage.getItem(`${color}Hue`));
+export default function ThemePicker({ colorName }: { colorName: string }) {
+  const [hue, setHue] = useState(
+    Number(localStorage.getItem(`${colorName}Hue`)) || defaultHues[colorName],
+  );
+  const [chroma, setChroma] = useState(
+    Number(localStorage.getItem(`${colorName}Chroma`)) ||
+      defaultChromas[colorName],
+  );
 
-    document.documentElement.style.setProperty(
-      `--color-${color}`,
-      hexFromArgb(Hct.from(savedColorHue, 100, 50).toInt()),
-    );
+  const currentColor = hexFromArgb(Hct.from(hue, chroma, 50).toInt());
 
-    versions.forEach((version) => {
-      const argbColor = Hct.from(
-        savedColorHue,
-        100,
-        100 - Number(version) / 10,
-      );
-      if (argbColor) {
-        document.documentElement.style.setProperty(
-          `--color-${color}-${version}`,
-          hexFromArgb(argbColor.toInt()),
-        );
-        console.log(
-          `--color-${color}-${version}`,
-          hexFromArgb(argbColor.toInt()),
-          argbColor,
-        );
-      }
-    });
-    localStorage.setItem(`${color}Hue`, String(colorHue));
-  };
+  useEffect(() => {
+    loadPalette(colorName, undefined, hue, chroma);
+    savePalette(colorName, hue, chroma);
+  }, [hue, chroma]);
 
   return (
-    <div className={`mb-4 overflow-auto rounded-3xl bg-self${color}-300 p-6`}>
-      <div className="mb-2 flex gap-2">
-        <Input
-          title="Primary Color"
-          type="range"
-          min={0}
-          max={360}
-          onChange={(e) => setColorHue(Number(e.target.value))}
-        />
-        <Button
-          onClick={updateColors}
-          style={{ backgroundColor: `hsl(${colorHue}, 100%, 50%)` }}
+    <div
+      className={
+        "mb-4 rounded-3xl p-3 text-foreground " + "bg-self" + colorName + "-300"
+      }
+    >
+      <p className="text-2xl font-bold">
+        {colorName === "primary" ? "Elsődleges" : "Másodlagos"} szín
+      </p>
+
+      <div className="my-3 flex items-center gap-4">
+        <div
+          className="flex h-10 w-10 items-center justify-center rounded-full text-black"
+          style={{
+            backgroundColor: hexFromArgb(Hct.from(hue, chroma, 50).toInt()),
+          }}
         >
-          Apply Colors
-        </Button>
+          {hue}
+        </div>
+        <input
+          title="Hue picker"
+          type="range"
+          min="0"
+          max="360"
+          value={hue}
+          onChange={(e) => setHue(Number(e.target.value))}
+          className="hue-slider"
+          style={{
+            background: `linear-gradient(to right, ${hexFromArgb(
+              Hct.from(0, chroma, 50).toInt(),
+            )}, ${hexFromArgb(Hct.from(60, chroma, 50).toInt())}, ${hexFromArgb(
+              Hct.from(120, chroma, 50).toInt(),
+            )}, ${hexFromArgb(Hct.from(180, chroma, 50).toInt())}, ${hexFromArgb(
+              Hct.from(240, chroma, 50).toInt(),
+            )}, ${hexFromArgb(Hct.from(300, chroma, 50).toInt())}, ${hexFromArgb(
+              Hct.from(360, chroma, 50).toInt(),
+            )})`,
+          }}
+        />
       </div>
 
-      <div className="flex">
-        {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((num) => (
-          <div
-            key={num}
-            className={`w-full p-2 text-center bg-self${color}-${num}`}
-          >
-            {num}
-          </div>
-        ))}
-      </div>
-      <div className="flex">
-        {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((num, index) => (
-          <div
-            key={num}
-            className="w-full p-2 text-center"
-            style={{
-              backgroundColor: hexFromArgb(
-                Hct.from(colorHue, 100, 100 - num / 10).toInt(),
-              ),
-            }}
-          >
-            {num}
-          </div>
-        ))}
-      </div>
-      <div className="flex">
-        {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((num) => (
-          <div
-            key={num}
-            className={`w-full p-2 text-center bg-${color}-${num}`}
-          >
-            {num}
-          </div>
-        ))}
+      <div className="my-3 flex items-center gap-4">
+        <div
+          className="flex h-10 w-10 items-center justify-center rounded-full text-black"
+          style={{ backgroundColor: currentColor }}
+        >
+          {chroma}
+        </div>
+
+        <input
+          title="Hue picker"
+          type="range"
+          min="0"
+          max="100"
+          value={chroma}
+          onChange={(e) => setChroma(Number(e.target.value))}
+          className="chroma-slider"
+          style={{
+            background: `linear-gradient(to right, ${hexFromArgb(
+              Hct.from(hue, 0, 50).toInt(),
+            )}, ${hexFromArgb(Hct.from(hue, 100, 50).toInt())})`,
+          }}
+        />
       </div>
     </div>
   );
-};
+}
 
 export const ThemeTemplate = ({
   color,
@@ -187,7 +202,7 @@ export const ThemeTemplate = ({
     <div
       className={
         "mb-4 rounded-3xl p-3 text-foreground " +
-        (color === "primary" ? "bg-selfprimary-300" : "bg-selfsecondary-300")
+        (color === "primary" ? "bg-primary-300" : "bg-secondary-300")
       }
     >
       {color}: {selectedHue}/{selectedChroma}
@@ -197,7 +212,7 @@ export const ThemeTemplate = ({
           color={color}
           size="sm"
           className="my-auto ml-2"
-          onClick={() => {
+          onPress={() => {
             localStorage.removeItem(`${color}Hue`);
             location.reload();
           }}
@@ -276,8 +291,8 @@ export const ThemeOptions = () => {
   const templates = [
     {
       name: "Default",
-      primary: [267, 71],
-      secondary: [305, 87],
+      primary: [defaultHues.primary, defaultChromas.primary],
+      secondary: [defaultHues.secondary, defaultChromas.secondary],
     },
     {
       // Coral, Olive
@@ -380,20 +395,4 @@ export const ThemeOptions = () => {
       ))}
     </div>
   );
-};
-
-export const ThemePickerPrimary = () => {
-  return <ThemePicker color="primary" />;
-};
-
-export const ThemePickerSecondary = () => {
-  return <ThemePicker color="secondary" />;
-};
-
-export const ThemeTemplatePrimary = () => {
-  return <ThemeTemplate color="primary" />;
-};
-
-export const ThemeTemplateSecondary = () => {
-  return <ThemeTemplate color="secondary" />;
 };

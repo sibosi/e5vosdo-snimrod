@@ -32,7 +32,7 @@ const NewParlament = () => {
       <Button
         radius="sm"
         className="mt-2 bg-selfprimary-200 px-1 text-foreground"
-        onClick={() => {
+        onPress={() => {
           createParlament(new Date().toISOString().split("T")[0]);
         }}
       >
@@ -53,7 +53,7 @@ const NewParlament = () => {
       <Button
         radius="sm"
         className="mt-2 bg-selfprimary-200 px-1 text-foreground"
-        onClick={() => createParlament()}
+        onPress={() => createParlament()}
         isDisabled={!newParlamentDate}
       >
         Létrehozás - {newParlamentDate}

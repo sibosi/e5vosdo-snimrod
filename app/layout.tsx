@@ -13,11 +13,11 @@ import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
 import { getAuth, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/cookie";
-import OGURL from "./ogurl";
 import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
 import PushManager from "@/components/PWA/push";
+import { Alert } from "@/components/home/alert";
 
 export const dynamic = "force-dynamic";
 
@@ -135,7 +135,6 @@ export default async function RootLayout({
           `}
         </Script>
         <LoadCacheMethod />
-        <OGURL isFakeAuth={process.env.FAKE_AUTH === "true"} />
         <ServiceWorker />
         <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>

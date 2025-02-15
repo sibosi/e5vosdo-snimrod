@@ -209,35 +209,35 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
           <ButtonGroup className="flex flex-wrap">
             <Button
               className={slotId == 11 ? "bg-selfsecondary-300" : ""}
-              onClick={() => setSlotId(11)}
+              onPress={() => setSlotId(11)}
             >
               Csüt. 1.
               {picked && picked["11"] !== undefined ? "✅" : "❌"}
             </Button>
             <Button
               className={slotId == 12 ? "bg-selfsecondary-300" : ""}
-              onClick={() => setSlotId(12)}
+              onPress={() => setSlotId(12)}
             >
               Csüt. 2.
               {picked && picked["12"] !== undefined ? "✅" : "❌"}
             </Button>
             <Button
               className={slotId == 21 ? "bg-selfsecondary-300" : ""}
-              onClick={() => setSlotId(21)}
+              onPress={() => setSlotId(21)}
             >
               Pént. 1. (szakmai)
               {picked && picked["21"] !== undefined ? "✅" : "❌"}
             </Button>
             <Button
               className={slotId == 22 ? "bg-selfsecondary-300" : ""}
-              onClick={() => setSlotId(22)}
+              onPress={() => setSlotId(22)}
             >
               Pént. 2.
               {picked && picked["22"] !== undefined ? "✅" : "❌"}
             </Button>
             <Button
               className={slotId == 23 ? "bg-selfsecondary-300" : ""}
-              onClick={() => setSlotId(23)}
+              onPress={() => setSlotId(23)}
             >
               Pént. 3.
               {picked && picked["23"] !== undefined ? "✅" : "❌"}
@@ -255,7 +255,7 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
           <Button
             disabled={!picked}
             isDisabled={true}
-            onClick={async () => {
+            onPress={async () => {
               return;
               await signUp(slotId, "NULL");
               await signUp(slotId, "NULL");
@@ -304,7 +304,7 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
                             // @ts-ignore
                             presentations.find(
                               (p) => p.id === presentation.direct_child,
-                            )?.slot_id 
+                            )?.slot_id
                           ]
                         }
                       </span>
@@ -338,7 +338,7 @@ const Table = ({ selfUser }: { selfUser: UserType }) => {
 
               <Field>
                 <Button
-                  onClick={async () => {
+                  onPress={async () => {
                     setSelectedPresentation(presentation.id);
                     setSignupers(await fetchSignupers(presentation.id));
                   }}

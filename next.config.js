@@ -37,6 +37,10 @@ const nextConfig = {
         hostname: "encrypted-tbn0.gstatic.com",
         protocol: "https",
       },
+      {
+        hostname: process.env.NEXT_PUBLIC_SUPABASE_URL.replace("https://", ""),
+        protocol: "https",
+      },
     ],
   },
   typescript: {
@@ -53,6 +57,12 @@ const nextConfig = {
       }
     }
     return config;
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: [process.env.NEXTAUTH_URL + "/api/upload"],
+      bodySizeLimit: 1024 * 1024 * 10, // 10MB
+    },
   },
 };
 

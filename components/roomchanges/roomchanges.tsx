@@ -69,7 +69,7 @@ export const RoomChanges = () => {
             <Button
               key={groupIndex}
               size="sm"
-              onClick={() => setSelect(group)}
+              onPress={() => setSelect(group)}
               className={`text-md rounded-xl ${
                 selectedGroup === group
                   ? "bg-selfprimary-400"

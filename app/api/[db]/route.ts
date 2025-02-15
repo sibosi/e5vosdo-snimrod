@@ -15,6 +15,9 @@ type Params = {
 const modules = {
   parlament: import("@/db/parlament"),
   autobackup: import("@/db/autobackup"),
+  event: import("@/db/event"),
+  supabaseStorage: import("@/db/supabaseStorage"),
+  images: import("@/db/images"),
 };
 
 export const GET = async (
@@ -31,7 +34,6 @@ export const GET = async (
       const mod = await modules[requestedModule as keyof typeof modules];
 
       if (typeof (mod as { [key: string]: any })[method] === "function") {
-        console.log("body:", body);
         return NextResponse.json(
           await (mod as { [key: string]: any })[method](
             selfUser,

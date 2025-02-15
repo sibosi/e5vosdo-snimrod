@@ -11,6 +11,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: "var(--color-primary)",
         selfprimary: {
           DEFAULT: "var(--color-primary)",
           bg: "var(--color-primary-bg)",
@@ -27,6 +28,7 @@ module.exports = {
           800: "var(--color-primary-800)",
           900: "var(--color-primary-900)",
         },
+        secondary: "var(--color-secondary)",
         selfsecondary: {
           DEFAULT: "var(--color-secondary)",
           bg: "var(--color-secondary-bg)",

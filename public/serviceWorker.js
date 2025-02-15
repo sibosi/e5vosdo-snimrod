@@ -1,26 +1,33 @@
 "use strict";
 
-self.addEventListener("push", function (event) {
-  let data = JSON.parse(event.data.text());
-  const icon = data.icon ?? "/favicon.ico";
-  data.icon = icon;
-  event.waitUntil(registration.showNotification(data.title, data));
+self.addEventListener("push", (event) => {
+  try {
+    const data = event.data ? JSON.parse(event.data.text()) : {};
+    const notificationOptions = {
+      ...data,
+      icon: data.icon || "/favicon.ico",
+    };
+    event.waitUntil(
+      self.registration.showNotification(
+        data.title || "Notification",
+        notificationOptions,
+      ),
+    );
+  } catch (error) {
+    console.error("Error handling push event:", error);
+  }
 });
 
-self.addEventListener("notificationclick", function (event) {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   event.waitUntil(
     clients
       .matchAll({ type: "window", includeUncontrolled: true })
-      .then(function (clientList) {
-        if (clientList.length > 0) {
-          let client = clientList[0];
-          for (const clientItem of clientList) {
-            if (clientItem.focused) {
-              client = clientItem;
-            }
+      .then((clientList) => {
+        for (const client of clientList) {
+          if (client.focused) {
+            return client.focus();
           }
-          return client.focus();
         }
         return clients.openWindow("/");
       }),

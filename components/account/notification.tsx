@@ -59,7 +59,7 @@ const NewNotification = () => {
   }
 
   return (
-    <div className="bg-selfprimary-50 my-4 rounded-3xl p-6 text-foreground">
+    <div className="my-4 rounded-3xl bg-selfprimary-50 p-6 text-foreground">
       <h2 className="text-2xl font-semibold">
         Új értesítés &middot; csak adminoknak
       </h2>
@@ -100,7 +100,7 @@ const NewNotification = () => {
           <Button
             key={index}
             color="success"
-            onClick={() =>
+            onPress={() =>
               setNotificationAddressees(
                 notificationAddressees.filter((item) => item !== name),
               )
@@ -113,7 +113,7 @@ const NewNotification = () => {
           <Button
             color="default"
             variant="flat"
-            onClick={() => {
+            onPress={() => {
               setNotificationAddressees([
                 ...notificationAddressees,
                 searchName,
@@ -130,7 +130,7 @@ const NewNotification = () => {
             <Button
               key={index}
               color="default"
-              onClick={() => {
+              onPress={() => {
                 setNotificationAddressees([...notificationAddressees, name]);
                 setSearchName("");
                 setOptions([]);
@@ -148,7 +148,7 @@ const NewNotification = () => {
           !notificationMessage ||
           notificationAddressees.length == 0
         }
-        onClick={() =>
+        onPress={() =>
           sendNotification(
             setNotificationTitle,
             setNotificationMessage,

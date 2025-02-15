@@ -6,7 +6,7 @@ export default function EventsPage() {
       <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
         Események
       </h1>
-      <Events />
+      <Events all={true} />
     </>
   );
 }

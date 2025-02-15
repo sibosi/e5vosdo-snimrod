@@ -1,4 +1,4 @@
-# E5vosDo Site
+# e5vosdo-snimrod
 
 This is a web application by Nimród Simon for the student government of the Eötvös József Secondary School.
 
@@ -13,8 +13,8 @@ This is a web application by Nimród Simon for the student government of the Eö
 
 ## Technologies Used
 
-- [Next.js 13](https://nextjs.org/docs/getting-started)
-- [NextUI v2](https://nextui.org/)
+- [Next.js 15](https://nextjs.org/docs/getting-started)
+- [HeroUI](https://www.heroui.com/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Tailwind Variants](https://tailwind-variants.org)
 - [TypeScript](https://www.typescriptlang.org/)
@@ -47,22 +47,14 @@ npm run dev
 
 The project or any part of the project may be distributed or used only with the written permission of the author.
 
-Licensed under the [MIT license](https://github.com/nextui-org/next-app-template/blob/main/LICENSE).
+Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
 
-##
-
-Acknowledgements
+## Acknowledgements
 
 - Ábel for the support
-
 - Lajos for the support
-
 - Zoltán for the support
-
 - Barnabás for the support
-
 - Zsolt for the support
-
 - Vince for the testing
-
 - Timi for the testing

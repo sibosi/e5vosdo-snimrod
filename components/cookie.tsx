@@ -46,7 +46,7 @@ const Cookie = () => {
           Az oldal használatával elfogadod a Cookie-kal kapcsolatos
           irányelveinket.
         </p>
-        <Button color="warning" onClick={acceptCookie}>
+        <Button color="warning" onPress={acceptCookie}>
           🍪 Rendben 🍪
         </Button>
       </ModalContent>

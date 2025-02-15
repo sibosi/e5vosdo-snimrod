@@ -60,7 +60,8 @@ export const GET = async (
 
 export const POST = async (
   request: Request,
-  { params }: { params: Promise<{ slug: string }> },
+  props: { params: Promise<{ slug: string }> },
 ) => {
-  return await GET(request, { params });
+  const params = await props.params;
+  return await GET(request, { params: Promise.resolve(params) });
 };

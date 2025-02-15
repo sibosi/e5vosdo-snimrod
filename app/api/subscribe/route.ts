@@ -27,9 +27,7 @@ export async function POST(req: NextRequest) {
   // Save the subscription to the subscriptions list
   // console.log("Adding subscription:", subscriptionObj);
   const response = await addPushAuth(subscriptionObj.keys.auth);
-  console.log(response);
   if (response === true) {
-    console.log("Subscription already exists");
     return NextResponse.json({
       status: 200,
       message: "Subscription already exists",

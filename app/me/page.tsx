@@ -1,69 +1,82 @@
 import { getAuth, hasPermission } from "@/db/dbreq";
 import { Avatar, Link } from "@nextui-org/react";
-import MySettings from "./mysettings";
 import IDCard from "./IDCard";
 import PleaseLogin from "./redirectToLogin";
-import TxtLiquid from "@/components/home/txtLiquid";
 import Tray from "@/components/tray";
+import Settings from "./Settings";
+import { LogoutBadge } from "@/components/LogOut";
 
-const AboutPage = async () => {
+const MePage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
+  const controlOptions: { title: string; href: string; access: boolean }[] = [
+    {
+      title: "Felhasználók",
+      href: "/admin/users",
+      access: await hasPermission(selfUser.email, "getUsers"),
+    },
+    {
+      title: "Oldal",
+      href: "/admin/page",
+      access: await hasPermission(selfUser.email, "getUsers"),
+    },
+    {
+      title: "Események",
+      href: "/dev",
+      access: selfUser.permissions.includes("admin"),
+    },
+    {
+      title: "Parlamentek",
+      href: "/parlament",
+      access: selfUser.permissions.includes("head_of_parlament"),
+    },
+  ];
+
   return (
-    <div>
-      <Avatar
-        isBordered
-        color="default"
-        className="mx-auto h-32 w-32"
-        src={selfUser.image}
-      />
-      <h1 className="pb-5 pt-3 text-center text-4xl font-semibold text-foreground lg:text-5xl">
-        Helló{" "}
-        <div className="inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
-          <TxtLiquid text={selfUser.nickname} />
+    <div className="space-y-4 lg:max-w-[50vw]">
+      <div className="flex content-start items-center gap-4">
+        <Avatar
+          isBordered
+          color="default"
+          className="h-20 w-20"
+          src={selfUser.image}
+        />
+        <div className="text-foreground">
+          <h1 className="text-2xl font-semibold lg:text-5xl">
+            {selfUser.name}
+          </h1>
+          <h2 className="flex items-center gap-2 text-lg font-light lg:text-2xl">
+            <LogoutBadge />
+            {selfUser.EJG_code && (
+              <IDCard codeType="barcode" EJG_code={selfUser.EJG_code} />
+            )}
+          </h2>
         </div>
-        !
-      </h1>
+      </div>
 
-      {(await hasPermission(selfUser.email, "getUsers")) ? (
-        <Tray title="Felhasználók és oldal kezelése">
-          <Link
-            href="/about"
-            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
-          >
-            Az oldal kezelése
-          </Link>
+      {controlOptions.some((option) => option.access) && (
+        <Tray title="Kezelési lehetőségek" className="text-lg">
+          <div className="flex flex-wrap justify-between gap-2">
+            {controlOptions.map(
+              (option) =>
+                option.access && (
+                  <Link
+                    key={option.title}
+                    href={option.href}
+                    className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+                  >
+                    {option.title}
+                  </Link>
+                ),
+            )}
+          </div>
         </Tray>
-      ) : null}
+      )}
 
-      {(await hasPermission(selfUser.email, "updateEvent")) ? (
-        <Tray title="Események kezelése">
-          <Link
-            href="/dev"
-            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
-          >
-            Események kezelése
-          </Link>
-        </Tray>
-      ) : null}
-
-      {selfUser.permissions.includes("head_of_parlament") ? (
-        <Tray title="Parlamentek kezelése">
-          <Link
-            href="/parlament"
-            className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
-          >
-            Parlamentek kezelése
-          </Link>
-        </Tray>
-      ) : null}
-
-      <IDCard EJG_code={selfUser.EJG_code} codeType="barcode" center={true} />
-
-      <MySettings selfUser={selfUser} />
+      <Settings selfUser={selfUser} />
     </div>
   );
 };
 
-export default AboutPage;
+export default MePage;

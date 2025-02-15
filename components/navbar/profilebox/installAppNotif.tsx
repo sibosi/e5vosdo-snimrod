@@ -123,7 +123,7 @@ const InstallAppNotif = () => {
               </p>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={() => setModalOpen(false)}>Bezárás</Button>
+              <Button onPress={() => setModalOpen(false)}>Bezárás</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>

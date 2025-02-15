@@ -189,7 +189,7 @@ export default function ParlamentManager() {
               <Button
                 radius="sm"
                 className="mt-2 bg-selfsecondary-200 px-1 text-foreground"
-                onClick={() => setSelectedParlament(parlament)}
+                onPress={() => setSelectedParlament(parlament)}
               >
                 Részletek
               </Button>
@@ -207,7 +207,7 @@ export default function ParlamentManager() {
       <Button
         radius="sm"
         className="mt-2 bg-selfsecondary-200 px-1 text-foreground"
-        onClick={() => setSelectedParlament(undefined)}
+        onPress={() => setSelectedParlament(undefined)}
       >
         Vissza
       </Button>
@@ -249,7 +249,7 @@ export default function ParlamentManager() {
                         key={email}
                         color="default"
                         variant="faded"
-                        onClick={() => registerToParlament(email, group)}
+                        onPress={() => registerToParlament(email, group)}
                       >
                         {MagicIcon} {email}
                       </Button>
@@ -265,7 +265,7 @@ export default function ParlamentManager() {
                     <Button
                       key={email}
                       color="success"
-                      onClick={() => unregisterFromParlament(email, group)}
+                      onPress={() => unregisterFromParlament(email, group)}
                     >
                       {email}
                     </Button>
@@ -282,7 +282,7 @@ export default function ParlamentManager() {
       <Button
         radius="sm"
         className="mt-2 bg-selfsecondary-200 px-1 text-foreground"
-        onClick={() => deleteParlament(selectedParlament.id)}
+        onPress={() => deleteParlament(selectedParlament.id)}
       >
         Parlament törlése
       </Button>

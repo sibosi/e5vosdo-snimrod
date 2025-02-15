@@ -27,7 +27,7 @@ export const Navbar = async ({
   selfUser: PossibleUserType;
   className?: string;
 }) => {
-  const _ = headers();
+  const _ = await headers();
   const isActiveHeadSpace = (await getPageSettings()).headspace === 1;
   const phoneView = (
     <NextUINavbar

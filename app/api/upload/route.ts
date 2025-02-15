@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addLog, getAuth } from "@/db/dbreq";
+import { addLog, getAuth, newNotificationByNames } from "@/db/dbreq";
 import { uploadImage } from "@/db/supabaseStorage";
 import sharp from "sharp";
 
@@ -67,6 +67,8 @@ export async function POST(req: NextRequest) {
     const compressedFile = new File([compressedData], file.name, {
       type: info.format,
     });
+
+    newNotificationByNames("Képet töltött fel", selfUser.email, ["admin"]);
 
     return uploadImage(compressedFile, "uploads", directory);
   } catch (error) {

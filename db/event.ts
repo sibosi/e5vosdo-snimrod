@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { dbreq, multipledbreq } from "./db";
-import { UserType } from "./dbreq";
+import { newNotificationByNames, UserType } from "./dbreq";
 import { gate } from "./permissions";
 
 export interface EventType {
@@ -86,6 +86,7 @@ export async function editEvent(selfUser: UserType, event: EventType) {
 
 export async function createEvent(selfUser: UserType, event: EventType) {
   gate(selfUser, "user");
+  newNotificationByNames("Új esemény", selfUser.email, ["admin"]);
   return await dbreq(
     `INSERT INTO events_preview (title, time, show_time, hide_time, image, description, tags, show_author, show_at_carousel, show_at_events) VALUES ('${event.title}', '${event.time}', '${event.show_time}', '${event.hide_time}', '${event.image}', '${event.description}', '${JSON.stringify(event.tags)}', ${event.show_author}, ${event.show_at_carousel}, ${event.show_at_events});`,
   );

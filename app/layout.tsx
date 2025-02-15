@@ -56,22 +56,6 @@ export default async function RootLayout({
   const selfUser = await getAuth(session?.user?.email ?? undefined);
   if (session?.user?.email) console.log("New user: " + session.user.email);
 
-  // TODO: Remove
-  if (
-    !selfUser ||
-    !(
-      selfUser?.permissions.includes("tester") ||
-      selfUser?.permissions.includes("admin")
-    )
-  )
-    children = (
-      <div>
-        <Alert className="border-selfprimary-400 bg-selfprimary-100 text-selfprimary-900">
-          Az oldal jelenleg karbantartás alatt van. Kérjük nézz vissza később.
-        </Alert>
-      </div>
-    );
-
   return (
     <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
       <head>

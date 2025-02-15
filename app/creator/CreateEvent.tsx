@@ -22,7 +22,7 @@ const CreateEvent = ({
   const [showAuthor, setShowAuthor] = useState(true);
 
   const handleCreateEvent = async () => {
-    if (!eventImage || !eventName || !eventDescription || !eventDate)
+    if (!eventImage || !eventName || !eventDate)
       return alert("Minden mezőt ki kell tölteni!");
 
     const event: EventType = {
@@ -107,7 +107,7 @@ const CreateEvent = ({
       <textarea
         value={eventDescription}
         onChange={(e) => setEventDescription(e.target.value)}
-        placeholder="Az esemény / bejegyzés leírása"
+        placeholder="Az esemény / bejegyzés leírása (nem kötelező)"
         className="h-32 w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
       />
 
@@ -129,14 +129,15 @@ const CreateEvent = ({
       </CheckboxGroup>
 
       <div>
-        <p>{showAuthor ? "Szerző: " + selfUser.name : "Szerző: Anonim"}</p>
+        <p>{showAuthor ? "Feltöltő: " + selfUser.name : "Feltöltő: Anonim"}</p>
         <Switch
           isSelected={showAuthor}
           onChange={() => setShowAuthor((prev) => !prev)}
         >
-          Szerző megjelenítése
+          Feltöltő megjelenítése (hamarosan)
         </Switch>
       </div>
+      {/* TODO: Feltöltő megjelenítése (hamarosan) */}
 
       <Button color="primary" onPress={handleCreateEvent}>
         Létrehozás

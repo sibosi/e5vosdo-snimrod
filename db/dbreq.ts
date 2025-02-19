@@ -78,7 +78,7 @@ export interface AlertType {
 }
 
 export async function addLog(action: string, message?: string) {
-  const email = (await getAuth())?.email;
+  const email = await getEmail();
   return await dbreq(
     `INSERT INTO logs (time, user, action, message) VALUES ('${new Date().toJSON()}', '${email}', '${action}', '${
       message ?? ""
@@ -124,6 +124,12 @@ export async function getAllUsersNameByEmail() {
     users[user.email] = user.name;
   });
   return users;
+}
+
+export async function getEmail() {
+  const session = await auth();
+  const authEmail = session?.user?.email;
+  return authEmail;
 }
 
 export async function getAuth(email?: string | undefined) {
@@ -465,13 +471,7 @@ export async function newNotificationByEmails(
   // Add the notification to the sender's sent notifications
   const REQ5 = `UPDATE users SET notifications = JSON_SET(notifications, '$.sent', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.sent'), '$', CAST(@notification_id AS JSON))) WHERE email = '${sender_email}';`;
 
-  const MAINRRQ = [
-    { query: REQ1 },
-    { query: REQ2 },
-    { query: REQ3 },
-    { query: REQ4 },
-    { query: REQ5 },
-  ];
+  const MAINRRQ = [REQ1, REQ2, REQ3, REQ4, REQ5];
 
   await multipledbreq(MAINRRQ);
 

@@ -5,7 +5,6 @@ import {
   apireqType,
   defaultApiReq,
   getAuth,
-  getUser,
 } from "@/db/dbreq";
 
 type Params = {
@@ -71,12 +70,11 @@ export const GET = async (
     );
   }
 
-  const user = await getUser(selfUser.email ?? undefined);
-  if (!user) {
+  if (!selfUser) {
     return NextResponse.json({ error: "User not found" }, { status: 500 });
   }
 
-  const userPermissionsSet = new Set(user.permissions);
+  const userPermissionsSet = new Set(selfUser.permissions);
   const gatePermissions = new Set(apireq[gate as apireqType].perm);
 
   if (
@@ -85,13 +83,12 @@ export const GET = async (
   ) {
     return NextResponse.json(
       {
-        error: `You do not have permission to use this API\nYour permissions: ${user.name}`,
+        error: `You do not have permission to use this API\nYour permissions: ${selfUser.name}`,
       },
       { status: 403 },
     );
   }
 
-  // const bodyData = streamToString(request.body);
   let bodyData: string | Promise<string>;
   try {
     bodyData = JSON.parse(await request.text());

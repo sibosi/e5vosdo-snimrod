@@ -1,22 +1,7 @@
 "use client";
-import { Alert } from "@/components/home/alert";
-import { UserType } from "@/db/dbreq";
 import { PresentationType } from "@/db/presentationSignup";
 import { Button } from "@heroui/react";
 import React, { useEffect, useState } from "react";
-
-async function fetchSignupers(presentation_id: number) {
-  const resp = await fetch("/api/getMembersAtPresentation", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ presentation_id }),
-  });
-  console.log(resp);
-  const data = await resp.json();
-  return data;
-}
 
 const Field = ({
   children,
@@ -43,35 +28,63 @@ const Table = () => {
     number | null
   >();
 
-  useEffect(() => {
-    fetch("/api/presentations/getPresentations").then((res) =>
-      res.json().then((data) => setPresentations(data)),
-    );
-  }, []);
+  async function initData() {
+    const presRes = await fetch("/api/presentations/getPresentations");
+    const presData = await presRes.json();
+    setPresentations(presData);
+
+    const myPresRes = await fetch("/api/presentations/getMyPresentationId");
+    const myPres = await myPresRes.json();
+    setSelectedPresentationId(myPres);
+  }
+
+  const setupSSE = () => {
+    const evtSource = new EventSource("/api/presentations/sseCapacity");
+
+    evtSource.onmessage = (event) => {
+      try {
+        const capacityData: { [key: number]: number } | { message: string } =
+          JSON.parse(event.data);
+
+        if (!("message" in capacityData))
+          setPresentations((prev) =>
+            prev?.map((p) => ({
+              ...p,
+              remaining_capacity: capacityData[p.id],
+            })),
+          );
+      } catch (err) {
+        console.error("Error parsing SSE data:", err);
+      }
+    };
+
+    evtSource.onerror = (err) => {
+      console.error("EventSource encountered an error:", err);
+      evtSource.close();
+    };
+
+    return () => {
+      evtSource.close();
+    };
+  };
 
   useEffect(() => {
-    fetch("/api/presentations/getMyPresentationId").then((res) =>
-      res
-        .json()
-        .then((presentation_id) => setSelectedPresentationId(presentation_id)),
-    );
+    initData().then(() => setupSSE());
   }, []);
 
   const signup = async (presentation_id: number) => {
-    fetch("/api/presentations/signUpForPresentation", {
+    const response = await fetch("/api/presentations/signUpForPresentation", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ presentation_id }),
-    }).then((res) => {
-      if (res.status === 200) {
-        setSelectedPresentationId(presentation_id);
-        alert("Sikeres jelentkezés");
-      } else {
-        alert("Sikertelen jelentkezés");
-      }
     });
+
+    if (response.ok) {
+      setSelectedPresentationId(presentation_id);
+      alert("Sikeres jelentkezés");
+    } else {
+      alert("Sikertelen jelentkezés");
+    }
   };
 
   return (
@@ -94,20 +107,20 @@ const Table = () => {
               selectedPresentationId === undefined
             }
             onPress={async () => {
-              return fetch("/api/presentations/signUpForPresentation", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
+              const response = await fetch(
+                "/api/presentations/signUpForPresentation",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ presentation_id: "NULL" }),
                 },
-                body: JSON.stringify({ presentation_id: "NULL" }),
-              }).then((res) => {
-                if (res.status === 200) {
-                  setSelectedPresentationId(null);
-                  alert("Sikeres törlés");
-                } else {
-                  alert("Sikertelen törlés");
-                }
-              });
+              );
+              if (response.ok) {
+                setSelectedPresentationId(null);
+                alert("Sikeres törlés");
+              } else {
+                alert("Sikertelen törlés");
+              }
             }}
           >
             Kiválasztás törlése
@@ -137,7 +150,6 @@ const Table = () => {
           <Field className="md:col-span-2">
             <div>
               <p>ID: {presentation.id}</p>
-
               {presentation.description}
             </div>
           </Field>

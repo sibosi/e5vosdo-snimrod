@@ -18,6 +18,21 @@ export async function getPresentations(): Promise<PresentationType[]> {
   return await dbreq("SELECT * FROM presentations");
 }
 
+export async function getPresentationsCapacity(): Promise<{
+  [key: number]: number;
+}> {
+  // current time
+  // console.log("CALLED " + new Date().toISOString());
+  const rows: { id: number; remaining_capacity: number }[] = await dbreq(
+    "SELECT id, remaining_capacity FROM presentations",
+  );
+  const result: { [key: number]: number } = {};
+  for (const row of rows) {
+    result[row.id] = row.remaining_capacity;
+  }
+  return result;
+}
+
 export async function getMyPresentationId(
   email: string | null | undefined,
 ): Promise<number | null> {

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ThemeOptions } from "../themePicker";
-import { Button, Link } from "@nextui-org/react";
+import { Button, Link } from "@heroui/react";
 import { siteConfig } from "@/config/site";
 import { reinstallServiceWorker } from "../PWA/managesw";
 

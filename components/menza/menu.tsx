@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import nyersMenu from "@/public/storage/mindenkorimenu.json";
 import { useEffect, useState } from "react";
 import { PossibleUserType } from "@/db/dbreq";

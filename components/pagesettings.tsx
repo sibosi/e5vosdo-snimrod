@@ -1,6 +1,6 @@
 "use client";
 import { Match, PageSettingsType } from "@/db/dbreq";
-import { Button, ButtonGroup, Input } from "@nextui-org/react";
+import { Button, ButtonGroup, Input } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 
 async function getPageSettings() {

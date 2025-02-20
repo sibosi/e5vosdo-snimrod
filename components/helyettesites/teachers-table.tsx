@@ -7,7 +7,7 @@ import {
   TableRow,
   TableCell,
   getKeyValue,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { teachersConfig } from "@/config/teachers";
 import { useState, useEffect } from "react";
 

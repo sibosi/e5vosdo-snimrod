@@ -9,7 +9,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalFooter,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Image from "next/image";
 
 interface UserType {

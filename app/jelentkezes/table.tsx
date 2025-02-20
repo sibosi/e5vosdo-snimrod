@@ -2,7 +2,7 @@
 import { Alert } from "@/components/home/alert";
 import { UserType } from "@/db/dbreq";
 import { PresentationType } from "@/db/presentationSignup";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 
 async function fetchSignupers(presentation_id: number) {

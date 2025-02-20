@@ -3,7 +3,7 @@ import SearchUser from "@/components/searchUser";
 import Tray from "@/components/tray";
 import { Parlament } from "@/db/parlament";
 import { EJG_CLASSES } from "@/public/getUserClass";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 
 const MagicIcon = (

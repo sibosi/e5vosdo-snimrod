@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
-import { Alert, Input, Link, RadioGroup, Radio } from "@nextui-org/react";
+import { Alert, Input, Link, RadioGroup, Radio } from "@heroui/react";
 import saveSettings, { SettingsProps } from "./saveSettings";
 
 const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {

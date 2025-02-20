@@ -1,5 +1,5 @@
 import { doSocialLogin } from "@/actions/route";
-import { Button, Link } from "@nextui-org/react";
+import { Button, Link } from "@heroui/react";
 import React from "react";
 import resetCache from "./PWA/resetCache";
 import { checkMessengerBrowser, RedirectUrlButton } from "@/app/skipMessenger";

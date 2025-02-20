@@ -1,5 +1,5 @@
 "use client";
-import { Image, Modal, ModalBody, ModalContent } from "@nextui-org/react";
+import { Image, Modal, ModalBody, ModalContent } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import "./timer.css";
 import { Match } from "@/db/dbreq";

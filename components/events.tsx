@@ -1,5 +1,5 @@
 "use client";
-import { Chip, Link } from "@nextui-org/react";
+import { Chip, Link } from "@heroui/react";
 import { SideCard } from "./sidecard";
 import { useState, useEffect } from "react";
 import { EventType } from "@/db/event";

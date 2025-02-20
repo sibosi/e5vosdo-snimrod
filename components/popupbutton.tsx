@@ -21,7 +21,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React from "react";
 
 export const PopupButton: React.FC<CardProps> = ({

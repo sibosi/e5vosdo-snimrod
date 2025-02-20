@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Avatar, Badge, Link, Navbar, NavbarContent } from "@nextui-org/react";
+import { Avatar, Badge, Link, Navbar, NavbarContent } from "@heroui/react";
 import Login from "@/components/LoginForm";
 import { LogoutIcon } from "@/components/LogOut";
 import { PossibleUserType } from "@/db/dbreq";

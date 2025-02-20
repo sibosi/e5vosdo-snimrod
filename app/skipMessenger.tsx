@@ -1,6 +1,6 @@
 "use client";
 import { siteConfig } from "@/config/site";
-import { Button, Modal, ModalContent, ModalHeader } from "@nextui-org/react";
+import { Button, Modal, ModalContent, ModalHeader } from "@heroui/react";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 

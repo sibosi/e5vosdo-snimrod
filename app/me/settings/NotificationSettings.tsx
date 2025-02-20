@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Alert, Switch } from "@nextui-org/react";
+import { Alert, Switch } from "@heroui/react";
 import { UserType } from "@/db/dbreq";
 import saveSettings from "./saveSettings";
 

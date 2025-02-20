@@ -1,5 +1,5 @@
 "use client";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { hexFromArgb, Hct } from "@material/material-color-utilities";
 import "./css/HuePicker.css";

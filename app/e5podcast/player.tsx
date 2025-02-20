@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { Card, CardBody, Image, Button, Slider } from "@nextui-org/react";
+import { Card, CardBody, Image, Button, Slider } from "@heroui/react";
 import { extractColors } from "extract-colors";
 
 const HeartIcon = ({

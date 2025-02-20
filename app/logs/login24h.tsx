@@ -53,7 +53,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 
 ChartJS.register(
   CategoryScale,

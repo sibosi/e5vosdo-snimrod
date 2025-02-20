@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "@/styles/globals.css";
-import { Button, ButtonGroup, Link } from "@nextui-org/react";
+import { Button, ButtonGroup, Link } from "@heroui/react";
 
 type SectionProps = {
   title: string;

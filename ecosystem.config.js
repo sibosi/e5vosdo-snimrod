@@ -3,10 +3,10 @@ module.exports = {
     {
       name: "e5vosdo-snimrod",
       script: "node_modules/next/dist/bin/next",
-      args: "-c /app/ start",
+      args: "start",
       instances: "max",
       exec_mode: "cluster",
-      cwd: "/app",
+      cwd: "/app/",
       env: {
         NODE_ENV: "production",
       },

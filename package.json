@@ -1,6 +1,6 @@
 {
   "name": "e5vosdo-snimrod",
-  "version": "0.0.2500.0",
+  "version": "0.0.2502.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

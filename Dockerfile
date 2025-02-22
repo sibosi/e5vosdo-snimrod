@@ -30,10 +30,9 @@ ENV AUTH_SECRET=$AUTH_SECRET
 ENV AUTH_TRUST_HOST=$AUTH_TRUST_HOST
 ENV GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
 ENV GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
-ENV SERVICE_ACCOUNT_KEY=$SERVICE_ACCOUNT_KEY
+ENV BACKUP_FOLDER_ID=$BACKUP_FOLDER_ID
 ENV SERVICE_ACCOUNT_KEY=$SERVICE_ACCOUNT_KEY
 ENV SERVICE_ACCOUNT_KEY_PATH=$SERVICE_ACCOUNT_KEY_PATH
-ENV BACKUP_FOLDER_ID=$BACKUP_FOLDER_ID
 ENV IGNORE_BUILD_ERRORS=$IGNORE_BUILD_ERRORS
 ENV FAKE_AUTH=$FAKE_AUTH
 ENV MYSQL_HOST=$MYSQL_HOST
@@ -53,9 +52,10 @@ RUN npm run build
 # Stage 2: Production
 FROM node:lts-alpine
 RUN apk add --no-cache mysql-client
+RUN npm install -g pm2
 WORKDIR /app
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app .
+COPY --from=builder /app ./
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["pm2-runtime", "start", "npm", "--", "start", "-i", "max"]

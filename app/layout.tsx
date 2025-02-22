@@ -52,7 +52,7 @@ export default async function RootLayout({
     console.log(e);
   }
   const selfUser = await getAuth(session?.user?.email ?? undefined);
-  if (session?.user?.email) console.log("New user: " + session.user.email);
+  // if (session?.user?.email) console.log("New user: " + session.user.email);
 
   return (
     <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">

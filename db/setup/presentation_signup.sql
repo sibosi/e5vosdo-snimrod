@@ -5,8 +5,7 @@ CREATE TABLE IF NOT EXISTS signups (
 );
 --@block
 SELECT *
-FROM presentations;
-DROP TABLE IF EXISTS signups;
+FROM signups;
 --@block
 DROP TABLE IF EXISTS presentations;
 CREATE TABLE IF NOT EXISTS presentations (

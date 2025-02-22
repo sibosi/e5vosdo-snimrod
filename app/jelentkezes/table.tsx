@@ -27,6 +27,7 @@ const Table = () => {
   const [selectedPresentationId, setSelectedPresentationId] = useState<
     number | null
   >();
+  const [isFetchingAutomatically, setIsFetchingAutomatically] = useState(false);
 
   async function initData() {
     const presRes = await fetch("/api/presentations/getPresentations");
@@ -40,6 +41,7 @@ const Table = () => {
 
   const setupSSE = () => {
     const evtSource = new EventSource("/api/presentations/sseCapacity");
+    setIsFetchingAutomatically(true);
 
     evtSource.onmessage = (event) => {
       try {
@@ -61,12 +63,18 @@ const Table = () => {
     evtSource.onerror = (err) => {
       console.error("EventSource encountered an error:", err);
       evtSource.close();
+      setIsFetchingAutomatically(false);
     };
 
     return () => {
       evtSource.close();
+      setIsFetchingAutomatically(false);
     };
   };
+
+  useEffect(() => {
+    if (!isFetchingAutomatically) setupSSE();
+  }, [isFetchingAutomatically]);
 
   useEffect(() => {
     initData().then(() => setupSSE());

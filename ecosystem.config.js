@@ -6,6 +6,7 @@ module.exports = {
       args: "start",
       instances: "max",
       exec_mode: "cluster",
+      cwd: "/app",
     },
   ],
 };

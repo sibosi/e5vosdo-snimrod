@@ -47,7 +47,7 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   try {
-    if (session?.user) await updateUser(session?.user as User);
+    if (session?.user) null; // await updateUser(session?.user as User);
   } catch (e) {
     console.log(e);
   }

@@ -78,6 +78,7 @@ export interface AlertType {
 }
 
 export async function addLog(action: string, message?: string) {
+  return;
   const email = await getEmail();
   return await dbreq(
     `INSERT INTO logs (time, user, action, message) VALUES ('${new Date().toJSON()}', '${email}', '${action}', '${
@@ -217,26 +218,24 @@ export async function updateUser(user: User | undefined) {
   if (!user) return;
 
   addLog("updateUser", user.email);
+  const date = new Date().toJSON();
 
-  const REQ1 = `UPDATE \`users\` SET \`username\` = '${
-    user.name
-  }', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${
-    user.image
-  }', \`last_login\` = '${new Date().toJSON()}' WHERE \`email\` = '${
-    user.email
-  }';`;
+  const query = `
+    INSERT INTO \`users\` (
+      \`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`,
+      \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`, \`hidden_lessons\`
+    ) VALUES (
+      '${user.name}', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${user.name}', '${date}',
+      '["user"]', '{ "new": [1], "read": [], "sent": [] }', '[]', '["EJG_code_edit"]', '[]'
+    )
+    ON DUPLICATE KEY UPDATE
+      \`username\` = VALUES(\`username\`),
+      \`name\` = VALUES(\`name\`),
+      \`image\` = VALUES(\`image\`),
+      \`last_login\` = VALUES(\`last_login\`);
+  `;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`, \`hidden_lessons\`) SELECT '${
-    user.name
-  }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
-    user.name
-  }', '${new Date().toJSON()}', '["user"]', '{ "new": [1], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
-    user.email
-  }');`;
-
-  await dbreq(REQ1);
-  await dbreq(REQ2);
-
+  await dbreq(query);
   return null;
 }
 

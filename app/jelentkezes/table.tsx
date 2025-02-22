@@ -151,15 +151,16 @@ const Table = () => {
         >
           <Field className="md:col-span-2">
             <div>
-              <div className="font-bold underline">{presentation.name}</div>
-              {presentation.organiser}
+              <div className="font-bold underline">
+                {presentation.id}. {presentation.name}
+              </div>
+              <p>{presentation.requirements}</p>
+              <br />
+              <p className="info">{presentation.adress}</p>
             </div>
           </Field>
           <Field className="md:col-span-2">
-            <div>
-              <p>ID: {presentation.id}</p>
-              {presentation.description}
-            </div>
+            <div>{presentation.description}</div>
           </Field>
           <Field className="bg-selfprimary-200 text-center">
             <p className="text-xl font-bold">

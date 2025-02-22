@@ -3,8 +3,9 @@ import { dbreq, multipledbreq } from "./db";
 export interface PresentationType {
   id: number;
   name: string;
-  organiser: string;
   description: string;
+  adress: string;
+  requirements: string;
   capacity: number;
   remaining_capacity: number;
 }

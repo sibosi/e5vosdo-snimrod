@@ -56,5 +56,6 @@ WORKDIR /app
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app ./
+COPY --from=builder /app/ecosystem.config.js ./
 EXPOSE 3000
-CMD ["pm2-runtime", "start", "node_modules/next/dist/bin/next", "--", "start", "-i", "max", "--name", "e5vosdo-snimrod"]
+CMD ["pm2-runtime", "start", "ecosystem.config.js"]

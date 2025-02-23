@@ -1,4 +1,6 @@
 import mysql from "mysql2/promise";
+import { getAuth } from "./dbreq";
+import { gate } from "./permissions";
 
 interface MyGlobal {
   __mysqlPool?: mysql.Pool;
@@ -192,7 +194,7 @@ export async function signUpForPresentation(
           [presentation_id],
         );
         if (updateResult.affectedRows === 0)
-          return { success: true, message: "Nincs elegendő kapacitás" };
+          return { success: false, message: "Nincs elegendő kapacitás" };
 
         if (isUpdate) {
           await conn.execute(
@@ -224,4 +226,21 @@ export async function signUpForPresentation(
     console.error("Hiba a signUpForPresentation-ben:", error);
     throw new Error("Hiba a jelentkezés során");
   }
+}
+
+export async function pauseSignup() {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  gate(selfUser, "admin");
+  // lock the signup table
+  return await dbreq("UPDATE presentations SET remaining_capacity = NULL");
+}
+
+export async function startSignup() {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  gate(selfUser, "admin");
+  return await dbreq(
+    `UPDATE presentations SET remaining_capacity = capacity - (SELECT COUNT(*) FROM signups WHERE presentation_id = presentations.id)`,
+  );
 }

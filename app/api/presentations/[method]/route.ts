@@ -22,7 +22,11 @@ export async function POST(
       { error: `Invalid method: ${method}` },
       { status: 400 },
     );
-  return NextResponse.json(await funct(selfEmail, ...Object.values(body)));
+
+  const result = await funct(selfEmail, ...Object.values(body));
+  if (result?.success === false)
+    return NextResponse.json({ error: result }, { status: 400 });
+  return NextResponse.json(result);
 }
 
 export async function GET(

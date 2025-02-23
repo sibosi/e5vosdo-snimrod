@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS presentations (
     adress VARCHAR(255) NOT NULL,
     requirements VARCHAR(255) NOT NULL,
     capacity INTEGER NOT NULL,
-    remaining_capacity INTEGER NOT NULL DEFAULT 0
+    remaining_capacity INTEGER DEFAULT NULL
 );
 INSERT INTO presentations (
         name,
@@ -248,5 +248,3 @@ VALUES (
         'Budapest, Madách Imre tér 6, 1075',
         25
     );
-UPDATE presentations
-SET remaining_capacity = capacity;

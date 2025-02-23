@@ -130,7 +130,7 @@ const Table = () => {
       <div className="grid grid-cols-5 gap-4 text-2xl font-extrabold max-md:hidden">
         <Field className="md:col-span-2">Név és Leírás</Field>
         <Field className="md:col-span-2">Részletek</Field>
-        <Field>Jelentkezés</Field>
+        <Field>Létszám</Field>
       </div>
       {presentations === undefined && (
         <div className="text-center">Betöltés...</div>
@@ -147,6 +147,7 @@ const Table = () => {
               </div>
               <p>{presentation.requirements}</p>
               <br />
+              <p className="info">Maximális létszám: {presentation.capacity}</p>
               <p className="info">{presentation.adress}</p>
             </div>
           </Field>
@@ -155,13 +156,35 @@ const Table = () => {
           </Field>
           <Field className="bg-selfprimary-200 text-center">
             <p className="text-xl font-bold">
-              {presentation.remaining_capacity}
+              {presentation.remaining_capacity ?? "-"}
             </p>
             <Button
               color={
                 selectedPresentationId === presentation.id
                   ? "success"
-                  : "default"
+                  : undefined
+              }
+              // fill the button with the % of the remaining capacity (like a progress bar)
+              // disabled if the presentation is already selected
+              style={
+                selectedPresentationId !== presentation.id
+                  ? {
+                      backgroundSize: "100% 100%",
+                      backgroundPosition: "0 0",
+                      backgroundRepeat: "no-repeat",
+                      backgroundImage: `linear-gradient(90deg, var(--color-secondary-300) ${
+                        100 -
+                        (presentation.remaining_capacity /
+                          presentation.capacity) *
+                          100
+                      }%, #f5f5f5 ${
+                        100 -
+                        (presentation.remaining_capacity /
+                          presentation.capacity) *
+                          100
+                      }%)`,
+                    }
+                  : {}
               }
               isDisabled={selectedPresentationId === presentation.id}
               onPress={() => signup(presentation.id)}

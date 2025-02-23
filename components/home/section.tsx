@@ -68,8 +68,9 @@ export const Section = ({
   }, []);
 
   const toggleDropdown = () => {
-    if (dropdownable) if (savable) setSectionStatus(title, !isOpen);
+    if (!dropdownable) return;
     setIsOpen(!isOpen);
+    if (savable) setSectionStatus(title, !isOpen);
   };
 
   return (

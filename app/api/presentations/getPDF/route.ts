@@ -65,7 +65,11 @@ export async function GET() {
       const presCapacity = presentation.capacity ?? "N/A";
 
       // Write presentation details.
-      doc.fontSize(14).text(`Presentation: ${presName}`);
+      doc.registerFont("Outfit", fontPath, "bold");
+      doc
+        .fontSize(14)
+        .font("Outfit")
+        .text(`${presentation.id}: ${presName}`, { underline: true });
       doc.fontSize(12).text(`Description: ${presDescription}`);
       doc.text(`Address: ${presAddress}`);
       doc.text(`Capacity: ${presCapacity}`);

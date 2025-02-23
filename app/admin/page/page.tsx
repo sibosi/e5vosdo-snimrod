@@ -3,6 +3,7 @@ import { getAuth, hasPermission } from "@/db/dbreq";
 import NewNotification from "@/components/account/notification";
 import PageSettings from "@/components/pagesettings";
 import { Section } from "@/components/home/section";
+import PresentationAPIButtons from "./PresentationAPIButtons";
 
 const PagePage = async () => {
   const selfUser = await getAuth();
@@ -19,11 +20,13 @@ const PagePage = async () => {
         <></>
       )}
 
+      <PresentationAPIButtons />
+
       {selfUser.permissions.includes("admin") ? (
         <Section
           title="Oldalbeállítások"
-          dropdownable={true}
-          defaultStatus="closed"
+          dropdownable={false}
+          defaultStatus="opened"
         >
           <PageSettings />
         </Section>

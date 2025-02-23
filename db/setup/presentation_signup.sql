@@ -35,7 +35,7 @@ VALUES (
         'Flavorchem & Orchidia Fragrances',
         'A látogatás során aromák gyártásával ismerkedhetnek meg azok, akik ezt a programot választják. A legjobban a kémia tantárgyhoz kapcsolódik, pályaválasztási oldálról pedig az élelmiszer-mérnöki karrierhez. De mindenkit érdekel, hogy mitől van valaminek pl. mandula íze. ',
         '',
-        'Kerepes',
+        'Kerepes, találkozó az Örs Vezér téren (HÉV)',
         20
     ),
     (
@@ -171,7 +171,13 @@ VALUES (
         'Budapest, Csóka u. 7-13, 1115',
         30
     ),
-    ('egy cég véglegesítés alatt', '', '', '', 30),
+    (
+        'egy cég véglegesítés alatt (MOL)',
+        'részletek hétfőn',
+        '',
+        '',
+        30
+    ),
     (
         'Varian Medical Systems Hungary Kft.',
         'A Varian Medical Systems Hungary Kft. azoknak az informatika és villamosmérnöki területek iránt érdeklődő diákoknak kínál betekintést, akik társadalmilag hasznos célért szeretnének dolgozni. Our Mission: A World without Fear of Cancer. Megismerhetik, hogyan járulnak hozzá a legmodernebb orvostechnológiai fejlesztések a rákkezeléshez és a betegek életminőségének javításához.',
@@ -183,7 +189,7 @@ VALUES (
         'BKV ZRT - 4-es metró irányítás',
         'Érdekel, ki vezeti a 4-es metrót? A BKV 4-es metró telephelyén betekinthetnek a metróüzemeltetés kulisszatitkaiba. Megismerhetik, hogyan működnek az automata szerelvények, milyen szerepe van a forgalomirányításnak, a karbantartásnak és a biztonsági rendszereknek, valamint hogyan zajlik egy metróvonal mindennapi üzemeltetése.',
         '',
-        '',
+        'Kelenföldi végállomás ',
         20
     ),
     (
@@ -204,7 +210,7 @@ VALUES (
         'GE Healthcare',
         'Érdekel, hogyan készülnek a legmodernebb orvosi képalkotó eszközök? A GE Healthcare pátyi gyárában betekinthetnek a radiológiai berendezések gyártási folyamataiba. Megismerhetik, hogyan készülnek a CT- és MR-képalkotó rendszerek, milyen szerepe van az automatizációnak és a precíziós gyártástechnikának, valamint hogyan járulnak hozzá ezek az eszközök a betegellátás fejlődéséhez.',
         '',
-        'npark Business Park, Building H, 2071 Páty, Csonka János utca 1-3',
+        'Inpark Business Park, Building H, 2071 Páty, Csonka János utca 1-3',
         15
     ),
     (
@@ -232,8 +238,15 @@ VALUES (
         'CIRKO-GEJZÍR FILMSZÍNHÁZ',
         'A Cirko-Gejzír Mozi egy egyedülálló artmozi, amely a független filmek, a dokumentumfilmek és az európai művészmozi világába enged betekintést. Megismerhetik a filmforgalmazás, a vetítéstechnika és a kulturális menedzsment kulisszatitkait. Filmvetítéssel és beszélgetéssel. ',
         '',
+        '1055 Budapest, Balassi B. u. 15-17.',
+        25
+    ),
+    (
+        'Örkény Színház',
+        'Az Örkény Színházban betekinthetnek a színház és a színházhoz kapcsolódó szakmák kulisszatitkaiba. Megismerhetik, hogyan zajlik egy előadás előkészítése, milyen szerepe van a rendezőknek, dramaturgoknak, színészeknek és háttérmunkatársaknak, valamint hogyan működik egy kortárs, kísérletező szellemű társulat a mai magyar színházi életben.',
         '',
-        0
+        'Budapest, Madách Imre tér 6, 1075',
+        25
     );
 UPDATE presentations
 SET remaining_capacity = capacity;

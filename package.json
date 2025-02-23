@@ -33,6 +33,7 @@
     "dayjs": "^1.11.13",
     "eslint": "^9.20.1",
     "eslint-config-next": "15.1.4",
+    "express": "^4.21.2",
     "extract-colors": "^4.1.1",
     "framer-motion": "^11.17.0",
     "google-auth-library": "^9.15.1",

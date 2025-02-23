@@ -34,4 +34,4 @@ RUN apk add --no-cache mysql-client
 WORKDIR /app
 COPY --from=builder /app .
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["node", "index.js"]

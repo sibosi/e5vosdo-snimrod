@@ -7,6 +7,9 @@ services:
     env_file:
       - .env
     restart: always
+    deploy:
+      mode: replicated
+      replicas: 3
 
     watchtower:
       image: containrrr/watchtower

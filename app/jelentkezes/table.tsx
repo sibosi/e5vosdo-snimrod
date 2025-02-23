@@ -10,16 +10,7 @@ const Field = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  return (
-    <div
-      className={
-        "space-y-2 border-2 border-foreground-500 p-2 md:rounded-xl " +
-        className
-      }
-    >
-      {children}
-    </div>
-  );
+  return <div className={"space-y-2 p-2 " + className}>{children}</div>;
 };
 
 const Table = () => {
@@ -147,9 +138,9 @@ const Table = () => {
       {presentations?.map((presentation) => (
         <div
           key={presentation.id}
-          className="my-2 grid rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100 md:grid-cols-5 md:gap-4"
+          className="my-2 grid overflow-hidden rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100 md:grid-cols-5 md:gap-4"
         >
-          <Field className="md:col-span-2">
+          <Field className="bg-selfprimary-200 md:col-span-2">
             <div>
               <div className="font-bold underline">
                 {presentation.id}. {presentation.name}

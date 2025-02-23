@@ -144,9 +144,11 @@ export async function getMembersAtPresentation(
   email: string | null | undefined,
   presentation_id: number,
 ): Promise<string[]> {
-  return await dbreq(`SELECT email FROM signups WHERE presentation_id = ?`, [
-    presentation_id,
-  ]);
+  const result = await dbreq(
+    `SELECT email FROM signups WHERE presentation_id = ?`,
+    [presentation_id],
+  );
+  return result.map((row: { email: string }) => row.email);
 }
 
 export async function signUpForPresentation(

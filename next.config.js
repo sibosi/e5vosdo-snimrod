@@ -58,6 +58,7 @@ const nextConfig = {
     }
     return config;
   },
+  serverExternalPackages: ["pdfkit"],
   experimental: {
     serverActions: {
       allowedOrigins: [process.env.NEXTAUTH_URL + "/api/upload"],

@@ -30,7 +30,7 @@ RUN npm run build
 
 # Stage 2: Production
 FROM node:lts-alpine
-RUN apk add --no-cache mysql-client && npm install -g pm2
+RUN apk add --no-cache mysql-client && npm install -g pm2@latest
 WORKDIR /app
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules

@@ -1,5 +1,5 @@
 "use client";
-import { Button, Modal, ModalContent } from "@nextui-org/react";
+import { Button, Modal, ModalContent } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 
 const checkCookie = () => {

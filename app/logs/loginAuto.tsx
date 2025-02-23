@@ -68,7 +68,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Input } from "@nextui-org/react";
+import { Input } from "@heroui/react";
 
 ChartJS.register(
   CategoryScale,

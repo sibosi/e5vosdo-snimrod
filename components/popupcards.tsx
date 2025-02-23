@@ -9,7 +9,7 @@ import {
   ModalFooter,
   Button,
   Chip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { useState } from "react";
 import { Link } from "@/config/groups";
 import {

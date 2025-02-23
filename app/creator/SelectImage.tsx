@@ -2,13 +2,7 @@
 import { Alert } from "@/components/home/alert";
 import { siteConfig } from "@/config/site";
 import { ImageData } from "@/db/supabaseStorage";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalContent,
-  ModalHeader,
-} from "@nextui-org/react";
+import { Button, Input, Modal, ModalContent, ModalHeader } from "@heroui/react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { SwitchProps } from "@nextui-org/switch";
+import { SwitchProps } from "@heroui/switch";
 import { useEffect, useState } from "react";
 import {
   SunFilledIcon,

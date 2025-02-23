@@ -1,7 +1,7 @@
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
-import { Link } from "@nextui-org/link";
-import { button as buttonStyles } from "@nextui-org/theme";
+import { Link } from "@heroui/react";
+import { button as buttonStyles } from "@heroui/theme";
 
 import clsx from "clsx";
 import {

@@ -1,5 +1,5 @@
 "use client";
-import { Input } from "@nextui-org/react";
+import { Input } from "@heroui/react";
 import { useState, useRef, useEffect } from "react";
 
 export default function SearchUser({

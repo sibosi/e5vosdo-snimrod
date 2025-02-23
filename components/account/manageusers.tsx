@@ -9,7 +9,7 @@ import {
   Modal,
   ModalContent,
   ModalHeader,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { useState, useEffect } from "react";
 
 function sortUsers(users: any[]) {

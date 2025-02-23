@@ -1,6 +1,6 @@
 "use client";
 import { doLogout } from "@/actions/route";
-import { Button, Chip } from "@nextui-org/react";
+import { Button, Chip } from "@heroui/react";
 import React from "react";
 import resetCache from "./PWA/resetCache";
 

@@ -77,35 +77,9 @@ export interface AlertType {
   icon?: boolean;
 }
 
-export interface PresentationType {
-  id: number;
-  name: string;
-  description: string;
-  slot_id: number;
-  location_id: number;
-  signup_type: string;
-  is_competition: boolean;
-  organiser: string;
-  capacity: number;
-  starts_at: string;
-  ends_at: string;
-  signup_deadline: string;
-  min_team_size: number;
-  max_team_size: number;
-  root_parent: number;
-  direct_child: number;
-  remaining_capacity: number;
-  room?: string;
-}
-
-export interface SignUpType {
-  email: string;
-  slot_id: number;
-  presentation_id: number;
-}
-
 export async function addLog(action: string, message?: string) {
-  const email = (await getAuth())?.email;
+  return;
+  const email = await getEmail();
   return await dbreq(
     `INSERT INTO logs (time, user, action, message) VALUES ('${new Date().toJSON()}', '${email}', '${action}', '${
       message ?? ""
@@ -151,6 +125,12 @@ export async function getAllUsersNameByEmail() {
     users[user.email] = user.name;
   });
   return users;
+}
+
+export async function getEmail() {
+  const session = await auth();
+  const authEmail = session?.user?.email;
+  return authEmail;
 }
 
 export async function getAuth(email?: string | undefined) {
@@ -238,26 +218,24 @@ export async function updateUser(user: User | undefined) {
   if (!user) return;
 
   addLog("updateUser", user.email);
+  const date = new Date().toJSON();
 
-  const REQ1 = `UPDATE \`users\` SET \`username\` = '${
-    user.name
-  }', \`name\` = '${user.name}', \`email\` = '${user.email}', \`image\` = '${
-    user.image
-  }', \`last_login\` = '${new Date().toJSON()}' WHERE \`email\` = '${
-    user.email
-  }';`;
+  const query = `
+    INSERT INTO \`users\` (
+      \`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`,
+      \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`, \`hidden_lessons\`
+    ) VALUES (
+      '${user.name}', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${user.name}', '${date}',
+      '["user"]', '{ "new": [1], "read": [], "sent": [] }', '[]', '["EJG_code_edit"]', '[]'
+    )
+    ON DUPLICATE KEY UPDATE
+      \`username\` = VALUES(\`username\`),
+      \`name\` = VALUES(\`name\`),
+      \`image\` = VALUES(\`image\`),
+      \`last_login\` = VALUES(\`last_login\`);
+  `;
 
-  const REQ2 = `INSERT INTO \`users\` (\`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`, \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`, \`hidden_lessons\`) SELECT '${
-    user.name
-  }', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${
-    user.name
-  }', '${new Date().toJSON()}', '["user"]', '{ "new": [1], "read": [], "sent": []  }', '[]', '["EJG_code_edit"]', '[]'  WHERE NOT EXISTS (SELECT *FROM \`users\`WHERE \`email\` = '${
-    user.email
-  }');`;
-
-  await dbreq(REQ1);
-  await dbreq(REQ2);
-
+  await dbreq(query);
   return null;
 }
 
@@ -842,120 +820,6 @@ export async function getFreeRooms(
 
 export async function getAlerts() {
   return (await dbreq(`SELECT * FROM alerts;`)) as AlertType[];
-}
-
-export async function getPresentations() {
-  return (await dbreq(`SELECT * FROM presentations;`)) as PresentationType[];
-}
-
-export async function signUpForPresentation(
-  slot_id: number,
-  presentation_id: number | "NULL",
-) {
-  const email = (await getAuth())?.email;
-
-  async function checkHasCapacity(presentation_id: number) {
-    const result = (await dbreq(
-      `SELECT remaining_capacity FROM presentations WHERE id = ${presentation_id};`,
-    )) as { remaining_capacity: number }[];
-
-    return result.length > 0 && result[0].remaining_capacity > 0;
-  }
-
-  try {
-    // Ellenőrizzük, hogy a felhasználó már jelentkezett-e
-    const check = (await dbreq(
-      `SELECT * FROM signups_new WHERE email = '${email}' AND slot_id = ${slot_id};`,
-    )) as SignUpType[];
-
-    if (presentation_id === "NULL") {
-      // Jelentkezés törlése
-      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups_new WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
-      const REQ2 = `DELETE FROM signups_new WHERE email = '${email}' AND slot_id = ${slot_id};`;
-
-      const response = await multipledbreq([REQ1, REQ2]);
-      console.log(response);
-      return response;
-    }
-
-    if (check.length > 0) {
-      // Ha már van jelentkezés erre a slotra, előbb növeljük a korábbi előadás kapacitását, majd csökkentjük az új előadásét
-      if (!(await checkHasCapacity(presentation_id))) {
-        return { success: false, message: "Nincs elég kapacitás" };
-      }
-
-      const REQ1 = `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = (SELECT presentation_id FROM signups_new WHERE email = '${email}' AND slot_id = ${slot_id}) AND remaining_capacity < capacity;`;
-      const REQ2 = `UPDATE signups_new SET presentation_id = ${presentation_id} WHERE email = '${email}' AND slot_id = ${slot_id};`;
-      const REQ3 = `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ${presentation_id} AND remaining_capacity > 0;`;
-
-      const response = await multipledbreq([REQ1, REQ2, REQ3]);
-      console.log(response);
-      return response;
-    } else {
-      // Új jelentkezés esetén előbb ellenőrizzük a kapacitást
-      if (!(await checkHasCapacity(presentation_id))) {
-        return { success: false, message: "Nincs elég kapacitás" };
-      }
-
-      const REQ1 = `INSERT INTO signups_new (email, slot_id, presentation_id) VALUES ('${email}', ${slot_id}, ${presentation_id});`;
-      const REQ2 = `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ${presentation_id} AND remaining_capacity > 0;`;
-
-      const response = await multipledbreq([REQ1, REQ2]);
-      console.log(response);
-      return response;
-    }
-  } catch (error) {
-    console.error("SQL hiba történt:", error);
-    return { success: false, message: "SQL hiba történt", error };
-  }
-}
-
-export async function getMyPresentetions() {
-  const email = (await getAuth())?.email;
-  const response = await dbreq(
-    `SELECT * FROM signups_new WHERE email = '${email}';`,
-  );
-  return response;
-}
-
-export async function getMembersAtPresentation(presentation_id: number) {
-  const response = (await dbreq(
-    `SELECT email FROM signups_new WHERE presentation_id = ${presentation_id};`,
-  )) as { email: string }[];
-  // Format it
-  const emails = response.map((item: { email: string }) => item.email);
-
-  const uniqueEmails = Array.from(new Set(emails));
-
-  return uniqueEmails;
-}
-
-export async function getPresentationsByIds(ids: number[]) {
-  const response = await dbreq(
-    `SELECT * FROM presentations WHERE id IN (${ids.join(", ")});`,
-  );
-  return response;
-}
-
-export async function getMyPre() {
-  const email = (await getAuth())?.email;
-  const response = (await dbreq(
-    `SELECT * FROM signups_new WHERE email = '${email}';`,
-  )) as SignUpType[];
-
-  /**
-   * goal type: {
-   *  [key: slot_id]: presentation_id[]
-   * }
-   */
-  console.log(JSON.stringify(response));
-  const goal: { [key: number]: number[] } = {};
-  response.forEach((item: { slot_id: number; presentation_id: number }) => {
-    if (goal[item.slot_id]) goal[item.slot_id].push(item.presentation_id);
-    else goal[item.slot_id] = [item.presentation_id];
-  });
-
-  return goal;
 }
 
 export const apireq = {

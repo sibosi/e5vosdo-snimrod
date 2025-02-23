@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import oldRoomchangesConfig from "@/public/storage/roomchanges.json";
 import { useState } from "react";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 
 type RoomChange = [number, string, string, string];
 type ClassRoomChanges = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Avatar, Badge, Link, Navbar, NavbarContent } from "@nextui-org/react";
+import { Avatar, Badge, Link, Navbar, NavbarContent } from "@heroui/react";
 import Login from "@/components/LoginForm";
 import { LogoutIcon } from "@/components/LogOut";
 import { PossibleUserType } from "@/db/dbreq";
@@ -128,7 +128,8 @@ export const ProfileIcon = ({ selfUser }: { selfUser: PossibleUserType }) => {
   const handleIconClick = () => {
     setShowButtons(!showButtons);
   };
-
+  {
+    /*
   useEffect(() => {
     if (!selfUser) return;
     fetchNotifications(notificationsIds, setNotificationsIds, setNotifications);
@@ -150,6 +151,8 @@ export const ProfileIcon = ({ selfUser }: { selfUser: PossibleUserType }) => {
 
     return () => clearInterval(interval);
   }, [notificationsIds, selfUser]);
+  */
+  }
 
   return (
     <div>
@@ -216,9 +219,9 @@ export const ProfileIcon = ({ selfUser }: { selfUser: PossibleUserType }) => {
           )}
         </Navbar>
         <div className="max-h-72 overflow-auto scrollbar-default">
-          <UpdateSWNotif />
+          {/*<UpdateSWNotif />
           <InstallAppNotif />
-          <EnablePushNotif />
+          <EnablePushNotif />*/}
           {selfUser && notifications ? (
             notifications.newAndSent.map((item: Notification, index) =>
               notificationsIds.sent.includes(item.id) &&

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Radio, RadioGroup, Switch } from "@nextui-org/react";
+import { Radio, RadioGroup, Switch } from "@heroui/react";
 import ThemePicker, { ThemeOptions } from "@/components/themePicker";
 
 const AppearanceSettings = () => {

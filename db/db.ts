@@ -1,14 +1,11 @@
 import mysql from "mysql2/promise";
 
-// Kiterjesztjük a globalThis típusát egy saját interfésszel.
 interface MyGlobal {
   __mysqlPool?: mysql.Pool;
 }
 
-// Ezzel a castelés segítségével használhatjuk a kiterjesztett típust.
 const g = globalThis as MyGlobal;
 
-// Singleton pool: ha már létezik, akkor azt használjuk, különben létrehozunk egy újat.
 const pool =
   g.__mysqlPool ??
   mysql.createPool({
@@ -22,12 +19,8 @@ const pool =
     queueLimit: 0,
   });
 
-// Tároljuk a pool-t a globális objektumban.
 g.__mysqlPool = pool;
 
-/**
- * Segédfüggvény a kapcsolat kezelésére.
- */
 export async function withConnection<T>(
   callback: (connection: mysql.PoolConnection) => Promise<T>,
 ): Promise<T> {
@@ -39,9 +32,6 @@ export async function withConnection<T>(
   }
 }
 
-/**
- * Egyszerű lekérdezés futtatása.
- */
 export async function dbreq(query: string, params?: any[]): Promise<any> {
   try {
     return await withConnection(async (connection) => {
@@ -53,7 +43,6 @@ export async function dbreq(query: string, params?: any[]): Promise<any> {
           "Hiba a lekérdezés során, újrapróbálkozás:",
           error.message,
         );
-        // Hibás kapcsolat esetén megszüntetjük azt, majd új kapcsolatot kérünk.
         connection.destroy();
         return await withConnection(async (newConnection) => {
           const [result] = await newConnection.execute(query, params);
@@ -67,46 +56,27 @@ export async function dbreq(query: string, params?: any[]): Promise<any> {
   }
 }
 
-/**
- * Több lekérdezést tranzakcióban futtató függvény.
- */
-export async function multipledbreq(queries: string[]): Promise<any[]> {
-  try {
-    return await withConnection(async (connection) => {
-      try {
-        await connection.beginTransaction();
-        const results: any[] = [];
-        for (const query of queries) {
-          const [result] = await connection.execute(query);
-          results.push(result);
+export async function multipledbreq<T>(
+  queries: ((conn: mysql.PoolConnection) => Promise<T>) | string[],
+): Promise<T> {
+  return await withConnection(async (connection) => {
+    try {
+      await connection.beginTransaction();
+      let result: any;
+      if (typeof queries === "function") {
+        result = await queries(connection);
+      } else if (Array.isArray(queries)) {
+        result = [];
+        for (const q of queries) {
+          const [res] = await connection.execute(q);
+          result.push(res);
         }
-        await connection.commit();
-        return results;
-      } catch (error: any) {
-        console.error(
-          "Hiba a tranzakció során, rollback és újrapróbálkozás:",
-          error.message,
-        );
-        try {
-          await connection.rollback();
-        } catch (rollbackError) {
-          console.error("Rollback sikertelen:", rollbackError);
-        }
-        connection.destroy();
-        return await withConnection(async (newConnection) => {
-          await newConnection.beginTransaction();
-          const results: any[] = [];
-          for (const query of queries) {
-            const [result] = await newConnection.execute(query);
-            results.push(result);
-          }
-          await newConnection.commit();
-          return results;
-        });
       }
-    });
-  } catch (error) {
-    console.error("Tranzakció végrehajtása sikertelen:", error);
-    throw new Error("Transaction failed.");
-  }
+      await connection.commit();
+      return result;
+    } catch (e) {
+      await connection.rollback();
+      throw e;
+    }
+  });
 }

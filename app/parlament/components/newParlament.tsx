@@ -1,6 +1,6 @@
 "use client";
 import Tray from "@/components/tray";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import React, { useState } from "react";
 
 const NewParlament = () => {

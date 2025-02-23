@@ -10,7 +10,7 @@ import {
   Modal,
   ModalContent,
   ModalBody,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Change, TeacherChange } from "@/app/api/route";
 import Image from "next/image";
 import teacherName from "@/app/api/teacherName";

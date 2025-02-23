@@ -1,5 +1,5 @@
 import { getAuth, hasPermission } from "@/db/dbreq";
-import { Avatar, Link } from "@nextui-org/react";
+import { Avatar, Link } from "@heroui/react";
 import IDCard from "./IDCard";
 import PleaseLogin from "./redirectToLogin";
 import Tray from "@/components/tray";

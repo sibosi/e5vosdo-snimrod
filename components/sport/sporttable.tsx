@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 
 export const SportTable = () => {
   const [playerData, setPlayerData] = useState(null);

@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import { chechForUpdate, CheckResult, updateVersion } from "./version";
 

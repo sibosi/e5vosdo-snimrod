@@ -6,7 +6,7 @@ import {
 } from "@/app/api/milliolepes/route";
 import { useEffect, useState } from "react";
 import { Alert } from "./alert";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/react";
 
 const SchoolCard = ({
   school,

@@ -9,7 +9,7 @@ import {
   ModalContent,
   Modal,
   Switch,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import VersionTable from "./versionTable";
 import { Section } from "@/components/home/section";

@@ -4,19 +4,18 @@ import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar/navbar";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/react";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { auth } from "@/auth";
-import Script from "next/script";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
-import ServiceWorker from "@/components/PWA/serviceWorker";
+// import ServiceWorker from "@/components/PWA/serviceWorker";
 import { getAuth, updateUser, User } from "@/db/dbreq";
-import Cookie from "@/components/cookie";
-import LoadCacheMethod from "./loadCacheMethod";
-import OnCSSBug from "@/components/home/oncssbug";
+// import Cookie from "@/components/cookie";
+// import LoadCacheMethod from "./loadCacheMethod";
+// import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
-import PushManager from "@/components/PWA/push";
+// import PushManager from "@/components/PWA/push";
 
 export const dynamic = "force-dynamic";
 
@@ -48,12 +47,12 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   try {
-    if (session?.user) await updateUser(session?.user as User);
+    if (session?.user) null; // await updateUser(session?.user as User);
   } catch (e) {
     console.log(e);
   }
   const selfUser = await getAuth(session?.user?.email ?? undefined);
-  if (session?.user?.email) console.log("New user: " + session.user.email);
+  // if (session?.user?.email) console.log("New user: " + session.user.email);
 
   return (
     <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
@@ -110,17 +109,17 @@ export default async function RootLayout({
           fontFamily: "Outfit, sans-serif",
         }}
       >
-        <LoadCacheMethod />
-        <ServiceWorker />
-        <PushManager />
+        {/*<LoadCacheMethod />*/}
+        {/*<ServiceWorker />*/}
+        {/*<PushManager />*/}
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">
             <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
 
-            <Cookie />
+            {/*<Cookie />*/}
             <Alerts />
             <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
-              <OnCSSBug />
+              {/*<OnCSSBug />*/}
               {children}
             </main>
             <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">

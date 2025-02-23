@@ -12,7 +12,7 @@ import {
   Spinner,
   Button,
   Input,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useAsyncList } from "@react-stately/data";
 import { Log } from "@/db/dbreq";
 

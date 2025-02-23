@@ -3,10 +3,11 @@ import {
   NavbarContent,
   NavbarBrand,
   NavbarItem,
-} from "@nextui-org/navbar";
-import { Kbd } from "@nextui-org/kbd";
-import { Link } from "@nextui-org/link";
-import { link as linkStyles } from "@nextui-org/theme";
+  Kbd,
+  Link,
+  Chip,
+} from "@heroui/react";
+import { link as linkStyles } from "@heroui/theme";
 import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
 import clsx from "clsx";
@@ -16,7 +17,6 @@ import GetApp from "../PWA/getApp";
 import { getPageSettings, PossibleUserType } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
 import HelloMessage from "../home/helloMessage";
-import { Chip } from "@nextui-org/react";
 import ChangingComponent from "./changingComponent";
 import { headers } from "next/headers";
 

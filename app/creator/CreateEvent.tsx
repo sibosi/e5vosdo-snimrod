@@ -3,7 +3,7 @@ import Input from "@/components/Input";
 import React, { useEffect, useState } from "react";
 import SelectImage from "./SelectImage";
 import { EventType } from "@/db/event";
-import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
+import { Button, Checkbox, CheckboxGroup, Switch } from "@heroui/react";
 import { UserType } from "@/db/dbreq";
 
 const CreateEvent = ({

@@ -37,4 +37,4 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app ./
 
 EXPOSE 3000
-CMD ["pm2-runtime", "start", "ecosystem.config.js"]
+CMD ["pm2-runtime", "start", "ecosystem.config.js", "--env", "production"]

@@ -5,7 +5,7 @@ const express = require("express");
 
 let numCPUs = os.cpus().length;
 
-if (numCPUs > 1) numCPUs = numCPUs - 1;
+// if (numCPUs > 1) numCPUs = numCPUs - 1;
 
 if (cluster.isMaster) {
   console.log(`Fő process indul, ${numCPUs} CPU mag indítása...`);

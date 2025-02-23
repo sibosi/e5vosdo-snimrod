@@ -164,8 +164,6 @@ const Table = () => {
                   ? "success"
                   : undefined
               }
-              // fill the button with the % of the remaining capacity (like a progress bar)
-              // disabled if the presentation is already selected
               style={
                 selectedPresentationId !== presentation.id
                   ? {
@@ -177,7 +175,7 @@ const Table = () => {
                         (presentation.remaining_capacity /
                           presentation.capacity) *
                           100
-                      }%, #f5f5f5 ${
+                      }%, var(--color-secondary-50) ${
                         100 -
                         (presentation.remaining_capacity /
                           presentation.capacity) *

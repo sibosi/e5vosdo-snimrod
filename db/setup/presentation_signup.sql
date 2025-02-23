@@ -117,7 +117,7 @@ VALUES (
     ),
     (
         'E.ON Hungária Csoport',
-        'Az E.ON Hungária Energia Parkban, Fóton megismerhetik a megújuló energiaforrások, az okoshálózatok és az energiahatékonyság szerepét a fenntartható jövőben. Betekinthetnek az elektromobilitás, a napelemrendszerek és az akkumulátoros energiatárolás működésébe, valamint megtudhatják, hogyan járul hozzá az energiainnováció a klímavédelemhez.',
+        'Az E.ON Hungária Élhető Jövő Parkban, Fóton megismerhetik a megújuló energiaforrások, az okoshálózatok és az energiahatékonyság szerepét a fenntartható jövőben. Betekinthetnek az elektromobilitás, a napelemrendszerek és az akkumulátoros energiatárolás működésébe, valamint megtudhatják, hogyan járul hozzá az energiainnováció a klímavédelemhez.',
         '',
         '2151 Fót, Vörösmarty Mihály tér 2',
         22
@@ -247,4 +247,11 @@ VALUES (
         '',
         'Budapest, Madách Imre tér 6, 1075',
         25
+    ),
+    (
+        'Telex',
+        'Hogyan dolgoznak a Telex újságírói? Megismerhetik, hogyan készülnek a hírek, interjúk és riportok, milyen szerepe van a tényellenőrzésnek, hogyan dolgoznak az újságírók, szerkesztők és videósok, valamint milyen kihívásokkal jár a digitális média és az online újságírás',
+        '',
+        '',
+        15
     );

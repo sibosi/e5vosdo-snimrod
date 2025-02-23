@@ -105,8 +105,6 @@ export async function getPresentations(): Promise<PresentationType[]> {
 export async function getPresentationsCapacity(): Promise<{
   [key: number]: number;
 }> {
-  // current time
-  // console.log("CALLED " + new Date().toISOString());
   const rows: { id: number; remaining_capacity: number }[] = await dbreq(
     "SELECT id, remaining_capacity FROM presentations",
   );
@@ -124,8 +122,6 @@ export async function getMyPresentationId(
     `SELECT presentation_id FROM signups WHERE email = ?`,
     [email],
   );
-  // undefined | { presentation_id: number }
-  console.log(result);
   return result?.presentation_id ?? null;
 }
 

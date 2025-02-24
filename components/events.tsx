@@ -14,8 +14,12 @@ export const Events = ({ all = false }: { all?: boolean }) => {
           module: "event",
         },
       });
-      const data = await response.json();
-      setEvents(data);
+      const data = (await response.json()) as EventType[];
+      setEvents(
+        data.sort(
+          (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+        ),
+      );
     };
 
     fetchEvents();

@@ -33,7 +33,10 @@ async function fetchCarouselData() {
   const resp = await fetch("/api/getCarouselEvents", {
     headers: { module: "event" },
   });
-  return (await resp.json()) as EventType[];
+  const data = (await resp.json()) as EventType[];
+  return data.sort(
+    (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+  );
 }
 
 const CarouselItem = ({

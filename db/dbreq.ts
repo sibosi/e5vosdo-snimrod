@@ -134,6 +134,21 @@ export async function getEmail() {
 }
 
 export async function getAuth(email?: string | undefined) {
+  const addUser = async () => {
+    const selfAuth = await auth();
+    if (
+      !selfAuth?.user?.email ||
+      !selfAuth?.user?.name ||
+      !selfAuth?.user?.image
+    )
+      return;
+    await updateUser({
+      name: selfAuth.user.name,
+      email: selfAuth.user.email,
+      image: selfAuth.user.image,
+    } as User);
+  };
+
   try {
     if (!email) {
       const session = await auth();
@@ -144,11 +159,15 @@ export async function getAuth(email?: string | undefined) {
         `SELECT * FROM \`users\` WHERE email = '${authEmail}'`,
       )) as User[];
 
+      if (response.length === 0) await addUser();
+
       return response[0];
     } else {
       const response = (await dbreq(
         `SELECT * FROM \`users\` WHERE email = '${email}'`,
       )) as User[];
+
+      if (response.length === 0) await addUser();
 
       return response[0];
     }

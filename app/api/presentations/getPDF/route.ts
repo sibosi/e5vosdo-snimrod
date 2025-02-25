@@ -27,7 +27,7 @@ process.env.PDFKIT_FONT_DIR = path.join(
 
 export async function GET() {
   const selfUser = await getAuth();
-  if (selfUser?.permissions?.includes("admin") === false)
+  if (!selfUser?.permissions?.includes("admin"))
     return new NextResponse("Unauthorized", { status: 403 });
   // Use PDFDocumentWithTables from pdfkit-table.
   const doc = new PDFDocumentWithTables({ margin: 50 });

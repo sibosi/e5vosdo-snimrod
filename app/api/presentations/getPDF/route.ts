@@ -5,7 +5,7 @@ import {
   getMembersAtPresentation,
   getPresentations,
 } from "@/db/presentationSignup";
-import { getUser } from "@/db/dbreq";
+import { getAuth, getUser } from "@/db/dbreq";
 import PDFDocumentWithTables from "pdfkit-table";
 
 // A helper function to clean up unwanted control characters.
@@ -26,6 +26,9 @@ process.env.PDFKIT_FONT_DIR = path.join(
 );
 
 export async function GET() {
+  const selfUser = await getAuth();
+  if (selfUser?.permissions?.includes("admin") === false)
+    return new NextResponse("Unauthorized", { status: 403 });
   // Use PDFDocumentWithTables from pdfkit-table.
   const doc = new PDFDocumentWithTables({ margin: 50 });
   let customFontUsed = false;

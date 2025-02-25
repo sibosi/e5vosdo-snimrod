@@ -128,15 +128,13 @@ export async function GET() {
         });
 
         // Reset the font after drawing the table.
-        if (customFontUsed) {
-          doc.font("Outfit");
-        } else {
-          doc.font("Helvetica");
-        }
+        if (customFontUsed) doc.font("Outfit");
+        else doc.font("Helvetica");
       } else {
         doc.text("Signups: None");
       }
       doc.moveDown();
+      doc.addPage();
     }
 
     // Finalize the PDF.

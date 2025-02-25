@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS signups (
 --@block
 SELECT *
 FROM signups;
+SELECT *
+FROM presentations;
 --@block
 DROP TABLE IF EXISTS presentations;
 CREATE TABLE IF NOT EXISTS presentations (
@@ -173,9 +175,9 @@ VALUES (
     ),
     (
         'egy cég véglegesítés alatt (MOL)',
-        'részletek hétfőn',
+        'A MOL Nyrt.-nél betekinthetnek az energiaipar, a kőolaj- és földgázfeldolgozás, valamint a fenntartható energiamegoldások világába. Nemcsak a mérnöki területekkel, hanem a közgazdasági, jogi, kommunikációs és üzleti folyamatokkal is megismerkedhetnek, megtudva, hogyan működik egy globális vállalat a stratégiai tervezés, fenntarthatóság és innováció szempontjából.',
         '',
-        '',
+        '1117 Budapest, Dombóvári út 28.',
         30
     ),
     (

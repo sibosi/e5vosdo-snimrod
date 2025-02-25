@@ -78,7 +78,6 @@ export interface AlertType {
 }
 
 export async function addLog(action: string, message?: string) {
-  return;
   const email = await getEmail();
   return await dbreq(
     `INSERT INTO logs (time, user, action, message) VALUES ('${new Date().toJSON()}', '${email}', '${action}', '${

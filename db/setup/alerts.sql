@@ -18,10 +18,4 @@ VALUES (
         "bg-selfprimary-300 border-selfprimary-400 mx-5 text-md",
         1,
         NULL
-    ),
-    (
-        "Tipp: Ne töltsd újra az oldalt, a felületeten a maradék helyek száma automatikusan frissül.",
-        "bg-selfprimary-300 border-selfprimary-400 mx-5 text-md",
-        1,
-        NULL
     );

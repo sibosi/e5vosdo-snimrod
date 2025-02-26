@@ -257,3 +257,11 @@ VALUES (
         '',
         15
     );
+--@block
+SELECT *
+FROM presentations;
+--@block
+UPDATE presentations
+SET capacity = 15
+WHERE id = 22
+    AND capacity = 30;

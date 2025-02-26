@@ -156,6 +156,22 @@ export async function signUpForPresentation(
     const result = await multipledbreq(async (conn) => {
       // Ha NULL, akkor töröljük a jelentkezést
       if (presentation_id === "NULL") {
+        // if the signuped presentation is NULL, then the signup period is over, so do nothing
+
+        const [id] = await conn.execute(
+          `SELECT presentation_id FROM signups WHERE email = ?`,
+          [email],
+        );
+        const [isNull] = await conn.execute(
+          `SELECT remaining_capacity FROM presentations WHERE id = ?`,
+          [id],
+        );
+        const isNullCapacity = Array.isArray(isNull)
+          ? (isNull as { remaining_capacity: number }[])
+          : [];
+        if (isNullCapacity[0].remaining_capacity === null)
+          return { success: false, message: "Jelentkezési időszak lezárva" };
+
         const [selResult] = await conn.execute(
           `SELECT presentation_id FROM signups WHERE email = ? FOR UPDATE`,
           [email],

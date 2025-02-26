@@ -258,25 +258,3 @@ export async function startSignup() {
     `UPDATE presentations SET remaining_capacity = capacity - (SELECT COUNT(*) FROM signups WHERE presentation_id = presentations.id)`,
   );
 }
-
-export async function displayMessage(email: string, message: string) {
-  const selfUser = await getAuth();
-  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
-  gate(selfUser, "admin");
-  return await dbreq(
-    `INSERT INTO alerts (text, className, padding, icon) VALUES (?, ?, ?, ?)`,
-    [message, "bg-selfprimary-300 border-selfprimary-400 mx-auto", 1, 0],
-  );
-}
-
-export async function hideMessages() {
-  const selfUser = await getAuth();
-  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
-  gate(selfUser, "admin");
-  return await dbreq("DELETE FROM alerts");
-}
-
-export async function getFirstMessage() {
-  const response = await dbreq("SELECT * FROM alerts LIMIT 1");
-  return response[0]?.text ?? null;
-}

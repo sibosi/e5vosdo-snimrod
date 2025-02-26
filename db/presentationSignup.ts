@@ -156,6 +156,22 @@ export async function signUpForPresentation(
     const result = await multipledbreq(async (conn) => {
       // Ha NULL, akkor töröljük a jelentkezést
       if (presentation_id === "NULL") {
+        // if the signuped presentation is NULL, then the signup period is over, so do nothing
+
+        const [id] = await conn.execute(
+          `SELECT presentation_id FROM signups WHERE email = ?`,
+          [email],
+        );
+        const [isNull] = await conn.execute(
+          `SELECT remaining_capacity FROM presentations WHERE id = ?`,
+          [id],
+        );
+        const isNullCapacity = Array.isArray(isNull)
+          ? (isNull as { remaining_capacity: number }[])
+          : [];
+        if (isNullCapacity[0].remaining_capacity === null)
+          return { success: false, message: "Jelentkezési időszak lezárva" };
+
         const [selResult] = await conn.execute(
           `SELECT presentation_id FROM signups WHERE email = ? FOR UPDATE`,
           [email],
@@ -241,4 +257,26 @@ export async function startSignup() {
   return await dbreq(
     `UPDATE presentations SET remaining_capacity = capacity - (SELECT COUNT(*) FROM signups WHERE presentation_id = presentations.id)`,
   );
+}
+
+export async function displayMessage(email: string, message: string) {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  gate(selfUser, "admin");
+  return await dbreq(
+    `INSERT INTO alerts (text, className, padding, icon) VALUES (?, ?, ?, ?)`,
+    [message, "bg-selfprimary-300 border-selfprimary-400 mx-auto", 1, 0],
+  );
+}
+
+export async function hideMessages() {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  gate(selfUser, "admin");
+  return await dbreq("DELETE FROM alerts");
+}
+
+export async function getFirstMessage() {
+  const response = await dbreq("SELECT * FROM alerts LIMIT 1");
+  return response[0]?.text ?? null;
 }

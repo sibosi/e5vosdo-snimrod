@@ -23,7 +23,7 @@ interface Group {
 }
 
 export const clubsOrder: string[] = [
-  "Eötvös Podcast",
+  "E5 StudenTalk",
   "FLC EJG",
   "Filmklub",
   "Eötvös Diák",
@@ -417,15 +417,35 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "Eötvös Podcast",
+    title: "E5 StudenTalk",
     details:
-      "Az első műhelyfoglalkozásokon meghívott újságírók segítségével és saját műsorok készítésén keresztül mélyebben megismerjük a műfajt. Tervezünk rövidebb interjúkat és elmélyülős portrébeszélgetéseket, eötvösös hírműsort és egy-egy témában elmélyülő oktatási podcastet. Ha szívesen lennél állandó műsorkészítő várunk szeretettel Jelentkezhetsz egyénileg vagy két három főből álló műsorstábbal is. A szakkör tagjaival havonta egyszer találkozunk egy szombati műhelymunkára.",
-    image: "/groups/podcast.png",
+      "Az E5vös StudenTalk egy olyan csapat, amely izgalmas és gondolatébresztő podcastekkel látja el iskolánk diákjait.\nCélunk, hogy változatos témákkal, érdekes beszélgetésekkel és inspiráló vendégekkel szórakoztassunk és informáljunk benneteket.\nLegyen szó iskolai eseményekről, tanulmányi tippekről, aktuális társadalmi kérdésekről vagy akár könnyedebb, szórakoztató témákról, nálunk mindig találtok valami újat és izgalmasat.",
+    image: "/groups/e5studentalk.png",
     description: "",
     links: [
       {
-        title: "Eötvös Podcast Instagram",
-        value: "https://www.instagram.com/e5_podcast/",
+        title: "E5 StudenTalk Email",
+        value: "podcast@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "E5 StudenTalk website",
+        value: "http://sites.google.com/view/e5vos-studenttalk",
+        type: "website",
+      },
+      {
+        title: "E5 StudenTalk Bio",
+        value: "https://www.yoursit.ee/e5_studentalk/",
+        type: "website",
+      },
+      {
+        title: "E5 StudenTalk Spotify",
+        value: "https://open.spotify.com/show/2El9cQ7QqPYlDDnfJZNoeJ",
+        type: "spotify",
+      },
+      {
+        title: "E5 StudenTalk Instagram",
+        value: "https://www.instagram.com/e5_studentalk/",
         type: "instagram",
       },
     ],

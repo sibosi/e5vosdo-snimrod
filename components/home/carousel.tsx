@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import parse from "html-react-parser";
-import Player from "@/app/e5podcast/player";
 import { UserType } from "@/db/dbreq";
 import { EventType } from "@/db/event";
 import Link from "next/link";
@@ -207,33 +206,27 @@ export default function Carousel({
           onScroll={onScroll}
           className="flex snap-x overflow-x-auto scroll-smooth scrollbar-hide"
         >
-          {realData?.map(
-            (item, index: number) =>
-              !(
-                item.description === "<Player />" &&
-                !selfUser.permissions.includes("tester")
-              ) && (
-                <CarouselItem
-                  key={index.toString()}
-                  uri={item.image ?? ""}
-                  scrollX={scrollX * 10}
-                  index={index}
-                  dataLength={realData.length}
-                  title={item.title}
-                  onClick={() => {
-                    if (realData[index].description?.startsWith("http")) {
-                      window.location.href = realData[index].description;
-                    } else {
-                      setClicked(clicked === index ? null : index);
-                    }
-                  }}
-                  width={clicked === index ? "95%" : undefined}
-                  className={
-                    clicked == null || clicked === index ? "mx-auto" : "hidden"
-                  }
-                />
-              ),
-          )}
+          {realData?.map((item, index: number) => (
+            <CarouselItem
+              key={index.toString()}
+              uri={item.image ?? ""}
+              scrollX={scrollX * 10}
+              index={index}
+              dataLength={realData.length}
+              title={item.title}
+              onClick={() => {
+                if (realData[index].description?.startsWith("http"))
+                  window.location.href = realData[index].description;
+                else if (realData[index].description?.startsWith("/"))
+                  window.location.href = realData[index].description;
+                else setClicked(clicked === index ? null : index);
+              }}
+              width={clicked === index ? "95%" : undefined}
+              className={
+                clicked == null || clicked === index ? "mx-auto" : "hidden"
+              }
+            />
+          ))}
           {clicked !== null ? (
             <></>
           ) : (
@@ -290,7 +283,6 @@ export default function Carousel({
       {clicked !== null && (
         <div className="blocked mt-2 whitespace-pre-wrap rounded-3xl bg-selfprimary-50 p-4 text-foreground">
           {<span>{parse(String(realData[clicked].description))}</span>}
-          {realData[clicked].description === "<Player />" && <Player />}
         </div>
       )}
     </div>

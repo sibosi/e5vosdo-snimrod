@@ -56,6 +56,10 @@ const nextConfig = {
         console.log("Podcasts directory created.");
       }
     }
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    });
     return config;
   },
   serverExternalPackages: ["pdfkit"],

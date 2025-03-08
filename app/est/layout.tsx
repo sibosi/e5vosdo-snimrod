@@ -4,7 +4,7 @@ export default function E5PodcastLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section className="pt-8 md:pt-10">
+    <section className="pt-4 md:pt-10">
       <div className="p-1 text-foreground">{children}</div>
     </section>
   );

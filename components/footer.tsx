@@ -1,6 +1,8 @@
 import { siteConfig } from "@/config/site";
 import React from "react";
 import { GithubIcon, InstagramIcon } from "./icons";
+import E5vosST from "@/public/groups/e5vosst.svg";
+import Image from "next/image";
 
 type ElementType = {
   title: string;
@@ -25,7 +27,7 @@ const Footer = () => {
 
   return (
     <div className="mb-2 rounded-lg border-selfprimary-300 bg-selfprimary-100 p-2">
-      <div className="grid grid-flow-col grid-cols-4 grid-rows-2 justify-center gap-2">
+      <div className="grid grid-flow-col grid-cols-4 grid-rows-3 justify-center gap-2">
         <a href="/me" className={STYLES}>
           <svg {...SVGAttributes}>
             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
@@ -43,6 +45,24 @@ const Footer = () => {
           doksik
         </a>
 
+        <a
+          href={siteConfig.links.feedback}
+          className={STYLES + " col-span-4 row-span-1 flex"}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <svg {...SVGAttributes} className="mx-2 min-w-fit">
+              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z" />
+            </svg>
+            <p>
+              Küldj visszajelzést a DÖ-nek vagy a fejlesztőnek! (hibák, ötletek,
+              stb.)
+            </p>
+            <h5 className="mt-1 rounded-full bg-selfsecondary-200 px-3 py-1">
+              Irány az űrlap!
+            </h5>
+          </div>
+        </a>
+
         <a href="/clubs" className={STYLES}>
           <svg {...SVGAttributes}>
             <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
@@ -58,17 +78,12 @@ const Footer = () => {
         </a>
 
         <a
-          href={siteConfig.links.feedback}
-          className={STYLES + " col-span-2 row-span-2"}
+          href="/e5vosST"
+          className={
+            STYLES + " text-red col-span-2 row-span-2 text-selfprimary-500"
+          }
         >
-          <svg {...SVGAttributes}>
-            <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z" />
-          </svg>
-          Küldj visszajelzést a DÖ-nek vagy a fejlesztőnek! (hibák, ötletek,
-          stb.)
-          <h5 className="mt-1 rounded-full bg-selfsecondary-200 px-3 py-1">
-            Irány az űrlap!
-          </h5>
+          <E5vosST width={iconSize * 6} />
         </a>
       </div>
     </div>

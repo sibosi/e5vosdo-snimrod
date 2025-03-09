@@ -215,9 +215,10 @@ export default function Carousel({
               dataLength={realData.length}
               title={item.title}
               onClick={() => {
-                if (realData[index].description?.startsWith("http"))
-                  window.location.href = realData[index].description;
-                else if (realData[index].description?.startsWith("/"))
+                if (
+                  realData[index].description?.startsWith("http") ||
+                  realData[index].description?.startsWith("/")
+                )
                   window.location.href = realData[index].description;
                 else setClicked(clicked === index ? null : index);
               }}

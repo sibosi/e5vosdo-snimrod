@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
-import { Alert, Input, Link, RadioGroup, Radio } from "@heroui/react";
+import { Alert, Input, Link, RadioGroup, Radio, InputOtp } from "@heroui/react";
 import saveSettings, { SettingsProps } from "./saveSettings";
 
 const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
@@ -11,6 +11,15 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
   );
   const [studentCodeError, setStudentCodeError] = useState<string>("");
   const [foodMenu, setFoodMenu] = useState<string>(selfUser.food_menu);
+  const [code78OM, setCode78OM] = useState<string>(
+    localStorage.getItem("78OM") ?? "",
+  );
+
+  useEffect(() => {
+    if (code78OM.length === 2) {
+      localStorage.setItem("78OM", code78OM);
+    }
+  }, [code78OM]);
 
   const isAlphabetic = (username: string): boolean =>
     /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/.test(username);
@@ -128,6 +137,16 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
               {studentCodeError && (
                 <p className="text-danger-600">{studentCodeError}</p>
               )}
+            </td>
+          </tr>
+          <tr>
+            <th className="font-semibold">OM azonosító 7. és 8. számjegye:</th>
+            <td>
+              <InputOtp
+                length={2}
+                value={code78OM}
+                onValueChange={setCode78OM}
+              />
             </td>
           </tr>
           <tr>

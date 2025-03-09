@@ -1,9 +1,5 @@
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
-import { Link } from "@heroui/react";
-import { button as buttonStyles } from "@heroui/theme";
-
-import clsx from "clsx";
 import {
   QuickTeachers,
   QuickTeachersDev,
@@ -14,13 +10,7 @@ import { Events } from "@/components/events";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { getAuth } from "@/db/dbreq";
 import TimetableDay from "@/components/timetable/timetableday";
-import FreeRooms from "@/components/freeRooms";
-import Welcome from "@/components/home/welcome";
-import { Alert } from "@/components/home/alert";
-import { ChipBeta } from "@/components/chips";
-import SecialDay from "@/components/events/specialDay";
 import HelloMessage from "@/components/home/helloMessage";
-import MillioLepes from "@/components/home/milliolepes";
 import Carousel from "@/components/home/carousel";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
@@ -105,6 +95,12 @@ export default async function Home() {
           <Events />
         </Section>
       )}
+
+      {selfUser ? (
+        <Section title={"Órarend"} dropdownable={true} defaultStatus={"opened"}>
+          <TimetableDay selfUser={selfUser} hideTitle />
+        </Section>
+      ) : null}
 
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />

@@ -78,7 +78,7 @@ const Footer = () => {
         </a>
 
         <a
-          href="/e5vosST"
+          href="/est"
           className={
             STYLES + " text-red col-span-2 row-span-2 text-selfprimary-500"
           }

@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import Link from "next/link";
-import "../styles/globals.css";
+
+const ICON_SIZE = 20;
 
 const pages = {
   home: {
@@ -8,8 +9,8 @@ const pages = {
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
+        width={ICON_SIZE}
+        height={ICON_SIZE}
         fill="currentColor"
         viewBox="0 0 16 16"
       >
@@ -23,8 +24,8 @@ const pages = {
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
+        width={ICON_SIZE}
+        height={ICON_SIZE}
         fill="currentColor"
         viewBox="0 0 16 16"
       >
@@ -38,8 +39,8 @@ const pages = {
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
+        width={ICON_SIZE}
+        height={ICON_SIZE}
         fill="currentColor"
         className="bi bi-calendar-week-fill"
         viewBox="0 0 16 16"
@@ -54,8 +55,8 @@ const pages = {
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
+        width={ICON_SIZE}
+        height={ICON_SIZE}
         fill="currentColor"
         className="bi bi-wrench-adjustable-circle"
         viewBox="0 0 16 16"
@@ -71,8 +72,8 @@ const pages = {
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
+        width={ICON_SIZE}
+        height={ICON_SIZE}
         fill="currentColor"
         className="bi bi-person-fill"
         viewBox="0 0 16 16"
@@ -82,9 +83,25 @@ const pages = {
     ),
     label: "Me",
   },
+  podcast: {
+    route: "/est",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={ICON_SIZE}
+        height={ICON_SIZE}
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      >
+        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z" />
+        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5" />
+      </svg>
+    ),
+    label: "Podcast",
+  },
 };
 
-const tabs = [pages.home, pages.events, pages.clubs, pages.me];
+const tabs = [pages.podcast, pages.events, pages.home, pages.clubs, pages.me];
 
 export const PageNav = () => {
   return (

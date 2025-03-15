@@ -136,12 +136,12 @@ export const PageNav = () => {
               href={page.route}
               className={`group inline-flex flex-col items-center justify-center px-5 ${
                 currentPage === page
-                  ? "bg-selfprimary-100 text-selfprimary-600 " +
+                  ? "bg-selfprimary-100 text-selfprimary-700 " +
                     getTabRadius(index, true)
                   : "text-foreground"
               }`}
             >
-              <div className="text-xl hover:text-selfprimary-600">
+              <div className="text-xl hover:text-selfprimary-700">
                 {page.icon}
               </div>
             </Link>

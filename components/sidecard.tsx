@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import "../styles/globals.css";
 import { PopupButton } from "./popupbutton";
 
@@ -44,33 +43,32 @@ export const SideCard = ({
   };
 
   return (
-    <>
-      <div className="card image-full max-w-sm overflow-hidden rounded-2xl">
-        {typeof image === "string" && (
-          <figure>
-            <Image
-              fill
-              className="z-20 opacity-100 dark:opacity-50"
-              src={image}
-              alt="image"
-              priority={true}
-            />
-          </figure>
-        )}
-        <div className="card-body -mx-2 bg-neutral-200 bg-opacity-15 dark:bg-opacity-0 dark:bg-none">
-          <div className="flex justify-between">
-            <h2 className="card-title rounded-md bg-selfprimary-20 px-2 text-foreground">
-              {title}
-            </h2>
+    <div
+      className="max-w-md overflow-hidden rounded-2xl"
+      style={{
+        backgroundImage: `url(${image})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div
+        className="space-y-12 bg-foreground-100 bg-opacity-10 p-4 dark:bg-opacity-30"
+        style={{
+          background: "",
+        }}
+      >
+        <div className="flex justify-between">
+          <h2 className="flex items-center rounded-md bg-selfprimary-20 px-2 text-xl font-semibold text-foreground">
+            {title}
+          </h2>
 
-            <div>{OptionalButton(popup)}</div>
-          </div>
-          <p className="w-fit rounded-md bg-selfprimary-20 px-2 text-foreground">
-            {description}
-          </p>
-          {children}
+          <div>{OptionalButton(popup)}</div>
         </div>
+        <p className="w-fit rounded-md bg-selfprimary-20 px-2 text-foreground">
+          {description}
+        </p>
+        {children}
       </div>
-    </>
+    </div>
   );
 };

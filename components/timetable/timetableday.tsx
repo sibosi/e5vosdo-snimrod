@@ -25,7 +25,7 @@ const periodTimes = {
 const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
   const { selfUser, hideTitle } = props;
   const studentCode = selfUser.EJG_code;
-  const password = localStorage.getItem("78OM");
+  const [password, setPassword] = useState<string | null>();
 
   const [selectedDay, setSelectedDay] = useState<DayType>(() => {
     const today = new Date().getDay() - 1;
@@ -38,6 +38,8 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setPassword(localStorage.getItem("78OM"));
+    const password = localStorage.getItem("78OM");
     const fetchTimetable = async () => {
       setLoading(true);
       setError(null);
@@ -46,7 +48,7 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
         const response = await fetch("/api/timetable", {
           headers: {
             EJG_code: studentCode,
-            password: password || "",
+            password: password ?? "",
           },
         });
 
@@ -102,7 +104,7 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
     return (
       <div className="flex items-center justify-center gap-2">
         <div className="h-[72px] w-16 rounded-lg bg-selfprimary-100 py-3 text-center text-foreground">
-          <p className="text-md font-semibold text-selfprimary-800">{period}</p>
+          <p className="text-xl font-semibold text-selfprimary-800">{period}</p>
           <p className="text-sm text-selfprimary-800">
             {periodTimes[period as keyof typeof periodTimes].split(" - ")[0]}
           </p>

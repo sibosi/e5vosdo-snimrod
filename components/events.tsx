@@ -122,16 +122,25 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                 >
                   <div className="flex gap-2">
                     {event.show_time ? (
-                      <Chip
-                        key={`day-of-week-${event.id}`}
-                        size="sm"
-                        className="bg-selfsecondary-50"
-                      >
-                        {new Date(event.time).toLocaleTimeString("hu-HU", {
-                          hour: "numeric",
-                          minute: "numeric",
-                        })}
-                      </Chip>
+                      <>
+                        <Chip
+                          key={`day-of-week-${event.id}`}
+                          size="sm"
+                          className="bg-selfsecondary-50"
+                        >
+                          {new Date(event.time).toLocaleTimeString("hu-HU", {
+                            hour: "numeric",
+                            minute: "numeric",
+                          })}
+                        </Chip>
+                        <Chip
+                          key={`day-of-week-${event.id}-info`}
+                          size="sm"
+                          className="bg-selfprimary-50"
+                        >
+                          &nbsp;ⓘ&nbsp;
+                        </Chip>
+                      </>
                     ) : null}
                     {event.tags != undefined
                       ? event.tags.map((tag, tagIndex) => (
@@ -144,16 +153,6 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                           </Chip>
                         ))
                       : null}
-                    {event.image ? (
-                      <Chip size="sm" variant="flat">
-                        <Link
-                          className="text-xs text-foreground"
-                          href={event.image}
-                        >
-                          Kép forrása
-                        </Link>
-                      </Chip>
-                    ) : null}
                   </div>
                 </SideCard>
               </div>

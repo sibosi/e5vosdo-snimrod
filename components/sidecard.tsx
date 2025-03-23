@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/globals.css";
 import { PopupButton } from "./popupbutton";
 
@@ -18,57 +18,54 @@ export const SideCard = ({
   image,
   details,
   description,
-  button_size,
   popup,
   children,
   makeStringToHTML,
 }: SideCardProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const OptionalButton = (popup: boolean) => {
-    if (popup) {
-      return (
-        details != undefined &&
-        details != "" && (
-          <PopupButton
-            key={undefined}
-            title={title}
-            image={image}
-            button_size={button_size}
-            details={details}
-            makeStringToHTML={makeStringToHTML}
-            className="text-sm"
-          />
-        )
-      );
-    }
+    if (!popup || details == undefined || details == "") return;
+    return (
+      <PopupButton
+        key={undefined}
+        title={title}
+        image={image}
+        details={details}
+        makeStringToHTML={makeStringToHTML}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
+    );
   };
 
   return (
-    <div
-      className="max-w-md overflow-hidden rounded-2xl"
-      style={{
-        backgroundImage: `url(${image})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div
-        className="space-y-12 bg-foreground-100 bg-opacity-10 p-4 dark:bg-opacity-30"
-        style={{
-          background: "",
-        }}
+    <>
+      <button
+        className="w-full max-w-md rounded-2xl bg-selfprimary-100 text-left"
+        onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex justify-between">
-          <h2 className="flex items-center rounded-md bg-selfprimary-20 px-2 text-xl font-semibold text-foreground">
-            {title}
-          </h2>
-
-          <div>{OptionalButton(popup)}</div>
+        <div
+          className="overflow-hidden rounded-t-2xl"
+          style={{
+            backgroundImage: `url(${image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="h-28 bg-foreground-100 bg-opacity-10 p-4 dark:bg-opacity-30">
+            <div className="flex justify-end">{children}</div>
+            <p className="w-fit rounded-md bg-selfprimary-20 px-2 text-foreground">
+              {description}
+            </p>
+          </div>
         </div>
-        <p className="w-fit rounded-md bg-selfprimary-20 px-2 text-foreground">
-          {description}
-        </p>
-        {children}
-      </div>
-    </div>
+
+        <div className="p-4 py-1">
+          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+        </div>
+      </button>
+      {OptionalButton(popup)}
+    </>
   );
 };

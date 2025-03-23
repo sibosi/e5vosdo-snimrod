@@ -77,7 +77,8 @@ export const Events = ({ all = false }: { all?: boolean }) => {
   if (Object.keys(events).length == 0) return <p>Nincs esemény</p>;
 
   return (
-    <div className="grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left md:grid-cols-2 lg:grid-cols-3">
+    // TODO: desktop view
+    <div className="-md:grid-cols-2 -lg:grid-cols-3 grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left">
       {Object.keys(events).map((date) => (
         <div key={date} className="flex gap-2">
           <div>

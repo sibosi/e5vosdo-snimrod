@@ -55,7 +55,7 @@ export const PopupButton: React.FC<CardProps> = ({
                   )}
                 </div>
 
-                <div className="overflow-auto fill-overlay px-6 py-6 text-left text-foreground md:max-h-[100%]">
+                <div className="overflow-auto fill-overlay py-6 text-left text-foreground md:max-h-[100%]">
                   <p className="text-md overflow-auto whitespace-pre-line pb-4">
                     <span>
                       {makeStringToHTML ? parse(details as string) : details}

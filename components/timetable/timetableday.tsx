@@ -40,6 +40,15 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
   useEffect(() => {
     setPassword(localStorage.getItem("78OM"));
     const password = localStorage.getItem("78OM");
+
+    if (!password || !studentCode) {
+      setError(
+        "Hiányzó adatok. Kérjük, add meg a hiányzó adataidat a profilodban.",
+      );
+      setLoading(false);
+      return;
+    }
+
     const fetchTimetable = async () => {
       setLoading(true);
       setError(null);

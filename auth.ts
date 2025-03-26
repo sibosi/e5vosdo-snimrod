@@ -13,12 +13,13 @@ function getAuth() {
       };
     };
   } else {
+    const allowedUrls = process.env.NEXTAUTH_URLS?.split(",") || [];
+
     const { auth } = NextAuth({
       providers: [
         GoogleProvider({
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-
           authorization: {
             params: {
               prompt: "consent",
@@ -30,7 +31,7 @@ function getAuth() {
       ],
       callbacks: {
         async redirect({ url, baseUrl }) {
-          return url.startsWith(baseUrl) ? url : baseUrl;
+          return allowedUrls.some((allowedUrl) => url.startsWith(allowedUrl)) ? url : baseUrl;
         },
       },
       secret: process.env.AUTH_SECRET,
@@ -52,7 +53,6 @@ const {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-
       authorization: {
         params: {
           prompt: "consent",

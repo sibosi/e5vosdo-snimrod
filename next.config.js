@@ -62,6 +62,18 @@ const nextConfig = {
     });
     return config;
   },
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: ".e5vosdo.hu",
+      },
+    },
+  },  
   serverExternalPackages: ["pdfkit"],
   experimental: {
     serverActions: {

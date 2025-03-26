@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 function getAuth() {
-  if (process.env.FAKE_AUTH == "true") {
+  if (process.env.FAKE_AUTH === "true") {
     return () => {
       return {
         user: {
@@ -13,7 +13,7 @@ function getAuth() {
       };
     };
   } else {
-    const allowedUrls = process.env.NEXTAUTH_URLS?.split(",") || [];
+    const allowedUrls = process.env.NEXTAUTH_ALLOWED_URLS?.split(",") || [];
 
     const { auth } = NextAuth({
       providers: [
@@ -31,7 +31,9 @@ function getAuth() {
       ],
       callbacks: {
         async redirect({ url, baseUrl }) {
-          return allowedUrls.some((allowedUrl) => url.startsWith(allowedUrl)) ? url : baseUrl;
+          return allowedUrls.some((allowedUrl) => url.startsWith(allowedUrl))
+            ? url
+            : baseUrl;
         },
       },
       secret: process.env.AUTH_SECRET,

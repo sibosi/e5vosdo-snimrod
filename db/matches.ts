@@ -73,7 +73,7 @@ export const getMatch = async (id: number) => {
 
 export const getNextMatch = async () => {
   const query =
-    "SELECT * FROM matches WHERE status = 'pending' ORDER BY time LIMIT 1";
+    "SELECT * FROM matches WHERE status IN ('pending', 'live') ORDER BY datetime LIMIT 1";
   const result = await dbreq(query);
   return result[0];
 };

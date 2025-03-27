@@ -214,7 +214,11 @@ const ManageMatches = () => {
                 <Button
                   className="m-2"
                   onPress={() => {
-                    const updatedMatch: Match = { ...match, status: "live" };
+                    const updatedMatch: Match = {
+                      ...match,
+                      start_time: new Date().toISOString(),
+                      status: "live",
+                    };
                     updateMatch(updatedMatch);
                   }}
                 >

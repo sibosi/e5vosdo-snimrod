@@ -31,6 +31,11 @@ const MePage = async () => {
       href: "/parlament",
       access: selfUser.permissions.includes("head_of_parlament"),
     },
+    {
+      title: "Mérkőzések",
+      href: "/admin/matches",
+      access: selfUser.permissions.includes("matchOrganiser"),
+    },
   ];
 
   return (

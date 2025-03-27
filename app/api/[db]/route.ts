@@ -17,6 +17,7 @@ const modules = {
   event: import("@/db/event"),
   supabaseStorage: import("@/db/supabaseStorage"),
   images: import("@/db/images"),
+  matches: import("@/db/matches"),
 };
 
 export const GET = async (

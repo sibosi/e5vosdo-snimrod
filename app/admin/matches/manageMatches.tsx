@@ -2,7 +2,7 @@
 import { Match, Team } from "@/db/matches";
 import React, { useState, useEffect } from "react";
 import { getColorClass } from "./manageTeams";
-import { Button, Tooltip } from "@heroui/react";
+import { Button } from "@heroui/react";
 import "@/components/navbar/headspace/timer.css";
 import CreateEditMatch from "./createEditMatch";
 
@@ -68,7 +68,11 @@ const ManageMatches = (
       try {
         const data = JSON.parse(event.data);
         if (!data.message) {
-          setMatches(data);
+          setMatches(
+            (data as Match[]).toSorted((a, b) =>
+              a.datetime.localeCompare(b.datetime),
+            ),
+          );
         }
       } catch (error) {
         console.error("Error parsing SSE data:", error);
@@ -124,8 +128,6 @@ const ManageMatches = (
       body: JSON.stringify({
         match: match,
       }),
-    }).then((res) => {
-      if (res.ok) alert("Sikeresen frissítetted a meccset!");
     });
   }
 
@@ -140,7 +142,6 @@ const ManageMatches = (
       }),
     }).then((res) => {
       if (res.ok) {
-        alert("Sikeresen létrehoztad a meccset!");
         setIsCreateModalOpen(false);
       }
     });
@@ -156,8 +157,6 @@ const ManageMatches = (
         body: JSON.stringify({
           id: matchId,
         }),
-      }).then((res) => {
-        if (res.ok) alert("Sikeresen törölted a meccset!");
       });
     }
   }

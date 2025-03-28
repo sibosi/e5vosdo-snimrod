@@ -15,18 +15,21 @@ import Carousel from "@/components/home/carousel";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
+import TeamsAD from "./admin/matches/ad";
 
 export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
       {!selfUser?.permissions.includes("user") && (
-        <HelloMessage selfUser={selfUser} />
+        <></> // <HelloMessage selfUser={selfUser} />
       )}
+
+      <TeamsAD />
 
       {(() => {
         if (selfUser?.permissions.includes("user")) {
-          return <Carousel selfUser={selfUser} data={[]} />;
+          return; // <Carousel selfUser={selfUser} data={[]} />;
         } else if (selfUser === null) {
           return (
             <Tray>

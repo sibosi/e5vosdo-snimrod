@@ -16,8 +16,8 @@ const MatchesPage = async () => {
       </h1>
 
       <Section
-        title="Csapatok kezelése"
-        defaultStatus="opened"
+        title="Csapatok megtekintése"
+        defaultStatus="closed"
         savable={false}
         dropdownable={true}
       >

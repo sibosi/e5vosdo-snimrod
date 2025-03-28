@@ -50,16 +50,23 @@ const LiveScoreContent = () => {
 
   // Replace polling with SSE
   useEffect(() => {
+    fetch("/api/getNextMatch", {
+      method: "GET",
+      headers: {
+        module: "matches",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMatch(data);
+      });
+
     // Initial fetch to get data quickly
     fetch("/api/livescore")
       .then((res) => res.json() as unknown as Match[])
       .then((data) => {
         // Sort by date then find the first match that has pending or live status
-        data.sort((a, b) => {
-          return (
-            new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-          );
-        });
+        data.sort((a, b) => a.datetime.localeCompare(b.datetime));
         const match = data.find(
           (match) => match.status === "pending" || match.status === "live",
         );
@@ -95,13 +102,12 @@ const LiveScoreContent = () => {
         // If we receive an array of matches
         if (Array.isArray(data)) {
           // Sort by date then find the first match that has pending or live status
-          data.sort((a, b) => {
+          const data1 = data.toSorted((a, b) => {
             return (
-              new Date(a.start_time).getTime() -
-              new Date(b.start_time).getTime()
+              new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
             );
           });
-          const match = data.find(
+          const match = data1.find(
             (match) => match.status === "pending" || match.status === "live",
           );
           if (match) {
@@ -159,7 +165,12 @@ const LiveScoreContent = () => {
                   : match.team1_score + " - " + match.team2_score}
               </p>
               {match.status === "pending" && (
-                <p className="text-sm font-semibold">{match.start_time}</p>
+                <p className="text-sm font-semibold">
+                  {new Date(match.datetime).toLocaleTimeString(["hu"], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
               )}
               {match.status === "live" && (
                 <div className="w-full">

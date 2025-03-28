@@ -5,6 +5,7 @@ import { getColorClass } from "./manageTeams";
 import { Button } from "@heroui/react";
 import "@/components/navbar/headspace/timer.css";
 import CreateEditMatch from "./createEditMatch";
+import { Section } from "@/components/home/section";
 
 function getBetweenContent(match: Match) {
   switch (match.status) {
@@ -308,6 +309,7 @@ const ManageMatches = (
         ))}
       </div>
       <div className="space-y-4">
+        <Section title="Korábbi meccsek" className="mb-4 border-selfprimary border-2 rounded-lg" dropdownable={true} defaultStatus="closed" savable={false} >
         {matches
           .filter((match) => {
             if (matchFilter.length === 0) return true;
@@ -316,6 +318,152 @@ const ManageMatches = (
               matchFilter.some((team) => team.id === match.team2_id)
             );
           })
+          .filter((match) => match.status === "finished")
+          .map((match) => (
+            <div key={match.id}>
+              <div
+                className={
+                  "grid grid-cols-3 items-center justify-between gap-2 rounded-lg p-2 text-center " +
+                  getColorClass(match.group_letter)
+                }
+              >
+                <div className="flex flex-col items-center justify-center">
+                  <img
+                    className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                    src={
+                      teams?.find((team) => team.id === match.team1_id)
+                        ?.image_url
+                    }
+                    alt={
+                      teams?.find((team) => team.id === match.team1_id)?.name
+                    }
+                  />
+                  <span>
+                    {teams?.find((team) => team.id === match.team1_id)?.name}
+                  </span>
+                </div>
+                <div>{getBetweenContent(match)}</div>
+                <div className="flex flex-col items-center justify-center">
+                  <img
+                    className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                    src={
+                      teams?.find((team) => team.id === match.team2_id)
+                        ?.image_url
+                    }
+                    alt={
+                      teams?.find((team) => team.id === match.team2_id)?.name
+                    }
+                  />
+                  <span>
+                    {teams?.find((team) => team.id === match.team2_id)?.name}
+                  </span>
+                </div>
+              </div>
+              {isOrganiser && (
+                <div className="mt-1 flex flex-wrap justify-between gap-y-1">
+                  <Button
+                    color="primary"
+                    className=""
+                    size="sm"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        team1_score: match.team1_score + 1,
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    +1
+                  </Button>
+                  <Button
+                    className=""
+                    size="sm"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        team1_score: 0,
+                        team2_score: 0,
+                        status: "pending",
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    className=""
+                    size="sm"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        start_time: new Date().toISOString(),
+                        status: "live",
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    Start
+                  </Button>
+                  <Button
+                    className=""
+                    size="sm"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        status: "finished",
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    Finish
+                  </Button>
+                  <Button
+                    color="primary"
+                    className=""
+                    size="sm"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        team2_score: match.team2_score + 1,
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    +1
+                  </Button>
+                  <Button
+                    color="secondary"
+                    className=""
+                    size="sm"
+                    onPress={() => {
+                      setCurrentMatch(match);
+                      setIsEditModalOpen(true);
+                    }}
+                  >
+                    Szerkesztés
+                  </Button>
+                  <Button
+                    color="danger"
+                    className=""
+                    size="sm"
+                    onPress={() => deleteMatch(match.id)}
+                  >
+                    Törlés
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        </Section>
+        {matches
+          .filter((match) => {
+            if (matchFilter.length === 0) return true;
+            return (
+              matchFilter.some((team) => team.id === match.team1_id) ||
+              matchFilter.some((team) => team.id === match.team2_id)
+            );
+          })
+          .filter((match) => match.status !== "finished")
           .map((match) => (
             <div key={match.id}>
               <div

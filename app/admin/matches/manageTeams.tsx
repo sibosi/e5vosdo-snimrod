@@ -1,5 +1,5 @@
 "use client";
-import { Team } from "@/db/matches";
+import { Team, Match } from "@/db/matches";
 import React from "react";
 
 export function getColorClass(group: string) {
@@ -19,8 +19,57 @@ export function getColorClass(group: string) {
   }
 }
 
+// Function to calculate team points
+interface TeamPoints {
+  [teamId: number]: number;
+}
+
 const ManageTeams = () => {
   const [teams, setTeams] = React.useState<Team[]>();
+  const [matches, setMatches] = React.useState<any[]>([]);
+  const [teamPoints, setTeamPoints] = React.useState<TeamPoints>({});
+
+  React.useEffect(() => {
+    // Fetch all matches
+    fetch("/api/getMatches", {
+      method: "GET",
+      headers: {
+        module: "matches",
+      },
+    })
+      .then((res) => res.json())
+      .then((data: Match[]) => {
+        setMatches(data);
+        
+        // Calculate points for each team
+        const points: TeamPoints = {};
+        
+        // Initialize all teams with 0 points
+        teams?.forEach(team => {
+          points[team.id] = 0;
+        });
+        
+        // Calculate points from finished matches
+        data.filter(match => match.status === "finished").forEach(match => {
+          // Home team (team1) points
+          if (match.team1_score > match.team2_score) {
+            points[match.team1_id] = (points[match.team1_id] || 0) + 3;
+          } else if (match.team1_score === match.team2_score) {
+            points[match.team1_id] = (points[match.team1_id] || 0) + 1;
+          }
+          
+          // Away team (team2) points
+          if (match.team2_score > match.team1_score) {
+            points[match.team2_id] = (points[match.team2_id] || 0) + 3;
+          } else if (match.team1_score === match.team2_score) {
+            points[match.team2_id] = (points[match.team2_id] || 0) + 1;
+          }
+        });
+        
+        setTeamPoints(points);
+      });
+  }, [teams]);
+  
   React.useEffect(() => {
     fetch("/api/getTeams", {
       method: "GET",
@@ -33,6 +82,7 @@ const ManageTeams = () => {
         setTeams(data);
       });
   }, []);
+
 
   if (!teams)
     return (
@@ -77,9 +127,14 @@ const ManageTeams = () => {
               <p className="font-semibold">{team.name}</p>
               <p className="info">{team.team_leader}</p>
             </div>
-            <p className="ml-auto w-9 rounded-lg text-xl font-bold max-sm:hidden">
-              {team.group_letter}
-            </p>
+            <div className="sm:ml-auto flex flex-col sm:items-end">
+              <p className="w-9 rounded-lg text-xl font-bold max-sm:hidden">
+                {team.group_letter}
+              </p>
+              <p className="rounded-lg bg-white bg-opacity-30 px-2 py-1 text-sm font-bold">
+                {teamPoints[team.id] || 0} pont
+              </p>
+            </div>
           </div>
         ))}
       </div>

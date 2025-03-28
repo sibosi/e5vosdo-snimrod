@@ -58,88 +58,114 @@ const ManageMatches = (
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const eventSource = new EventSource("/api/livescore");
+    let eventSource: EventSource;
+    let retryCount = 0;
+    const maxRetryCount = 5;
+    const baseRetryDelay = 1000;
 
-    eventSource.onopen = () => {
-      setIsConnected(true);
-    };
+    const connectToSSE = () => {
+      eventSource = new EventSource("/api/livescore");
 
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
+      eventSource.onopen = () => {
+        setIsConnected(true);
+        retryCount = 0; // Reset retry count on successful connection
+      };
 
-        // Handle initial connection message
-        if (
-          data.message &&
-          data.message === "Match score SSE connection established"
-        ) {
-          return;
-        }
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
 
-        // Handle initial full data
-        if (data.initialData) {
-          setMatches(
-            (data.initialData as Match[]).toSorted((a, b) =>
-              a.datetime.localeCompare(b.datetime),
-            ),
-          );
-          return;
-        }
+          // Handle initial connection message
+          if (
+            data.message &&
+            data.message === "Match score SSE connection established"
+          ) {
+            return;
+          }
 
-        // Handle delta updates
-        if (data.changed || data.added || data.removed) {
-          setMatches((currentMatches) => {
-            // Create a new copy of the matches array
-            let updatedMatches = [...currentMatches];
+          // Handle initial full data
+          if (data.initialData) {
+            setMatches(
+              (data.initialData as Match[]).toSorted((a, b) =>
+                a.datetime.localeCompare(b.datetime),
+              ),
+            );
+            return;
+          }
 
-            // Process removed matches
-            if (data.removed && data.removed.length > 0) {
-              // Filter out removed matches
-              const removedIds = new Set(data.removed);
-              updatedMatches = updatedMatches.filter(
-                (m) => !removedIds.has(m.id),
-              );
-            }
+          // Handle delta updates
+          if (data.changed || data.added || data.removed) {
+            setMatches((currentMatches) => {
+              // Create a new copy of the matches array
+              let updatedMatches = [...currentMatches];
 
-            // Process added matches
-            if (data.added && data.added.length > 0) {
-              updatedMatches = [...updatedMatches, ...data.added];
-            }
-
-            // Process changed matches
-            if (data.changed && data.changed.length > 0) {
-              // Update changed matches
-              const matchMap = new Map(updatedMatches.map((m) => [m.id, m]));
-
-              for (const changedMatch of data.changed) {
-                matchMap.set(changedMatch.id, changedMatch);
+              // Process removed matches
+              if (data.removed && data.removed.length > 0) {
+                // Filter out removed matches
+                const removedIds = new Set(data.removed);
+                updatedMatches = updatedMatches.filter(
+                  (m) => !removedIds.has(m.id),
+                );
               }
 
-              updatedMatches = Array.from(matchMap.values());
-            }
+              // Process added matches
+              if (data.added && data.added.length > 0) {
+                updatedMatches = [...updatedMatches, ...data.added];
+              }
 
-            // Sort the matches
-            return updatedMatches.toSorted((a, b) =>
-              a.datetime.localeCompare(b.datetime),
-            );
-          });
+              // Process changed matches
+              if (data.changed && data.changed.length > 0) {
+                // Update changed matches
+                const matchMap = new Map(updatedMatches.map((m) => [m.id, m]));
+
+                for (const changedMatch of data.changed) {
+                  matchMap.set(changedMatch.id, changedMatch);
+                }
+
+                updatedMatches = Array.from(matchMap.values());
+              }
+
+              // Sort the matches
+              return updatedMatches.toSorted((a, b) =>
+                a.datetime.localeCompare(b.datetime),
+              );
+            });
+          }
+        } catch (error) {
+          console.error("Error parsing SSE data:", error);
         }
-      } catch (error) {
-        console.error("Error parsing SSE data:", error);
-      }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("SSE Error:", error);
+        setIsConnected(false);
+        eventSource.close();
+
+        if (retryCount < maxRetryCount) {
+          // Calculate exponential backoff delay with jitter
+          const delay = Math.min(
+            baseRetryDelay * Math.pow(2, retryCount) + Math.random() * 1000,
+            30000,
+          );
+          retryCount++;
+
+          console.log(
+            `Attempting to reconnect (${retryCount}/${maxRetryCount}) after ${Math.round(delay / 1000)}s`,
+          );
+          setTimeout(connectToSSE, delay);
+        } else {
+          console.error("Max retry attempts reached. Please refresh the page.");
+        }
+      };
     };
 
-    eventSource.onerror = (error) => {
-      console.error("SSE Error:", error);
-      setIsConnected(false);
-      eventSource.close();
-      setTimeout(() => {
-        setIsConnected(false);
-      }, 5000);
-    };
+    // Initial connection
+    connectToSSE();
 
     return () => {
-      eventSource.close();
+      if (eventSource) {
+        eventSource.close();
+      }
     };
   }, []);
 

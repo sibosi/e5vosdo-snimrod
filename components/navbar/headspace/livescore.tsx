@@ -22,6 +22,7 @@ const LiveScoreContent = () => {
   const [match, setMatch] = React.useState<Match>();
   const [currentTime, setCurrentTime] = useState<Date>();
   const [teams, setTeams] = useState<Team[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     fetch("/api/getTeams", {
@@ -47,21 +48,86 @@ const LiveScoreContent = () => {
     return () => clearInterval(interval);
   }, [match]);
 
-  // Evry 5 second update the result
+  // Replace polling with SSE
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetch("/api/livescore")
-        .then((res) => res.json() as unknown as Match)
-        .then((data) => {
-          if (JSON.stringify(data) == JSON.stringify(match)) return;
-          setMatch(data);
-          clearInterval(interval);
+    // Initial fetch to get data quickly
+    fetch("/api/livescore")
+      .then((res) => res.json() as unknown as Match[])
+      .then((data) => {
+        // Sort by date then find the first match that has pending or live status
+        data.sort((a, b) => {
+          return (
+            new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+          );
         });
-    }, 5000);
-    return () => {
-      clearInterval(interval);
+        const match = data.find(
+          (match) => match.status === "pending" || match.status === "live",
+        );
+        if (match) {
+          setMatch(match);
+        }
+      });
+
+    // Set up SSE connection
+    const eventSource = new EventSource("/api/livescore");
+
+    eventSource.onopen = () => {
+      setIsConnected(true);
     };
-  }, [match]);
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data: Match[] | { message: string } = JSON.parse(event.data);
+
+        // Ignore the initial connection message
+
+        if (
+          typeof data === "object" &&
+          "message" in data &&
+          data.message &&
+          data.message === "Match score SSE connection established"
+        ) {
+          return;
+        }
+
+        if ("message" in data) return;
+
+        // If we receive an array of matches
+        if (Array.isArray(data)) {
+          // Sort by date then find the first match that has pending or live status
+          data.sort((a, b) => {
+            return (
+              new Date(a.start_time).getTime() -
+              new Date(b.start_time).getTime()
+            );
+          });
+          const match = data.find(
+            (match) => match.status === "pending" || match.status === "live",
+          );
+          if (match) {
+            setMatch(match);
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing SSE data:", error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE Error:", error);
+      setIsConnected(false);
+
+      // Attempt to reconnect after a delay
+      setTimeout(() => {
+        eventSource.close();
+        // The browser will automatically try to reconnect
+      }, 5000);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
 
   return (
     <button

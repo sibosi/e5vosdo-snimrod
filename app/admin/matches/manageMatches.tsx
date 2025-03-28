@@ -1,9 +1,10 @@
 "use client";
 import { Match, Team } from "@/db/matches";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { getColorClass } from "./manageTeams";
-import { Button } from "@heroui/react";
+import { Button, Tooltip } from "@heroui/react";
 import "@/components/navbar/headspace/timer.css";
+import CreateEditMatch from "./createEditMatch";
 
 function getBetweenContent(match: Match) {
   switch (match.status) {
@@ -48,11 +49,58 @@ const ManageMatches = (
     isOrganiser: boolean;
   } = { isOrganiser: false },
 ) => {
-  const [matches, setMatches] = React.useState<Match[]>();
-  const [teams, setTeams] = React.useState<Team[]>();
-  const [matchFilter, setMatchFilter] = React.useState<Team[]>([]);
+  const [matches, setMatches] = useState<Match[]>();
+  const [teams, setTeams] = useState<Team[]>();
+  const [matchFilter, setMatchFilter] = useState<Team[]>([]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentMatch, setCurrentMatch] = useState<Match | undefined>();
+  const [isConnected, setIsConnected] = useState(false);
 
-  function fetchMatches() {
+  useEffect(() => {
+    const eventSource = new EventSource("/api/livescore");
+
+    eventSource.onopen = () => {
+      setIsConnected(true);
+    };
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (!data.message) {
+          setMatches(data);
+        }
+      } catch (error) {
+        console.error("Error parsing SSE data:", error);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE Error:", error);
+      setIsConnected(false);
+      eventSource.close();
+      setTimeout(() => {
+        setIsConnected(false);
+      }, 5000);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/getTeams", {
+      method: "GET",
+      headers: {
+        module: "matches",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setTeams(data);
+      });
+
     fetch("/api/getMatches", {
       method: "GET",
       headers: {
@@ -65,21 +113,6 @@ const ManageMatches = (
           data.toSorted((a, b) => a.datetime.localeCompare(b.datetime)),
         );
       });
-  }
-
-  React.useEffect(() => {
-    fetch("/api/getTeams", {
-      method: "GET",
-      headers: {
-        module: "matches",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setTeams(data);
-      });
-
-    fetchMatches();
   }, []);
 
   function updateMatch(match: Match) {
@@ -92,8 +125,54 @@ const ManageMatches = (
         match: match,
       }),
     }).then((res) => {
-      if (res.ok) fetchMatches();
+      if (res.ok) alert("Sikeresen frissítetted a meccset!");
     });
+  }
+
+  function createMatch(match: Match) {
+    fetch("/api/createMatch", {
+      method: "POST",
+      headers: {
+        module: "matches",
+      },
+      body: JSON.stringify({
+        match: match,
+      }),
+    }).then((res) => {
+      if (res.ok) {
+        alert("Sikeresen létrehoztad a meccset!");
+        setIsCreateModalOpen(false);
+      }
+    });
+  }
+
+  function deleteMatch(matchId: number) {
+    if (confirm("Biztosan törölni szeretnéd ezt a meccset?")) {
+      fetch("/api/deleteMatch", {
+        method: "POST",
+        headers: {
+          module: "matches",
+        },
+        body: JSON.stringify({
+          id: matchId,
+        }),
+      }).then((res) => {
+        if (res.ok) alert("Sikeresen törölted a meccset!");
+      });
+    }
+  }
+
+  function handleSaveMatch(match: Match) {
+    if (currentMatch?.id) {
+      // Editing existing match
+      updateMatch(match);
+      setIsEditModalOpen(false);
+    } else {
+      // Creating new match
+      createMatch(match);
+      setIsCreateModalOpen(false);
+    }
+    setCurrentMatch(undefined);
   }
 
   if (!matches)
@@ -103,6 +182,21 @@ const ManageMatches = (
 
   return (
     <div className="space-y-4">
+      {isOrganiser && (
+        <div className="mb-4 flex justify-between">
+          <h2 className="text-xl font-bold">Meccsek kezelése</h2>
+          <Button
+            color="primary"
+            onPress={() => {
+              setCurrentMatch(undefined);
+              setIsCreateModalOpen(true);
+            }}
+          >
+            Új meccs létrehozása
+          </Button>
+        </div>
+      )}
+
       <div className="flex gap-2 overflow-auto overflow-x-auto">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +244,6 @@ const ManageMatches = (
           .map((match) => (
             <div key={match.id}>
               <div
-                key={match.id}
                 className={
                   "grid grid-cols-3 items-center justify-between gap-2 rounded-lg p-2 text-center " +
                   getColorClass(match.group_letter)
@@ -189,15 +282,15 @@ const ManageMatches = (
                 </div>
               </div>
               {isOrganiser && (
-                <div className="flex">
+                <div className="mt-1 flex flex-wrap justify-between gap-y-1">
                   <Button
                     color="primary"
-                    className="m-2"
+                    className=""
+                    size="sm"
                     onPress={() => {
                       const updatedMatch: Match = {
                         ...match,
                         team1_score: match.team1_score + 1,
-                        team2_score: match.team2_score,
                       };
                       updateMatch(updatedMatch);
                     }}
@@ -205,7 +298,8 @@ const ManageMatches = (
                     +1
                   </Button>
                   <Button
-                    className="m-2"
+                    className=""
+                    size="sm"
                     onPress={() => {
                       const updatedMatch: Match = {
                         ...match,
@@ -216,10 +310,11 @@ const ManageMatches = (
                       updateMatch(updatedMatch);
                     }}
                   >
-                    Reset Match (Pending)
+                    Reset
                   </Button>
                   <Button
-                    className="m-2"
+                    className=""
+                    size="sm"
                     onPress={() => {
                       const updatedMatch: Match = {
                         ...match,
@@ -229,10 +324,11 @@ const ManageMatches = (
                       updateMatch(updatedMatch);
                     }}
                   >
-                    Start Match
+                    Start
                   </Button>
                   <Button
-                    className="m-2"
+                    className=""
+                    size="sm"
                     onPress={() => {
                       const updatedMatch: Match = {
                         ...match,
@@ -241,15 +337,15 @@ const ManageMatches = (
                       updateMatch(updatedMatch);
                     }}
                   >
-                    Finish Match
+                    Finish
                   </Button>
                   <Button
                     color="primary"
-                    className="m-2"
+                    className=""
+                    size="sm"
                     onPress={() => {
                       const updatedMatch: Match = {
                         ...match,
-                        team1_score: match.team1_score,
                         team2_score: match.team2_score + 1,
                       };
                       updateMatch(updatedMatch);
@@ -257,11 +353,47 @@ const ManageMatches = (
                   >
                     +1
                   </Button>
+                  <Button
+                    color="secondary"
+                    className=""
+                    size="sm"
+                    onPress={() => {
+                      setCurrentMatch(match);
+                      setIsEditModalOpen(true);
+                    }}
+                  >
+                    Szerkesztés
+                  </Button>
+                  <Button
+                    color="danger"
+                    className=""
+                    size="sm"
+                    onPress={() => deleteMatch(match.id)}
+                  >
+                    Törlés
+                  </Button>
                 </div>
               )}
             </div>
           ))}
       </div>
+
+      {/* Meccs létrehozása modal */}
+      <CreateEditMatch
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleSaveMatch}
+        teams={teams}
+      />
+
+      {/* Meccs szerkesztése modal */}
+      <CreateEditMatch
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveMatch}
+        matchToEdit={currentMatch}
+        teams={teams}
+      />
     </div>
   );
 };

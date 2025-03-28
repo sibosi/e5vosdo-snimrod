@@ -8,7 +8,8 @@ import ManageMatches from "./manageMatches";
 const MatchesPage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) redirect("/");
-  if (!gate(selfUser, "matchOrganiser", "boolean")) return <h2>Permission denied</h2>;
+  if (!gate(selfUser, "matchOrganiser", "boolean"))
+    return <h2>Permission denied</h2>;
 
   return (
     <div>
@@ -16,12 +17,22 @@ const MatchesPage = async () => {
         Mérkőzések kezelése
       </h1>
 
-      <Section title="Csapatok kezelése" defaultStatus="opened" savable={false} dropdownable={true}>
+      <Section
+        title="Csapatok kezelése"
+        defaultStatus="opened"
+        savable={false}
+        dropdownable={true}
+      >
         <ManageTeams />
       </Section>
 
-      <Section title="Mérkőzések kezelése" defaultStatus="opened" savable={false} dropdownable={true}>
-        <ManageMatches />
+      <Section
+        title="Mérkőzések kezelése"
+        defaultStatus="opened"
+        savable={false}
+        dropdownable={true}
+      >
+        <ManageMatches isOrganiser={true} />
       </Section>
     </div>
   );

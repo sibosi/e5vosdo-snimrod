@@ -82,91 +82,111 @@ const LiveScoreContent = () => {
         }
       });
 
-    // Set up SSE connection
-    const eventSource = new EventSource("/api/livescore");
+    // Set up SSE connection with reconnect capability
+    let eventSource: EventSource | null = null;
 
-    eventSource.onopen = () => {
-      setIsConnected(true);
-    };
+    const connectSSE = () => {
+      if (eventSource) {
+        eventSource.close();
+      }
 
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
+      eventSource = new EventSource("/api/livescore");
 
-        // Handle initial connection message
-        if (
-          data.message &&
-          data.message === "Match score SSE connection established"
-        ) {
-          return;
-        }
+      eventSource.onopen = () => {
+        setIsConnected(true);
+        console.log("SSE connection established");
+      };
 
-        // Handle initial full data
-        if (data.initialData) return;
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
 
-        // Handle delta updates
-        if (data.changed || data.added || data.removed) {
-          setAllMatches((currentMatches) => {
-            let updatedMatches = [...currentMatches];
+          // Handle initial connection message
+          if (
+            data.message &&
+            data.message === "Match score SSE connection established"
+          ) {
+            return;
+          }
 
-            if (data.removed && data.removed.length > 0) {
-              const removedIds = new Set(data.removed);
-              updatedMatches = updatedMatches.filter(
-                (m) => !removedIds.has(m.id),
-              );
-            }
+          // Handle initial full data
+          if (data.initialData) return;
 
-            if (data.added && data.added.length > 0) {
-              updatedMatches = [...updatedMatches, ...data.added];
-            }
+          // Handle delta updates
+          if (data.changed || data.added || data.removed) {
+            setAllMatches((currentMatches) => {
+              let updatedMatches = [...currentMatches];
 
-            if (data.changed && data.changed.length > 0) {
-              const matchMap = new Map(updatedMatches.map((m) => [m.id, m]));
-
-              for (const changedMatch of data.changed) {
-                matchMap.set(changedMatch.id, changedMatch);
-
-                if (match && match.id === changedMatch.id) {
-                  setMatch(changedMatch);
-                }
+              if (data.removed && data.removed.length > 0) {
+                const removedIds = new Set(data.removed);
+                updatedMatches = updatedMatches.filter(
+                  (m) => !removedIds.has(m.id),
+                );
               }
 
-              updatedMatches = Array.from(matchMap.values());
-            }
+              if (data.added && data.added.length > 0) {
+                updatedMatches = [...updatedMatches, ...data.added];
+              }
 
-            const sortedMatches = [...updatedMatches].sort((a, b) =>
-              a.datetime.localeCompare(b.datetime),
-            );
+              if (data.changed && data.changed.length > 0) {
+                const matchMap = new Map(updatedMatches.map((m) => [m.id, m]));
 
-            const liveMatch = sortedMatches.find(
-              (m) => m.status === "pending" || m.status === "live",
-            );
+                for (const changedMatch of data.changed) {
+                  matchMap.set(changedMatch.id, changedMatch);
 
-            if (liveMatch && (!match || match.status === "finished")) {
-              setMatch(liveMatch);
-            }
+                  if (match && match.id === changedMatch.id) {
+                    setMatch(changedMatch);
+                  }
+                }
 
-            return updatedMatches;
-          });
+                updatedMatches = Array.from(matchMap.values());
+              }
+
+              const sortedMatches = [...updatedMatches].sort((a, b) =>
+                a.datetime.localeCompare(b.datetime),
+              );
+
+              const liveMatch = sortedMatches.find(
+                (m) => m.status === "pending" || m.status === "live",
+              );
+
+              if (liveMatch && (!match || match.status === "finished")) {
+                setMatch(liveMatch);
+              }
+
+              return updatedMatches;
+            });
+          }
+        } catch (error) {
+          console.error("Error parsing SSE data:", error);
         }
-      } catch (error) {
-        console.error("Error parsing SSE data:", error);
-      }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("SSE Error:", error);
+        setIsConnected(false);
+
+        // Close the current connection
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+
+        // Attempt to reconnect after a delay
+        setTimeout(() => {
+          console.log("Attempting to reconnect SSE...");
+          connectSSE();
+        }, 5000);
+      };
     };
 
-    eventSource.onerror = (error) => {
-      console.error("SSE Error:", error);
-      setIsConnected(false);
-
-      // Attempt to reconnect after a delay
-      setTimeout(() => {
-        eventSource.close();
-        // The browser will automatically try to reconnect
-      }, 5000);
-    };
+    // Initial connection
+    connectSSE();
 
     return () => {
-      eventSource.close();
+      if (eventSource) {
+        eventSource.close();
+      }
     };
   }, []);
 

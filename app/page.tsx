@@ -99,11 +99,11 @@ export default async function Home() {
         </Section>
       )}
 
-      {selfUser ? (
+      {/*selfUser ? (
         <Section title={"Órarend"} dropdownable={true} defaultStatus={"opened"}>
           <TimetableDay selfUser={selfUser} hideTitle />
         </Section>
-      ) : null}
+      ) : null*/}
 
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />

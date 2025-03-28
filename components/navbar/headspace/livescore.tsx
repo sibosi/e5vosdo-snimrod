@@ -102,24 +102,7 @@ const LiveScoreContent = () => {
         }
 
         // Handle initial full data
-        if (data.initialData) {
-          const matches = data.initialData;
-          setAllMatches(matches);
-
-          // Sort by date then find the first match that has pending or live status
-          const sortedMatches = [...matches].sort((a, b) =>
-            a.datetime.localeCompare(b.datetime),
-          );
-
-          const liveMatch = sortedMatches.find(
-            (m) => m.status === "pending" || m.status === "live",
-          );
-
-          if (liveMatch) {
-            setMatch(liveMatch);
-          }
-          return;
-        }
+        if (data.initialData) return;
 
         // Handle delta updates
         if (data.changed || data.added || data.removed) {

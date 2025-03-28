@@ -125,15 +125,6 @@ export async function GET(request: NextRequest) {
     `data: ${JSON.stringify({ message: "Match score SSE connection established" })}\n\n`,
   );
 
-  // Send initial full data to new connection
-  if (globalState.lastMatchesData) {
-    writer.write(
-      `data: ${JSON.stringify({
-        initialData: globalState.lastMatchesData,
-      })}\n\n`,
-    );
-  }
-
   request.signal.addEventListener("abort", () => {
     globalState.sseSubscribers!.delete(writer);
     writer.close();

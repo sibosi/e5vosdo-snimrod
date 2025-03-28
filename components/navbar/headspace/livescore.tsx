@@ -21,7 +21,7 @@ const LiveScoreContent = () => {
   const [clicked, setClicked] = useState(false);
   const [match, setMatch] = React.useState<Match>();
   const [currentTime, setCurrentTime] = useState<Date>();
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<Team[]>();
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -134,6 +134,12 @@ const LiveScoreContent = () => {
       eventSource.close();
     };
   }, []);
+
+  if (!teams) {
+    return (
+      <div className="flex h-full items-center justify-center">Loading...</div>
+    );
+  }
 
   return (
     <button

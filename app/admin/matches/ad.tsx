@@ -48,7 +48,7 @@ const ManageTeams = () => {
     );
 
   return (
-    <div className="space-y-4 text-center">
+    <div className="space-y-4 text-center mb-4">
       <div className="flex gap-2">
         {["A", "B", "C", "D", "8.-9. (X)"].map((group) => (
           <div
@@ -93,7 +93,7 @@ const ManageTeams = () => {
       <p>
         <Link
           href="https://www.instagram.com/p/DHtqCIqtCFl"
-          className="-mt-2 rounded-lg bg-selfsecondary-100 p-1 text-center text-sm"
+          className="rounded-lg bg-selfsecondary-100 p-1 text-center text-sm"
         >
           Egyéb programok ➡
         </Link>

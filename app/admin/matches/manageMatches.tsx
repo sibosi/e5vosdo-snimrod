@@ -41,7 +41,13 @@ function getBetweenContent(match: Match) {
   }
 }
 
-const ManageMatches = () => {
+const ManageMatches = (
+  {
+    isOrganiser,
+  }: {
+    isOrganiser: boolean;
+  } = { isOrganiser: false },
+) => {
   const [matches, setMatches] = React.useState<Match[]>();
   const [teams, setTeams] = React.useState<Team[]>();
   const [matchFilter, setMatchFilter] = React.useState<Team[]>([]);
@@ -182,344 +188,79 @@ const ManageMatches = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex">
-                <Button
-                  color="primary"
-                  className="m-2"
-                  onPress={() => {
-                    const updatedMatch: Match = {
-                      ...match,
-                      team1_score: match.team1_score + 1,
-                      team2_score: match.team2_score,
-                    };
-                    updateMatch(updatedMatch);
-                  }}
-                >
-                  +1
-                </Button>
-                <Button
-                  className="m-2"
-                  onPress={() => {
-                    const updatedMatch: Match = {
-                      ...match,
-                      team1_score: 0,
-                      team2_score: 0,
-                      status: "pending",
-                    };
-                    updateMatch(updatedMatch);
-                  }}
-                >
-                  Reset Match (Pending)
-                </Button>
-                <Button
-                  className="m-2"
-                  onPress={() => {
-                    const updatedMatch: Match = {
-                      ...match,
-                      start_time: new Date().toISOString(),
-                      status: "live",
-                    };
-                    updateMatch(updatedMatch);
-                  }}
-                >
-                  Start Match
-                </Button>
-                <Button
-                  className="m-2"
-                  onPress={() => {
-                    const updatedMatch: Match = {
-                      ...match,
-                      status: "finished",
-                    };
-                    updateMatch(updatedMatch);
-                  }}
-                >
-                  Finish Match
-                </Button>
-                <Button
-                  color="primary"
-                  className="m-2"
-                  onPress={() => {
-                    const updatedMatch: Match = {
-                      ...match,
-                      team1_score: match.team1_score,
-                      team2_score: match.team2_score + 1,
-                    };
-                    updateMatch(updatedMatch);
-                  }}
-                >
-                  +1
-                </Button>
-              </div>
+              {isOrganiser && (
+                <div className="flex">
+                  <Button
+                    color="primary"
+                    className="m-2"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        team1_score: match.team1_score + 1,
+                        team2_score: match.team2_score,
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    +1
+                  </Button>
+                  <Button
+                    className="m-2"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        team1_score: 0,
+                        team2_score: 0,
+                        status: "pending",
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    Reset Match (Pending)
+                  </Button>
+                  <Button
+                    className="m-2"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        start_time: new Date().toISOString(),
+                        status: "live",
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    Start Match
+                  </Button>
+                  <Button
+                    className="m-2"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        status: "finished",
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    Finish Match
+                  </Button>
+                  <Button
+                    color="primary"
+                    className="m-2"
+                    onPress={() => {
+                      const updatedMatch: Match = {
+                        ...match,
+                        team1_score: match.team1_score,
+                        team2_score: match.team2_score + 1,
+                      };
+                      updateMatch(updatedMatch);
+                    }}
+                  >
+                    +1
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
-      </div>
-      <div className="mt-4">
-        <h2 className="text-lg font-bold">Add New Match</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const newMatch = {
-              team1_id: Number(formData.get("team1_id")),
-              team2_id: Number(formData.get("team2_id")),
-              datetime: formData.get("datetime") as string,
-            };
-            fetch("/api/createMatch", {
-              method: "POST",
-              headers: {
-                module: "matches",
-              },
-              body: JSON.stringify(newMatch),
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                setMatches([...matches, data]);
-              });
-          }}
-          className="flex flex-col gap-2"
-        >
-          <select name="team1_id" required>
-            <option value="">Select Team 1</option>
-            {teams?.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-          <select name="team2_id" required>
-            <option value="">Select Team 2</option>
-            {teams?.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="datetime-local"
-            name="datetime"
-            required
-            className="rounded border p-2"
-          />
-          <button type="submit" className="rounded bg-blue-500 p-2 text-white">
-            Add Match
-          </button>
-        </form>
-      </div>
-      <div className="mt-4">
-        <h2 className="text-lg font-bold">Edit Match</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const updatedMatch = {
-              id: Number(formData.get("id")),
-              team1_id: Number(formData.get("team1_id")),
-              team2_id: Number(formData.get("team2_id")),
-              datetime: formData.get("datetime") as string,
-            };
-            fetch("/api/editMatch", {
-              method: "POST",
-              headers: {
-                module: "matches",
-              },
-              body: JSON.stringify(updatedMatch),
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                setMatches(
-                  matches.map((match) => (match.id === data.id ? data : match)),
-                );
-              });
-          }}
-          className="flex flex-col gap-2"
-        >
-          <select name="id" required>
-            <option value="">Select Match</option>
-            {matches.map((match) => (
-              <option key={match.id} value={match.id}>
-                {teams?.find((team) => team.id === match.team1_id)?.name} vs{" "}
-                {teams?.find((team) => team.id === match.team2_id)?.name}
-              </option>
-            ))}
-          </select>
-          <select name="team1_id" required>
-            <option value="">Select Team 1</option>
-            {teams?.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-          <select name="team2_id" required>
-            <option value="">Select Team 2</option>
-            {teams?.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="datetime-local"
-            name="datetime"
-            required
-            className="rounded border p-2"
-          />
-          <button type="submit" className="rounded bg-blue-500 p-2 text-white">
-            Edit Match
-          </button>
-        </form>
-      </div>
-      <div className="mt-4">
-        <h2 className="text-lg font-bold">Delete Match</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const matchId = Number(formData.get("id"));
-            fetch("/api/deleteMatch", {
-              method: "POST",
-              headers: {
-                module: "matches",
-              },
-              body: JSON.stringify({ id: matchId }),
-            })
-              .then((res) => res.json())
-              .then(() => {
-                setMatches(matches.filter((match) => match.id !== matchId));
-              });
-          }}
-          className="flex flex-col gap-2"
-        >
-          <select name="id" required>
-            <option value="">Select Match</option>
-            {matches.map((match) => (
-              <option key={match.id} value={match.id}>
-                {teams?.find((team) => team.id === match.team1_id)?.name} vs{" "}
-                {teams?.find((team) => team.id === match.team2_id)?.name}
-              </option>
-            ))}
-          </select>
-          <button type="submit" className="rounded bg-red-500 p-2 text-white">
-            Delete Match
-          </button>
-        </form>
-      </div>
-      <div className="mt-4">
-        <h2 className="text-lg font-bold">Pin Match</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const matchId = Number(formData.get("id"));
-            fetch("/api/pinMatch", {
-              method: "POST",
-              headers: {
-                module: "matches",
-              },
-              body: JSON.stringify({ id: matchId }),
-            })
-              .then((res) => res.json())
-              .then(() => {
-                // Handle pinning logic
-              });
-          }}
-          className="flex flex-col gap-2"
-        >
-          <select name="id" required>
-            <option value="">Select Match</option>
-            {matches.map((match) => (
-              <option key={match.id} value={match.id}>
-                {teams?.find((team) => team.id === match.team1_id)?.name} vs{" "}
-                {teams?.find((team) => team.id === match.team2_id)?.name}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            className="rounded bg-yellow-500 p-2 text-white"
-          >
-            Pin Match
-          </button>
-        </form>
-      </div>
-      <div className="mt-4">
-        <h2 className="text-lg font-bold">Unpin Match</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const matchId = Number(formData.get("id"));
-            fetch("/api/unpinMatch", {
-              method: "POST",
-              headers: {
-                module: "matches",
-              },
-              body: JSON.stringify({ id: matchId }),
-            })
-              .then((res) => res.json())
-              .then(() => {
-                // Handle unpinning logic
-              });
-          }}
-          className="flex flex-col gap-2"
-        >
-          <select name="id" required>
-            <option value="">Select Match</option>
-            {matches.map((match) => (
-              <option key={match.id} value={match.id}>
-                {teams?.find((team) => team.id === match.team1_id)?.name} vs{" "}
-                {teams?.find((team) => team.id === match.team2_id)?.name}
-              </option>
-            ))}
-          </select>
-          <button type="submit" className="rounded bg-gray-500 p-2 text-white">
-            Unpin Match
-          </button>
-        </form>
-      </div>
-      <div className="mt-4">
-        <h2 className="text-lg font-bold">Set Match Result</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const matchId = Number(formData.get("id"));
-            const result = formData.get("result") as string;
-            fetch("/api/setMatchResult", {
-              method: "POST",
-              headers: {
-                module: "matches",
-              },
-              body: JSON.stringify({ id: matchId, result }),
-            })
-              .then((res) => res.json())
-              .then(() => {
-                // Handle setting match result logic
-              });
-          }}
-          className="flex flex-col gap-2"
-        >
-          <select name="id" required>
-            <option value="">Select Match</option>
-            {matches.map((match) => (
-              <option key={match.id} value={match.id}>
-                {teams?.find((team) => team.id === match.team1_id)?.name} vs{" "}
-                {teams?.find((team) => team.id === match.team2_id)?.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            name="result"
-            required
-            placeholder="Enter result (e.g., 3-1)"
-            className="rounded border p-2"
-          />
-          <button type="submit" className="rounded bg-green-500 p-2 text-white">
-            Set Result
-          </button>
-        </form>
       </div>
     </div>
   );

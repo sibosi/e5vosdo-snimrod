@@ -24,18 +24,78 @@ if (globalState.lastMatchesData === undefined) {
   globalState.lastMatchesData = null;
 }
 
+// Helper function to find changes between old and new match data
+function findChanges(
+  oldMatches: Match[] | null | undefined,
+  newMatches: Match[],
+): {
+  changed: Match[];
+  added: Match[];
+  removed: number[];
+} {
+  const changes = {
+    changed: [] as Match[],
+    added: [] as Match[],
+    removed: [] as number[],
+  };
+
+  if (!oldMatches) {
+    // First time, all matches are new
+    return {
+      changed: [],
+      added: newMatches,
+      removed: [],
+    };
+  }
+
+  // Create maps for efficient lookup
+  const oldMatchMap = new Map(oldMatches.map((match) => [match.id, match]));
+  const newMatchMap = new Map(newMatches.map((match) => [match.id, match]));
+
+  // Find added and changed matches
+  for (const match of newMatches) {
+    const oldMatch = oldMatchMap.get(match.id);
+
+    if (!oldMatch) {
+      // New match
+      changes.added.push(match);
+    } else if (JSON.stringify(oldMatch) !== JSON.stringify(match)) {
+      // Changed match
+      changes.changed.push(match);
+    }
+  }
+
+  // Find removed matches
+  for (const oldMatch of oldMatches) {
+    if (!newMatchMap.has(oldMatch.id)) {
+      changes.removed.push(oldMatch.id);
+    }
+  }
+
+  return changes;
+}
+
 if (!globalState.sseInterval) {
   globalState.sseInterval = setInterval(async () => {
     try {
       const matchData = await getMatches();
 
+      // Find changes compared to last update
+      const changes = findChanges(globalState.lastMatchesData, matchData);
+
+      // Only send updates if there are changes
       if (
-        !globalState.lastMatchesData ||
-        JSON.stringify(globalState.lastMatchesData) !== JSON.stringify(matchData)
+        changes.changed.length > 0 ||
+        changes.added.length > 0 ||
+        changes.removed.length > 0
       ) {
+        // Update stored data
         globalState.lastMatchesData = matchData;
-        const data = `data: ${JSON.stringify(matchData)}\n\n`;
+
+        // Send only the changes
+        const data = `data: ${JSON.stringify(changes)}\n\n`;
         const subscribers = globalState.sseSubscribers!;
+
         for (const writer of Array.from(subscribers)) {
           try {
             writer.write(data);
@@ -60,9 +120,19 @@ export async function GET(request: NextRequest) {
 
   globalState.sseSubscribers!.add(writer);
 
+  // Send connection established message
   writer.write(
     `data: ${JSON.stringify({ message: "Match score SSE connection established" })}\n\n`,
   );
+
+  // Send initial full data to new connection
+  if (globalState.lastMatchesData) {
+    writer.write(
+      `data: ${JSON.stringify({
+        initialData: globalState.lastMatchesData,
+      })}\n\n`,
+    );
+  }
 
   request.signal.addEventListener("abort", () => {
     globalState.sseSubscribers!.delete(writer);

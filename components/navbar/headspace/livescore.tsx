@@ -23,6 +23,7 @@ const LiveScoreContent = () => {
   const [currentTime, setCurrentTime] = useState<Date>();
   const [teams, setTeams] = useState<Team[]>();
   const [isConnected, setIsConnected] = useState(false);
+  const [allMatches, setAllMatches] = useState<Match[]>([]);
 
   useEffect(() => {
     fetch("/api/getTeams", {
@@ -48,7 +49,7 @@ const LiveScoreContent = () => {
     return () => clearInterval(interval);
   }, [match]);
 
-  // Replace polling with SSE
+  // Replace polling with SSE that handles deltas
   useEffect(() => {
     fetch("/api/getNextMatch", {
       method: "GET",
@@ -63,15 +64,21 @@ const LiveScoreContent = () => {
 
     // Initial fetch to get data quickly
     fetch("/api/livescore")
-      .then((res) => res.json() as unknown as Match[])
+      .then((res) => res.json())
       .then((data) => {
         // Sort by date then find the first match that has pending or live status
-        data.sort((a, b) => a.datetime.localeCompare(b.datetime));
-        const match = data.find(
-          (match) => match.status === "pending" || match.status === "live",
-        );
-        if (match) {
-          setMatch(match);
+        const sortedMatches = Array.isArray(data)
+          ? data.sort((a, b) => a.datetime.localeCompare(b.datetime))
+          : [];
+
+        if (sortedMatches.length > 0) {
+          setAllMatches(sortedMatches);
+          const liveMatch = sortedMatches.find(
+            (m) => m.status === "pending" || m.status === "live",
+          );
+          if (liveMatch) {
+            setMatch(liveMatch);
+          }
         }
       });
 
@@ -84,34 +91,84 @@ const LiveScoreContent = () => {
 
     eventSource.onmessage = (event) => {
       try {
-        const data: Match[] | { message: string } = JSON.parse(event.data);
+        const data = JSON.parse(event.data);
 
-        // Ignore the initial connection message
-
+        // Handle initial connection message
         if (
-          typeof data === "object" &&
-          "message" in data &&
           data.message &&
           data.message === "Match score SSE connection established"
         ) {
           return;
         }
 
-        if ("message" in data) return;
+        // Handle initial full data
+        if (data.initialData) {
+          const matches = data.initialData;
+          setAllMatches(matches);
 
-        // If we receive an array of matches
-        if (Array.isArray(data)) {
           // Sort by date then find the first match that has pending or live status
-          const data1 = data.toSorted((a, b) => {
-            return (
-              new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
-            );
-          });
-          const match = data1.find(
-            (match) => match.status === "pending" || match.status === "live",
+          const sortedMatches = [...matches].sort((a, b) =>
+            a.datetime.localeCompare(b.datetime),
           );
-          if (match) {
-            setMatch(match);
+
+          const liveMatch = sortedMatches.find(
+            (m) => m.status === "pending" || m.status === "live",
+          );
+
+          if (liveMatch) {
+            setMatch(liveMatch);
+          }
+          return;
+        }
+
+        // Handle delta updates
+        if (data.changed || data.added || data.removed) {
+          // Create a new copy of the matches array
+          const updatedMatches = [...allMatches];
+
+          // Process removed matches
+          if (data.removed && data.removed.length > 0) {
+            // Filter out removed matches
+            const removedIds = new Set(data.removed);
+            const filteredMatches = updatedMatches.filter(
+              (m) => !removedIds.has(m.id),
+            );
+            setAllMatches(filteredMatches);
+          }
+
+          // Process added matches
+          if (data.added && data.added.length > 0) {
+            setAllMatches([...updatedMatches, ...data.added]);
+          }
+
+          // Process changed matches
+          if (data.changed && data.changed.length > 0) {
+            // Update changed matches
+            const matchMap = new Map(updatedMatches.map((m) => [m.id, m]));
+
+            for (const changedMatch of data.changed) {
+              matchMap.set(changedMatch.id, changedMatch);
+
+              // Update the current match if it changed
+              if (match && match.id === changedMatch.id) {
+                setMatch(changedMatch);
+              }
+            }
+
+            setAllMatches(Array.from(matchMap.values()));
+          }
+
+          // Find the most relevant match for display
+          const sortedMatches = [...updatedMatches].sort((a, b) =>
+            a.datetime.localeCompare(b.datetime),
+          );
+
+          const liveMatch = sortedMatches.find(
+            (m) => m.status === "pending" || m.status === "live",
+          );
+
+          if (liveMatch && (!match || match.status === "finished")) {
+            setMatch(liveMatch);
           }
         }
       } catch (error) {

@@ -49,7 +49,7 @@ const ManageMatches = (
     isOrganiser: boolean;
   } = { isOrganiser: false },
 ) => {
-  const [matches, setMatches] = useState<Match[]>();
+  const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>();
   const [matchFilter, setMatchFilter] = useState<Team[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -67,12 +67,62 @@ const ManageMatches = (
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (!data.message) {
+
+        // Handle initial connection message
+        if (
+          data.message &&
+          data.message === "Match score SSE connection established"
+        ) {
+          return;
+        }
+
+        // Handle initial full data
+        if (data.initialData) {
           setMatches(
-            (data as Match[]).toSorted((a, b) =>
+            (data.initialData as Match[]).toSorted((a, b) =>
               a.datetime.localeCompare(b.datetime),
             ),
           );
+          return;
+        }
+
+        // Handle delta updates
+        if (data.changed || data.added || data.removed) {
+          setMatches((currentMatches) => {
+            // Create a new copy of the matches array
+            let updatedMatches = [...currentMatches];
+
+            // Process removed matches
+            if (data.removed && data.removed.length > 0) {
+              // Filter out removed matches
+              const removedIds = new Set(data.removed);
+              updatedMatches = updatedMatches.filter(
+                (m) => !removedIds.has(m.id),
+              );
+            }
+
+            // Process added matches
+            if (data.added && data.added.length > 0) {
+              updatedMatches = [...updatedMatches, ...data.added];
+            }
+
+            // Process changed matches
+            if (data.changed && data.changed.length > 0) {
+              // Update changed matches
+              const matchMap = new Map(updatedMatches.map((m) => [m.id, m]));
+
+              for (const changedMatch of data.changed) {
+                matchMap.set(changedMatch.id, changedMatch);
+              }
+
+              updatedMatches = Array.from(matchMap.values());
+            }
+
+            // Sort the matches
+            return updatedMatches.toSorted((a, b) =>
+              a.datetime.localeCompare(b.datetime),
+            );
+          });
         }
       } catch (error) {
         console.error("Error parsing SSE data:", error);
@@ -174,7 +224,7 @@ const ManageMatches = (
     setCurrentMatch(undefined);
   }
 
-  if (!matches)
+  if (!teams)
     return (
       <div className="flex h-full items-center justify-center">Loading...</div>
     );

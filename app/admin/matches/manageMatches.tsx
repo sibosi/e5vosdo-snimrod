@@ -309,7 +309,8 @@ const ManageMatches = (
         ))}
       </div>
       <div className="space-y-4">
-        <Section title="Korábbi meccsek" className="mb-4 border-selfprimary border-2 rounded-lg" dropdownable={true} defaultStatus="closed" savable={false} >
+        <Section title="Korábbi meccsek" className="border-selfprimary border-2 rounded-lg space-y-4" dropdownable={true} defaultStatus="closed" savable={false} >
+          <div className="space-y-4">
         {matches
           .filter((match) => {
             if (matchFilter.length === 0) return true;
@@ -454,6 +455,7 @@ const ManageMatches = (
               )}
             </div>
           ))}
+          </div>
         </Section>
         {matches
           .filter((match) => {

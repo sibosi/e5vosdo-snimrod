@@ -1,6 +1,6 @@
 {
   "name": "e5vosdo-snimrod",
-  "version": "0.0.2503.0",
+  "version": "0.0.2503.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -30,7 +30,6 @@
     "chart.js": "^4.4.7",
     "cheerio": "^1.0.0",
     "clsx": "^2.1.1",
-    "daisyui": "^4.12.23",
     "dayjs": "^1.11.13",
     "eslint": "^9.20.1",
     "eslint-config-next": "15.1.4",

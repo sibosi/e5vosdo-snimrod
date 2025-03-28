@@ -75,7 +75,7 @@ const PopupCards = ({
         {cards.map((card, index) => (
           <div
             key={"CardList" + index}
-            className="card mb-2 h-auto w-40 overflow-hidden border-1 border-selfprimary-200 bg-selfprimary-bg text-foreground shadow-md sm:w-60"
+            className="mb-2 flex h-auto w-40 flex-col overflow-hidden rounded-xl border-1 border-selfprimary-200 bg-selfprimary-bg text-foreground shadow-md sm:w-60"
           >
             {typeof card.image === "string" && (
               <button
@@ -102,7 +102,7 @@ const PopupCards = ({
               </button>
             )}
 
-            <div className="card-body flex p-2">
+            <div className="p-2">
               <h2 className="card-title mx-auto overflow-hidden text-clip text-center">
                 {card.title}
               </h2>

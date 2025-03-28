@@ -1,6 +1,9 @@
 import Page from "./index";
+import { headers } from "next/headers";
 
 const E5PodcastPage = async () => {
+  const _ = await headers();
+
   const res = await fetch(`${process.env.NEXTAUTH_URL}/api/podcast`);
   if (!res.ok) {
     // handle error, optionally redirect or show an error message

@@ -1,110 +1,141 @@
-import axios from "axios";
-import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
-import NodeCache from "node-cache";
-import { getComingMatch, updateMatch } from "@/db/dbreq";
+import { getMatches, Match } from "@/db/matches";
+import { NextRequest, NextResponse } from "next/server";
 
-const cache = new NodeCache();
-
-function formatTime(time: string) {
-  // time : dd.mm.yyyy hh:mm
-  const [date, hour] = time.split(" ");
-  const [day, month, year] = date.split(".");
-  return `${year}/${month}/${day} ${hour}`;
-}
-
-const fetchSoccerData = async () => {
-  try {
-    // Replace this URL with the actual URL you are scraping
-    const comingMatch = await getComingMatch();
-    const url = comingMatch.url;
-    if (["undefined", "null", "0"].includes(url))
-      return {
-        ...comingMatch,
-        image1:
-          comingMatch.image1 ||
-          `/flags/${comingMatch.team1?.toLowerCase().replace(/\s+/g, "")}.png`,
-        image2:
-          comingMatch.image2 ||
-          `/flags/${comingMatch.team2?.toLowerCase().replace(/\s+/g, "")}.png`,
-      };
-
-    const { data: html } = await axios.get(url);
-
-    const $ = cheerio.load(html);
-
-    // Extract the game details
-    const teams = $("h3").text().trim().split(" - ");
-
-    const firstDetail = $(".detail").eq(0).text().trim();
-    const secondDetail = $(".detail").eq(1).text().trim();
-
-    const score = $(".detail")
-      .eq(0)
-      .text()
-      .trim()
-      .split(" ")[0]
-      .split(":")
-      .map(Number);
-
-    const halftimeScore = $(".detail").eq(1).text().trim();
-    const time = halftimeScore.split(" ").reverse()[0];
-    const startTime = $(".detail").eq(2).text().trim();
-    const events = [];
-
-    $("#detail-tab-content .incident.soccer").each((index, element) => {
-      const time = $(element).find(".i-field.time").text().trim();
-      const iconElement = $(element).find(".i-field.icon");
-      const eventType = iconElement.attr("class")
-        ? iconElement.attr("class")?.split(" ")[1]
-        : "unknown";
-      const eventDetail = $(element).text().trim();
-      events.push({ time, eventType, eventDetail });
-    });
-
-    // Construct the response object in the desired format
-    const gameData = {
-      id: 1, // Assign a unique ID if necessary
-      team1: teams[0] || "Unknown Team 1",
-      team2: teams[1] || "Unknown Team 2",
-      team_short1: teams[0] ? teams[0].substring(0, 3).toUpperCase() : "???",
-      team_short2: teams[1] ? teams[1].substring(0, 3).toUpperCase() : "???",
-      score1: score[0] || 0,
-      score2: score[1] || 0,
-      image1: `/flags/${teams[0]?.toLowerCase().replace(/\s+/g, "")}.png`,
-      image2: `/flags/${teams[1]?.toLowerCase().replace(/\s+/g, "")}.png`,
-      status:
-        time === "Finished" ? "Finished" : time === "" ? "Upcoming" : "Live",
-      time: formatTime(time == "Time" ? "Félidő" : time),
-      start_time: formatTime(
-        time === "" ? firstDetail.split(" ").reverse()[0] : startTime,
-      ),
-    };
-
-    return gameData;
-  } catch (error) {
-    console.error("Error fetching soccer data:", error);
-    return { error: error };
-  }
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 };
 
-export async function GET() {
-  // Check if data is cached
-  const cachedData = cache.get("soccerData");
-  if (cachedData) {
-    console.log("Using cached data...");
-    return NextResponse.json(cachedData);
-  }
-  const soccerData: any = await fetchSoccerData();
-  cache.set("soccerData", soccerData, 20); // In seconds
-  console.log("Fetched new data...");
-  updateMatch(soccerData.id, soccerData);
-  return NextResponse.json(soccerData);
+interface SSEMatchGlobalState {
+  sseSubscribers: Set<WritableStreamDefaultWriter<string>>;
+  sseInterval: ReturnType<typeof setInterval> | null;
+  lastMatchesData: Match[] | null;
 }
 
-export async function POST() {
-  return NextResponse.json({
-    status: 500,
-    message: "POST requests are not supported",
+const globalState = globalThis as unknown as Partial<SSEMatchGlobalState>;
+if (!globalState.sseSubscribers) {
+  globalState.sseSubscribers = new Set<WritableStreamDefaultWriter<string>>();
+}
+if (globalState.sseInterval === undefined) {
+  globalState.sseInterval = null;
+}
+if (globalState.lastMatchesData === undefined) {
+  globalState.lastMatchesData = null;
+}
+
+// Helper function to find changes between old and new match data
+function findChanges(
+  oldMatches: Match[] | null | undefined,
+  newMatches: Match[],
+): {
+  changed: Match[];
+  added: Match[];
+  removed: number[];
+} {
+  const changes = {
+    changed: [] as Match[],
+    added: [] as Match[],
+    removed: [] as number[],
+  };
+
+  if (!oldMatches) {
+    // First time, all matches are new
+    return {
+      changed: [],
+      added: newMatches,
+      removed: [],
+    };
+  }
+
+  // Create maps for efficient lookup
+  const oldMatchMap = new Map(oldMatches.map((match) => [match.id, match]));
+  const newMatchMap = new Map(newMatches.map((match) => [match.id, match]));
+
+  // Find added and changed matches
+  for (const match of newMatches) {
+    const oldMatch = oldMatchMap.get(match.id);
+
+    if (!oldMatch) {
+      // New match
+      changes.added.push(match);
+    } else if (JSON.stringify(oldMatch) !== JSON.stringify(match)) {
+      // Changed match
+      changes.changed.push(match);
+    }
+  }
+
+  // Find removed matches
+  for (const oldMatch of oldMatches) {
+    if (!newMatchMap.has(oldMatch.id)) {
+      changes.removed.push(oldMatch.id);
+    }
+  }
+
+  return changes;
+}
+
+if (!globalState.sseInterval) {
+  globalState.sseInterval = setInterval(async () => {
+    try {
+      const matchData = await getMatches();
+
+      // Find changes compared to last update
+      const changes = findChanges(globalState.lastMatchesData, matchData);
+
+      // Only send updates if there are changes
+      if (
+        changes.changed.length > 0 ||
+        changes.added.length > 0 ||
+        changes.removed.length > 0
+      ) {
+        // Update stored data
+        globalState.lastMatchesData = matchData;
+
+        // Send only the changes
+        const data = `data: ${JSON.stringify(changes)}\n\n`;
+        const subscribers = globalState.sseSubscribers!;
+
+        for (const writer of Array.from(subscribers)) {
+          try {
+            writer.write(data);
+          } catch (error) {
+            globalState.sseSubscribers!.delete(writer);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching match data:", error);
+    }
+  }, 2000); // Check for updates every 2 seconds
+}
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
+}
+
+export async function GET(request: NextRequest) {
+  const stream = new TransformStream();
+  const writer = stream.writable.getWriter();
+
+  globalState.sseSubscribers!.add(writer);
+
+  // Send connection established message
+  writer.write(
+    `data: ${JSON.stringify({ message: "Match score SSE connection established" })}\n\n`,
+  );
+
+  request.signal.addEventListener("abort", () => {
+    globalState.sseSubscribers!.delete(writer);
+    writer.close();
+  });
+
+  return new Response(stream.readable, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "Access-Control-Allow-Origin": "*",
+    },
   });
 }

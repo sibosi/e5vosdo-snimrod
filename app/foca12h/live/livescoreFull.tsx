@@ -315,18 +315,18 @@ const LiveScoreContent = ({
   );
 };
 
-const getMatchStage = (match: Match) => {
+export const getMatchStage = (match: Match, size?: string) => { 
   switch (match.group_letter) {
     case "Q":
-      return <p className="text-5xl mb-6 font-bold">
+      return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
         Negyeddöntő
       </p>;
     case "H":
-      return <p className="text-5xl mb-6 font-bold">
+      return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
         Elődöntő
       </p>;
     case "W":
-      return <p className="text-5xl mb-6 font-bold">
+      return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
         Döntő
       </p>;
     default:

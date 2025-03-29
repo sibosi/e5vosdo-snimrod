@@ -6,37 +6,47 @@ import { Button } from "@heroui/react";
 import "@/components/navbar/headspace/timer.css";
 import CreateEditMatch from "./createEditMatch";
 import { Section } from "@/components/home/section";
+import { getMatchStage } from "@/app/foca12h/live/livescoreFull";
 
 function getBetweenContent(match: Match) {
   switch (match.status) {
     case "pending":
       return (
         <div className="text-md text-gray-500">
+          {getMatchStage(match, "2xl")}
+          <p className="text-xl font-bold">vs</p>
           <p className="">
             {new Date(match.datetime).toLocaleTimeString("hu-HU", {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </p>
-          <p className="text-xl font-bold">vs</p>
+          
+          
         </div>
       );
     case "live":
       return (
         <div>
+          {getMatchStage(match, "2xl")}
           <p className="text-xl font-bold">
             {match.team1_score} - {match.team2_score}
           </p>
           <div className="h-1 w-full overflow-hidden">
             <div className="animate-grow-line-x mx-auto h-full w-1/2 bg-green-500"></div>
           </div>
+            
         </div>
       );
     case "finished":
       return (
+        <div>
+          {getMatchStage(match, "2xl")}
         <p className="text-3xl font-bold">
           {match.team1_score} - {match.team2_score}
         </p>
+          
+        </div>
       );
     default:
       return <span className="text-sm text-gray-500">Unknown</span>;

@@ -329,6 +329,10 @@ export const getMatchStage = (match: Match, size?: string) => {
       return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
         Döntő
       </p>;
+    case "T":
+      return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
+        Bronzmecccs
+      </p>;
     default:
       return <></>;
   }}

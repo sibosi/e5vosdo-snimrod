@@ -120,7 +120,7 @@ const CreateEditMatch = ({
     onSave(matchData);
   };
 
-  const availableGroups = ["A", "B", "C", "D", "X", "Q", "H", "W"];
+  const availableGroups = ["A", "B", "C", "D", "X", "Q", "T", "H", "W"];
 
   if (!teams) {
     return (

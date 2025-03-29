@@ -12,6 +12,12 @@ export function getColorClass(group: string) {
       return "bg-green-400 dark:bg-green-700";
     case "D":
       return "bg-yellow-400 dark:bg-yellow-600";
+    case "Q":
+      return "bg-yellow-400 dark:bg-yellow-600";
+    case "H":
+      return "bg-orange-400 dark:bg-orange-600";
+    case "W":
+      return "bg-red-400 dark:bg-red-800";
     case "X":
       return "bg-gray-300 dark:bg-gray-500";
     default:

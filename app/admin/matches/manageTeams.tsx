@@ -131,9 +131,7 @@ const ManageTeams = () => {
               <p className="w-9 rounded-lg text-xl font-bold max-sm:hidden">
                 {team.group_letter}
               </p>
-              <p className="rounded-lg bg-white bg-opacity-30 px-2 py-1 text-sm font-bold">
-                {teamPoints[team.id] || 0} pont
-              </p>
+              
             </div>
           </div>
         ))}

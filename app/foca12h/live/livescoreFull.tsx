@@ -253,6 +253,7 @@ const LiveScoreContent = ({
               </p>
             </div>
             <div className="flex flex-col items-center justify-center">
+              {match.status !== "pending" && (getMatchStage(match))}
               <p className="text-8xl font-bold text-success-600">
                 {match.status === "pending"
                   ? "vs"
@@ -314,6 +315,24 @@ const LiveScoreContent = ({
   );
 };
 
+const getMatchStage = (match: Match) => {
+  switch (match.group_letter) {
+    case "Q":
+      return <p className="text-5xl mb-6 font-bold">
+        Negyeddöntő
+      </p>;
+    case "H":
+      return <p className="text-5xl mb-6 font-bold">
+        Elődöntő
+      </p>;
+    case "W":
+      return <p className="text-5xl mb-6 font-bold">
+        Döntő
+      </p>;
+    default:
+      return <></>;
+  }}
+
 const UpcomingMatches = ({
   matches,
   teams,
@@ -362,6 +381,7 @@ const UpcomingMatches = ({
             </div>
             <div>
               <div className="">
+                {getMatchStage(match)}
                 <p className="text-3xl font-bold">vs</p>
                 <p className="text-2xl">
                   {new Date(match.datetime).toLocaleTimeString("hu-HU", {

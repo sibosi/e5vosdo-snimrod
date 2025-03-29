@@ -1,8 +1,8 @@
 "use client";
 import { Match, Team } from "@/db/matches";
 import React, { useState, useEffect } from "react";
-import { Button } from "@heroui/react";
 import {
+  Button,
   Modal,
   ModalContent,
   ModalHeader,
@@ -120,7 +120,7 @@ const CreateEditMatch = ({
     onSave(matchData);
   };
 
-  const availableGroups = ["A", "B", "C", "D", "X", "W"];
+  const availableGroups = ["A", "B", "C", "D", "X", "Q", "H", "W"];
 
   if (!teams) {
     return (

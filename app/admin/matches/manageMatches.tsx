@@ -21,8 +21,6 @@ function getBetweenContent(match: Match) {
               minute: "2-digit",
             })}
           </p>
-          
-          
         </div>
       );
     case "live":
@@ -35,17 +33,15 @@ function getBetweenContent(match: Match) {
           <div className="h-1 w-full overflow-hidden">
             <div className="animate-grow-line-x mx-auto h-full w-1/2 bg-green-500"></div>
           </div>
-            
         </div>
       );
     case "finished":
       return (
         <div>
           {getMatchStage(match, "2xl")}
-        <p className="text-3xl font-bold">
-          {match.team1_score} - {match.team2_score}
-        </p>
-          
+          <p className="text-3xl font-bold">
+            {match.team1_score} - {match.team2_score}
+          </p>
         </div>
       );
     default:
@@ -319,152 +315,166 @@ const ManageMatches = (
         ))}
       </div>
       <div className="space-y-4">
-        <Section title="Korábbi meccsek" className="border-selfprimary border-2 rounded-lg space-y-4" dropdownable={true} defaultStatus="closed" savable={false} >
+        <Section
+          title="Korábbi meccsek"
+          className="space-y-4 rounded-lg border-2 border-selfprimary"
+          dropdownable={true}
+          defaultStatus="opened"
+          savable={false}
+        >
           <div className="space-y-4">
-        {matches
-          .filter((match) => {
-            if (matchFilter.length === 0) return true;
-            return (
-              matchFilter.some((team) => team.id === match.team1_id) ||
-              matchFilter.some((team) => team.id === match.team2_id)
-            );
-          })
-          .filter((match) => match.status === "finished")
-          .map((match) => (
-            <div key={match.id}>
-              <div
-                className={
-                  "grid grid-cols-3 items-center justify-between gap-2 rounded-lg p-2 text-center " +
-                  getColorClass(match.group_letter)
-                }
-              >
-                <div className="flex flex-col items-center justify-center">
-                  <img
-                    className="mx-1 h-9 w-9 rounded-lg border-gray-500"
-                    src={
-                      teams?.find((team) => team.id === match.team1_id)
-                        ?.image_url
+            {matches
+              .filter((match) => {
+                if (matchFilter.length === 0) return true;
+                return (
+                  matchFilter.some((team) => team.id === match.team1_id) ||
+                  matchFilter.some((team) => team.id === match.team2_id)
+                );
+              })
+              .filter((match) => match.status === "finished")
+              .map((match) => (
+                <div key={match.id}>
+                  <div
+                    className={
+                      "grid grid-cols-3 items-center justify-between gap-2 rounded-lg p-2 text-center " +
+                      getColorClass(match.group_letter)
                     }
-                    alt={
-                      teams?.find((team) => team.id === match.team1_id)?.name
-                    }
-                  />
-                  <span>
-                    {teams?.find((team) => team.id === match.team1_id)?.name}
-                  </span>
+                  >
+                    <div className="flex flex-col items-center justify-center">
+                      <img
+                        className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                        src={
+                          teams?.find((team) => team.id === match.team1_id)
+                            ?.image_url
+                        }
+                        alt={
+                          teams?.find((team) => team.id === match.team1_id)
+                            ?.name
+                        }
+                      />
+                      <span>
+                        {
+                          teams?.find((team) => team.id === match.team1_id)
+                            ?.name
+                        }
+                      </span>
+                    </div>
+                    <div>{getBetweenContent(match)}</div>
+                    <div className="flex flex-col items-center justify-center">
+                      <img
+                        className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                        src={
+                          teams?.find((team) => team.id === match.team2_id)
+                            ?.image_url
+                        }
+                        alt={
+                          teams?.find((team) => team.id === match.team2_id)
+                            ?.name
+                        }
+                      />
+                      <span>
+                        {
+                          teams?.find((team) => team.id === match.team2_id)
+                            ?.name
+                        }
+                      </span>
+                    </div>
+                  </div>
+                  {isOrganiser && (
+                    <div className="mt-1 flex flex-wrap justify-between gap-y-1">
+                      <Button
+                        color="primary"
+                        className=""
+                        size="sm"
+                        onPress={() => {
+                          const updatedMatch: Match = {
+                            ...match,
+                            team1_score: match.team1_score + 1,
+                          };
+                          updateMatch(updatedMatch);
+                        }}
+                      >
+                        +1
+                      </Button>
+                      <Button
+                        className=""
+                        size="sm"
+                        onPress={() => {
+                          const updatedMatch: Match = {
+                            ...match,
+                            team1_score: 0,
+                            team2_score: 0,
+                            status: "pending",
+                          };
+                          updateMatch(updatedMatch);
+                        }}
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        className=""
+                        size="sm"
+                        onPress={() => {
+                          const updatedMatch: Match = {
+                            ...match,
+                            start_time: new Date().toISOString(),
+                            status: "live",
+                          };
+                          updateMatch(updatedMatch);
+                        }}
+                      >
+                        Start
+                      </Button>
+                      <Button
+                        className=""
+                        size="sm"
+                        onPress={() => {
+                          const updatedMatch: Match = {
+                            ...match,
+                            status: "finished",
+                          };
+                          updateMatch(updatedMatch);
+                        }}
+                      >
+                        Finish
+                      </Button>
+                      <Button
+                        color="primary"
+                        className=""
+                        size="sm"
+                        onPress={() => {
+                          const updatedMatch: Match = {
+                            ...match,
+                            team2_score: match.team2_score + 1,
+                          };
+                          updateMatch(updatedMatch);
+                        }}
+                      >
+                        +1
+                      </Button>
+                      <Button
+                        color="secondary"
+                        className=""
+                        size="sm"
+                        onPress={() => {
+                          setCurrentMatch(match);
+                          setIsEditModalOpen(true);
+                        }}
+                      >
+                        Szerkesztés
+                      </Button>
+                      <Button
+                        color="danger"
+                        className=""
+                        size="sm"
+                        onPress={() => deleteMatch(match.id)}
+                      >
+                        Törlés
+                      </Button>
+                    </div>
+                  )}
                 </div>
-                <div>{getBetweenContent(match)}</div>
-                <div className="flex flex-col items-center justify-center">
-                  <img
-                    className="mx-1 h-9 w-9 rounded-lg border-gray-500"
-                    src={
-                      teams?.find((team) => team.id === match.team2_id)
-                        ?.image_url
-                    }
-                    alt={
-                      teams?.find((team) => team.id === match.team2_id)?.name
-                    }
-                  />
-                  <span>
-                    {teams?.find((team) => team.id === match.team2_id)?.name}
-                  </span>
-                </div>
-              </div>
-              {isOrganiser && (
-                <div className="mt-1 flex flex-wrap justify-between gap-y-1">
-                  <Button
-                    color="primary"
-                    className=""
-                    size="sm"
-                    onPress={() => {
-                      const updatedMatch: Match = {
-                        ...match,
-                        team1_score: match.team1_score + 1,
-                      };
-                      updateMatch(updatedMatch);
-                    }}
-                  >
-                    +1
-                  </Button>
-                  <Button
-                    className=""
-                    size="sm"
-                    onPress={() => {
-                      const updatedMatch: Match = {
-                        ...match,
-                        team1_score: 0,
-                        team2_score: 0,
-                        status: "pending",
-                      };
-                      updateMatch(updatedMatch);
-                    }}
-                  >
-                    Reset
-                  </Button>
-                  <Button
-                    className=""
-                    size="sm"
-                    onPress={() => {
-                      const updatedMatch: Match = {
-                        ...match,
-                        start_time: new Date().toISOString(),
-                        status: "live",
-                      };
-                      updateMatch(updatedMatch);
-                    }}
-                  >
-                    Start
-                  </Button>
-                  <Button
-                    className=""
-                    size="sm"
-                    onPress={() => {
-                      const updatedMatch: Match = {
-                        ...match,
-                        status: "finished",
-                      };
-                      updateMatch(updatedMatch);
-                    }}
-                  >
-                    Finish
-                  </Button>
-                  <Button
-                    color="primary"
-                    className=""
-                    size="sm"
-                    onPress={() => {
-                      const updatedMatch: Match = {
-                        ...match,
-                        team2_score: match.team2_score + 1,
-                      };
-                      updateMatch(updatedMatch);
-                    }}
-                  >
-                    +1
-                  </Button>
-                  <Button
-                    color="secondary"
-                    className=""
-                    size="sm"
-                    onPress={() => {
-                      setCurrentMatch(match);
-                      setIsEditModalOpen(true);
-                    }}
-                  >
-                    Szerkesztés
-                  </Button>
-                  <Button
-                    color="danger"
-                    className=""
-                    size="sm"
-                    onPress={() => deleteMatch(match.id)}
-                  >
-                    Törlés
-                  </Button>
-                </div>
-              )}
-            </div>
-          ))}
+              ))}
           </div>
         </Section>
         {matches

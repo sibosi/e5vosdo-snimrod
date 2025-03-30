@@ -15,7 +15,7 @@ import Carousel from "@/components/home/carousel";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
-import TeamsAD from "./admin/matches/ad";
+import TeamsAD from "./admin/matches/adAfter";
 
 export default async function Home() {
   const selfUser = await getAuth();

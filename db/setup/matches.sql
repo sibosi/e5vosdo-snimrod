@@ -145,7 +145,6 @@ VALUES (
 SELECT *
 FROM matches;
 --@block
-DROP TABLE IF EXISTS matches;
 CREATE TABLE IF NOT EXISTS matches (
   id INT AUTO_INCREMENT PRIMARY KEY,
   group_letter VARCHAR(1),

@@ -12,6 +12,8 @@ export function getColorClass(name: string) {
       return "bg-gray-300 dark:bg-gray-400 shadow-lg";
     case "Belgium":
       return "bg-orange-400 dark:bg-orange-600 shadow-lg";
+    case "Svédország":
+      return "bg-blue-400 dark:bg-blue-600 shadow-lg";
     default:
       return "bg-gray-400 dark:bg-gray-600";
   }
@@ -49,16 +51,6 @@ const ManageTeams = () => {
 
   return (
     <div className="mb-4 space-y-4 text-center">
-      <div className="flex gap-2">
-        {["A", "B", "C", "D", "8.-9. (X)"].map((group) => (
-          <div
-            key={group}
-            className={"w-full rounded-lg p-1 text-sm font-bold"}
-          >
-            {group}
-          </div>
-        ))}
-      </div>
       <div className="grid grid-cols-7 gap-2">
         {teams.map((team) => (
           <div

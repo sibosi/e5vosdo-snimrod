@@ -21,7 +21,7 @@ const HelloMessage = ({
           }
         >
           Helló&nbsp;
-          <TxtLiquid text={selfUser.nickname} />
+          <TxtLiquid text={"Nimród"} />
           <span>!</span>
         </h1>
       </div>

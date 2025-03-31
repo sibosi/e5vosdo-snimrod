@@ -86,7 +86,7 @@ const TxtLiquid: React.FC<TxtLiquidProps> = ({ text }) => {
       className={`relative inline bg-gradient-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent ${
         fade ? "text-opacity-100" : "text-opacity-0"
       }`}
-      style={{ fontFamily: pacifico.style.fontFamily }}
+      style={{ fontFamily: currentTextAndFont.font }}
     >
       {text}
       <div

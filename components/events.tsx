@@ -1,5 +1,5 @@
 "use client";
-import { Chip, Link } from "@heroui/react";
+import { Chip } from "@heroui/react";
 import { SideCard } from "./sidecard";
 import { useState, useEffect } from "react";
 import { EventType } from "@/db/event";
@@ -28,7 +28,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
   useEffect(() => {
     const fetchEvents = async () => {
-      const response = await fetch("/api/getEventEvents", {
+      const response = await fetch("/api/getAllEvent", {
         headers: {
           module: "event",
         },
@@ -76,91 +76,153 @@ export const Events = ({ all = false }: { all?: boolean }) => {
   if (events == undefined) return <p>Loading...</p>;
   if (Object.keys(events).length == 0) return <p>Nincs esemény</p>;
 
-  return (
-    // TODO: desktop view
-    <div className="-md:grid-cols-2 -lg:grid-cols-3 grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left">
-      {Object.keys(events).map((date) => (
-        <div key={date} className="flex gap-2">
-          <div>
-            <p className="text-center text-sm text-selfprimary-700">
-              {
-                shortWeekday[
-                  new Date(date).toLocaleDateString("hu-HU", {
-                    weekday: "long",
-                  })
-                ]
-              }
-            </p>
-            <h2 className="mx-auto grid h-10 w-10 grid-cols-1 rounded-full bg-selfprimary-700 text-xl font-normal text-selfprimary-bg">
-              <span className="m-auto">
-                {new Date(date).toLocaleDateString("hu-HU", {
-                  day: "numeric",
-                })}
-              </span>
-            </h2>
-          </div>
-          <div className="w-full space-y-4">
-            {events[date].length == 0 && (
-              <div className="mt-5 flex h-10 max-w-md rounded-2xl bg-foreground-100">
-                <p className="my-auto pl-6">A mai napon nincs esemény</p>
-              </div>
-            )}
+  // Sort dates chronologically
+  const sortedDates = Object.keys(events).sort(
+    (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+  );
 
-            {events[date].map((event) => (
-              <div key={`event-${event.id}`}>
-                <SideCard
-                  title={
-                    typeof event.title === "object"
-                      ? event.title.join(" ")
-                      : event.title
+  // Create a structure that includes month headers and dates
+  const itemsToRender: Array<{
+    type: "month" | "date";
+    month?: string;
+    date: string;
+    key: string;
+  }> = [];
+  let currentMonth: any = null;
+
+  sortedDates.forEach((date) => {
+    const eventDate = new Date(date);
+    const month = eventDate.toLocaleDateString("hu-HU", {
+      year: "numeric",
+      month: "long",
+    });
+
+    if (currentMonth !== month) {
+      itemsToRender.push({
+        type: "month",
+        month,
+        date: "",
+        key: `month-${month}`,
+      });
+      currentMonth = month;
+    }
+
+    itemsToRender.push({
+      type: "date",
+      date,
+      key: `date-${date}`,
+    });
+  });
+
+  return (
+    <div className="-md:grid-cols-2 -lg:grid-cols-3 grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left">
+      {itemsToRender.map((item) => {
+        if (item.type === "month") {
+          return (
+            <div key={item.key} className="col-span-full my-4">
+              <h2 className="border-b border-selfprimary-200 pb-2 text-xl font-semibold text-selfprimary-700">
+                {item.month}
+              </h2>
+            </div>
+          );
+        } else {
+          const date = item.date;
+          const isToday =
+            date ===
+            new Date().toLocaleDateString("hu-HU", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            });
+
+          return (
+            <div key={item.key} className="flex gap-2">
+              <div>
+                <p className="text-center text-xs font-semibold text-selfprimary-700">
+                  {
+                    shortWeekday[
+                      new Date(date).toLocaleDateString("hu-HU", {
+                        weekday: "long",
+                      })
+                    ]
                   }
-                  details={event.description ?? undefined}
-                  description={""}
-                  image={event.image ?? "/events/default.jpg"}
-                  popup={true}
-                  button_size="sm"
-                  makeStringToHTML={true}
+                </p>
+                <h2
+                  className={`mx-auto grid w-9 grid-cols-1 rounded-full ${isToday ? "h-9 bg-selfprimary-700 text-selfprimary-bg" : "text-selfprimary-700"} text-xl font-normal`}
                 >
-                  <div className="flex gap-2">
-                    {event.show_time ? (
-                      <>
-                        <Chip
-                          key={`day-of-week-${event.id}`}
-                          size="sm"
-                          className="bg-selfsecondary-50"
-                        >
-                          {new Date(event.time).toLocaleTimeString("hu-HU", {
-                            hour: "numeric",
-                            minute: "numeric",
-                          })}
-                        </Chip>
-                        <Chip
-                          key={`day-of-week-${event.id}-info`}
-                          size="sm"
-                          className="bg-selfprimary-50"
-                        >
-                          &nbsp;ⓘ&nbsp;
-                        </Chip>
-                      </>
-                    ) : null}
-                    {event.tags != undefined
-                      ? event.tags.map((tag, tagIndex) => (
-                          <Chip
-                            key={`tag-${event.id}-${tagIndex}`}
-                            className="bg-selfprimary-200"
-                            size="sm"
-                          >
-                            {tag}
-                          </Chip>
-                        ))
-                      : null}
-                  </div>
-                </SideCard>
+                  <span className="m-auto">
+                    {new Date(date).toLocaleDateString("hu-HU", {
+                      day: "numeric",
+                    })}
+                  </span>
+                </h2>
               </div>
-            ))}
-          </div>
-        </div>
-      ))}
+              <div className="w-full space-y-2">
+                {events[date].length == 0 && (
+                  <div className="mt-5 flex h-10 max-w-md rounded-2xl bg-foreground-100">
+                    <p className="my-auto pl-6">A mai napon nincs esemény</p>
+                  </div>
+                )}
+
+                {events[date].map((event) => (
+                  <div key={`event-${event.id}`}>
+                    <SideCard
+                      title={
+                        typeof event.title === "object"
+                          ? event.title.join(" ")
+                          : event.title
+                      }
+                      details={event.description ?? undefined}
+                      description={""}
+                      image={event.image ?? undefined}
+                      popup={true}
+                      makeStringToHTML={true}
+                    >
+                      <div className="flex gap-2">
+                        {event.show_time ? (
+                          <>
+                            <Chip
+                              key={`day-of-week-${event.id}`}
+                              size="sm"
+                              className="bg-selfsecondary-50"
+                            >
+                              {new Date(event.time).toLocaleTimeString(
+                                "hu-HU",
+                                {
+                                  hour: "numeric",
+                                  minute: "numeric",
+                                },
+                              )}
+                            </Chip>
+                            <Chip
+                              key={`day-of-week-${event.id}-info`}
+                              size="sm"
+                              className="bg-selfprimary-50"
+                            >
+                              &nbsp;ⓘ&nbsp;
+                            </Chip>
+                          </>
+                        ) : null}
+                        {event.tags != undefined
+                          ? event.tags.map((tag, tagIndex) => (
+                              <Chip
+                                key={`tag-${event.id}-${tagIndex}`}
+                                className="bg-selfprimary-200"
+                                size="sm"
+                              >
+                                {tag}
+                              </Chip>
+                            ))
+                          : null}
+                      </div>
+                    </SideCard>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        }
+      })}
     </div>
   );
 };

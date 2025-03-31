@@ -8,7 +8,6 @@ type SideCardProps = {
   details?: React.ReactNode;
   description: string;
   popup: boolean;
-  button_size?: "sm" | "md" | "lg";
   children?: React.ReactNode;
   makeStringToHTML?: boolean;
 };
@@ -53,12 +52,14 @@ export const SideCard = ({
             backgroundPosition: "center",
           }}
         >
-          <div className="h-28 bg-foreground-100 bg-opacity-10 p-4 dark:bg-opacity-30">
-            <div className="flex justify-end">{children}</div>
-            <p className="w-fit rounded-md bg-selfprimary-20 px-2 text-foreground">
-              {description}
-            </p>
-          </div>
+          {image !== undefined && (
+            <div className="h-28 bg-foreground-100 bg-opacity-10 p-4 dark:bg-opacity-30">
+              <div className="flex justify-end">{children}</div>
+              <p className="w-fit rounded-md bg-selfprimary-20 px-2 text-foreground">
+                {description}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="p-4 py-1">

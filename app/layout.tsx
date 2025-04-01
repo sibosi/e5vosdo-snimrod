@@ -105,8 +105,7 @@ export default async function RootLayout({
           "light:bg-white",
         )}
         style={{
-          fontFamily:
-            Math.random() < 0.5 ? "Redacted Script, sans-serif" : undefined,
+          fontFamily: "Outfit, sans-serif",
         }}
       >
         {/*<LoadCacheMethod />*/}

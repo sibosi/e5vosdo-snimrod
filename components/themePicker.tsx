@@ -35,11 +35,11 @@ export const loadPalette = (
   hue?: number,
   chroma?: number,
 ) => {
-  const colorHue = Math.floor(Math.random() * 361);
-  //  hue ||
-  //  Number(localStorage.getItem(`${colorName}Hue`)) ||
-  //  defaultHues[colorName] ||
-  //  255;
+  const colorHue =
+    hue ||
+    Number(localStorage.getItem(`${colorName}Hue`)) ||
+    defaultHues[colorName] ||
+    255;
 
   const colorChroma =
     chroma ||
@@ -98,8 +98,7 @@ const savePalette = (colorName: string, hue: number, chroma: number) => {
 
 export default function ThemePicker({ colorName }: { colorName: string }) {
   const [hue, setHue] = useState(
-    Math.floor(Math.random() * 361),
-    // Number(localStorage.getItem(`${colorName}Hue`)) || defaultHues[colorName],
+    Number(localStorage.getItem(`${colorName}Hue`)) || defaultHues[colorName],
   );
   const [chroma, setChroma] = useState(
     Number(localStorage.getItem(`${colorName}Chroma`)) ||
@@ -193,9 +192,8 @@ export const ThemeTemplate = ({
 
   useEffect(() => {
     setSelectedHue(
-      Math.floor(Math.random() * 361),
-      // Number(localStorage.getItem(`${color}Hue`)) ||
-      //   (color === "primary" ? defaultHues.primary : defaultHues.secondary),
+      Number(localStorage.getItem(`${color}Hue`)) ||
+        (color === "primary" ? defaultHues.primary : defaultHues.secondary),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -365,7 +363,7 @@ export const ThemeOptions = () => {
             loadPalette("secondary");
           }}
         >
-          <div className="rounded-badge mx-auto grid h-8 w-8 grid-cols-2 overflow-hidden">
+          <div className="mx-auto grid h-8 w-8 grid-cols-2 overflow-hidden rounded-badge">
             <div
               className="h-full w-full"
               style={{

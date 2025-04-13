@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@heroui/react";
 import nyersMenu from "@/public/storage/mindenkorimenu.json";
 import { useEffect, useState } from "react";
 import { PossibleUserType } from "@/db/dbreq";
@@ -17,12 +16,12 @@ const mindenkorimenu = nyersMenu as unknown as MenuType;
 const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
   return (
     <div
-      className="gap-2 rounded-md bg-foreground-200 p-4 max-sm:text-center sm:flex"
+      className="flex flex-wrap items-center justify-around gap-2 rounded-md bg-foreground-200 p-4 max-sm:text-center"
       key={menu}
     >
       <div
         className={
-          "mx-auto mb-2 grid h-10 w-10 grid-cols-1 rounded-xl " +
+          "mx-2 grid h-10 w-10 grid-cols-1 rounded-xl " +
           (menu === "A" ? "bg-selfprimary" : "bg-selfsecondary")
         }
       >
@@ -48,9 +47,9 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
             ),
           )
         ) : (
-          <Button disabled key={"Amenu2"} color="default" variant="solid">
-            <p>Nincs információ</p>
-          </Button>
+          <div key={"Amenu2"} className="p-1 font-light text-foreground-700">
+            Nincs információ
+          </div>
         )}
       </div>
     </div>
@@ -97,7 +96,7 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
           {">"}
         </button>
       </p>
-      <div className="grid grid-cols-2 gap-2 overflow-hidden rounded-xl md:max-w-max">
+      <div className="flex w-fit gap-2 overflow-hidden rounded-xl md:max-w-max">
         {realMenu !== "B" && (
           <MenuCard menu="A" items={tableData[formatDate()]?.A ?? []} />
         )}

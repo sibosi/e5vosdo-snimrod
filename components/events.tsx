@@ -22,6 +22,7 @@ const shortWeekday: { [key: string]: string } = {
 export const Events = ({ all = false }: { all?: boolean }) => {
   const [events, setEvents] = useState<EventByDateType>();
   const [archivedEvents, setArchivedEvents] = useState<EventByDateType>();
+  const [futureEvents, setFutureEvents] = useState<EventByDateType>();
   const today = new Date().toLocaleDateString("hu-HU", {
     year: "numeric",
     month: "2-digit",
@@ -47,6 +48,11 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
       let eventsByDate: EventByDateType = {};
       let archivedEventsByDate: EventByDateType = {};
+      let futureEventsByDate: EventByDateType = {};
+
+      const twoWeeksFromNow = new Date();
+      twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14); // 2 weeks
+      twoWeeksFromNow.setHours(0, 0, 0, 0);
 
       events.forEach((event) => {
         const date = new Date(event.time).toLocaleDateString("hu-HU", {
@@ -54,11 +60,16 @@ export const Events = ({ all = false }: { all?: boolean }) => {
           month: "2-digit",
           day: "2-digit",
         });
+        const eventDate = new Date(date);
 
-        if (new Date(date).getTime() < new Date().setHours(0, 0, 0, 0)) {
+        if (eventDate.getTime() < new Date().setHours(0, 0, 0, 0)) {
           if (archivedEventsByDate[date] == undefined)
             archivedEventsByDate[date] = [];
           archivedEventsByDate[date].push(event);
+        } else if (eventDate.getTime() >= twoWeeksFromNow.getTime()) {
+          if (futureEventsByDate[date] == undefined)
+            futureEventsByDate[date] = [];
+          futureEventsByDate[date].push(event);
         } else {
           if (eventsByDate[date] == undefined) eventsByDate[date] = [];
           eventsByDate[date].push(event);
@@ -70,6 +81,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
       setEvents(eventsByDate);
       setArchivedEvents(archivedEventsByDate);
+      setFutureEvents(futureEventsByDate);
     };
 
     fetchEvents();
@@ -133,10 +145,48 @@ export const Events = ({ all = false }: { all?: boolean }) => {
     key: string;
   }> = [];
 
+  const futureItemsToRender: Array<{
+    type: "month" | "date";
+    month?: string;
+    date: string;
+    key: string;
+  }> = [];
+
+  if (futureEvents) {
+    let futureCurrentMonth: any = null;
+    const futureSortedDates = Object.keys(futureEvents).sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+    );
+
+    futureSortedDates.forEach((date) => {
+      const eventDate = new Date(date);
+      const month = eventDate.toLocaleDateString("hu-HU", {
+        year: "numeric",
+        month: "long",
+      });
+
+      if (futureCurrentMonth !== month) {
+        futureItemsToRender.push({
+          type: "month",
+          month,
+          date: "",
+          key: `future-month-${month}`,
+        });
+        futureCurrentMonth = month;
+      }
+
+      futureItemsToRender.push({
+        type: "date",
+        date,
+        key: `future-date-${date}`,
+      });
+    });
+  }
+
   if (archivedEvents) {
     let archivedCurrentMonth: any = null;
     const archivedSortedDates = Object.keys(archivedEvents).sort(
-      (a, b) => new Date(b).getTime() - new Date(a).getTime(), // Reverse chronological
+      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
     );
 
     archivedSortedDates.forEach((date) => {
@@ -378,6 +428,109 @@ export const Events = ({ all = false }: { all?: boolean }) => {
           );
         }
       })}
+
+      {futureEvents && Object.keys(futureEvents).length > 0 && (
+        <Section
+          title="További események"
+          dropdownable
+          defaultStatus="closed"
+          savable={false}
+        >
+          <div className="-md:grid-cols-2 -lg:grid-cols-3 grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left">
+            {futureItemsToRender.map((item) => {
+              if (item.type === "month") {
+                return (
+                  <div key={item.key} className="col-span-full my-4">
+                    <h2 className="border-b border-selfprimary-200 pb-2 text-xl font-semibold text-selfprimary-700">
+                      {item.month}
+                    </h2>
+                  </div>
+                );
+              } else {
+                const date = item.date;
+                return (
+                  <div key={item.key} className="flex gap-2">
+                    <div>
+                      <p className="text-center text-xs font-semibold text-selfprimary-700">
+                        {
+                          shortWeekday[
+                            new Date(date).toLocaleDateString("hu-HU", {
+                              weekday: "long",
+                            })
+                          ]
+                        }
+                      </p>
+                      <h2 className="mx-auto grid w-9 grid-cols-1 rounded-full text-xl font-normal text-selfprimary-700">
+                        <span className="m-auto">
+                          {new Date(date).toLocaleDateString("hu-HU", {
+                            day: "numeric",
+                          })}
+                        </span>
+                      </h2>
+                    </div>
+                    <div className="w-full space-y-2">
+                      {futureEvents[date].map((event) => (
+                        <div key={`future-event-${event.id}`}>
+                          <SideCard
+                            title={
+                              typeof event.title === "object"
+                                ? event.title.join(" ")
+                                : event.title
+                            }
+                            details={event.description ?? undefined}
+                            description={""}
+                            image={event.image ?? undefined}
+                            popup={true}
+                            makeStringToHTML={true}
+                          >
+                            <div className="flex gap-2">
+                              {event.show_time ? (
+                                <>
+                                  <Chip
+                                    key={`future-time-${event.id}`}
+                                    size="sm"
+                                    className="bg-selfsecondary-50"
+                                  >
+                                    {new Date(event.time).toLocaleTimeString(
+                                      "hu-HU",
+                                      {
+                                        hour: "numeric",
+                                        minute: "numeric",
+                                      },
+                                    )}
+                                  </Chip>
+                                  <Chip
+                                    key={`future-info-${event.id}`}
+                                    size="sm"
+                                    className="bg-selfprimary-50"
+                                  >
+                                    &nbsp;ⓘ&nbsp;
+                                  </Chip>
+                                </>
+                              ) : null}
+                              {event.tags != undefined
+                                ? event.tags.map((tag, tagIndex) => (
+                                    <Chip
+                                      key={`future-tag-${event.id}-${tagIndex}`}
+                                      className="bg-selfprimary-200"
+                                      size="sm"
+                                    >
+                                      {tag}
+                                    </Chip>
+                                  ))
+                                : null}
+                            </div>
+                          </SideCard>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+            })}
+          </div>
+        </Section>
+      )}
     </div>
   );
 };

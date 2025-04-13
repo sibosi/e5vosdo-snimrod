@@ -89,10 +89,15 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
   const checkVisibility = (event: EventType) => {
     if (all) return true;
-    if (new Date(event.hide_time) < new Date()) return false;
+    if (new Date(event.time) < new Date()) return false;
     if (event.show_time == undefined) return true;
     if (
       new Date(event.show_time).getTime() - 28 * 24 * 60 * 60 * 1000 >
+      new Date().getTime()
+    )
+      return false;
+    if (
+      new Date(event.time).getTime() - 14 * 24 * 60 * 60 * 1000 >
       new Date().getTime()
     )
       return false;
@@ -222,6 +227,8 @@ export const Events = ({ all = false }: { all?: boolean }) => {
           dropdownable
           defaultStatus="closed"
           savable={false}
+          className="ml-4"
+          titleClassName="text-xl"
         >
           <div className="-md:grid-cols-2 -lg:grid-cols-3 grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left">
             {archivedItemsToRender.map((item) => {
@@ -435,6 +442,8 @@ export const Events = ({ all = false }: { all?: boolean }) => {
           dropdownable
           defaultStatus="closed"
           savable={false}
+          className="ml-4"
+          titleClassName="text-xl"
         >
           <div className="-md:grid-cols-2 -lg:grid-cols-3 grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left">
             {futureItemsToRender.map((item) => {
@@ -530,6 +539,17 @@ export const Events = ({ all = false }: { all?: boolean }) => {
             })}
           </div>
         </Section>
+      )}
+
+      {!all && (
+        <a
+          className="w-full max-w-sm rounded-2xl bg-selfsecondary-100 px-4 py-1.5 text-left"
+          href="/events"
+        >
+          <h2 className="text-base font-semibold text-foreground">
+            Az összes esemény megtekintése ➡
+          </h2>
+        </a>
       )}
     </div>
   );

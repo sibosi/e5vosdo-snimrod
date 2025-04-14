@@ -9,24 +9,23 @@ import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
 import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { getAuth } from "@/db/dbreq";
-import TimetableDay from "@/components/timetable/timetableday";
+// import TimetableDay from "@/components/timetable/timetableday";
 import HelloMessage from "@/components/home/helloMessage";
 import Carousel from "@/components/home/carousel";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
+import Elections from "@/components/events/elections";
 
 export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      {!selfUser?.permissions.includes("user") && (
-        <HelloMessage selfUser={selfUser} />
-      )}
-
       {(() => {
+        return <Elections />;
+
         if (selfUser?.permissions.includes("user")) {
-          return <Carousel selfUser={selfUser} data={[]} />;
+          // return <Carousel selfUser={selfUser} data={[]} />;
         } else if (selfUser === null) {
           return (
             <Tray>

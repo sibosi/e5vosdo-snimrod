@@ -171,7 +171,11 @@ export const ProfileIcon = ({ selfUser }: { selfUser: PossibleUserType }) => {
             <Avatar isBordered color="default" src={selfUser.image} />
           </Badge>
         ) : (
-          <Avatar isBordered color="default" src="apa-logo.jpg" />
+          <Avatar
+            isBordered
+            color="default"
+            src="governments/2526/szombat-logo.jpeg"
+          />
         )}
       </div>
       {showButtons && (

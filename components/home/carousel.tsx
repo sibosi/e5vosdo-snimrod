@@ -234,7 +234,7 @@ export default function Carousel({
             <Link
               title="add item"
               href="/creator/"
-              className="grid min-w-[100px] grid-rows-1 content-around rounded-3xl bg-selfprimary-100"
+              className="flex w-full min-w-52 content-around gap-2 rounded-3xl bg-selfprimary-100 p-4"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -251,7 +251,7 @@ export default function Carousel({
                 />
               </svg>
               {realData && realData.length == 0 && (
-                <span className="mx-2">Esemény feltöltése</span>
+                <span>Esemény feltöltése</span>
               )}
             </Link>
           )}

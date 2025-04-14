@@ -105,7 +105,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
     return true;
   };
 
-  if (events == undefined) return <p>Loading...</p>;
+  if (events == undefined) return <p>Betöltés...</p>;
   if (Object.keys(events).length == 0) return <p>Nincs esemény</p>;
 
   const sortedDates = Object.keys(events).sort(

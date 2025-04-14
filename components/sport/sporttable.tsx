@@ -20,7 +20,7 @@ export const SportTable = () => {
 
   // If data is not yet loaded, display loading message
   if (!playerData) {
-    return <div>Loading...</div>;
+    return <div>Betöltés...</div>;
   }
 
   // Destructure player data

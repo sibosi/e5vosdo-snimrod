@@ -192,7 +192,7 @@ const LiveScoreContent = () => {
 
   if (!teams) {
     return (
-      <div className="flex h-full items-center justify-center">Loading...</div>
+      <div className="flex h-full items-center justify-center">Betöltés...</div>
     );
   }
 

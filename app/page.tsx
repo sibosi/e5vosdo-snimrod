@@ -25,7 +25,7 @@ export default async function Home() {
         return <Elections />;
 
         if (selfUser?.permissions.includes("user")) {
-          return <Carousel selfUser={selfUser} data={[]} />;
+          // return <Carousel selfUser={selfUser} data={[]} />;
         } else if (selfUser === null) {
           return (
             <Tray>

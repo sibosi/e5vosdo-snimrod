@@ -89,7 +89,8 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
   const checkVisibility = (event: EventType) => {
     if (all) return true;
-    if (new Date(event.time) < new Date()) return false;
+    if (new Date(event.time).getTime() < new Date().setHours(0, 0, 0, 0))
+      return false;
     if (event.show_time == undefined) return true;
     if (
       new Date(event.show_time).getTime() - 28 * 24 * 60 * 60 * 1000 >
@@ -104,7 +105,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
     return true;
   };
 
-  if (events == undefined) return <p>Loading...</p>;
+  if (events == undefined) return <p>Betöltés...</p>;
   if (Object.keys(events).length == 0) return <p>Nincs esemény</p>;
 
   const sortedDates = Object.keys(events).sort(
@@ -221,7 +222,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
   return (
     <div className="-md:grid-cols-2 -lg:grid-cols-3 grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left">
-      {archivedEvents && Object.keys(archivedEvents).length > 0 && (
+      {all && archivedEvents && Object.keys(archivedEvents).length > 0 && (
         <Section
           title="Korábbi események"
           dropdownable
@@ -436,7 +437,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
         }
       })}
 
-      {futureEvents && Object.keys(futureEvents).length > 0 && (
+      {all && futureEvents && Object.keys(futureEvents).length > 0 && (
         <Section
           title="További események"
           dropdownable

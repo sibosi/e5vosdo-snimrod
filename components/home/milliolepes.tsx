@@ -57,7 +57,7 @@ const MillioLepes = () => {
   }, []);
 
   if (!data) {
-    return <p>Loading...</p>;
+    return <p>Betöltés...</p>;
   }
 
   return (

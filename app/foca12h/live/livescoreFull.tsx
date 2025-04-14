@@ -224,7 +224,7 @@ const LiveScoreContent = ({
 }) => {
   if (!teams) {
     return (
-      <div className="flex h-full items-center justify-center">Loading...</div>
+      <div className="flex h-full items-center justify-center">Betöltés...</div>
     );
   }
 
@@ -253,7 +253,7 @@ const LiveScoreContent = ({
               </p>
             </div>
             <div className="flex flex-col items-center justify-center">
-              {match.status !== "pending" && (getMatchStage(match))}
+              {match.status !== "pending" && getMatchStage(match)}
               <p className="text-8xl font-bold text-success-600">
                 {match.status === "pending"
                   ? "vs"
@@ -315,27 +315,36 @@ const LiveScoreContent = ({
   );
 };
 
-export const getMatchStage = (match: Match, size?: string) => { 
+export const getMatchStage = (match: Match, size?: string) => {
   switch (match.group_letter) {
     case "Q":
-      return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
-        Negyeddöntő
-      </p>;
+      return (
+        <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
+          Negyeddöntő
+        </p>
+      );
     case "H":
-      return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
-        Elődöntő
-      </p>;
+      return (
+        <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
+          Elődöntő
+        </p>
+      );
     case "W":
-      return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
-        Döntő
-      </p>;
+      return (
+        <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
+          Döntő
+        </p>
+      );
     case "T":
-      return <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
-        Bronzmecccs
-      </p>;
+      return (
+        <p className={`text-${size ?? "5xl"} ${!size && "mb-6"} font-bold`}>
+          Bronzmecccs
+        </p>
+      );
     default:
       return <></>;
-  }}
+  }
+};
 
 const UpcomingMatches = ({
   matches,

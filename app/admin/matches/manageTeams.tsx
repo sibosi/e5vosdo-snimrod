@@ -48,36 +48,38 @@ const ManageTeams = () => {
       .then((res) => res.json())
       .then((data: Match[]) => {
         setMatches(data);
-        
+
         // Calculate points for each team
         const points: TeamPoints = {};
-        
+
         // Initialize all teams with 0 points
-        teams?.forEach(team => {
+        teams?.forEach((team) => {
           points[team.id] = 0;
         });
-        
+
         // Calculate points from finished matches
-        data.filter(match => match.status === "finished").forEach(match => {
-          // Home team (team1) points
-          if (match.team1_score > match.team2_score) {
-            points[match.team1_id] = (points[match.team1_id] || 0) + 3;
-          } else if (match.team1_score === match.team2_score) {
-            points[match.team1_id] = (points[match.team1_id] || 0) + 1;
-          }
-          
-          // Away team (team2) points
-          if (match.team2_score > match.team1_score) {
-            points[match.team2_id] = (points[match.team2_id] || 0) + 3;
-          } else if (match.team1_score === match.team2_score) {
-            points[match.team2_id] = (points[match.team2_id] || 0) + 1;
-          }
-        });
-        
+        data
+          .filter((match) => match.status === "finished")
+          .forEach((match) => {
+            // Home team (team1) points
+            if (match.team1_score > match.team2_score) {
+              points[match.team1_id] = (points[match.team1_id] || 0) + 3;
+            } else if (match.team1_score === match.team2_score) {
+              points[match.team1_id] = (points[match.team1_id] || 0) + 1;
+            }
+
+            // Away team (team2) points
+            if (match.team2_score > match.team1_score) {
+              points[match.team2_id] = (points[match.team2_id] || 0) + 3;
+            } else if (match.team1_score === match.team2_score) {
+              points[match.team2_id] = (points[match.team2_id] || 0) + 1;
+            }
+          });
+
         setTeamPoints(points);
       });
   }, [teams]);
-  
+
   React.useEffect(() => {
     fetch("/api/getTeams", {
       method: "GET",
@@ -91,10 +93,9 @@ const ManageTeams = () => {
       });
   }, []);
 
-
   if (!teams)
     return (
-      <div className="flex h-full items-center justify-center">Loading...</div>
+      <div className="flex h-full items-center justify-center">Betöltés...</div>
     );
   if (teams.length === 0)
     return (
@@ -135,11 +136,10 @@ const ManageTeams = () => {
               <p className="font-semibold">{team.name}</p>
               <p className="info">{team.team_leader}</p>
             </div>
-            <div className="sm:ml-auto flex flex-col sm:items-end">
+            <div className="flex flex-col sm:ml-auto sm:items-end">
               <p className="w-9 rounded-lg text-xl font-bold max-sm:hidden">
                 {team.group_letter}
               </p>
-              
             </div>
           </div>
         ))}

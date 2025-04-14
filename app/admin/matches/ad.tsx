@@ -38,7 +38,7 @@ const ManageTeams = () => {
 
   if (!teams)
     return (
-      <div className="flex h-full items-center justify-center">Loading...</div>
+      <div className="flex h-full items-center justify-center">Betöltés...</div>
     );
   if (teams.length === 0)
     return (
@@ -48,7 +48,7 @@ const ManageTeams = () => {
     );
 
   return (
-    <div className="space-y-4 text-center mb-4">
+    <div className="mb-4 space-y-4 text-center">
       <div className="flex gap-2">
         {["A", "B", "C", "D", "8.-9. (X)"].map((group) => (
           <div

@@ -121,7 +121,7 @@ export function ManagePreviewEvents({
   return (
     <div style={{ padding: "1rem" }}>
       <h1 style={{ marginBottom: "1rem" }}>Preview Events (Admin)</h1>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <p>Betöltés...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {previewEvents.length === 0 && !isLoading && !error && (
@@ -319,7 +319,7 @@ export function ManageActiveEvents({
   return (
     <div style={{ padding: "1rem" }}>
       <h1 style={{ marginBottom: "1rem" }}>Active Events (Admin)</h1>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <p>Betöltés...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {activeEvents.length === 0 && !isLoading && !error && (

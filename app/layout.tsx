@@ -12,10 +12,8 @@ import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
 import { getAuth, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/cookie";
-// import LoadCacheMethod from "./loadCacheMethod";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
-import PushManager from "@/components/PWA/push";
 
 export const dynamic = "force-dynamic";
 
@@ -46,11 +44,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  try {
-    if (session?.user) updateUser(session?.user as User);
-  } catch (e) {
-    console.log(e);
-  }
+  if (session?.user)
+    updateUser(session?.user as User).catch((e) => console.log(e));
+
   const selfUser = await getAuth(session?.user?.email ?? undefined);
 
   return (
@@ -108,9 +104,7 @@ export default async function RootLayout({
           fontFamily: "Outfit, sans-serif",
         }}
       >
-        {/*<LoadCacheMethod />*/}
         <ServiceWorker />
-        <PushManager />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">
             <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />

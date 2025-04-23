@@ -81,15 +81,11 @@ async function getTimetable(
 
   const days = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"] as const;
 
-  // Process each lesson period (0-7)
   for (let period = 0; period <= 7; period++) {
-    // Find the two rows for this period (code row and teacher row)
-    const codeRow = $(`tr:contains("${period}.")`); // Row that contains the period number AND codes
-    const teacherRow = codeRow.next(); // Next row has teacher names
+    const codeRow = $(`tr:contains("${period}.")`);
+    const teacherRow = codeRow.next();
 
-    // Process each day
     days.forEach((day, dayIndex) => {
-      // Lesson code is in the first row, teacher name in the second row
       const lessonCode = codeRow
         .find("td")
         .eq(dayIndex + 1)
@@ -97,22 +93,18 @@ async function getTimetable(
         .trim();
       const teacherName = teacherRow
         .find("td")
-        .eq(dayIndex) // No need for +1 as there's no period column in teacher row
+        .eq(dayIndex)
         .text()
         .trim();
 
-      // Parse the lesson code
       let subject_code = "";
       let subject_name = "";
 
       if (lessonCode && lessonCode !== "-") {
-        // Format is typically [grade][subject][class][teacher]
-        // Example: 10matxc2deak -> 10 (grade), mat (subject), xc (class), 2 (group), deak (teacher)
-        const match = lessonCode.match(/(\d+)([a-z]+)([a-z0-9]+)/i);
+        const match = (/(\d+)([a-z]+)([a-z0-9]+)/i).exec(lessonCode);
         if (match) {
           subject_code = match[2].split("x")[0];
 
-          // Map subject codes to names
           const subjectMapping: Record<string, string> = {
             mat: "Matematika",
             tes: "Testnevelés",
@@ -147,8 +139,12 @@ async function getTimetable(
 }
 
 export async function GET(request: Request) {
-  const studentCode = request.headers.get("EJG_code");
+  const studentCode = request.headers.get("ejg-code");
   const password = request.headers.get("password");
+
+  const headers = request.headers;
+  const headerEntries = Array.from(headers.entries());
+  console.log("Response Headers:", headerEntries);
 
   if (!studentCode || !password) {
     return new Response(

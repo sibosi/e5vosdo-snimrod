@@ -1,9 +1,9 @@
 "use client";
 import { Chip } from "@heroui/react";
 import { SideCard } from "./sidecard";
-import { useState, useEffect } from "react";
 import { EventType } from "@/db/event";
 import { Section } from "./home/section";
+import { useEvents } from "@/hooks/useEvents";
 
 interface EventByDateType {
   [date: string]: EventType[];
@@ -20,93 +20,10 @@ const shortWeekday: { [key: string]: string } = {
 };
 
 export const Events = ({ all = false }: { all?: boolean }) => {
-  const [events, setEvents] = useState<EventByDateType>();
-  const [archivedEvents, setArchivedEvents] = useState<EventByDateType>();
-  const [futureEvents, setFutureEvents] = useState<EventByDateType>();
-  const today = new Date().toLocaleDateString("hu-HU", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
+  const { events, archivedEvents, futureEvents, isLoading } = useEvents(all);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const response = await fetch("/api/getAllEvent", {
-        headers: {
-          module: "event",
-        },
-      });
-      const data = (await response.json()) as EventType[];
-      let events = data.toSorted(
-        (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
-      );
-
-      events = events.filter((event) => {
-        if (checkVisibility(event)) return true;
-        return false;
-      });
-
-      let eventsByDate: EventByDateType = {};
-      let archivedEventsByDate: EventByDateType = {};
-      let futureEventsByDate: EventByDateType = {};
-
-      const twoWeeksFromNow = new Date();
-      twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14); // 2 weeks
-      twoWeeksFromNow.setHours(0, 0, 0, 0);
-
-      events.forEach((event) => {
-        const date = new Date(event.time).toLocaleDateString("hu-HU", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        });
-        const eventDate = new Date(date);
-
-        if (eventDate.getTime() < new Date().setHours(0, 0, 0, 0)) {
-          if (archivedEventsByDate[date] == undefined)
-            archivedEventsByDate[date] = [];
-          archivedEventsByDate[date].push(event);
-        } else if (eventDate.getTime() >= twoWeeksFromNow.getTime()) {
-          if (futureEventsByDate[date] == undefined)
-            futureEventsByDate[date] = [];
-          futureEventsByDate[date].push(event);
-        } else {
-          if (eventsByDate[date] == undefined) eventsByDate[date] = [];
-          eventsByDate[date].push(event);
-        }
-      });
-
-      if (eventsByDate[today] == undefined)
-        eventsByDate = { [today]: [], ...eventsByDate };
-
-      setEvents(eventsByDate);
-      setArchivedEvents(archivedEventsByDate);
-      setFutureEvents(futureEventsByDate);
-    };
-
-    fetchEvents();
-  }, []);
-
-  const checkVisibility = (event: EventType) => {
-    if (all) return true;
-    if (new Date(event.time).getTime() < new Date().setHours(0, 0, 0, 0))
-      return false;
-    if (event.show_time == undefined) return true;
-    if (
-      new Date(event.show_time).getTime() - 28 * 24 * 60 * 60 * 1000 >
-      new Date().getTime()
-    )
-      return false;
-    if (
-      new Date(event.time).getTime() - 14 * 24 * 60 * 60 * 1000 >
-      new Date().getTime()
-    )
-      return false;
-    return true;
-  };
-
-  if (events == undefined) return <p>Betöltés...</p>;
-  if (Object.keys(events).length == 0) return <p>Nincs esemény</p>;
+  if (isLoading) return <p>Betöltés...</p>;
+  if (!events || Object.keys(events).length === 0) return <p>Nincs esemény</p>;
 
   const sortedDates = Object.keys(events).sort(
     (a, b) => new Date(a).getTime() - new Date(b).getTime(),
@@ -158,37 +75,6 @@ export const Events = ({ all = false }: { all?: boolean }) => {
     key: string;
   }> = [];
 
-  if (futureEvents) {
-    let futureCurrentMonth: any = null;
-    const futureSortedDates = Object.keys(futureEvents).sort(
-      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
-    );
-
-    futureSortedDates.forEach((date) => {
-      const eventDate = new Date(date);
-      const month = eventDate.toLocaleDateString("hu-HU", {
-        year: "numeric",
-        month: "long",
-      });
-
-      if (futureCurrentMonth !== month) {
-        futureItemsToRender.push({
-          type: "month",
-          month,
-          date: "",
-          key: `future-month-${month}`,
-        });
-        futureCurrentMonth = month;
-      }
-
-      futureItemsToRender.push({
-        type: "date",
-        date,
-        key: `future-date-${date}`,
-      });
-    });
-  }
-
   if (archivedEvents) {
     let archivedCurrentMonth: any = null;
     const archivedSortedDates = Object.keys(archivedEvents).sort(
@@ -216,6 +102,37 @@ export const Events = ({ all = false }: { all?: boolean }) => {
         type: "date",
         date,
         key: `archived-date-${date}`,
+      });
+    });
+  }
+
+  if (futureEvents) {
+    let futureCurrentMonth: any = null;
+    const futureSortedDates = Object.keys(futureEvents).sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+    );
+
+    futureSortedDates.forEach((date) => {
+      const eventDate = new Date(date);
+      const month = eventDate.toLocaleDateString("hu-HU", {
+        year: "numeric",
+        month: "long",
+      });
+
+      if (futureCurrentMonth !== month) {
+        futureItemsToRender.push({
+          type: "month",
+          month,
+          date: "",
+          key: `future-month-${month}`,
+        });
+        futureCurrentMonth = month;
+      }
+
+      futureItemsToRender.push({
+        type: "date",
+        date,
+        key: `future-date-${date}`,
       });
     });
   }

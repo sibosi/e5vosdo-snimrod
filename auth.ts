@@ -18,7 +18,6 @@ function getAuth() {
         GoogleProvider({
           clientId: process.env.GOOGLE_CLIENT_ID,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-
           authorization: {
             params: {
               prompt: "consent",
@@ -30,22 +29,14 @@ function getAuth() {
       ],
       callbacks: {
         async redirect({ url, baseUrl }) {
-          // Check if the URL starts with any of our trusted domains
-          const trustedDomains = [
-            'https://e5vosdo.hu',
-            'https://info.e5vosdo.hu',
-            // Add any development domains if needed
-            'http://localhost:3000',
+          const allowedOrigins = [
+            "https://e5vosdo.hu",
+            "https://info.e5vosdo.hu",
+            "http://localhost:3000",
           ];
-          
-          // If the URL starts with any trusted domain, allow the redirect
-          for (const domain of trustedDomains) {
-            if (url.startsWith(domain)) {
-              return url;
-            }
-          }
-          
-          // Otherwise, fall back to the base URL
+          const urlOrigin = new URL(url).origin;
+          if (allowedOrigins.includes(urlOrigin)) return url;
+
           return baseUrl;
         },
       },
@@ -68,7 +59,6 @@ const {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-
       authorization: {
         params: {
           prompt: "consent",
@@ -80,27 +70,20 @@ const {
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Check if the URL starts with any of our trusted domains
-      const trustedDomains = [
-        'https://e5vosdo.hu',
-        'https://info.e5vosdo.hu',
-        // Add any development domains if needed
-        'http://localhost:3000',
+      const allowedOrigins = [
+        "https://e5vosdo.hu",
+        "https://info.e5vosdo.hu",
+        "http://localhost:3000",
       ];
-      
-      // If the URL starts with any trusted domain, allow the redirect
-      for (const domain of trustedDomains) {
-        if (url.startsWith(domain)) {
-          return url;
-        }
-      }
-      
-      // Otherwise, fall back to the base URL
+      const urlOrigin = new URL(url).origin;
+      if (allowedOrigins.includes(urlOrigin)) return url;
+
       return baseUrl;
     },
   },
   secret: process.env.AUTH_SECRET,
   basePath: "/api/auth",
+  trustHost: true,
 });
 
 export { GET, POST, auth, signIn, signOut };

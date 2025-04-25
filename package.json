@@ -33,6 +33,7 @@
     "dayjs": "^1.11.13",
     "eslint": "^9.20.1",
     "eslint-config-next": "15.1.4",
+    "exceljs": "^4.4.0",
     "express": "^4.21.2",
     "extract-colors": "^4.1.1",
     "framer-motion": "^11.17.0",
@@ -55,11 +56,10 @@
     "react-chartjs-2": "^5.3.0",
     "react-dom": "19.0.0",
     "sharp": "^0.33.5",
-    "swr": "^2.3.0",
+    "swr": "^2.3.3",
     "tailwind-variants": "^0.3.0",
     "tailwindcss": "3.4.17",
     "web-push": "^3.6.7",
-    "xlsx": "^0.18.5",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {

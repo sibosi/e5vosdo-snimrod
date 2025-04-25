@@ -12,7 +12,7 @@ https://smallpdf.com/pdf-to-excel#r=convert-to-excel
 3. Az xlsx fájl tábláit egy táblába (tab-ba) összefűzni
 
 4. A kapott xlsx fájl átalakítása JSON formátumba
-https://excel2json.io/editor
+https://excel2json.io/
 
 A kapott fájl valahogy így néz ki:
 [
@@ -48,6 +48,14 @@ from datetime import timedelta, datetime
 import os
 
 KINDERF_KFT = "KinderF.ésK.Kft."
+JSON_PATH = os.path.join('public', 'storage', 'mindenkorimenu.json')
+
+import os
+
+if not os.path.exists(JSON_PATH):
+    os.makedirs(os.path.dirname(JSON_PATH), exist_ok=True)
+    with open(JSON_PATH, 'w', encoding='utf-8') as f:
+        f.write('{}')
 
 def main (path : str):
     with open(path, 'r', encoding='utf-8') as outfile:
@@ -99,13 +107,13 @@ def main (path : str):
         
     mindenkori_menu = havi_menu
 
-    with open('public\\storage\\mindenkorimenu.json', 'r') as outfile:
+    with open(JSON_PATH, 'r') as outfile:
         data = outfile.read()
         if data == '': data = '{}'
         data = json.loads(data)
         mindenkori_menu.update(data)
 
-    with open('public\\storage\\mindenkorimenu.json', 'w', encoding='utf-8') as outfile:
+    with open(JSON_PATH, 'w', encoding='utf-8') as outfile:
         json.dump(mindenkori_menu, outfile)
 
 

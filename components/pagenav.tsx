@@ -1,3 +1,6 @@
+"use client";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import "../styles/globals.css";
 import Link from "next/link";
 
@@ -104,6 +107,23 @@ const pages = {
 const tabs = [pages.podcast, pages.events, pages.home, pages.clubs, pages.me];
 
 export const PageNav = () => {
+  const pathname = usePathname();
+
+  const [currentPage, setCurrentPage] = useState(() =>
+    tabs.find((page) => page.route === pathname),
+  );
+
+  useEffect(() => {
+    setCurrentPage(tabs.find((page) => page.route === pathname));
+  }, [pathname]);
+
+  const getTabRadius = (index: number, isActive: boolean) => {
+    if (!isActive) return "";
+    if (index === 0) return "rounded-r-3xl rounded-l-lg";
+    if (index === tabs.length - 1) return "rounded-l-3xl rounded-r-lg";
+    return "rounded-3xl";
+  };
+
   return (
     <div className="fixed bottom-0 z-50 h-14 w-[90%] items-center md:hidden">
       <div className="myglass h-12 rounded-lg border-1 border-gray-500">
@@ -114,9 +134,14 @@ export const PageNav = () => {
             <Link
               key={index}
               href={page.route}
-              className="group inline-flex flex-col items-center justify-center px-5"
+              className={`group inline-flex flex-col items-center justify-center px-5 ${
+                currentPage === page
+                  ? "bg-selfprimary-100 text-selfprimary-700 " +
+                    getTabRadius(index, true)
+                  : "text-foreground"
+              }`}
             >
-              <div className="text-xl text-foreground hover:text-selfprimary-600">
+              <div className="text-xl hover:text-selfprimary-700">
                 {page.icon}
               </div>
             </Link>

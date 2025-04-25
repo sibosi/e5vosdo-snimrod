@@ -19,7 +19,7 @@ export const Scoreboard = () => {
 
   // If data is not yet loaded, display loading message
   if (!teamData) {
-    return <div>Loading...</div>;
+    return <div>Betöltés...</div>;
   }
 
   // Destructure team data

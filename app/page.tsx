@@ -15,14 +15,14 @@ import Carousel from "@/components/home/carousel";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
-import Elections from "@/components/events/elections";
+import ShortDay from "@/components/home/shortDay";
 
 export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
       {(() => {
-        return <Elections />;
+        return <ShortDay />;
 
         if (selfUser?.permissions.includes("user")) {
           // return <Carousel selfUser={selfUser} data={[]} />;

@@ -33,7 +33,7 @@ const ShortDay = () => {
         ))}
       </div>
       <p className="text-xs text-selfprimary-300">
-        Ha vki tudja a 0. órát, dobja már át
+        Ha vki tudja a 0. órát, pls dobja át
       </p>
     </div>
   );

@@ -7,25 +7,19 @@ import {
 import { Menu } from "@/components/menza/menu";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
-import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { getAuth } from "@/db/dbreq";
-// import TimetableDay from "@/components/timetable/timetableday";
-import HelloMessage from "@/components/home/helloMessage";
 import Carousel from "@/components/home/carousel";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
-import ShortDay from "@/components/home/shortDay";
 
 export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
       {(() => {
-        return <ShortDay />;
-
         if (selfUser?.permissions.includes("user")) {
-          // return <Carousel selfUser={selfUser} data={[]} />;
+          return <Carousel selfUser={selfUser} data={[]} />;
         } else if (selfUser === null) {
           return (
             <Tray>
@@ -45,16 +39,6 @@ export default async function Home() {
           );
         }
       })()}
-
-      {siteConfig.pageSections["teremcserek"] != "hidden" && (
-        <Section
-          title={"Teremcserék"}
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["teremcserek"]}
-        >
-          <RoomChanges />
-        </Section>
-      )}
 
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section
@@ -94,12 +78,6 @@ export default async function Home() {
           <Events />
         </Section>
       )}
-
-      {/*selfUser ? (
-        <Section title={"Órarend"} dropdownable={true} defaultStatus={"opened"}>
-          <TimetableDay selfUser={selfUser} hideTitle />
-        </Section>
-      ) : null*/}
 
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />

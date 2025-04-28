@@ -110,6 +110,9 @@ const Elections = () => {
           priority
         />
       </div>
+      <h3 className="py-1 text-center text-lg font-bold text-black">
+        Átadás: szerda 2. nagyszünet, udvar
+      </h3>
     </div>
   );
 };

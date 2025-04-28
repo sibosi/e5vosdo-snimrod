@@ -8,18 +8,21 @@ import { Menu } from "@/components/menza/menu";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
 import { getAuth } from "@/db/dbreq";
-import Carousel from "@/components/home/carousel";
+// import Carousel from "@/components/home/carousel";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
+import Elections from "@/components/events/elections";
 
 export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
       {(() => {
+        return <Elections />;
+
         if (selfUser?.permissions.includes("user")) {
-          return <Carousel selfUser={selfUser} data={[]} />;
+          // return <Carousel selfUser={selfUser} data={[]} />;
         } else if (selfUser === null) {
           return (
             <Tray>

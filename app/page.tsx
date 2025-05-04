@@ -11,7 +11,7 @@ import { getAuth, UserType } from "@/db/dbreq";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
-import HeadTimetable from "@/components/home/smartHead/headTimetable";
+import Carousel from "@/components/home/carousel";
 
 const PageHeadContent = ({
   selfUser,
@@ -19,7 +19,7 @@ const PageHeadContent = ({
   selfUser: UserType | null | undefined;
 }) => {
   if (selfUser?.permissions.includes("user"))
-    return <HeadTimetable selfUser={selfUser} />;
+    return <Carousel data={[]} selfUser={selfUser} />;
 
   if (selfUser === null)
     return (

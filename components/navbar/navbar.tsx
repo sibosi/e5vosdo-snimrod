@@ -19,6 +19,7 @@ import HelloMessage from "../home/helloMessage";
 import ChangingComponent from "./changingComponent";
 import { usePageSettings } from "@/hooks/usePageSettings";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const NavbarForPhone = ({
   selfUser,
@@ -29,6 +30,22 @@ const NavbarForPhone = ({
   className?: string;
   isActiveHeadSpace: boolean;
 }) => {
+  const PageTitles: Record<string, string> = {
+    "/": "E5vös DÖ",
+    "/events": "Események",
+    "/clubs": "Szakkörök",
+    "/me": "Profilom",
+    "/est": "E5 Podcast",
+    "/admin/page": "Admin panel",
+  };
+
+  const pathname = usePathname();
+  const [currentTitle, setCurrentTitle] = useState("E5vös DÖ");
+
+  useEffect(() => {
+    setCurrentTitle(PageTitles[pathname] ?? "E5vös DÖ");
+  }, [pathname]);
+
   return (
     <NextUINavbar
       maxWidth="xl"
@@ -56,7 +73,7 @@ const NavbarForPhone = ({
               >
                 <Logo />
                 <h1 className="p-2 text-3xl font-bold text-foreground">
-                  E5vös&nbsp;DÖ
+                  {currentTitle}
                 </h1>
               </NextLink>
             )

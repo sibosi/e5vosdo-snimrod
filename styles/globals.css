@@ -8,100 +8,107 @@
 
   --zoom: 0.05rem;
 }
-
+/* primary: 240 & 30
+   secondary: 45 & 50
+*/
 :root.light {
-  /*
-  HSL = Hue, Saturation, Lightness
-  50: X, 92%, 95%
-  100: X, 92%, 90%
-  200: X, 93%, 79%
-  300: X, 92%, 69%
-  400: X, 92%, 58%
-  500: X, 100%, 47%
-  600: X, 100%, 38%
-  700: X, 100%, 29%
-  800: X, 100%, 19%
-  900: X, 100%, 10%
-
-  DARK MODE
-  50: X, 100%, 10%
-  100: X, 100%, 19%
-  200: X, 100%, 29%
-  300: X, 100%, 38%
-  400: X, 100%, 47%
-  500: X, 92%, 58%
-  600: X, 92%, 69%
-  700: X, 93%, 79%
-  800: X, 92%, 90%
-  900: X, 92%, 95%
-  */
   --lightness-bg: 100%;
   --lightness-cont: 0%;
-  /* Hue érték (H) */
-  --color-primary: hsl(212, 100%, 47%);
-  --color-primary-bg: hsl(212, 0%, 100%);
-  --color-primary-cont: hsl(212, 92%, 0%);
-  --color-primary-20: hsl(212, 92%, 98%);
-  --color-primary-50: hsl(212, 92%, 95%);
-  --color-primary-100: hsl(212, 92%, 90%);
-  --color-primary-200: hsl(212, 93%, 79%);
-  --color-primary-300: hsl(212, 92%, 69%);
-  --color-primary-400: hsl(212, 92%, 58%);
-  --color-primary-500: hsl(212, 100%, 47%);
-  --color-primary-600: hsl(212, 100%, 38%);
-  --color-primary-700: hsl(212, 100%, 29%);
-  --color-primary-800: hsl(212, 100%, 19%);
-  --color-primary-900: hsl(212, 100%, 10%);
 
-  --color-secondary: hsl(270, 100%, 47%);
-  --color-secondary-bg: hsl(270, 0%, 100%);
-  --color-secondary-cont: hsl(270, 92%, 0%);
-  --color-secondary-20: hsl(270, 92%, 98%);
-  --color-secondary-50: hsl(270, 92%, 95%);
-  --color-secondary-100: hsl(270, 92%, 90%);
-  --color-secondary-200: hsl(270, 93%, 79%);
-  --color-secondary-300: hsl(270, 92%, 69%);
-  --color-secondary-400: hsl(270, 92%, 58%);
-  --color-secondary-500: hsl(270, 100%, 47%);
-  --color-secondary-600: hsl(270, 100%, 38%);
-  --color-secondary-700: hsl(270, 100%, 29%);
-  --color-secondary-800: hsl(270, 100%, 19%);
-  --color-secondary-900: hsl(270, 100%, 10%);
+  --color-primary: #507c9a;
+  --color-primary-bg: #ffffff;
+  --color-primary-cont: #000000;
+  --color-primary-20: #f6faff;
+  --color-primary-50: #e5f2ff;
+  --color-primary-100: #c8e6ff;
+  --color-primary-200: #a0cced;
+  --color-primary-300: #85b0d1;
+  --color-primary-400: #6a96b5;
+  --color-primary-500: #507c9a;
+  --color-primary-600: #366380;
+  --color-primary-700: #1b4b67;
+  --color-primary-800: #00344d;
+  --color-primary-900: #001e2e;
+
+  --color-secondary: #b95d2a;
+  --color-secondary-bg: #ffffff;
+  --color-secondary-cont: #000000;
+  --color-secondary-20: #fff8f6;
+  --color-secondary-50: #ffede6;
+  --color-secondary-100: #ffdbcb;
+  --color-secondary-200: #ffb692;
+  --color-secondary-300: #fa8f57;
+  --color-secondary-400: #d97640;
+  --color-secondary-500: #b95d2a;
+  --color-secondary-600: #9a4613;
+  --color-secondary-700: #793000;
+  --color-secondary-800: #562000;
+  --color-secondary-900: #341100;
+
+  --color-surface: #74777b;
+  --color-surface-bg: #ffffff;
+  --color-surface-cont: #000000;
+  --color-surface-20: #f8f9fd;
+  --color-surface-50: #eff1f5;
+  --color-surface-100: #e1e2e6;
+  --color-surface-200: #c4c7ca;
+  --color-surface-300: #a9abaf;
+  --color-surface-400: #8e9194;
+  --color-surface-500: #74777b;
+  --color-surface-600: #5c5f62;
+  --color-surface-700: #44474a;
+  --color-surface-800: #2e3134;
+  --color-surface-900: #191c1f;
 }
 
 :root.dark {
   --lightness-bg: 0%;
   --lightness-cont: 100%;
 
-  --color-primary: hsl(212, 92%, 58%);
-  --color-primary-bg: hsl(212, 0%, 0%);
-  --color-primary-cont: hsl(212, 92%, 100%);
-  --color-primary-20: hsl(212, 100%, 4%);
-  --color-primary-50: hsl(212, 100%, 10%);
-  --color-primary-100: hsl(212, 100%, 19%);
-  --color-primary-200: hsl(212, 100%, 29%);
-  --color-primary-300: hsl(212, 100%, 38%);
-  --color-primary-400: hsl(212, 100%, 47%);
-  --color-primary-500: hsl(212, 92%, 58%);
-  --color-primary-600: hsl(212, 92%, 69%);
-  --color-primary-700: hsl(212, 93%, 79%);
-  --color-primary-800: hsl(212, 92%, 90%);
-  --color-primary-900: hsl(212, 92%, 95%);
+  --color-primary: #507c9a;
+  --color-primary-bg: #000000;
+  --color-primary-cont: #ffffff;
+  --color-primary-20: #000811;
+  --color-primary-50: #00131f;
+  --color-primary-100: #001e2e;
+  --color-primary-200: #00344d;
+  --color-primary-300: #1b4b67;
+  --color-primary-400: #366380;
+  --color-primary-500: #507c9a;
+  --color-primary-600: #6a96b5;
+  --color-primary-700: #85b0d1;
+  --color-primary-800: #a0cced;
+  --color-primary-900: #c8e6ff;
 
-  --color-secondary: hsl(270, 92%, 58%);
-  --color-secondary-bg: hsl(270, 0%, 0%);
-  --color-primary-cont: hsl(212, 92%, 100%);
-  --color-secondary-20: hsl(270, 100%, 4%);
-  --color-secondary-50: hsl(270, 100%, 10%);
-  --color-secondary-100: hsl(270, 100%, 19%);
-  --color-secondary-200: hsl(270, 100%, 29%);
-  --color-secondary-300: hsl(270, 100%, 38%);
-  --color-secondary-400: hsl(270, 100%, 47%);
-  --color-secondary-500: hsl(270, 92%, 58%);
-  --color-secondary-600: hsl(270, 92%, 69%);
-  --color-secondary-700: hsl(270, 93%, 79%);
-  --color-secondary-800: hsl(270, 92%, 90%);
-  --color-secondary-900: hsl(270, 92%, 95%);
+  --color-secondary: #b95d2a;
+  --color-secondary-bg: #000000;
+  --color-secondary-cont: #ffffff;
+  --color-secondary-20: #140400;
+  --color-secondary-50: #230900;
+  --color-secondary-100: #341100;
+  --color-secondary-200: #562000;
+  --color-secondary-300: #793000;
+  --color-secondary-400: #9a4613;
+  --color-secondary-500: #b95d2a;
+  --color-secondary-600: #d97640;
+  --color-secondary-700: #fa8f57;
+  --color-secondary-800: #ffb692;
+  --color-secondary-900: #ffdbcb;
+
+  --color-surface: #74777b;
+  --color-surface-bg: #000000;
+  --color-surface-cont: #ffffff;
+  --color-surface-20: #05080a;
+  --color-surface-50: #0e1114;
+  --color-surface-100: #191c1f;
+  --color-surface-200: #2e3134;
+  --color-surface-300: #44474a;
+  --color-surface-400: #5c5f62;
+  --color-surface-500: #74777b;
+  --color-surface-600: #8e9194;
+  --color-surface-700: #a9abaf;
+  --color-surface-800: #c4c7ca;
+  --color-surface-900: #e1e2e6;
 }
 
 h1 {

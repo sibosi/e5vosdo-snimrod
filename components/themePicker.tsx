@@ -1,5 +1,5 @@
 "use client";
-import { Button, Input } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { hexFromArgb, Hct } from "@material/material-color-utilities";
 import "./css/HuePicker.css";
@@ -15,7 +15,7 @@ const defaultChromas: { [key: string]: number } = {
   secondary: 50, // 87
 };
 
-const versions = [
+const tones = [
   "20",
   "50",
   "100",
@@ -64,7 +64,7 @@ export const loadPalette = (
       return window.matchMedia("(prefers-color-scheme: dark)").matches;
   })();
 
-  versions.forEach((version) => {
+  tones.forEach((version) => {
     const argbColor = Hct.from(
       colorHue,
       colorChroma,
@@ -89,6 +89,8 @@ export const loadPalette = (
       hexFromArgb(Hct.from(colorHue, 6, isDarkMode ? 97 : 6).toInt()),
     );
   }
+
+  if (colorName === "primary") loadPalette("surface", theme, colorHue, 5);
 };
 
 const savePalette = (colorName: string, hue: number, chroma: number) => {
@@ -363,7 +365,7 @@ export const ThemeOptions = () => {
             loadPalette("secondary");
           }}
         >
-          <div className="mx-auto grid h-8 w-8 grid-cols-2 overflow-hidden rounded-badge">
+          <div className="mx-auto grid h-8 w-8 grid-cols-2 overflow-hidden rounded-full">
             <div
               className="h-full w-full"
               style={{

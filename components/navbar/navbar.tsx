@@ -158,7 +158,7 @@ export const Navbar = ({
   const { pageSettings } = usePageSettings();
   const isActiveHeadSpace = pageSettings?.headspace === 1;
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
   useEffect(() => {
     const handleResize = (): void => {
       setIsMobile(window.innerWidth < 768);

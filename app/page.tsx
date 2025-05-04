@@ -47,16 +47,6 @@ export default async function Home() {
     <div>
       <PageHeadContent selfUser={selfUser} />
 
-      {siteConfig.pageSections["teremcserek"] != "hidden" && (
-        <Section
-          title={"Teremcserék"}
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["teremcserek"]}
-        >
-          <RoomChanges />
-        </Section>
-      )}
-
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section
           title={"Helyettesítések"}

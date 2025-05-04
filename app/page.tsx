@@ -7,7 +7,6 @@ import {
 import { Menu } from "@/components/menza/menu";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
-import { RoomChanges } from "@/components/roomchanges/roomchanges";
 import { getAuth, UserType } from "@/db/dbreq";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";

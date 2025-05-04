@@ -14,6 +14,7 @@ import AppearanceSettings from "./settings/AppearanceSettings";
 import NotificationSettings from "./settings/NotificationSettings";
 import PersonalDataSettings from "./settings/PersonalDataSettings";
 import { UserType } from "@/db/dbreq";
+import { doLogout } from "@/actions/route";
 
 const Settings = ({ selfUser }: { selfUser: UserType }) => {
   const [activeSection, setActiveSection] = useState<number | null>(null);
@@ -79,6 +80,31 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
             </svg>
           </button>
         ))}
+      </Tray>
+
+      <Tray
+        padding={false}
+        className="flex flex-col divide-y divide-selfprimary-500 p-1 text-sm font-bold text-selfprimary-900"
+      >
+        <button
+          className="flex items-center justify-between p-3"
+          onClick={doLogout}
+        >
+          <p>Kijelentkezés</p>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fillRule="evenodd"
+              strokeWidth="2"
+              d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"
+            />
+          </svg>
+        </button>
       </Tray>
 
       <Drawer

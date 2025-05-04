@@ -15,6 +15,7 @@ type SectionProps = {
   newVersion?: React.ReactNode;
   oldVersionName?: string;
   newVersionName?: string;
+  isCard?: boolean;
 };
 
 const loadSectionStatus = (name: string) => {
@@ -44,6 +45,7 @@ export const Section = ({
   newVersion,
   oldVersionName = "Régi nézet",
   newVersionName = "Új nézet",
+  isCard = false,
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(defaultStatus != "closed");
   const [isNewVersion, setIsNewVersion] = useState(false);
@@ -72,6 +74,8 @@ export const Section = ({
     setIsOpen(!isOpen);
     if (savable) setSectionStatus(title, !isOpen);
   };
+
+  if (isCard) className += " rounded-3xl bg-selfprimary-50 p-6";
 
   return (
     <div

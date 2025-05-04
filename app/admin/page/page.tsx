@@ -10,23 +10,35 @@ const PagePage = async () => {
   if (!selfUser) redirect("/");
 
   return (
-    <div>
-      <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
-        Oldal kezelése
-      </h1>
+    <div className="space-y-4">
       {(await hasPermission(selfUser.email, "getUsers")) ? (
-        <NewNotification />
+        <Section
+          title="Új értesítés · csak adminoknak"
+          dropdownable={false}
+          defaultStatus="opened"
+          isCard={true}
+          titleClassName="text-2xl font-semibold text-foreground"
+        >
+          <NewNotification />
+        </Section>
       ) : (
         <></>
       )}
-
-      <PresentationAPIButtons />
+      <Section
+        title="Előadásjelentkezések kezelése"
+        dropdownable={false}
+        defaultStatus="opened"
+        isCard={true}
+      >
+        <PresentationAPIButtons />
+      </Section>
 
       {selfUser.permissions.includes("admin") ? (
         <Section
           title="Oldalbeállítások"
           dropdownable={false}
           defaultStatus="opened"
+          isCard={true}
         >
           <PageSettings />
         </Section>

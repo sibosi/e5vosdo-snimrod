@@ -3,14 +3,26 @@ import { Image } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import "./timer.css";
 import { Match, Team } from "@/db/matches";
+import { PageSettingsType } from "@/db/pageSettings";
 
 const LiveScore = () => {
   const [isActiveHeadSpace, setIsActiveHeadSpace] = useState(false);
 
   useEffect(() => {
-    fetch("/api/getPageSettings").then((res) =>
-      res.json().then((data) => setIsActiveHeadSpace(data.headspace == "1")),
-    );
+    fetch("/api/getPageSettings", {
+      method: "GET",
+      headers: {
+        module: "pageSettings",
+      },
+    })
+      .then((res) => res.json())
+      .then((res) =>
+        res
+          .json()
+          .then((data: PageSettingsType) =>
+            setIsActiveHeadSpace(data.headspace == 1),
+          ),
+      );
   });
 
   if (!isActiveHeadSpace) return <></>;
@@ -49,7 +61,6 @@ const LiveScoreContent = () => {
     return () => clearInterval(interval);
   }, [match]);
 
-  // Replace polling with SSE that handles deltas
   useEffect(() => {
     fetch("/api/getNextMatch", {
       method: "GET",
@@ -62,13 +73,11 @@ const LiveScoreContent = () => {
         setMatch(data);
       });
 
-    // Initial fetch to get data quickly
     fetch("/api/livescore")
       .then((res) => res.json())
       .then((data) => {
-        // Sort by date then find the first match that has pending or live status
         const sortedMatches = Array.isArray(data)
-          ? data.sort((a, b) => a.datetime.localeCompare(b.datetime))
+          ? data.toSorted((a, b) => a.datetime.localeCompare(b.datetime))
           : [];
 
         if (sortedMatches.length > 0) {
@@ -82,7 +91,6 @@ const LiveScoreContent = () => {
         }
       });
 
-    // Set up SSE connection with reconnect capability
     let eventSource: EventSource | null = null;
 
     const connectSSE = () => {
@@ -101,7 +109,6 @@ const LiveScoreContent = () => {
         try {
           const data = JSON.parse(event.data);
 
-          // Handle initial connection message
           if (
             data.message &&
             data.message === "Match score SSE connection established"
@@ -109,10 +116,8 @@ const LiveScoreContent = () => {
             return;
           }
 
-          // Handle initial full data
           if (data.initialData) return;
 
-          // Handle delta updates
           if (data.changed || data.added || data.removed) {
             setAllMatches((currentMatches) => {
               let updatedMatches = [...currentMatches];
@@ -166,13 +171,11 @@ const LiveScoreContent = () => {
         console.error("SSE Error:", error);
         setIsConnected(false);
 
-        // Close the current connection
         if (eventSource) {
           eventSource.close();
           eventSource = null;
         }
 
-        // Attempt to reconnect after a delay
         setTimeout(() => {
           console.log("Attempting to reconnect SSE...");
           connectSSE();
@@ -180,7 +183,6 @@ const LiveScoreContent = () => {
       };
     };
 
-    // Initial connection
     connectSSE();
 
     return () => {

@@ -1,13 +1,5 @@
 import type { NextConfig } from "next";
 
-/*
-const { execSync } = require("child_process");
-if (true) {
-  const pyOutput = execSync("pip3 install -r requirements.txt", { encoding: "utf-8" });
-  console.log(pyOutput);
-}
-*/
-
 const fs = require("fs");
 const path = require("path");
 
@@ -47,16 +39,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: process.env.IGNORE_BUILD_ERRORS === "true",
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      const podcastsDir = path.join(__dirname, "podcasts");
-
-      // Check if the 'podcasts' directory exists, if not, create it
-      if (!fs.existsSync(podcastsDir)) {
-        fs.mkdirSync(podcastsDir, { recursive: true });
-        console.log("Podcasts directory created.");
-      }
-    }
+  webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/,
       use: ["@svgr/webpack"],

@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */
+import type { NextConfig } from "next";
 
 /*
 const { execSync } = require("child_process");
@@ -17,8 +17,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactProductionProfiling: true,
   images: {
@@ -38,7 +37,9 @@ const nextConfig = {
         protocol: "https",
       },
       {
-        hostname: process.env.NEXT_PUBLIC_SUPABASE_URL.replace("https://", ""),
+        hostname:
+          process.env.NEXT_PUBLIC_SUPABASE_URL?.replace("https://", "") ??
+          "localhost",
         protocol: "https",
       },
     ],
@@ -69,10 +70,7 @@ const nextConfig = {
       bodySizeLimit: 1024 * 1024 * 10, // 10MB
     },
   },
-  allowedDevOrigins: [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-  ],
+  allowedDevOrigins: ["http://localhost:3000", "http://127.0.0.1:3000"],
 };
 
 module.exports = withBundleAnalyzer(nextConfig);

@@ -1,6 +1,5 @@
 const { heroui } = require("@heroui/react");
 
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -62,13 +61,7 @@ module.exports = {
         },
       },
     },
-    screens: {
-      xs: "475px",
-      ...require("tailwindcss/defaultConfig").theme.screens,
-    },
   },
   darkMode: "class",
-  plugins: [
-    // heroui()
-    ],
+  plugins: [heroui()],
 };

@@ -43,7 +43,7 @@ const MePage = async () => {
         <Avatar
           isBordered
           color="default"
-          className="h-20 min-h-[80] w-20 min-w-[80px]"
+          className="h-20 min-h-80 w-20 min-w-80"
           src={selfUser.image}
         />
         <div className="text-foreground">
@@ -67,7 +67,7 @@ const MePage = async () => {
                   <Link
                     key={option.title}
                     href={option.href}
-                    className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+                    className="bg-selfsecondary-300 text-foreground rounded-xl px-4 py-2.5 text-sm"
                   >
                     {option.title}
                   </Link>

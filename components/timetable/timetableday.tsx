@@ -122,7 +122,7 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
             Object.entries(timetable[selectedDay]).map(
               ([period, lesson]) =>
                 lesson.code !== "-" && (
-                  <div className="flex-grow" key={period}>
+                  <div className="grow" key={period}>
                     {renderLesson(lesson, parseInt(period))}
                   </div>
                 ),

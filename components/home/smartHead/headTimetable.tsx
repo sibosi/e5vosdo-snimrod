@@ -99,7 +99,7 @@ const HeadTimetable = (props: { selfUser: UserType }) => {
             Object.entries(timetable[selectedDay]).map(
               ([period, lesson]) =>
                 lesson.code !== "-" && (
-                  <div className="flex-grow" key={period}>
+                  <div className="grow" key={period}>
                     {renderLesson(lesson, parseInt(period))}
                   </div>
                 ),

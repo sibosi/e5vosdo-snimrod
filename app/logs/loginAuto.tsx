@@ -119,19 +119,19 @@ export const LineChartLoginBetween = ({ logs }: { logs: Log[] }) => {
           type="datetime-local"
           value={startDate.format("YYYY-MM-DDTHH:mm")}
           onChange={(e) => setStartDate(dayjs(e.target.value))}
-          className="mr-4 rounded border p-2"
+          className="mr-4 rounded-sm border p-2"
         />
 
         <Input
           type="datetime-local"
           value={endDate.format("YYYY-MM-DDTHH:mm")}
           onChange={(e) => setEndDate(dayjs(e.target.value))}
-          className="rounded border p-2"
+          className="rounded-sm border p-2"
         />
       </div>
       <button
         onClick={() => setUniqueUser(!uniqueUser)}
-        className="mb-4 rounded bg-blue-500 px-4 py-2 text-white"
+        className="mb-4 rounded-sm bg-blue-500 px-4 py-2 text-white"
       >
         {uniqueUser
           ? "Összes bejelentkezés mutatása"

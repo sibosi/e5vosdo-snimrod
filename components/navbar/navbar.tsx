@@ -72,7 +72,7 @@ const NavbarForPhone = ({
                 href="/"
               >
                 <Logo />
-                <h1 className="p-2 text-3xl font-bold text-foreground">
+                <h1 className="text-foreground p-2 text-3xl font-bold">
                   {currentTitle}
                 </h1>
               </NextLink>
@@ -123,7 +123,7 @@ const NavbarForDesktop = ({
               href="/"
             >
               <Logo />
-              <p className="block- hidden p-2 font-bold text-foreground">E5</p>
+              <p className="block- text-foreground hidden p-2 font-bold">E5</p>
             </NextLink>
           ) : (
             <>
@@ -144,7 +144,7 @@ const NavbarForDesktop = ({
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
+                  "data-[active=true]:text-selfprimary data-[active=true]:font-medium",
                 )}
                 color="foreground"
                 href={item.href}

@@ -111,7 +111,7 @@ export default async function RootLayout({
 
             <Cookie />
             <Alerts />
-            <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
+            <main className="container mx-auto max-w-7xl grow bg-selfprimary-bg pl-3 pr-3 pt-4">
               <OnCSSBug />
               {children}
             </main>

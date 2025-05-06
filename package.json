@@ -68,6 +68,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node-fetch": "^2.6.12",
     "@types/pdfkit": "^0.13.9",
+    "@types/postcss-js": "^4.0.4",
     "@types/serviceworker": "^0.0.111",
     "@types/web-push": "^3.6.4",
     "@types/xml2js": "^0.4.14",

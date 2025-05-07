@@ -14,6 +14,7 @@ import { getAuth, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/cookie";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
+import RunClientSide from "./runClientSide";
 
 export const dynamic = "force-dynamic";
 
@@ -104,6 +105,7 @@ export default async function RootLayout({
           fontFamily: "Outfit, sans-serif",
         }}
       >
+        <RunClientSide />
         <ServiceWorker />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">

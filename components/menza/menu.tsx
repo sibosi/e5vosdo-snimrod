@@ -2,6 +2,8 @@
 import nyersMenu from "@/public/storage/mindenkorimenu.json";
 import { useEffect, useState } from "react";
 import { PossibleUserType } from "@/db/dbreq";
+import { Section } from "../home/section";
+import Arrow from "@/icons/arrow.svg";
 
 type MenuType = {
   [x: string]: {
@@ -11,21 +13,42 @@ type MenuType = {
   };
 };
 
+function formatDate(date: Date, simple = false) {
+  if (simple) {
+    const dateDiff = date.getDate() - new Date().getDate();
+    if (dateDiff === 0) return "Ma";
+    if (dateDiff === 1) return "Holnap";
+    if (dateDiff === -1) return "Tegnap";
+    return date
+      .toLocaleDateString("hu", {
+        month: "2-digit",
+        day: "2-digit",
+        weekday: "narrow",
+      })
+      .replaceAll(". ", "/")
+      .replaceAll(".", "")
+      .replaceAll("/", ".");
+  }
+  return date
+    .toLocaleDateString("hu")
+    .replaceAll(". ", "/")
+    .replaceAll(".", "")
+    .replaceAll("/", ".");
+}
+
 const mindenkorimenu = nyersMenu as unknown as MenuType;
 
 const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
+  const color = menu === "A" ? "selfprimary" : "selfsecondary";
   return (
     <div
-      className="flex flex-wrap items-center justify-around gap-2 rounded-md bg-foreground-200 p-4 max-sm:text-center"
+      className={`flex flex-wrap items-center justify-around gap-2 rounded-xl bg-${color}-100 p-4 text-center`}
       key={menu}
     >
-      <div
-        className={
-          "mx-2 grid h-10 w-10 grid-cols-1 rounded-xl " +
-          (menu === "A" ? "bg-selfprimary" : "bg-selfsecondary")
-        }
-      >
-        <div className="m-auto max-h-fit max-w-fit text-lg font-bold text-white">
+      <div className="mx-2 grid h-10 w-10 grid-cols-1">
+        <div
+          className={`m-auto max-h-fit max-w-fit text-4xl font-bold text-${color}-700`}
+        >
           {menu}
         </div>
       </div>
@@ -37,7 +60,7 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
                 key={`fogas-${rowIndex}`}
                 className={
                   "info p-1 " +
-                  (rowIndex !== 0 ? "border-t-1 border-foreground-400" : "")
+                  (rowIndex !== 0 ? `border-t-1 border-${color}-400` : "")
                 }
               >
                 {fogas}
@@ -47,7 +70,7 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
             ),
           )
         ) : (
-          <div key={"Amenu2"} className="p-1 font-light text-foreground-700">
+          <div key={"Amenu2"} className={`p-1 font-light text-${color}-700`}>
             Nincs információ
           </div>
         )}
@@ -56,9 +79,41 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
   );
 };
 
-export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
+const DatePicker = ({
+  date,
+  setDate,
+}: {
+  date: Date;
+  setDate: React.Dispatch<React.SetStateAction<Date>>;
+}) => {
+  function changeDate(days: number) {
+    setDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(newDate.getDate() + days);
+      return newDate;
+    });
+  }
+  return (
+    <div className="flex h-8 items-center gap-2 rounded-full bg-selfprimary-100 px-2 text-center text-base font-medium text-selfprimary-700">
+      <button onClick={() => changeDate(-1)}>
+        <Arrow className="rotate-90" />
+      </button>
+      {formatDate(date, true)}
+      <button onClick={() => changeDate(1)}>
+        <Arrow className="-rotate-90" />
+      </button>
+    </div>
+  );
+};
+
+export const Menu = ({
+  menu,
+  date = new Date(),
+}: {
+  menu: "A" | "B" | undefined;
+  date: Date;
+}) => {
   const tableData = mindenkorimenu;
-  const [date, setDate] = useState(new Date());
   const [realMenu, setRealMenu] = useState(menu);
 
   useEffect(() => {
@@ -70,41 +125,46 @@ export const Menu = ({ menu }: { menu: "A" | "B" | undefined }) => {
     });
   }, [menu]);
 
-  function changeDate(days: number) {
-    setDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setDate(newDate.getDate() + days);
-      return newDate;
-    });
-  }
-
-  function formatDate() {
-    return date
-      .toLocaleDateString("hu")
-      .replaceAll(". ", "/")
-      .replaceAll(".", "")
-      .replaceAll("/", ".");
-  }
-
   return (
     <div className="text-foreground">
-      <p className="pb-1 text-sm font-medium">
-        <button onClick={() => changeDate(-1)}>{"<"}&nbsp;</button>
-        {formatDate()}
-        <button onClick={() => changeDate(1)}>
-          &nbsp;
-          {">"}
-        </button>
-      </p>
-      <div className="flex w-fit gap-2 overflow-hidden rounded-xl md:max-w-max">
+      <div className="flex w-fit gap-2 md:max-w-max">
         {realMenu !== "B" && (
-          <MenuCard menu="A" items={tableData[formatDate()]?.A ?? []} />
+          <MenuCard menu="A" items={tableData[formatDate(date)]?.A ?? []} />
         )}
 
         {realMenu !== "A" && (
-          <MenuCard menu="B" items={tableData[formatDate()]?.B ?? []} />
+          <MenuCard menu="B" items={tableData[formatDate(date)]?.B ?? []} />
         )}
       </div>
     </div>
+  );
+};
+
+export const MenuInSection = ({
+  selfUser,
+  dropdownable = true,
+  defaultStatus,
+}: {
+  selfUser: PossibleUserType | null | undefined;
+  dropdownable?: boolean;
+  defaultStatus?: "opened" | "closed";
+}) => {
+  const [date, setDate] = useState(new Date());
+  return (
+    <Section
+      title="Mi a mai menü?"
+      dropdownable={dropdownable}
+      defaultStatus={defaultStatus}
+      sideComponent={<DatePicker date={date} setDate={setDate} />}
+    >
+      <Menu
+        date={date}
+        menu={
+          selfUser?.food_menu == "A" || selfUser?.food_menu == "B"
+            ? selfUser?.food_menu
+            : undefined
+        }
+      />
+    </Section>
   );
 };

@@ -16,6 +16,18 @@ type SectionProps = {
   oldVersionName?: string;
   newVersionName?: string;
   isCard?: boolean;
+  sideComponent?: React.ReactNode;
+};
+
+type SideComponenetProps = {
+  title: string;
+  isOpen: boolean;
+  newVersion: React.ReactNode | undefined;
+  oldVersionName: string;
+  newVersionName: string;
+  isNewVersion: boolean;
+  setIsNewVersion: React.Dispatch<React.SetStateAction<boolean>>;
+  sideComponent: React.ReactNode | undefined;
 };
 
 const loadSectionStatus = (name: string) => {
@@ -33,6 +45,60 @@ const setSectionStatus = (name: string, status: boolean) => {
   }
 };
 
+const SideComponenet = ({
+  title,
+  isOpen,
+  newVersion,
+  oldVersionName,
+  newVersionName,
+  isNewVersion,
+  setIsNewVersion,
+  sideComponent,
+}: SideComponenetProps) => {
+  const updateVersion = (isNewVersion: boolean) => {
+    setIsNewVersion(isNewVersion);
+    if (newVersion !== undefined)
+      localStorage.setItem(
+        "section_" + title + "_new_version",
+        isNewVersion.toString(),
+      );
+  };
+
+  if (sideComponent) return sideComponent;
+  if (newVersion !== undefined && isOpen)
+    return (
+      <span className="text-xs text-red-500">
+        <ButtonGroup>
+          <Button
+            onPress={() => updateVersion(false)}
+            size="sm"
+            className={
+              "border-selfprimary-100 " +
+              (!isNewVersion
+                ? "bg-selfprimary-100 text-selfprimary-900"
+                : "border-1 bg-transparent text-selfprimary-500")
+            }
+          >
+            {oldVersionName}
+          </Button>
+          <Button
+            onPress={() => updateVersion(true)}
+            size="sm"
+            className={
+              "border-selfprimary-100 " +
+              (isNewVersion
+                ? "bg-selfprimary-100 text-selfprimary-900"
+                : "border-1 bg-transparent text-selfprimary-500")
+            }
+          >
+            {newVersionName}
+          </Button>
+        </ButtonGroup>
+      </span>
+    );
+  return <></>;
+};
+
 export const Section = ({
   title,
   defaultStatus,
@@ -46,18 +112,10 @@ export const Section = ({
   oldVersionName = "Régi nézet",
   newVersionName = "Új nézet",
   isCard = false,
+  sideComponent,
 }: SectionProps) => {
   const [isOpen, setIsOpen] = useState(defaultStatus != "closed");
   const [isNewVersion, setIsNewVersion] = useState(false);
-
-  const updateVersion = (isNewVersion: boolean) => {
-    setIsNewVersion(isNewVersion);
-    if (newVersion !== undefined)
-      localStorage.setItem(
-        "section_" + title + "_new_version",
-        isNewVersion.toString(),
-      );
-  };
 
   useEffect(() => {
     setIsOpen(
@@ -85,7 +143,7 @@ export const Section = ({
         } ` + className
       }
     >
-      <div className="flex">
+      <div className="flex items-center justify-between">
         <button
           className="flex max-w-fit py-1 text-2xl font-medium"
           onClick={toggleDropdown}
@@ -122,36 +180,16 @@ export const Section = ({
             {chip}
           </span>
         </button>
-        {newVersion !== undefined && isOpen && (
-          <span className="ml-auto pl-2 text-xs text-red-500">
-            <ButtonGroup>
-              <Button
-                onPress={() => updateVersion(false)}
-                size="sm"
-                className={
-                  "border-selfprimary-100 " +
-                  (!isNewVersion
-                    ? "bg-selfprimary-100 text-selfprimary-900"
-                    : "border-1 bg-transparent text-selfprimary-500")
-                }
-              >
-                {oldVersionName}
-              </Button>
-              <Button
-                onPress={() => updateVersion(true)}
-                size="sm"
-                className={
-                  "border-selfprimary-100 " +
-                  (isNewVersion
-                    ? "bg-selfprimary-100 text-selfprimary-900"
-                    : "border-1 bg-transparent text-selfprimary-500")
-                }
-              >
-                {newVersionName}
-              </Button>
-            </ButtonGroup>
-          </span>
-        )}
+        <SideComponenet
+          title={title}
+          isOpen={isOpen}
+          newVersion={newVersion}
+          oldVersionName={oldVersionName}
+          newVersionName={newVersionName}
+          isNewVersion={isNewVersion}
+          setIsNewVersion={setIsNewVersion}
+          sideComponent={sideComponent}
+        />
       </div>
       <div
         className={`transition-all duration-1000 ${

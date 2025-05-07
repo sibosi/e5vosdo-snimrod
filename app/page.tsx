@@ -4,7 +4,7 @@ import {
   QuickTeachers,
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
-import { Menu } from "@/components/menza/menu";
+import { MenuInSection } from "@/components/menza/menu";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
 import { getAuth, UserType } from "@/db/dbreq";
@@ -60,19 +60,7 @@ export default async function Home() {
       )}
 
       {siteConfig.pageSections["menza"] != "hidden" && (
-        <Section
-          title="Mi a mai menü?"
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["menza"]}
-        >
-          <Menu
-            menu={
-              selfUser?.food_menu == "A" || selfUser?.food_menu == "B"
-                ? selfUser?.food_menu
-                : undefined
-            }
-          />
-        </Section>
+        <MenuInSection selfUser={selfUser} />
       )}
 
       {siteConfig.pageSections["esemenyek"] != "hidden" && (

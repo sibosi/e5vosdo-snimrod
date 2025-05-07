@@ -263,18 +263,18 @@ export async function removeUserPermissions(
 }
 
 export async function getUsersEmailByPermission(permission: string) {
-  const response = (await dbreq(
+  const response = await dbreq(
     `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`,
-  )) as any;
+  );
   let emails: string[] = [];
   response.map((user: { email: string }) => emails.push(user.email));
   return emails;
 }
 
 export async function getUsersEmailWherePushAboutGames() {
-  const response = (await dbreq(
+  const response = await dbreq(
     `SELECT email FROM users WHERE push_about_games = 1`,
-  )) as any;
+  );
   let emails: string[] = [];
   response.map((user: { email: string }) => emails.push(user.email));
   return emails;
@@ -298,9 +298,7 @@ export async function getNotificationById(id: number) {
 export async function getUserNotificationsIds() {
   const email = (await getAuth())?.email;
   const response = (
-    (await dbreq(
-      `SELECT notifications FROM users WHERE email = '${email}'`,
-    )) as any
+    await dbreq(`SELECT notifications FROM users WHERE email = '${email}'`)
   )[0].notifications as number[];
   return response;
 }
@@ -349,9 +347,7 @@ export async function addServiceWorker(serviceWorker: any) {
 
 export async function removeServiceWorker(serviceWorker: any, email: string) {
   let users_service_workers = (
-    (await dbreq(
-      `SELECT service_workers FROM users WHERE email = '${email}'`,
-    )) as any
+    await dbreq(`SELECT service_workers FROM users WHERE email = '${email}'`)
   )[0].service_workers;
 
   users_service_workers = users_service_workers.filter(
@@ -366,9 +362,9 @@ export async function removeServiceWorker(serviceWorker: any, email: string) {
 }
 
 export async function getServiceWorkersByPermission(permission: string) {
-  const users_service_workers: { service_workers: [] }[] = (await dbreq(
+  const users_service_workers: { service_workers: [] }[] = await dbreq(
     `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`,
-  )) as any;
+  );
   let service_workers: any[] = [];
   users_service_workers.forEach((user: { service_workers: [] }) =>
     user.service_workers.map((sw: any) => service_workers.push(sw)),
@@ -378,9 +374,9 @@ export async function getServiceWorkersByPermission(permission: string) {
 }
 
 export async function getServiceWorkersByEmail(email: string) {
-  const response = (await dbreq(
+  const response = await dbreq(
     `SELECT service_workers FROM users WHERE email = '${email}'`,
-  )) as any;
+  );
   return response[0].service_workers;
 }
 
@@ -417,9 +413,7 @@ export async function markAsRead(id: number) {
   const email = (await getAuth())?.email;
 
   const new_notifications = (
-    (await dbreq(
-      `SELECT notifications FROM users WHERE email = '${email}'`,
-    )) as any
+    await dbreq(`SELECT notifications FROM users WHERE email = '${email}'`)
   )[0].notifications.new;
 
   const filtered_new_notifications = new_notifications.filter(
@@ -498,8 +492,9 @@ export async function newNotificationByNames(
   let receiving_emails: string[] = [];
   let valid_receiving_emails: string[] = [];
 
-  const usersNameAndEmail: Array<{ name: string; email: string }> =
-    (await dbreq(`SELECT name, email FROM users`)) as any;
+  const usersNameAndEmail: Array<{ name: string; email: string }> = await dbreq(
+    `SELECT name, email FROM users`,
+  );
 
   const usersNameAndEmailDict: { [key: string]: string } = {};
   usersNameAndEmail.forEach((user: { name: string; email: string }) => {
@@ -646,7 +641,7 @@ export async function getDefaultGroup() {
   const email = (await getAuth())?.email;
   const REQ1 = `SELECT default_group FROM users WHERE email = '${email}';`;
 
-  return ((await dbreq(REQ1)) as any)[0].default_group;
+  return (await dbreq(REQ1))[0].default_group;
 }
 
 export async function editDefaultGroup(group: number | null) {

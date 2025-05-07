@@ -15,7 +15,11 @@ export interface UsePageSettingsReturn {
 }
 
 const fetcher = async (url: string) => {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      module: "pageSettings",
+    },
+  });
   return response.json();
 };
 

@@ -1,23 +1,11 @@
 "use client";
 import { PageSettingsType } from "@/db/pageSettings";
+import { usePageSettings } from "@/hooks/usePageSettings";
 import { Button, Input } from "@heroui/react";
-import React, { useEffect, useState } from "react";
-
-async function getPageSettings() {
-  return await fetch("/api/getPageSettings", {
-    method: "GET",
-    headers: {
-      module: "pageSettings",
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      return data as PageSettingsType;
-    });
-}
+import React, { useState } from "react";
 
 async function editPageSettings(settings: PageSettingsType) {
-  return await fetch("/api/editPageSettings", {
+  fetch("/api/editPageSettings", {
     method: "POST",
     headers: {
       module: "pageSettings",
@@ -26,21 +14,15 @@ async function editPageSettings(settings: PageSettingsType) {
     body: JSON.stringify({
       settings: settings,
     }),
+  }).then((res) => {
+    if (res.status === 200) window.location.reload();
+    else alert("Hiba történt a mentés során!");
   });
 }
 
 const PageSettings = () => {
-  const [settings, setSettings] = useState<PageSettingsType>();
-  const [newSettings, setNewSettings] = useState<PageSettingsType>(
-    {} as PageSettingsType,
-  );
-
-  useEffect(() => {
-    getPageSettings().then((data) => {
-      setSettings(data);
-      setNewSettings(data);
-    });
-  }, []);
+  const { pageSettings: settings, isLoading } = usePageSettings(true);
+  const [newSettings, setNewSettings] = useState<PageSettingsType>(settings!);
 
   return (
     <div className="space-y-2">
@@ -96,7 +78,6 @@ const PageSettings = () => {
           color="primary"
           onPress={() => {
             editPageSettings(newSettings);
-            setSettings(newSettings);
           }}
         >
           Mentés

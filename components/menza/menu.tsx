@@ -18,9 +18,6 @@ function formatDate(date: Date, simple = false) {
     const today = new Date();
     date.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-    const diff = (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
-    console.log("date", date.getTime(), today.getTime(), diff);
-
     switch ((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) {
       case 0:
         return "Ma";

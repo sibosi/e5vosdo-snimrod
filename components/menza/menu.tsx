@@ -15,7 +15,9 @@ type MenuType = {
 
 function formatDate(date: Date, simple = false) {
   if (simple) {
-    const dateDiff = date.getDate() - new Date().getDate();
+    const dateDiff = Math.floor(
+      (date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
+    );
     if (dateDiff === 0) return "Ma";
     if (dateDiff === 1) return "Holnap";
     if (dateDiff === -1) return "Tegnap";

@@ -15,12 +15,20 @@ type MenuType = {
 
 function formatDate(date: Date, simple = false) {
   if (simple) {
-    const dateDiff = Math.floor(
-      (date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
-    );
-    if (dateDiff === 0) return "Ma";
-    if (dateDiff === 1) return "Holnap";
-    if (dateDiff === -1) return "Tegnap";
+    const today = new Date();
+    date.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    const diff = (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+    console.log("date", date.getTime(), today.getTime(), diff);
+
+    switch ((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) {
+      case 0:
+        return "Ma";
+      case 1:
+        return "Holnap";
+      case -1:
+        return "Tegnap";
+    }
     return date
       .toLocaleDateString("hu", {
         month: "2-digit",

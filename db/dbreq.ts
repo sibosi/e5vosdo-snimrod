@@ -28,7 +28,6 @@ export interface User {
   tickets: string[];
   hidden_lessons: number[];
   default_group: number | null;
-  service_workers: any[];
   push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
@@ -217,10 +216,10 @@ export async function updateUser(user: User | undefined) {
   const query = `
     INSERT INTO \`users\` (
       \`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`,
-      \`permissions\`, \`notifications\`, \`service_workers\`, \`tickets\`, \`hidden_lessons\`
+      \`permissions\`, \`notifications\`, \`tickets\`, \`hidden_lessons\`
     ) VALUES (
       '${user.name}', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${user.name}', '${date}',
-      '["user"]', '{ "new": [1], "read": [], "sent": [] }', '[]', '["EJG_code_edit"]', '[]'
+      '["user"]', '{ "new": [1], "read": [], "sent": [] }', '["EJG_code_edit"]', '[]'
     )
     ON DUPLICATE KEY UPDATE
       \`username\` = VALUES(\`username\`),

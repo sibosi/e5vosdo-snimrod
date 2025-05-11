@@ -91,7 +91,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
       if (archivedCurrentMonth !== month) {
         archivedItemsToRender.push({
           type: "month",
-          month,
+          month: month,
           date: "",
           key: `archived-month-${month}`,
         });
@@ -100,7 +100,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
       archivedItemsToRender.push({
         type: "date",
-        date,
+        date: date,
         key: `archived-date-${date}`,
       });
     });

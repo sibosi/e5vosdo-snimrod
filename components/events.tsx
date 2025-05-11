@@ -91,7 +91,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
       if (archivedCurrentMonth !== month) {
         archivedItemsToRender.push({
           type: "month",
-          month: month,
+          month,
           date: "",
           key: `archived-month-${month}`,
         });
@@ -100,7 +100,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
       archivedItemsToRender.push({
         type: "date",
-        date: date,
+        date,
         key: `archived-date-${date}`,
       });
     });
@@ -255,13 +255,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
           );
         } else {
           const date = item.date;
-          const isToday =
-            date ===
-            new Date().toLocaleDateString("hu-HU", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            });
+          const isToday = date === new Date().toISOString().slice(0, 10);
 
           return (
             <div key={item.key} className="flex gap-2">

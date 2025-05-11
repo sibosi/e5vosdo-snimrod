@@ -1,13 +1,8 @@
 "use client";
 import { Chip } from "@heroui/react";
 import { SideCard } from "./sidecard";
-import { EventType } from "@/db/event";
 import { Section } from "./home/section";
 import { useEvents } from "@/hooks/useEvents";
-
-interface EventByDateType {
-  [date: string]: EventType[];
-}
 
 const shortWeekday: { [key: string]: string } = {
   hétfő: "hétf.",
@@ -19,6 +14,10 @@ const shortWeekday: { [key: string]: string } = {
   vasárnap: "vas.",
 };
 
+const parseDateString = (dateStr: string): Date => {
+  return new Date(dateStr.replace(/-/g, "/"));
+};
+
 export const Events = ({ all = false }: { all?: boolean }) => {
   const { events, archivedEvents, futureEvents, isLoading } = useEvents(all);
 
@@ -26,7 +25,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
   if (!events || Object.keys(events).length === 0) return <p>Nincs esemény</p>;
 
   const sortedDates = Object.keys(events).sort(
-    (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+    (a, b) => parseDateString(a).getTime() - parseDateString(b).getTime(),
   );
 
   const itemsToRender: Array<{
@@ -35,10 +34,10 @@ export const Events = ({ all = false }: { all?: boolean }) => {
     date: string;
     key: string;
   }> = [];
-  let currentMonth: any = null;
+  let currentMonth: string | null = null;
 
-  sortedDates.forEach((date) => {
-    const eventDate = new Date(date);
+  sortedDates.forEach((dateKey) => {
+    const eventDate = parseDateString(dateKey);
     const month = eventDate.toLocaleDateString("hu-HU", {
       year: "numeric",
       month: "long",
@@ -56,8 +55,8 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
     itemsToRender.push({
       type: "date",
-      date,
-      key: `date-${date}`,
+      date: dateKey,
+      key: `date-${dateKey}`,
     });
   });
 
@@ -68,21 +67,14 @@ export const Events = ({ all = false }: { all?: boolean }) => {
     key: string;
   }> = [];
 
-  const futureItemsToRender: Array<{
-    type: "month" | "date";
-    month?: string;
-    date: string;
-    key: string;
-  }> = [];
-
   if (archivedEvents) {
-    let archivedCurrentMonth: any = null;
+    let archivedCurrentMonth: string | null = null;
     const archivedSortedDates = Object.keys(archivedEvents).sort(
-      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+      (a, b) => parseDateString(a).getTime() - parseDateString(b).getTime(),
     );
 
-    archivedSortedDates.forEach((date) => {
-      const eventDate = new Date(date);
+    archivedSortedDates.forEach((dateKey) => {
+      const eventDate = parseDateString(dateKey);
       const month = eventDate.toLocaleDateString("hu-HU", {
         year: "numeric",
         month: "long",
@@ -100,20 +92,27 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
       archivedItemsToRender.push({
         type: "date",
-        date,
-        key: `archived-date-${date}`,
+        date: dateKey,
+        key: `archived-date-${dateKey}`,
       });
     });
   }
 
+  const futureItemsToRender: Array<{
+    type: "month" | "date";
+    month?: string;
+    date: string;
+    key: string;
+  }> = [];
+
   if (futureEvents) {
-    let futureCurrentMonth: any = null;
+    let futureCurrentMonth: string | null = null;
     const futureSortedDates = Object.keys(futureEvents).sort(
-      (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+      (a, b) => parseDateString(a).getTime() - parseDateString(b).getTime(),
     );
 
-    futureSortedDates.forEach((date) => {
-      const eventDate = new Date(date);
+    futureSortedDates.forEach((dateKey) => {
+      const eventDate = parseDateString(dateKey);
       const month = eventDate.toLocaleDateString("hu-HU", {
         year: "numeric",
         month: "long",
@@ -131,11 +130,13 @@ export const Events = ({ all = false }: { all?: boolean }) => {
 
       futureItemsToRender.push({
         type: "date",
-        date,
-        key: `future-date-${date}`,
+        date: dateKey,
+        key: `future-date-${dateKey}`,
       });
     });
   }
+
+  const today = new Date();
 
   return (
     <div className="-md:grid-cols-2 -lg:grid-cols-3 grid grid-cols-1 items-start space-y-4 border-b-8 border-transparent pb-5 text-left">
@@ -159,14 +160,15 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                   </div>
                 );
               } else {
-                const date = item.date;
+                const dateKey = item.date;
+                const currentDateObj = parseDateString(dateKey);
                 return (
                   <div key={item.key} className="flex gap-2">
                     <div>
                       <p className="text-center text-xs font-semibold text-selfprimary-700">
                         {
                           shortWeekday[
-                            new Date(date).toLocaleDateString("hu-HU", {
+                            currentDateObj.toLocaleDateString("hu-HU", {
                               weekday: "long",
                             })
                           ]
@@ -174,14 +176,14 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                       </p>
                       <h2 className="mx-auto grid w-9 grid-cols-1 rounded-full text-xl font-normal text-selfprimary-700">
                         <span className="m-auto">
-                          {new Date(date).toLocaleDateString("hu-HU", {
+                          {currentDateObj.toLocaleDateString("hu-HU", {
                             day: "numeric",
                           })}
                         </span>
                       </h2>
                     </div>
                     <div className="w-full space-y-2">
-                      {archivedEvents[date].map((event) => (
+                      {archivedEvents[dateKey].map((event) => (
                         <div key={`archived-event-${event.id}`}>
                           <SideCard
                             title={
@@ -254,8 +256,13 @@ export const Events = ({ all = false }: { all?: boolean }) => {
             </div>
           );
         } else {
-          const date = item.date;
-          const isToday = date === new Date().toISOString().slice(0, 10);
+          const dateKey = item.date;
+          const currentDateObj = parseDateString(dateKey);
+
+          const isToday =
+            currentDateObj.getFullYear() === today.getFullYear() &&
+            currentDateObj.getMonth() === today.getMonth() &&
+            currentDateObj.getDate() === today.getDate();
 
           return (
             <div key={item.key} className="flex gap-2">
@@ -263,7 +270,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                 <p className="text-center text-xs font-semibold text-selfprimary-700">
                   {
                     shortWeekday[
-                      new Date(date).toLocaleDateString("hu-HU", {
+                      currentDateObj.toLocaleDateString("hu-HU", {
                         weekday: "long",
                       })
                     ]
@@ -273,14 +280,14 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                   className={`mx-auto grid w-9 grid-cols-1 rounded-full ${isToday ? "h-9 bg-selfprimary-700 text-selfprimary-bg" : "text-selfprimary-700"} text-xl font-normal`}
                 >
                   <span className="m-auto">
-                    {new Date(date).toLocaleDateString("hu-HU", {
+                    {currentDateObj.toLocaleDateString("hu-HU", {
                       day: "numeric",
                     })}
                   </span>
                 </h2>
               </div>
               <div className="w-full space-y-2">
-                {events[date].length == 0 && (
+                {events[dateKey].length == 0 && (
                   <div className="w-full max-w-md rounded-2xl bg-foreground-100 p-4 py-3 text-left">
                     <h2 className="text-lg font-semibold text-foreground">
                       A mai napon nincs esemény
@@ -288,7 +295,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                   </div>
                 )}
 
-                {events[date].map((event) => (
+                {events[dateKey].map((event) => (
                   <div key={`event-${event.id}`}>
                     <SideCard
                       title={
@@ -368,14 +375,15 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                   </div>
                 );
               } else {
-                const date = item.date;
+                const dateKey = item.date;
+                const currentDateObj = parseDateString(dateKey);
                 return (
                   <div key={item.key} className="flex gap-2">
                     <div>
                       <p className="text-center text-xs font-semibold text-selfprimary-700">
                         {
                           shortWeekday[
-                            new Date(date).toLocaleDateString("hu-HU", {
+                            currentDateObj.toLocaleDateString("hu-HU", {
                               weekday: "long",
                             })
                           ]
@@ -383,14 +391,14 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                       </p>
                       <h2 className="mx-auto grid w-9 grid-cols-1 rounded-full text-xl font-normal text-selfprimary-700">
                         <span className="m-auto">
-                          {new Date(date).toLocaleDateString("hu-HU", {
+                          {currentDateObj.toLocaleDateString("hu-HU", {
                             day: "numeric",
                           })}
                         </span>
                       </h2>
                     </div>
                     <div className="w-full space-y-2">
-                      {futureEvents[date].map((event) => (
+                      {futureEvents[dateKey].map((event) => (
                         <div key={`future-event-${event.id}`}>
                           <SideCard
                             title={

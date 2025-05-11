@@ -12,6 +12,9 @@ import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
 import Carousel from "@/components/home/carousel";
+import { gate } from "@/db/permissions";
+import HeadTimetable from "@/components/home/smartHead/headTimetable";
+import { Chip } from "@heroui/react";
 
 const PageHeadContent = ({
   selfUser,
@@ -45,6 +48,22 @@ export default async function Home() {
   return (
     <div>
       <PageHeadContent selfUser={selfUser} />
+
+      {gate(selfUser, "tester", "boolean") && (
+        <Section
+          title="Órarend"
+          dropdownable={true}
+          defaultStatus="closed"
+          savable={true}
+          chip={
+            <Chip color="secondary" size="sm">
+              Előnézet
+            </Chip>
+          }
+        >
+          <HeadTimetable selfUser={selfUser} />
+        </Section>
+      )}
 
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section

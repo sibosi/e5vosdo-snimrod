@@ -1,13 +1,14 @@
 "use client";
-import { UserType } from "@/db/dbreq";
+import { PossibleUserType } from "@/db/dbreq";
 import React from "react";
 import { TimetableLesson } from "@/app/api/timetable/route";
 import { Alert } from "@/components/home/alert";
 import Link from "next/link";
 import { useTimetable } from "@/hooks/useTimetable";
 
-const HeadTimetable = (props: { selfUser: UserType }) => {
+const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
   const { selfUser } = props;
+  if (!selfUser) return null;
   const studentCode = selfUser.EJG_code;
 
   const {

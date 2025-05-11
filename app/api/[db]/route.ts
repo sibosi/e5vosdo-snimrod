@@ -18,6 +18,7 @@ const modules = {
   supabaseStorage: import("@/db/supabaseStorage"),
   images: import("@/db/images"),
   matches: import("@/db/matches"),
+  pageSettings: import("@/db/pageSettings"),
 };
 
 export const GET = async (

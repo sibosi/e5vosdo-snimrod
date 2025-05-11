@@ -40,9 +40,9 @@ export const siteConfig = {
   ],
   //navMenuItems: [],
   links: {
-    home: "https://info.e5vosdo.hu",
-    alternative: "https://snimrod.com",
-    github: "https://github.com/Sibosi",
+    home: "https://e5vosdo.hu",
+    alternative: "https://info.e5vosdo.hu",
+    github: "https://github.com/sibosi",
     mypage: "https://linktr.ee/snimrod",
     instagram: "https://instagram.com/e5vosdo/",
     gdrive:

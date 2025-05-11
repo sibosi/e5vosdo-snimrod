@@ -1,91 +1,32 @@
 "use client";
 import { UserType } from "@/db/dbreq";
-import React, { useState, useEffect } from "react";
-import { TimetableWeek, TimetableLesson } from "@/app/api/timetable/route";
+import React from "react";
+import { TimetableLesson } from "@/app/api/timetable/route";
 import Image from "next/image";
 import teacherDataByNames from "@/public/storage/teacherDataByNames.json";
 import teacherName from "@/app/api/teacherName";
 import { Alert } from "../home/alert";
 import Link from "next/link";
-
-const days = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"] as const;
-type DayType = (typeof days)[number];
-
-const periodTimes = {
-  0: "7:15 - 8:00",
-  1: "8:15 - 9:00",
-  2: "9:15 - 10:00",
-  3: "10:15 - 11:00",
-  4: "11:15 - 12:00",
-  5: "12:25 - 13:10",
-  6: "13:35 - 14:20",
-  7: "14:30 - 15:15",
-};
+import { useTimetable } from "@/hooks/useTimetable";
 
 const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
   const { selfUser, hideTitle } = props;
   const studentCode = selfUser.EJG_code;
-  const [password, setPassword] = useState<string | null>();
 
-  const [selectedDay, setSelectedDay] = useState<DayType>(() => {
-    const today = new Date().getDay() - 1;
-    const dayIndex = [-1, 5].includes(today) ? 0 : today;
-    return days[dayIndex > 4 ? 0 : dayIndex];
+  const {
+    timetable,
+    isLoading,
+    isError,
+    selectedDay,
+    setSelectedDay,
+    days,
+    periodTimes,
+    isConfigured,
+  } = useTimetable({
+    studentCode,
   });
 
-  const [timetable, setTimetable] = useState<TimetableWeek | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setPassword(localStorage.getItem("78OM"));
-    const password = localStorage.getItem("78OM");
-
-    if (!password || !studentCode) {
-      setError(
-        "Hiányzó adatok. Kérjük, add meg a hiányzó adataidat a profilodban.",
-      );
-      setLoading(false);
-      return;
-    }
-
-    const fetchTimetable = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch("/api/timetable", {
-          headers: {
-            EJG_code: studentCode,
-            password: password ?? "",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch timetable: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setTimetable(data);
-      } catch (err) {
-        console.error("Error fetching timetable:", err);
-        setError(
-          "Hiba történt az órarend betöltése közben. Kérjük, próbáld újra később.",
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (studentCode) {
-      fetchTimetable();
-    } else {
-      setError("Hiányzik az EJG kód. Kérjük, add meg a profilodban.");
-      setLoading(false);
-    }
-  }, [studentCode, password]);
-
-  if (!password || !studentCode)
+  if (!isConfigured) {
     return (
       <Alert className="border-selfprimary-300 bg-selfprimary-50">
         <Link href="/me">
@@ -96,6 +37,7 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
         </Link>
       </Alert>
     );
+  }
 
   const renderLesson = (lesson: TimetableLesson, period: number) => {
     if (lesson.code === "-") {
@@ -162,16 +104,18 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
         </div>
       </div>
 
-      {loading && (
+      {isLoading && (
         <div className="flex h-40 items-center justify-center">
           <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
         </div>
       )}
-      {!loading && error && (
+
+      {isError && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-          {error}
+          Hiba történt az órarend betöltése közben. Kérjük, próbáld újra később.
         </div>
       )}
+
       {timetable ? (
         <div className="space-y-2">
           {timetable[selectedDay] &&
@@ -194,7 +138,8 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
             )}
         </div>
       ) : null}
-      {!timetable && !error && !loading && (
+
+      {!timetable && !isError && !isLoading && (
         <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-yellow-700">
           Nem található órarend.
         </div>

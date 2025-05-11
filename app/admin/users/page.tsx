@@ -21,7 +21,7 @@ const UsersPage = async () => {
       <p>{"Adminok: " + admins.join(", ")}</p>
 
       {(await hasPermission(selfUser.email, "getUsers")) ? (
-        <ManageUsers selfUser={selfUser} initialUsers={await getUsers()} />
+        <ManageUsers initialUsers={await getUsers()} />
       ) : (
         <></>
       )}

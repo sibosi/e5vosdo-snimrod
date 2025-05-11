@@ -4,10 +4,13 @@ import getUserClass from "@/public/getUserClass";
 import {
   Button,
   ButtonGroup,
+  Chip,
   Image,
   Input,
   Modal,
+  ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
 } from "@heroui/react";
 import React, { useState, useEffect } from "react";
@@ -24,13 +27,34 @@ async function fetchUsers(setUsers: (data: any) => void) {
   setUsers(sortUsers(data));
 }
 
-const ManageUsers = ({
-  selfUser,
-  initialUsers,
-}: {
-  selfUser: User;
-  initialUsers: any;
-}) => {
+function displayDate(dateInStr: string) {
+  const date = new Date(dateInStr);
+  const diff = new Date().getTime() - date.getTime();
+
+  // if invvalid date, return empty string
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+
+  if (diff < 1000 * 60) {
+    return `${Math.floor(diff / 1000)} másodperce`;
+  } else if (diff < 1000 * 60 * 60) {
+    return `${Math.floor(diff / (1000 * 60))} perce`;
+  } else if (diff < 1000 * 60 * 60 * 24) {
+    return `${Math.floor(diff / (1000 * 60 * 60))} óra ${Math.floor(
+      (diff % (1000 * 60 * 60)) / (1000 * 60),
+    )} perce`;
+  } else if (diff < 1000 * 60 * 60 * 24 * 7) {
+    return `${Math.floor(diff / (1000 * 60 * 60 * 24))} napja`;
+  } else {
+    return new Intl.DateTimeFormat("hu-HU", {
+      dateStyle: "full",
+      timeStyle: "long",
+    }).format(date);
+  }
+}
+
+const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
   const [users, setUsers] = useState(sortUsers(initialUsers));
   const [reloadUsers, setReloadUsers] = useState(false);
 
@@ -122,278 +146,302 @@ const ManageUsers = ({
         onChange={(e) => setSearchName(e.target.value)}
         className="mb-2 max-w-[200px]"
       />
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {users.slice(0, 12).map((user: UserType) => (
-          <div key={user.email} className="rounded-3xl bg-selfprimary-50 p-6">
-            <div className="flex">
-              <div className="flex w-full">
-                <Image
-                  src={user.image}
-                  alt={user.username}
-                  width={72}
-                  height={72}
-                  className="rounded-full"
-                  loading="lazy"
-                />
-                {user.service_workers.length != 0 && <span>🔔</span>}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        {users.slice(0, 24).map((user: UserType) => (
+          <button
+            key={user.email}
+            onClick={() => {
+              setSelectedUser(user);
+              setSelectedUserLogs([]);
+            }}
+            className="rounded-3xl bg-selfprimary-50 p-6 text-left"
+          >
+            <div className="flex justify-between">
+              <Image
+                src={user.image}
+                alt={user.username}
+                width={72}
+                height={72}
+                className="rounded-full"
+                loading="lazy"
+              />
+              <div className="flex flex-col gap-2">
+                {["admin", "tester"].map(
+                  (permission) =>
+                    user.permissions.includes(permission) && (
+                      <Chip
+                        key={permission + " enable"}
+                        size="sm"
+                        color="secondary"
+                      >
+                        {permission}
+                      </Chip>
+                    ),
+                )}
               </div>
-              <Button
-                size="sm"
-                color="default"
-                onPress={() => {
-                  setSelectedUser(user);
-                  setSelectedUserLogs([]);
-                }}
-              >
-                Részletek
-              </Button>
             </div>
-            <h1 className="text-foreground">{user.username}</h1>
-            <p>{user.email}</p>
-            <p>
-              {new Date(user.last_login).toLocaleString("hu-HU", {
-                dateStyle: "long",
-                timeStyle: "long",
-              })}
-            </p>
-            <p>Permissions: {(user.permissions ?? []).join(" ")}</p>
-            <div className="flex gap-2">
-              {["student", "admin", "tester"].map((permission) =>
-                user.permissions.includes(permission) ? (
-                  <Button
-                    key={permission + " enable"}
-                    size="sm"
-                    color="success"
-                    onPress={() => removeUserPermission(user.email, permission)}
-                  >
-                    {permission}
-                  </Button>
-                ) : (
-                  <Button
-                    key={permission + " disable"}
-                    size="sm"
-                    color="default"
-                    onPress={() => addUserPermission(user.email, permission)}
-                  >
-                    {permission}
-                  </Button>
-                ),
-              )}
-            </div>
-          </div>
+
+            <h3 className="text-xl font-bold text-foreground">
+              {user.username}
+            </h3>
+            <p className="mb-2 text-xs">{user.email}</p>
+            <p suppressHydrationWarning>{displayDate(user.last_login)}</p>
+          </button>
         ))}
       </div>
-      {users.length == 0 ? (
+      {users.length == 0 && (
         <div className="text-foreground">Nincs találat</div>
-      ) : users.length > 12 ? (
+      )}
+      {users.length > 12 && (
         <div className="my-2 rounded-3xl bg-selfprimary-50 p-6 text-center">
           Túl sok találat ({users.length})
         </div>
-      ) : (
-        <></>
       )}
 
       <Modal
         isOpen={selectedUser != null}
         onClose={() => setSelectedUser(null)}
-        className="rounded-3xl"
-        size="2xl"
-        placement="center"
+        size="full"
+        scrollBehavior="inside"
       >
         <ModalContent>
-          <ModalHeader>{selectedUser?.username}</ModalHeader>
-          <div className="gap-6 px-8 pb-8 md:flex">
-            <div className="mb-4">
-              <div>
-                <Image
-                  src={selectedUser?.image}
-                  alt={selectedUser?.username}
-                  width={72}
-                  height={72}
-                  className="rounded-full"
-                />
-              </div>
+          {selectedUser && (
+            <>
+              <ModalHeader>{selectedUser.username}</ModalHeader>
+              <ModalBody className="gap-6 px-8 pb-8 text-left md:flex">
+                <div className="mb-4">
+                  <div>
+                    <Image
+                      src={selectedUser.image}
+                      alt={selectedUser.username}
+                      width={72}
+                      height={72}
+                      className="rounded-full"
+                    />
+                  </div>
 
-              <table>
-                <tr>
-                  <td>Név</td>
-                  <td>{selectedUser?.name}</td>
-                </tr>
-                <tr>
-                  <td>Felhasználónév</td>
-                  <td>{selectedUser?.username}</td>
-                </tr>
-                <tr>
-                  <td>Email</td>
-                  <td>{selectedUser?.email}</td>
-                </tr>
-                <tr>
-                  <td>Nickname</td>
-                  <td>{selectedUser?.nickname}</td>
-                </tr>
-                <tr>
-                  <td>Osztály</td>
-                  <td>{selectedUser && getUserClass(selectedUser)}</td>
-                </tr>
-                <tr>
-                  <td>Utolsó belépés</td>
-                  <td>
-                    {new Date(selectedUser?.last_login ?? "").toLocaleString(
-                      "hu-HU",
-                      {
-                        dateStyle: "long",
-                        timeStyle: "long",
-                      },
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Permissions</td>
-                  <td>{(selectedUser?.permissions ?? []).join(" ")}</td>
-                </tr>
-                <tr>
-                  <td>EJG kód</td>
-                  <td>{selectedUser?.EJG_code}</td>
-                </tr>
-                <tr>
-                  <td>Étkezési menü</td>
-                  <td>{selectedUser?.food_menu}</td>
-                </tr>
-                <tr>
-                  <td>Érkezés éve</td>
-                  <td>{selectedUser?.coming_year}</td>
-                </tr>
-                <tr>
-                  <td>Osztályjelleg</td>
-                  <td>{selectedUser?.class_character}</td>
-                </tr>
-                <tr>
-                  <td>Hely a névsorban</td>
-                  <td>{selectedUser?.order_number}</td>
-                </tr>
-                <tr>
-                  <td>Jegyek</td>
-                  <td>{selectedUser?.tickets.join(", ")}</td>
-                </tr>
-                <tr>
-                  <td>Rejtett órák</td>
-                  <td>{selectedUser?.hidden_lessons.length} db</td>
-                </tr>
-                <tr>
-                  <td>Alapcsoport</td>
-                  <td>{selectedUser?.default_group}</td>
-                </tr>
-                <tr>
-                  <td>Service workers</td>
-                  <td>{selectedUser?.service_workers.length} db</td>
-                </tr>
-              </table>
-            </div>
-            <div>
-              <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
-                <h3>Get users logs</h3>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Név</th>
+                        <td>{selectedUser.name}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Felhasználónév</th>
+                        <td>{selectedUser.username}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Email</th>
+                        <td>{selectedUser.email}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Nickname</th>
+                        <td>{selectedUser.nickname}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Osztály</th>
+                        <td>{selectedUser && getUserClass(selectedUser)}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Utolsó belépés</th>
+                        <td>
+                          {new Date(
+                            selectedUser.last_login ?? "",
+                          ).toLocaleString("hu-HU", {
+                            dateStyle: "long",
+                            timeStyle: "long",
+                          })}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Permissions</th>
+                        <td>{(selectedUser.permissions ?? []).join(" ")}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">EJG kód</th>
+                        <td>{selectedUser.EJG_code}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Étkezési menü</th>
+                        <td>{selectedUser.food_menu}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Érkezés éve</th>
+                        <td>{selectedUser.coming_year}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Osztályjelleg</th>
+                        <td>{selectedUser.class_character}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Hely a névsorban</th>
+                        <td>{selectedUser.order_number}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Jegyek</th>
+                        <td>{selectedUser.tickets.join(", ")}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Rejtett órák</th>
+                        <td>{selectedUser.hidden_lessons.length} db</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Alapcsoport</th>
+                        <td>{selectedUser.default_group}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div>
+                  <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
+                    <h3>Get users logs</h3>
 
-                <Button
-                  onPress={() => {
-                    fetch("api/getUserLogs", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({ email: selectedUser?.email }),
-                    })
-                      .then((res) => res.json())
-                      .then((data) => setSelectedUserLogs(data));
-                  }}
-                  color="success"
-                >
-                  Get logs
-                </Button>
+                    <Button
+                      onPress={() => {
+                        fetch("api/getUserLogs", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({ email: selectedUser.email }),
+                        })
+                          .then((res) => res.json())
+                          .then((data) => setSelectedUserLogs(data));
+                      }}
+                      color="success"
+                    >
+                      Get logs
+                    </Button>
 
-                <div className="max-h-40 max-w-min overflow-auto">
-                  {selectedUserLogs.map((log) => (
-                    <div key={log.id} className="border-b-1 py-1">
-                      <span>{log.time}</span>
-                      <br />
-                      <span>{log.action}</span>
-                      <br />
-                      <span>{log.message}</span>
+                    <div className="max-h-40 max-w-min overflow-auto">
+                      {selectedUserLogs.map((log) => (
+                        <div key={log.id} className="border-b-1 py-1">
+                          <span>{log.time}</span>
+                          <br />
+                          <span>{log.action}</span>
+                          <br />
+                          <span>{log.message}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-              <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
-                <h3>Hozzáférés hozzáadása</h3>
-                <ButtonGroup>
-                  <Input
-                    value={newPermission}
-                    onChange={(e) => setNewPermission(e.target.value)}
-                    placeholder="Permission"
-                  />
-                  <Button
-                    onPress={() => {
-                      addUserPermission(selectedUser?.email, newPermission);
-                      setNewPermission("");
-                    }}
-                    color="success"
-                  >
-                    +
-                  </Button>
-                </ButtonGroup>
-                <div>
-                  {selectedUser?.permissions.map((permission) => (
-                    <Button
-                      key={permission}
-                      color="success"
-                      className="m-1"
-                      size="sm"
-                    >
-                      {permission}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                  <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
+                    <h3>Hozzáférés hozzáadása</h3>
+                    <p>
+                      Permissions: {(selectedUser.permissions ?? []).join(" ")}
+                    </p>
+                    <div className="flex gap-2">
+                      {["student", "admin", "tester"].map((permission) =>
+                        selectedUser.permissions.includes(permission) ? (
+                          <Button
+                            key={permission + " enable"}
+                            size="sm"
+                            color="success"
+                            onPress={() =>
+                              removeUserPermission(
+                                selectedUser.email,
+                                permission,
+                              )
+                            }
+                          >
+                            {permission}
+                          </Button>
+                        ) : (
+                          <Button
+                            key={permission + " disable"}
+                            size="sm"
+                            color="default"
+                            onPress={() =>
+                              addUserPermission(selectedUser.email, permission)
+                            }
+                          >
+                            {permission}
+                          </Button>
+                        ),
+                      )}
+                    </div>
+                    <ButtonGroup>
+                      <Input
+                        value={newPermission}
+                        onChange={(e) => setNewPermission(e.target.value)}
+                        placeholder="Permission"
+                      />
+                      <Button
+                        onPress={() => {
+                          addUserPermission(selectedUser.email, newPermission);
+                          setNewPermission("");
+                        }}
+                        color="success"
+                      >
+                        +
+                      </Button>
+                    </ButtonGroup>
+                    <div>
+                      {selectedUser.permissions.map((permission) => (
+                        <Button
+                          key={permission}
+                          color="success"
+                          className="m-1"
+                          size="sm"
+                        >
+                          {permission}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
 
-              <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
-                <h3>Tickets</h3>
-                <ButtonGroup>
-                  <Input
-                    value={newTicket}
-                    onChange={(e) => setNewTicket(e.target.value)}
-                    placeholder="Ticket"
-                  />
-                  <Button
-                    onPress={() => {
-                      addTicket(selectedUser?.email, newTicket);
-                      setNewTicket("");
-                    }}
-                    color="success"
-                  >
-                    +
-                  </Button>
-                </ButtonGroup>
-                <div>
-                  {selectedUser?.tickets.map((ticket) => (
-                    <Button
-                      key={ticket}
-                      color="success"
-                      className="m-1"
-                      size="sm"
-                      onPress={() => deleteTicket(selectedUser?.email, ticket)}
-                    >
-                      {ticket}
-                    </Button>
-                  ))}
+                  <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
+                    <h3>Tickets</h3>
+                    <ButtonGroup>
+                      <Input
+                        value={newTicket}
+                        onChange={(e) => setNewTicket(e.target.value)}
+                        placeholder="Ticket"
+                      />
+                      <Button
+                        onPress={() => {
+                          addTicket(selectedUser.email, newTicket);
+                          setNewTicket("");
+                        }}
+                        color="success"
+                      >
+                        +
+                      </Button>
+                    </ButtonGroup>
+                    <div>
+                      {selectedUser.tickets.map((ticket) => (
+                        <Button
+                          key={ticket}
+                          color="success"
+                          className="m-1"
+                          size="sm"
+                          onPress={() =>
+                            deleteTicket(selectedUser.email, ticket)
+                          }
+                        >
+                          {ticket}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <Button
-                onPress={() => setSelectedUser(null)}
-                className="ml-auto mt-2 flex fill-selfprimary"
-              >
-                Rendben
-              </Button>
-            </div>
-          </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  onPress={() => setSelectedUser(null)}
+                  className="ml-auto mt-2 flex fill-selfprimary"
+                >
+                  Rendben
+                </Button>
+              </ModalFooter>
+            </>
+          )}
         </ModalContent>
       </Modal>
     </div>

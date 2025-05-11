@@ -26,7 +26,7 @@ const Footer = () => {
     "flex gap-0.5 p-2 flex-col items-center justify-center rounded-lg bg-selfprimary-bg text-center text-sm text-foreground hover:text-selfprimary-900";
 
   return (
-    <div className="mb-2 rounded-lg border-selfprimary-300 bg-selfprimary-100 p-2">
+    <div className="mb-2 rounded-lg bg-selfprimary-100 p-2">
       <div className="grid grid-flow-col grid-cols-4 grid-rows-3 justify-center gap-2">
         <a href="/me" className={STYLES}>
           <svg {...SVGAttributes}>

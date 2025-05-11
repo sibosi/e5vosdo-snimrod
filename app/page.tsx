@@ -4,44 +4,66 @@ import {
   QuickTeachers,
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
-import { Menu } from "@/components/menza/menu";
+import { MenuInSection } from "@/components/menza/menu";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
-import { getAuth } from "@/db/dbreq";
-// import Carousel from "@/components/home/carousel";
+import { getAuth, UserType } from "@/db/dbreq";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Footer from "@/components/footer";
-import Elections from "@/components/events/elections";
+import Carousel from "@/components/home/carousel";
+import { gate } from "@/db/permissions";
+import HeadTimetable from "@/components/home/smartHead/headTimetable";
+import { Chip } from "@heroui/react";
+
+const PageHeadContent = ({
+  selfUser,
+}: {
+  selfUser: UserType | null | undefined;
+}) => {
+  if (selfUser?.permissions.includes("user"))
+    return <Carousel data={[]} selfUser={selfUser} />;
+
+  if (selfUser === null)
+    return (
+      <Tray>
+        <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+          Sajnáljuk, valamilyen hiba történt. Kérjük, próbáld újra később!
+        </h1>
+      </Tray>
+    );
+
+  return (
+    <Tray>
+      <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+        Hiányolsz valamit? Netán a híreket?
+        <LoginButton />
+      </h1>
+    </Tray>
+  );
+};
 
 export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      {(() => {
-        return <Elections />;
+      <PageHeadContent selfUser={selfUser} />
 
-        if (selfUser?.permissions.includes("user")) {
-          // return <Carousel selfUser={selfUser} data={[]} />;
-        } else if (selfUser === null) {
-          return (
-            <Tray>
-              <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-                Sajnáljuk, valamilyen hiba történt. Kérjük, próbáld újra később!
-              </h1>
-            </Tray>
-          );
-        } else {
-          return (
-            <Tray>
-              <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-                Hiányolsz valamit? Netán a híreket?
-                <LoginButton />
-              </h1>
-            </Tray>
-          );
-        }
-      })()}
+      {gate(selfUser, "tester", "boolean") && (
+        <Section
+          title="Órarend"
+          dropdownable={true}
+          defaultStatus="closed"
+          savable={true}
+          chip={
+            <Chip color="secondary" size="sm">
+              Előnézet
+            </Chip>
+          }
+        >
+          <HeadTimetable selfUser={selfUser} />
+        </Section>
+      )}
 
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section
@@ -57,19 +79,7 @@ export default async function Home() {
       )}
 
       {siteConfig.pageSections["menza"] != "hidden" && (
-        <Section
-          title="Mi a mai menü?"
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["menza"]}
-        >
-          <Menu
-            menu={
-              selfUser?.food_menu == "A" || selfUser?.food_menu == "B"
-                ? selfUser?.food_menu
-                : undefined
-            }
-          />
-        </Section>
+        <MenuInSection selfUser={selfUser} />
       )}
 
       {siteConfig.pageSections["esemenyek"] != "hidden" && (

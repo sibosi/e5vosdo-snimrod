@@ -1,4 +1,4 @@
-import { UserType } from "./dbreq";
+import { PossibleUserType } from "./dbreq";
 
 export const PERMISSIONS = [
   "user",
@@ -24,10 +24,14 @@ matchOrganiser: can manage matches
 */
 
 export function gate(
-  user: UserType,
+  user: PossibleUserType,
   permission: string | string[],
   type?: "boolean" | "throw",
 ) {
+  if (!user) {
+    if (type === "boolean") return false;
+    throw new Error("Permission denied");
+  }
   let hasPermission = false;
   if (user.permissions.includes("super_admin")) hasPermission = true;
   if (typeof permission === "string") {

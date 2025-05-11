@@ -1,10 +1,9 @@
+"use client";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
   NavbarBrand,
   NavbarItem,
-  Kbd,
-  Link,
   Chip,
 } from "@heroui/react";
 import { link as linkStyles } from "@heroui/theme";
@@ -14,26 +13,44 @@ import clsx from "clsx";
 import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
-import { getPageSettings, PossibleUserType } from "@/db/dbreq";
+import { PossibleUserType } from "@/db/dbreq";
 import LiveScore from "./headspace/livescore";
 import HelloMessage from "../home/helloMessage";
 import ChangingComponent from "./changingComponent";
-import { headers } from "next/headers";
+import { usePageSettings } from "@/hooks/usePageSettings";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
-export const Navbar = async ({
+const NavbarForPhone = ({
   selfUser,
   className,
+  isActiveHeadSpace,
 }: {
   selfUser: PossibleUserType;
   className?: string;
+  isActiveHeadSpace: boolean;
 }) => {
-  const _ = await headers();
-  const isActiveHeadSpace = (await getPageSettings()).headspace === 1;
-  const phoneView = (
+  const PageTitles: Record<string, string> = {
+    "/": "E5vös DÖ",
+    "/events": "Események",
+    "/clubs": "Szakkörök",
+    "/me": "Profilom",
+    "/est": "E5 Podcast",
+    "/admin/page": "Admin panel",
+  };
+
+  const pathname = usePathname();
+  const [currentTitle, setCurrentTitle] = useState("E5vös DÖ");
+
+  useEffect(() => {
+    setCurrentTitle(PageTitles[pathname] ?? "E5vös DÖ");
+  }, [pathname]);
+
+  return (
     <NextUINavbar
       maxWidth="xl"
       position="sticky"
-      className={"top-0 md:hidden " + className}
+      className={"top-0 " + className}
     >
       <NavbarContent className="flex" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
@@ -56,7 +73,7 @@ export const Navbar = async ({
               >
                 <Logo />
                 <h1 className="p-2 text-3xl font-bold text-foreground">
-                  E5vös&nbsp;DÖ
+                  {currentTitle}
                 </h1>
               </NextLink>
             )
@@ -81,12 +98,22 @@ export const Navbar = async ({
       </NavbarContent>
     </NextUINavbar>
   );
+};
 
-  const desktopView = (
+const NavbarForDesktop = ({
+  selfUser,
+  className,
+  isActiveHeadSpace,
+}: {
+  selfUser: PossibleUserType;
+  className?: string;
+  isActiveHeadSpace: boolean;
+}) => {
+  return (
     <NextUINavbar
       maxWidth="xl"
       position="sticky"
-      className={"top-0 max-md:hidden " + className}
+      className={"top-0 " + className}
     >
       <NavbarContent className="fixed basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
@@ -136,11 +163,45 @@ export const Navbar = async ({
       </NavbarContent>
     </NextUINavbar>
   );
+};
 
+export const Navbar = ({
+  selfUser,
+  className,
+}: {
+  selfUser: PossibleUserType;
+  className?: string;
+}) => {
+  const { pageSettings } = usePageSettings();
+  const isActiveHeadSpace = pageSettings?.headspace === 1;
+
+  const [isMobile, setIsMobile] = useState(true);
+  useEffect(() => {
+    const handleResize = (): void => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  if (isMobile)
+    return (
+      <NavbarForPhone
+        selfUser={selfUser}
+        className={className}
+        isActiveHeadSpace={isActiveHeadSpace}
+      />
+    );
   return (
-    <>
-      {phoneView}
-      {desktopView}
-    </>
+    <NavbarForDesktop
+      selfUser={selfUser}
+      className={className}
+      isActiveHeadSpace={isActiveHeadSpace}
+    />
   );
 };

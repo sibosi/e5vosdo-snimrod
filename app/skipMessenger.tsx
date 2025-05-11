@@ -64,10 +64,10 @@ export const SkipMessengerModal = ({ isOpen }: { isOpen: boolean }) => {
           megtekintéséhez használja a Google Chrome böngészőt vagy a Safari-t
           (iOS).
         </p>
-        <p className="tegt-xl font-bold text-selfprimary">info.e5vosdo.hu</p>
+        <p className="tegt-xl font-bold text-selfprimary">e5vosdo.hu</p>
         <Button
           onPress={() => {
-            navigator.clipboard.writeText("info.e5vosdo.hu");
+            navigator.clipboard.writeText("e5vosdo.hu");
             redirect(window.location.href);
           }}
         >
@@ -96,12 +96,10 @@ const SkipMessenger: React.FC = () => {
               megtekintéséhez használja a Google Chrome böngészőt vagy a
               Safari-t (iOS).
             </p>
-            <p className="tegt-xl font-bold text-selfprimary">
-              info.e5vosdo.hu
-            </p>
+            <p className="tegt-xl font-bold text-selfprimary">e5vosdo.hu</p>
             <Button
               onPress={() => {
-                navigator.clipboard.writeText("info.e5vosdo.hu");
+                navigator.clipboard.writeText("e5vosdo.hu");
                 redirect(window.location.href);
               }}
             >

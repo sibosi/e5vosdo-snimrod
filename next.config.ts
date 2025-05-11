@@ -1,12 +1,4 @@
-/** @type {import('next').NextConfig} */
-
-/*
-const { execSync } = require("child_process");
-if (true) {
-  const pyOutput = execSync("pip3 install -r requirements.txt", { encoding: "utf-8" });
-  console.log(pyOutput);
-}
-*/
+import type { NextConfig } from "next";
 
 const fs = require("fs");
 const path = require("path");
@@ -17,8 +9,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactProductionProfiling: true,
   images: {
@@ -38,7 +29,9 @@ const nextConfig = {
         protocol: "https",
       },
       {
-        hostname: process.env.NEXT_PUBLIC_SUPABASE_URL.replace("https://", ""),
+        hostname:
+          process.env.NEXT_PUBLIC_SUPABASE_URL?.replace("https://", "") ??
+          "localhost",
         protocol: "https",
       },
     ],
@@ -46,16 +39,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: process.env.IGNORE_BUILD_ERRORS === "true",
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      const podcastsDir = path.join(__dirname, "podcasts");
-
-      // Check if the 'podcasts' directory exists, if not, create it
-      if (!fs.existsSync(podcastsDir)) {
-        fs.mkdirSync(podcastsDir, { recursive: true });
-        console.log("Podcasts directory created.");
-      }
-    }
+  webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/,
       use: ["@svgr/webpack"],
@@ -69,6 +53,7 @@ const nextConfig = {
       bodySizeLimit: 1024 * 1024 * 10, // 10MB
     },
   },
+  allowedDevOrigins: ["http://localhost:3000", "http://127.0.0.1:3000"],
 };
 
 module.exports = withBundleAnalyzer(nextConfig);

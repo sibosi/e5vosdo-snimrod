@@ -14,7 +14,7 @@ const Login = () => {
         value="google"
         size="sm"
         onPress={resetCache}
-        className="w-full rounded-badge bg-selfprimary-300"
+        className="rounded-badge w-full bg-selfprimary-300"
       >
         Bejelentkezés
       </Button>

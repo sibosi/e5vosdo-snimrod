@@ -53,7 +53,7 @@ export const useEvents = (all = false): UseEventsReturn => {
 
   sortedEvents = sortedEvents.filter((event) => checkVisibility(event, all));
 
-  const today = new Date().toLocaleDateString(undefined, {
+  const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "Europe/Budapest",
     year: "numeric",
     month: "2-digit",
@@ -69,7 +69,7 @@ export const useEvents = (all = false): UseEventsReturn => {
   twoWeeksFromNow.setHours(0, 0, 0, 0);
 
   sortedEvents.forEach((event) => {
-    const date = new Date(event.time).toLocaleDateString(undefined, {
+    const date = new Date(event.time).toLocaleDateString("en-CA", {
       timeZone: "Europe/Budapest",
       year: "numeric",
       month: "2-digit",

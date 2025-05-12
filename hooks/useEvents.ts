@@ -53,7 +53,8 @@ export const useEvents = (all = false): UseEventsReturn => {
 
   sortedEvents = sortedEvents.filter((event) => checkVisibility(event, all));
 
-  const today = new Date().toLocaleDateString("hu-HU", {
+  const today = new Date().toLocaleDateString(undefined, {
+    timeZone: "Europe/Budapest",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -68,7 +69,8 @@ export const useEvents = (all = false): UseEventsReturn => {
   twoWeeksFromNow.setHours(0, 0, 0, 0);
 
   sortedEvents.forEach((event) => {
-    const date = new Date(event.time).toLocaleDateString("hu-HU", {
+    const date = new Date(event.time).toLocaleDateString(undefined, {
+      timeZone: "Europe/Budapest",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -76,14 +78,13 @@ export const useEvents = (all = false): UseEventsReturn => {
     const eventDate = new Date(date);
 
     if (eventDate.getTime() < new Date().setHours(0, 0, 0, 0)) {
-      if (archivedEventsByDate[date] == undefined)
-        archivedEventsByDate[date] = [];
+      archivedEventsByDate[date] ??= [];
       archivedEventsByDate[date].push(event);
     } else if (eventDate.getTime() >= twoWeeksFromNow.getTime()) {
-      if (futureEventsByDate[date] == undefined) futureEventsByDate[date] = [];
+      futureEventsByDate[date] ??= [];
       futureEventsByDate[date].push(event);
     } else {
-      if (eventsByDate[date] == undefined) eventsByDate[date] = [];
+      eventsByDate[date] ??= [];
       eventsByDate[date].push(event);
     }
   });

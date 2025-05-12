@@ -6,7 +6,13 @@ import { TimetableWeek } from "@/app/api/timetable/route";
 
 export type DayType = "Hétfő" | "Kedd" | "Szerda" | "Csütörtök" | "Péntek";
 
-export const days: DayType[] = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"];
+export const days: DayType[] = [
+  "Hétfő",
+  "Kedd",
+  "Szerda",
+  "Csütörtök",
+  "Péntek",
+];
 
 export const periodTimes = {
   0: "7:15 - 8:00",
@@ -35,7 +41,11 @@ interface UseTimetableReturn {
   isConfigured: boolean | null;
 }
 
-const fetcher = async ([url, studentCode, password]: [string, string, string]) => {
+const fetcher = async ([url, studentCode, password]: [
+  string,
+  string,
+  string,
+]) => {
   if (!studentCode || !password) {
     throw new Error("Missing credentials");
   }
@@ -43,7 +53,7 @@ const fetcher = async ([url, studentCode, password]: [string, string, string]) =
   const response = await fetch(url, {
     headers: {
       "ejg-code": studentCode,
-      "password": password,
+      password: password,
     },
   });
 
@@ -54,16 +64,16 @@ const fetcher = async ([url, studentCode, password]: [string, string, string]) =
   return response.json();
 };
 
-export const useTimetable = ({ 
+export const useTimetable = ({
   studentCode,
-  initialDay
+  initialDay,
 }: UseTimetableProps = {}): UseTimetableReturn => {
   const [password, setPassword] = useState<string | null>(null);
   const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
-  
+
   const [selectedDay, setSelectedDay] = useState<DayType>(() => {
     if (initialDay) return initialDay;
-    
+
     const today = new Date().getDay() - 1;
     const dayIndex = [-1, 5].includes(today) ? 0 : today;
     return days[dayIndex > 4 ? 0 : dayIndex];
@@ -72,12 +82,12 @@ export const useTimetable = ({
   useEffect(() => {
     const storedPassword = localStorage.getItem("78OM");
     setPassword(storedPassword);
-    
+
     setIsConfigured(!!storedPassword && !!studentCode);
   }, [studentCode]);
 
   const shouldFetch = !!(isConfigured && studentCode && password);
-  
+
   const { data, error } = useSWR<TimetableWeek>(
     shouldFetch ? ["/api/timetable", studentCode, password] : null,
     fetcher,
@@ -86,7 +96,7 @@ export const useTimetable = ({
       revalidateOnReconnect: false,
       refreshInterval: 1000 * 60 * 60,
       dedupingInterval: 1000 * 60 * 5,
-    }
+    },
   );
 
   return {
@@ -97,6 +107,6 @@ export const useTimetable = ({
     setSelectedDay,
     periodTimes,
     days,
-    isConfigured
+    isConfigured,
   };
 };

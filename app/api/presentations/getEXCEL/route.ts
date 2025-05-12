@@ -40,21 +40,23 @@ export async function GET() {
         `Jelentkezések (${type === "email" ? "Email" : "Név"})`,
       );
 
-      const headerRow = presentations.map(p => p.name);
+      const headerRow = presentations.map((p) => p.name);
       sheet.addRow(headerRow).font = { bold: true };
 
-      sheet.addRow(presentations.map(p => `Létszámkorlát: ${p.capacity}`));
+      sheet.addRow(presentations.map((p) => `Létszámkorlát: ${p.capacity}`));
       sheet.addRow(
-        presentations.map(p => `Jelentkezettek száma: ${tableData[p.name].length}`),
+        presentations.map(
+          (p) => `Jelentkezettek száma: ${tableData[p.name].length}`,
+        ),
       );
       sheet.addRow(
         presentations.map(
-          p => `Hátralévő helyek: ${p.capacity - tableData[p.name].length}`,
+          (p) => `Hátralévő helyek: ${p.capacity - tableData[p.name].length}`,
         ),
       );
 
       for (let i = 0; i < longestList; i++) {
-        const row = presentations.map(p => {
+        const row = presentations.map((p) => {
           const email = tableData[p.name][i];
           if (!email) return "";
           return type === "email" ? email : namesByEmail[email] || email;
@@ -62,7 +64,7 @@ export async function GET() {
         sheet.addRow(row);
       }
 
-      sheet.columns.forEach(col => {
+      sheet.columns.forEach((col) => {
         col.width = 30;
       });
     };

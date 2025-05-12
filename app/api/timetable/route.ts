@@ -91,17 +91,13 @@ async function getTimetable(
         .eq(dayIndex + 1)
         .text()
         .trim();
-      const teacherName = teacherRow
-        .find("td")
-        .eq(dayIndex)
-        .text()
-        .trim();
+      const teacherName = teacherRow.find("td").eq(dayIndex).text().trim();
 
       let subject_code = "";
       let subject_name = "";
 
       if (lessonCode && lessonCode !== "-") {
-        const match = (/(\d+)([a-z]+)([a-z0-9]+)/i).exec(lessonCode);
+        const match = /(\d+)([a-z]+)([a-z0-9]+)/i.exec(lessonCode);
         if (match) {
           subject_code = match[2].split("x")[0];
 

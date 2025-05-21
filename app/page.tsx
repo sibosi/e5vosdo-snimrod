@@ -62,7 +62,9 @@ export default async function Home() {
             </Chip>
           }
         >
-          <UnderTestingAlert />
+          <div className="max-w-md">
+            <UnderTestingAlert />
+          </div>
           <HeadTimetable selfUser={selfUser} />
         </Section>
       )}

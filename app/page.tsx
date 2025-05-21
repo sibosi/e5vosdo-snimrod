@@ -37,7 +37,11 @@ const PageHeadContent = ({
   return (
     <Tray>
       <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-        Hiányolsz valamit? Netán a híreket?
+        Hiányolsz valamit? <br />
+        Netán a híreket? <br />
+        <span className="bg-gradient-to-r from-selfprimary-900 to-selfsecondary-300 bg-clip-text text-transparent">
+          Vagy az órarendedet?
+        </span>
         <LoginButton />
       </h1>
     </Tray>
@@ -50,7 +54,7 @@ export default async function Home() {
     <div>
       <PageHeadContent selfUser={selfUser} />
 
-      {gate(selfUser, "tester", "boolean") && (
+      {gate(selfUser, "user", "boolean") && (
         <Section
           title="Órarend"
           dropdownable={true}

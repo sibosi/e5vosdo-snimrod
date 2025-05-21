@@ -83,7 +83,7 @@ const NavbarForPhone = ({
 
       <NavbarContent className="gap-2" justify="end">
         {selfUser?.permissions.includes("tester") && (
-          <Chip variant="shadow" className="bg-selfsecondary-300 text-sm">
+          <Chip className="bg-selfsecondary-300 text-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -129,7 +129,7 @@ const NavbarForDesktop = ({
             <>
               <HelloMessage selfUser={selfUser} size="sm" padding={false} />
               {selfUser?.permissions.includes("tester") && (
-                <Chip variant="shadow" className="bg-selfsecondary-300 text-sm">
+                <Chip className="bg-selfsecondary-300 text-sm">
                   Tesztverzió
                 </Chip>
               )}

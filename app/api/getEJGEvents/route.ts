@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 import { EventType } from "@/db/event";
 import https from "https";
 
-export async function GET(request: Request) {
+export async function GET() {
   let cache: { data: any; timestamp: number } | null =
     (global as any)._ejgCache ?? null;
   const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours

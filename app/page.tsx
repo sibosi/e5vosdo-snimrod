@@ -15,6 +15,7 @@ import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Chip } from "@heroui/react";
+import UnderTestingAlert from "@/components/home/underTestingAlert";
 
 const PageHeadContent = ({
   selfUser,
@@ -36,7 +37,11 @@ const PageHeadContent = ({
   return (
     <Tray>
       <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-        Hiányolsz valamit? Netán a híreket?
+        Hiányolsz valamit? <br />
+        Netán a híreket? <br />
+        <span className="bg-gradient-to-r from-selfprimary-900 to-selfsecondary-300 bg-clip-text text-transparent">
+          Vagy az órarendedet?
+        </span>
         <LoginButton />
       </h1>
     </Tray>
@@ -49,7 +54,7 @@ export default async function Home() {
     <div>
       <PageHeadContent selfUser={selfUser} />
 
-      {gate(selfUser, "tester", "boolean") && (
+      {gate(selfUser, "user", "boolean") && (
         <Section
           title="Órarend"
           dropdownable={true}
@@ -61,6 +66,9 @@ export default async function Home() {
             </Chip>
           }
         >
+          <div className="max-w-md">
+            <UnderTestingAlert />
+          </div>
           <HeadTimetable selfUser={selfUser} />
         </Section>
       )}

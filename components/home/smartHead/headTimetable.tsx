@@ -18,7 +18,6 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
     selectedDay,
     setSelectedDay,
     days,
-    periodTimes,
     isConfigured,
   } = useTimetable({
     studentCode,
@@ -46,19 +45,18 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
   }
 
   const renderLesson = (lesson: TimetableLesson, period: number) => {
-    if (lesson.code === "-") {
-      return null;
-    }
+    if (lesson.code === "-") return null;
 
     return (
       <div className="flex items-center justify-center gap-2 text-sm">
-        <div className="w-12 font-semibold text-selfprimary-800">
-          {periodTimes[period as keyof typeof periodTimes].split(" - ")[0]}
-        </div>
+        <div className="w-2 font-semibold text-selfprimary-800">{period}.</div>
 
         <div className="flex w-full justify-between text-sm">
-          <span className="font-semibold">{lesson.subject_name}</span>
-          <span>{lesson.teacher}</span>
+          <span className="font-semibold">
+            {lesson.subject_name} &nbsp;
+            <span className="info">({lesson.teacher})</span>
+          </span>
+          <span>{lesson.room}</span>
         </div>
       </div>
     );

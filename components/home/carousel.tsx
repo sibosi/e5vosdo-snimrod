@@ -33,7 +33,14 @@ async function fetchCarouselData() {
     headers: { module: "event" },
   });
   const data = (await resp.json()) as EventType[];
-  return data.sort(
+  // filter out the events that are at least 24 hours old
+  const now = new Date();
+  const filteredData = data.filter((event) => {
+    const eventDate = new Date(event.time);
+    const diff = eventDate.getTime() - now.getTime();
+    return diff > 0;
+  });
+  return filteredData.sort(
     (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
-import { Alert, Input, Link, RadioGroup, Radio, InputOtp } from "@heroui/react";
+import { Input, Link, RadioGroup, Radio, InputOtp } from "@heroui/react";
 import saveSettings, { SettingsProps } from "./saveSettings";
+import { Alert } from "@/components/home/alert";
 
 const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
@@ -59,12 +60,21 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
   return (
     <div>
       {studentCode === "" && (
-        <Alert className="mt-2 border-selfsecondary-400 bg-selfsecondary-200">
+        <Alert className="mt-2 border-selfsecondary-300 bg-selfsecondary-100">
           Az EJG kódod még nincs megadva. Az EJG kód nélkül nem tudod használni
           az alkalmazás számos funkcióját, például az órarended megtekintését és
           a beállításaid módosítását.
         </Alert>
       )}
+      <Alert
+        icon={false}
+        className="mt-2 border-selfsecondary-300 bg-selfsecondary-100"
+      >
+        Az OM azonosító a diákigazolványodon található személyes adat.
+        Adatvédelmi okokból ezt az adatot kizárólag az eszközödön tároljuk, nem
+        fiókhoz kötött. Amennyiben egy mások eszközön jelentkezel be, azon újra
+        meg kell adnod ezt az adatot.
+      </Alert>
       <table className="table gap-y-2">
         <tbody>
           <tr>

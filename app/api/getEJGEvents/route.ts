@@ -5,6 +5,28 @@ import { EventType } from "@/db/event";
 import https from "https";
 
 export async function GET() {
+  let cache: { data: any; timestamp: number } | null =
+    (global as any)._ejgCache ?? null;
+  const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours
+
+  const now = Date.now();
+  if (cache && now - cache.timestamp < CACHE_DURATION) {
+    return NextResponse.json(cache.data);
+  }
+
+  const response = await updater();
+
+  if (response.status === 200) {
+    const data = await response.json();
+    cache = { data, timestamp: now };
+    (global as any)._ejgCache = cache;
+    return NextResponse.json(data);
+  } else {
+    return response;
+  }
+}
+
+async function updater() {
   try {
     // Create an HTTPS agent disabling certificate verification
     const httpsAgent = new https.Agent({

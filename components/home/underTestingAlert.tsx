@@ -8,8 +8,8 @@ const UnderTestingAlert = () => {
       icon={false}
       className="border-selfsecondary-300 bg-selfsecondary-100"
     >
-      Figyelem! Ez a funkció még fejlesztés alatt áll, és nem minden esetben
-      működik megfelelően. Kérjük, hogy tapasztalataidat oszd meg velünk a{" "}
+      Figyelem! Ez a funkció még tesztelés alatt áll. Kérjük, hogy
+      tapasztalataidat oszd meg velünk a{" "}
       <a
         href={siteConfig.links.feedback}
         target="_blank"
@@ -18,7 +18,7 @@ const UnderTestingAlert = () => {
       >
         visszajelzések
       </a>{" "}
-      oldalon, hogy javíthassuk a felhasználói élményt.
+      oldalon. Köszönjük!
     </Alert>
   );
 };

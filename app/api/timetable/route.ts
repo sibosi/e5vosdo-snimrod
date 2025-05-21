@@ -1,10 +1,15 @@
+import { getAuth } from "@/db/dbreq";
+import { gate } from "@/db/permissions";
+import { extendTimetableWeekWithRooms } from "@/db/timetableRooms";
 import { load } from "cheerio";
 
 export interface TimetableLesson {
   code: string;
   teacher: string;
+  slot: string;
   subject_code: string;
   subject_name: string;
+  room?: string;
 }
 
 export interface TimetableDay {
@@ -30,6 +35,10 @@ async function getTimetable(
   studentCode: string,
   password: string,
 ): Promise<TimetableWeek | null> {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("User not authenticated");
+  gate(selfUser, "user");
+
   const passwordOM = password + studentCode.slice(-3);
 
   const response = await fetch(
@@ -124,6 +133,7 @@ async function getTimetable(
       }
 
       timetable[day][period as keyof TimetableDay] = {
+        slot: day[0].toLowerCase() + String(period),
         code: lessonCode || "-",
         teacher: teacherName || "-",
         subject_code: subject_code || "-",
@@ -131,16 +141,18 @@ async function getTimetable(
       };
     });
   }
-  return timetable;
+
+  const extendedTimetable = await extendTimetableWeekWithRooms(
+    selfUser,
+    timetable,
+  );
+
+  return extendedTimetable;
 }
 
 export async function GET(request: Request) {
   const studentCode = request.headers.get("ejg-code");
   const password = request.headers.get("password");
-
-  const headers = request.headers;
-  const headerEntries = Array.from(headers.entries());
-  console.log("Response Headers:", headerEntries);
 
   if (!studentCode || !password) {
     return new Response(

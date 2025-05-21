@@ -15,6 +15,7 @@ import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Chip } from "@heroui/react";
+import UnderTestingAlert from "@/components/home/underTestingAlert";
 
 const PageHeadContent = ({
   selfUser,
@@ -61,6 +62,7 @@ export default async function Home() {
             </Chip>
           }
         >
+          <UnderTestingAlert />
           <HeadTimetable selfUser={selfUser} />
         </Section>
       )}

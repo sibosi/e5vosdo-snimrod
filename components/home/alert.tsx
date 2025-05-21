@@ -25,7 +25,7 @@ export const Alert = ({
       {icon && (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="inline h-6 w-6"
+          className="inline h-5 w-5"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -41,7 +41,7 @@ export const Alert = ({
           />
         </svg>
       )}
-      <div className="inline p-2">{children}</div>
+      <div className="inline">{children}</div>
     </div>
   );
 };

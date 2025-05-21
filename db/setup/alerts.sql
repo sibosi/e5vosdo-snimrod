@@ -15,7 +15,7 @@ VALUES (
     ),
     (
         "A 8-11. évfolyamosok jelentkezési felülete: <a href='https://e5vosdo.hu/jelentkezes' className='text-selfsecondary-700'>e5vosdo.hu/jelentkezes</a>",
-        "bg-selfprimary-300 border-selfprimary-400 mx-5 text-md hidden",
+        "bg-selfprimary-100 border-selfprimary-300 mx-5 text-md hidden",
         1,
         NULL
     );

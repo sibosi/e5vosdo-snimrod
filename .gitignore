@@ -55,3 +55,4 @@ public/workbox-07a7b4f2.js
 /tests/
 .service-account-key.json
 tmp.sql
+*.ignorethis

@@ -207,10 +207,10 @@ export async function getAdminUsersEmail() {
   return emails;
 }
 
-export async function updateUser(user: User | undefined) {
+export async function updateUser(user: User | undefined, isLogin = false) {
   if (!user) return;
 
-  addLog("updateUser", user.email);
+  if (!isLogin) addLog("updateUser", user.email);
   const date = new Date().toJSON();
 
   const query = `

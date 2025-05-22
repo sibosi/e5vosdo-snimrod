@@ -5,12 +5,13 @@ import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/navbar/navbar";
 import { Link } from "@heroui/react";
+import { headers } from "next/headers";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { auth } from "@/auth";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorker";
-import { getAuth, updateUser, User } from "@/db/dbreq";
+import { addLog, getAuth, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/cookie";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
@@ -46,9 +47,11 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   if (session?.user)
-    updateUser(session?.user as User).catch((e) => console.log(e));
+    updateUser(session?.user as User, true).catch((e) => console.log(e));
 
   const selfUser = await getAuth(session?.user?.email ?? undefined);
+
+  logLogin(session?.user?.email);
 
   return (
     <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
@@ -137,4 +140,15 @@ export default async function RootLayout({
       </body>
     </html>
   );
+}
+
+async function logLogin(email: string | undefined | null) {
+  if (email) addLog("login", email);
+  else
+    addLog(
+      "login",
+      (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? // proxy mögül
+        (await headers()).get("x-real-ip") ??
+        "unknown ip",
+    );
 }

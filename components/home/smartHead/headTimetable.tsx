@@ -5,11 +5,50 @@ import { TimetableLesson } from "@/app/api/timetable/route";
 import { Alert } from "@/components/home/alert";
 import Link from "next/link";
 import { useTimetable } from "@/hooks/useTimetable";
+import {
+  TeacherChangesByDate,
+  useSubstitutions,
+} from "@/hooks/useSubstitutions";
+
+function extendLessonWithSubstitutions(
+  lesson: TimetableLesson,
+  substitutions: TeacherChangesByDate,
+): TimetableLesson {
+  function getSlot0ByDate(date: string) {
+    const weekday: "h" | "k" | "s" | "c" | "p" = new Date(date)
+      .toLocaleDateString("hu-HU", {
+        weekday: "narrow",
+      })
+      .toLocaleLowerCase()[0] as any;
+    return weekday;
+  }
+
+  const allChanges = Object.values(substitutions).flatMap((changes) =>
+    changes.flatMap((change) => change.changes),
+  );
+
+  const lessonChanges = allChanges.filter(
+    (change) =>
+      lesson.slot.startsWith(getSlot0ByDate(change.date)) &&
+      lesson.slot[1] === change.period &&
+      lesson.code === change.group,
+  );
+  if (lessonChanges.length !== 1) return lesson;
+  lesson.isSubstitution = true;
+  console.log(JSON.stringify(lessonChanges[0]));
+  if (lessonChanges[0].replacementTeacher)
+    lesson.substitutionTeacher = lessonChanges[0].replacementTeacher;
+  else lesson.substitutionTeacher = lessonChanges[0].comment;
+
+  return lesson;
+}
 
 const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
   const { selfUser } = props;
   if (!selfUser) return null;
   const studentCode = selfUser.EJG_code;
+
+  const { tableData: substitutions, isLoaded } = useSubstitutions();
 
   const {
     timetable,
@@ -23,7 +62,7 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
     studentCode,
   });
 
-  if (isConfigured === null) {
+  if (isConfigured === null || !isLoaded) {
     return (
       <div className="flex h-40 items-center justify-center">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-selfprimary"></div>
@@ -54,7 +93,13 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
         <div className="flex w-full justify-between text-sm">
           <span className="font-semibold">
             {lesson.subject_name} &nbsp;
-            <span className="info">({lesson.teacher})</span>
+            {lesson.isSubstitution ? (
+              <span className="text-selfsecondary-500">
+                ({lesson.substitutionTeacher})
+              </span>
+            ) : (
+              <span className="info">({lesson.teacher})</span>
+            )}
           </span>
           <span>{lesson.room}</span>
         </div>
@@ -96,10 +141,13 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
         <div className="space-y-2 rounded-lg bg-selfprimary-100 p-2">
           {timetable[selectedDay] &&
             Object.entries(timetable[selectedDay]).map(
-              ([period, lesson]) =>
+              ([period, lesson]: [string, TimetableLesson]) =>
                 lesson.code !== "-" && (
                   <div className="flex-grow" key={period}>
-                    {renderLesson(lesson, parseInt(period))}
+                    {renderLesson(
+                      extendLessonWithSubstitutions(lesson, substitutions),
+                      parseInt(period),
+                    )}
                   </div>
                 ),
             )}

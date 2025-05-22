@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Dropdown,
   DropdownTrigger,
@@ -14,72 +14,15 @@ import {
 import { Change, TeacherChange } from "@/app/api/route";
 import Image from "next/image";
 import teacherName from "@/app/api/teacherName";
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch data");
-  return res.json();
-};
-
-interface TeacherChangesByDate {
-  [date: string]: TeacherChange[];
-}
-
-function getTeacherChangesByDate(changesByTeacher: TeacherChange[]) {
-  const changesByDate: TeacherChangesByDate = {};
-  let teachersByDate: { [date: string]: string[] } = {};
-
-  changesByTeacher.forEach((teacher) => {
-    teacher.changes.forEach((change) => {
-      if (!changesByDate[change.date]) {
-        changesByDate[change.date] = [];
-        teachersByDate[change.date] = [];
-      }
-      if (!teachersByDate[change.date].includes(teacher.name)) {
-        changesByDate[change.date].push({
-          name: teacher.name,
-          photoUrl: teacher.photoUrl,
-          subjects: teacher.subjects,
-          changes: [],
-        });
-        teachersByDate[change.date].push(teacher.name);
-      }
-
-      changesByDate[change.date].forEach((teacherChange) => {
-        if (teacherChange.name === teacher.name)
-          teacherChange.changes.push(change);
-      });
-    });
-  });
-
-  const sortedKeys = Object.keys(changesByDate).sort((a, b) =>
-    a.localeCompare(b),
-  );
-  const sortedChangesByDate: TeacherChangesByDate = {};
-  sortedKeys.forEach((key) => {
-    sortedChangesByDate[key] = changesByDate[key];
-  });
-
-  return sortedChangesByDate;
-}
+import { useSubstitutions } from "@/hooks/useSubstitutions";
 
 export const QuickTeachers = ({
   isNewView = false,
 }: {
   isNewView?: boolean;
 }) => {
-  const [tableData, setTableData] = useState<TeacherChangesByDate>({});
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { tableData, isLoaded } = useSubstitutions();
   const [selectedEvent, setSelectedEvent] = useState<Change | null>(null);
-
-  useEffect(() => {
-    fetcher("/api/")
-      .then((data: TeacherChange[]) => {
-        setTableData(getTeacherChangesByDate(data));
-        setIsLoaded(true);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
 
   const oldViewLayout = (teacher: TeacherChange, rowIndex: number) => (
     <DropdownTrigger>
@@ -188,7 +131,7 @@ export const QuickTeachers = ({
                                   "Szombat",
                                 ][new Date(event.date).getDay()] +
                                 " " +
-                                event.hour +
+                                event.period +
                                 ". ó"}
                               &nbsp;
                               {" 📍" +
@@ -251,7 +194,7 @@ export const QuickTeachers = ({
                         "Szombat",
                       ][new Date(selectedEvent.date).getDay()] +
                       " " +
-                      selectedEvent.hour +
+                      selectedEvent.period +
                       ". ó"}
                     &nbsp;
                     {" 📍" +

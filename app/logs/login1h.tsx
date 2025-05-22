@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 // Szűrés egy adott órában történt bejelentkezésekre
 const filterLogsLastHour = (logs: Log[], hour: number): Log[] => {
   return logs.filter(
-    (log) => log.action === "updateUser" && dayjs(log.time).hour() === hour,
+    (log) => log.action === "login" && dayjs(log.time).hour() === hour,
   );
 };
 

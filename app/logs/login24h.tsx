@@ -8,7 +8,7 @@ const filterLogsLast24Hours = (logs: Log[]): Log[] => {
   const now = dayjs();
   return logs.filter(
     (log) =>
-      log.action === "updateUser" &&
+      log.action === "login" &&
       dayjs(log.time).isAfter(now.subtract(24, "hour")),
   );
 };

@@ -12,8 +12,7 @@ const filterLogsBetweenDates = (
   end: Dayjs,
 ): Log[] => {
   return logs.filter(
-    (log) =>
-      log.action === "updateUser" && dayjs(log.time).isBetween(start, end),
+    (log) => log.action === "login" && dayjs(log.time).isBetween(start, end),
   );
 };
 

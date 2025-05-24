@@ -2,25 +2,22 @@
 import { Input } from "@heroui/react";
 import { useState, useRef, useEffect } from "react";
 
-export default function SearchUser({
-  usersNameByEmail,
-  onSelectEmail,
-  label,
-  placeholder,
-  size,
-}: Readonly<{
-  usersNameByEmail: Record<string, string>;
+type SearchUserProps = {
   onSelectEmail: (email: string) => void;
-  label?: string;
-  placeholder?: string;
-  size?: "sm" | "md" | "lg";
-}>) {
+} & React.ComponentProps<typeof Input>;
+
+export default function SearchUser({
+  onSelectEmail,
+  ...props
+}: Readonly<SearchUserProps>) {
+  const [usersNameByEmail, setUsersNameByEmail] =
+    useState<Record<string, string>>();
   const [searchValue, setSearchValue] = useState("");
-  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const [filteredEmails, setFilteredEmails] = useState<string[]>([]);
   const optionsRef = useRef<HTMLButtonElement[]>([]);
 
   const filter = (searchValue: string) => {
+    if (!usersNameByEmail) return [];
     const elements = Object.keys(usersNameByEmail).filter((email) =>
       searchValue
         .toLocaleLowerCase()
@@ -30,60 +27,77 @@ export default function SearchUser({
         ),
     );
 
-    return elements.slice(0, 6);
+    return [...elements.slice(0, 6), searchValue];
   };
 
   useEffect(() => {
+    fetch("/api/getAllUsersNameByEmail", {
+      method: "GET",
+    }).then((res) => {
+      if (res.ok) {
+        res.json().then((data: Record<string, string>) => {
+          setUsersNameByEmail(data);
+        });
+      } else {
+        alert("Hiba a felhasználók lekérdezése közben");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (usersNameByEmail === undefined) return;
     const results = filter(searchValue);
     setFilteredEmails(results);
-    setHighlightedIndex(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLElement> = (
+    event: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>,
+  ) => {
     if (filteredEmails.length === 0) return;
+
+    const currentIndex = optionsRef.current.findIndex(
+      (el) => el === document.activeElement,
+    );
 
     switch (event.key) {
       case "ArrowDown":
-        setHighlightedIndex((prevIndex) =>
-          prevIndex === null || prevIndex === filteredEmails.length - 1
-            ? 0
-            : prevIndex + 1,
-        );
+        event.preventDefault();
+        optionsRef.current[
+          currentIndex === -1 ? 0 : (currentIndex + 1) % filteredEmails.length
+        ]?.focus();
         break;
       case "ArrowUp":
-        setHighlightedIndex((prevIndex) =>
-          prevIndex === null || prevIndex === 0
+        event.preventDefault();
+        optionsRef.current[
+          currentIndex === -1
             ? filteredEmails.length - 1
-            : prevIndex - 1,
-        );
+            : (currentIndex - 1 + filteredEmails.length) % filteredEmails.length
+        ]?.focus();
         break;
       case "Enter":
-        if (highlightedIndex !== null) {
-          onSelectEmail(filteredEmails[highlightedIndex]);
+        event.preventDefault();
+        if (currentIndex === -1 && filteredEmails.length > 0) {
+          onSelectEmail(filteredEmails[0]);
           setSearchValue("");
         }
-        break;
-      case "Escape":
-        setHighlightedIndex(null);
-        break;
-      default:
-        break;
     }
   };
 
+  if (usersNameByEmail === undefined)
+    return <Input {...props} placeholder="Betöltés..." disabled />;
+
   return (
-    <>
+    <div className="relative w-full">
       <Input
-        name={label ?? "Diák keresése"}
-        placeholder={placeholder ?? "Diák neve"}
-        size={size}
+        {...props}
+        name={props.name ?? "Diák keresése"}
+        size={props.size}
         value={searchValue}
         onChange={(event) => setSearchValue(event.target.value)}
         onKeyDown={handleKeyDown}
       />
       {searchValue.length > 1 && (
-        <div className="w-unit-80 absolute z-50 mt-8 rounded-md border border-selfprimary-200 bg-selfprimary-bg p-1 text-selfprimary-900 shadow-md">
+        <div className="absolute z-50 rounded-md bg-surface-20 py-1 text-selfprimary-900 shadow-lg">
           {filteredEmails.map((email, index) => (
             <button
               type="button"
@@ -95,16 +109,19 @@ export default function SearchUser({
               ref={(el) => {
                 optionsRef.current[index] = el!;
               }}
-              className={`block w-full rounded-md px-1 py-0.5 text-left hover:bg-selfprimary-200 ${
-                highlightedIndex === index ? "bg-selfprimary-200" : ""
-              }`}
+              className="block w-full rounded-md px-2 py-1 text-left hover:bg-selfprimary-100 focus:bg-selfprimary-100"
+              onKeyDown={handleKeyDown}
             >
-              <p className="font-bold">{usersNameByEmail[email]}</p>
-              <p className="text-xs font-thin">{email}</p>
+              <p className="font-semibold">
+                {usersNameByEmail[email] ?? "Nem személy kiválasztása"}
+              </p>
+              <p className="text-xs font-extralight text-surface-700">
+                {email}
+              </p>
             </button>
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

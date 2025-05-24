@@ -337,7 +337,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                       Permissions: {(selectedUser.permissions ?? []).join(" ")}
                     </p>
                     <div className="flex gap-2">
-                      {["student", "admin", "tester"].map((permission) =>
+                      {["admin", "tester"].map((permission) =>
                         selectedUser.permissions.includes(permission) ? (
                           <Button
                             key={permission + " enable"}

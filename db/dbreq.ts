@@ -173,23 +173,6 @@ export async function getUsersEmail() {
   return emails;
 }
 
-export async function getStudentUsers() {
-  return await dbreq(
-    `SELECT * FROM users WHERE JSON_CONTAINS(permissions, '"student"', '$')`,
-  );
-}
-
-export async function getStudentUsersEmail() {
-  const response = (await dbreq(
-    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"student"', '$')`,
-  )) as { email: string }[];
-  let emails: string[] = [];
-  (response as unknown as []).map((user: { email: string }) =>
-    emails.push(user.email),
-  );
-  return emails;
-}
-
 export async function getAdminUsers() {
   return await dbreq(
     `SELECT * FROM users WHERE JSON_CONTAINS(permissions, '"admin"', '$')`,
@@ -673,14 +656,12 @@ export async function getAlerts() {
 
 export const apireq = {
   getUsers: { req: getUsers, perm: ["admin"] },
-  getUsersName: { req: getUsersName, perm: ["student"] },
+  getUsersName: { req: getUsersName, perm: ["user"] },
   getUser: { req: getUser, perm: [] },
   getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },
   getAuth: { req: getAuth, perm: ["user"] },
   hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
-  getStudentUsers: { req: getStudentUsers, perm: ["admin", "tester"] },
-  getStudentUsersEmail: { req: getStudentUsersEmail, perm: [] },
   getAdminUsers: { req: getAdminUsers, perm: ["admin", "tester"] },
   getAdminUsersEmail: { req: getAdminUsersEmail, perm: ["admin", "tester"] },
   updateUser: { req: updateUser, perm: ["admin"] },
@@ -714,7 +695,6 @@ export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getAuth") return await getAuth();
   if (req === "getAllUsersNameByEmail") return await getAllUsersNameByEmail();
   if (req === "getUsersName") return await getUsersName();
-  if (req === "getStudentUsers") return await getStudentUsers();
   if (req === "getAdminUsers") return await getAdminUsers();
   if (req === "getUsersEmail") return await getUsersEmail();
   if (req === "getAdminUsersEmail") return await getAdminUsersEmail();

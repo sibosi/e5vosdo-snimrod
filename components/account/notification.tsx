@@ -2,6 +2,7 @@
 
 import { Button, Input } from "@heroui/react";
 import React, { useState } from "react";
+import SearchUser from "../searchUser";
 
 const NewNotification = () => {
   const [notificationTitle, setNotificationTitle] = React.useState<string>();
@@ -9,30 +10,7 @@ const NewNotification = () => {
   const [notificationAddressees, setNotificationAddressees] = useState<
     string[]
   >([]);
-  const [searchName, setSearchName] = useState("");
-  const [allUsers, setAllUsers] = useState<string[]>([]);
   const [options, setOptions] = useState<string[]>([]);
-
-  async function search(searchName: string) {
-    if (allUsers.length == 0) {
-      const response = await fetch("/api/getUsersName");
-      const data: string[] = await response.json();
-      setAllUsers(data.sort());
-    }
-
-    if (searchName.length < 2) {
-      setOptions([]);
-      return;
-    }
-
-    let filteredUsers: string[] = [];
-    allUsers.map((name: string) => {
-      if (name.toLocaleLowerCase().includes(searchName.toLowerCase())) {
-        filteredUsers.push(name);
-      }
-    });
-    setOptions(filteredUsers);
-  }
 
   async function sendNotification(
     setTitle: (data: string) => void,
@@ -77,19 +55,16 @@ const NewNotification = () => {
           onValueChange={setNotificationMessage}
           color={notificationMessage == "" ? "danger" : "default"}
         />
-        <Input
+
+        <SearchUser
           size="md"
           type="text"
           label="Címzett"
-          value={searchName}
-          onValueChange={(name) => {
-            setSearchName(name), search(name);
+          onSelectEmail={(name) => {
+            setNotificationAddressees([...notificationAddressees, name]);
+            setOptions([]);
           }}
-          placeholder={
-            notificationAddressees.length > 0
-              ? notificationAddressees.length + " címzett hozzáadva"
-              : "Kezdj el gépelni egy nevet..."
-          }
+          className="w-full"
         />
       </div>
       <div className="mb-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -106,22 +81,6 @@ const NewNotification = () => {
             {name}
           </Button>
         ))}
-        {searchName.length > 0 && (
-          <Button
-            color="default"
-            variant="flat"
-            onPress={() => {
-              setNotificationAddressees([
-                ...notificationAddressees,
-                searchName,
-              ]);
-              setSearchName("");
-              setOptions([]);
-            }}
-          >
-            {searchName}
-          </Button>
-        )}
         {options.map((name, index) =>
           notificationAddressees.includes(name) ? null : (
             <Button
@@ -129,7 +88,6 @@ const NewNotification = () => {
               color="default"
               onPress={() => {
                 setNotificationAddressees([...notificationAddressees, name]);
-                setSearchName("");
                 setOptions([]);
               }}
             >

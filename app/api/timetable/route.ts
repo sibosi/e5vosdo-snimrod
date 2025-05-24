@@ -10,6 +10,8 @@ export interface TimetableLesson {
   subject_code: string;
   subject_name: string;
   room?: string;
+  isSubstitution?: boolean;
+  substitutionTeacher?: string;
 }
 
 export interface TimetableDay {

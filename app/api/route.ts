@@ -16,7 +16,7 @@ export interface Change {
   replacementTeacherPhotoUrl: string;
   comment: string;
   day: string;
-  hour: string;
+  period: string;
   room: string;
 }
 
@@ -140,7 +140,7 @@ async function update() {
           TEACHER_AVATAR;
         const comment = event[6];
         const day = event[7];
-        const hour = event[8];
+        const period = event[8];
         const room = event[9];
 
         return {
@@ -153,7 +153,7 @@ async function update() {
           replacementTeacherPhotoUrl,
           comment,
           day,
-          hour,
+          period,
           room,
         };
       });

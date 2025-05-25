@@ -117,36 +117,24 @@ export const PageNav = () => {
     setCurrentPage(tabs.find((page) => page.route === pathname));
   }, [pathname]);
 
-  const getTabRadius = (index: number, isActive: boolean) => {
-    if (!isActive) return "";
-    if (index === 0) return "rounded-r-3xl rounded-l-lg";
-    if (index === tabs.length - 1) return "rounded-l-3xl rounded-r-lg";
-    return "rounded-3xl";
-  };
-
   return (
-    <div className="fixed bottom-0 z-50 h-14 w-[90%] items-center md:hidden">
-      <div className="myglass h-12 rounded-lg border-1 border-gray-500">
-        <div
-          className={`grid h-full max-w-lg grid-cols-${tabs.length} mx-auto font-medium`}
-        >
-          {tabs.map((page, index) => (
-            <Link
-              key={index}
-              href={page.route}
-              className={`group inline-flex flex-col items-center justify-center px-5 ${
-                currentPage === page
-                  ? "bg-selfprimary-100 text-selfprimary-700 " +
-                    getTabRadius(index, true)
-                  : "text-foreground"
-              }`}
-            >
-              <div className="text-xl hover:text-selfprimary-700">
-                {page.icon}
-              </div>
-            </Link>
-          ))}
-        </div>
+    <div className="myglass fixed bottom-6 z-50 h-16 w-auto items-center rounded-full p-2 md:hidden">
+      <div className="mx-auto flex h-full max-w-lg items-center justify-around gap-3.5 font-medium">
+        {tabs.map((page, index) => (
+          <Link
+            key={index}
+            href={page.route}
+            className={`group inline-flex flex-col items-center justify-center p-3.5 ${
+              currentPage === page
+                ? "rounded-full bg-selfprimary-100 text-selfprimary-700"
+                : "text-foreground"
+            }`}
+          >
+            <div className="text-xl hover:text-selfprimary-700">
+              {page.icon}
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

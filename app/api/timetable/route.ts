@@ -127,7 +127,8 @@ async function getTimetable(
             dig: "Digitális kultúra",
             kem: "Kémia",
             tor: "Történelem",
-            rvk: "Dráma és színház",
+            rvk: "Rajz-vizuális kultúra",
+            api: "Állampolgári ismeretek",
           };
 
           subject_name = subjectMapping[subject_code] || subject_code;

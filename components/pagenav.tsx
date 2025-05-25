@@ -118,7 +118,7 @@ export const PageNav = () => {
   }, [pathname]);
 
   return (
-    <div className="myglass fixed bottom-6 z-50 h-16 w-auto items-center rounded-full p-2 md:hidden">
+    <div className="myglass fixed bottom-6 z-50 w-auto items-center rounded-full p-0.5 md:hidden">
       <div className="mx-auto flex h-full max-w-lg items-center justify-around gap-3.5 font-medium">
         {tabs.map((page, index) => (
           <Link

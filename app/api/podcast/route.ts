@@ -10,15 +10,12 @@ export async function GET() {
     const response = await axios.get(RSS_FEED_URL);
     const xmlData = response.data;
 
-    // OK console.log("Fetched XML data:", xmlData);
-
     const result = await parseStringPromise(xmlData, {
       explicitArray: false,
       mergeAttrs: true,
     });
 
     const channel = result.rss.channel;
-    console.log("Parsed channel data:", channel);
 
     const podcastData: PodcastChannel = {
       title: channel?.title,

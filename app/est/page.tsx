@@ -6,9 +6,10 @@ const E5PodcastPage = async () => {
   const _ = await headers();
 
   const podcastData = await (await getPodcastData()).json();
-  const lastFetched = new Date().toISOString();
 
-  return <Page podcastData={podcastData} lastFetched={lastFetched} />;
+  console.log("E5PodcastPage podcastData", podcastData);
+
+  return <Page podcastData={podcastData} />;
 };
 
 export default E5PodcastPage;

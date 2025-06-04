@@ -10,28 +10,27 @@ export async function GET() {
     const response = await axios.get(RSS_FEED_URL);
     const xmlData = response.data;
 
+    // OK console.log("Fetched XML data:", xmlData);
+
     const result = await parseStringPromise(xmlData, {
       explicitArray: false,
       mergeAttrs: true,
     });
 
     const channel = result.rss.channel;
+    console.log("Parsed channel data:", channel);
 
     const podcastData: PodcastChannel = {
-      title: channel.title,
-      description: channel.description,
-      link: channel.link,
-      image: {
-        url: channel.image.url,
-        title: channel.image.title,
-        link: channel.image.link,
-      },
-      author: channel.author,
-      copyright: channel.copyright,
-      language: channel.language,
-      lastBuildDate: channel.lastBuildDate,
-      items: Array.isArray(channel.item)
-        ? channel.item.map((item: any) => ({
+      title: channel?.title,
+      description: channel?.description,
+      link: channel?.link,
+      image: channel?.["itunes:image"]?.href || "",
+      author: channel?.author,
+      copyright: channel?.copyright,
+      language: channel?.language,
+      lastBuildDate: channel?.lastBuildDate,
+      items: Array.isArray(channel?.item)
+        ? channel?.item.map((item: any) => ({
             title: item.title,
             description: item.description,
             link: item.link,
@@ -53,24 +52,24 @@ export async function GET() {
           }))
         : [
             {
-              title: channel.item.title,
-              description: channel.item.description,
-              link: channel.item.link,
-              guid: channel.item.guid._ || channel.item.guid,
-              creator: channel.item["dc:creator"],
-              pubDate: channel.item.pubDate,
+              title: channel?.item.title,
+              description: channel?.item.description,
+              link: channel?.item.link,
+              guid: channel?.item.guid._ || channel?.item.guid,
+              creator: channel?.item["dc:creator"],
+              pubDate: channel?.item.pubDate,
               enclosure: {
-                url: channel.item.enclosure.url,
-                length: channel.item.enclosure.length,
-                type: channel.item.enclosure.type,
+                url: channel?.item.enclosure.url,
+                length: channel?.item.enclosure.length,
+                type: channel?.item.enclosure.type,
               },
-              summary: channel.item["itunes:summary"],
-              explicit: channel.item["itunes:explicit"],
-              duration: channel.item["itunes:duration"],
-              image: channel.item["itunes:image"]?.href || "",
-              season: channel.item["itunes:season"],
-              episode: channel.item["itunes:episode"],
-              episodeType: channel.item["itunes:episodeType"],
+              summary: channel?.item["itunes:summary"],
+              explicit: channel?.item["itunes:explicit"],
+              duration: channel?.item["itunes:duration"],
+              image: channel?.item["itunes:image"]?.href || "",
+              season: channel?.item["itunes:season"],
+              episode: channel?.item["itunes:episode"],
+              episodeType: channel?.item["itunes:episodeType"],
             },
           ],
     };

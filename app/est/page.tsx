@@ -7,8 +7,6 @@ const E5PodcastPage = async () => {
 
   const podcastData = await (await getPodcastData()).json();
 
-  console.log("E5PodcastPage podcastData", podcastData);
-
   return <Page podcastData={podcastData} />;
 };
 

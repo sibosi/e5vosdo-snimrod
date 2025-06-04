@@ -4,15 +4,11 @@ import Image from "next/image";
 import { PodcastChannel } from "@/types/podcast";
 import PodcastPlayer from "./player";
 
-interface PodcastProps {
-  podcastData: PodcastChannel;
-  lastFetched: string;
-}
-
 export default function PodcastPage({
   podcastData,
-  lastFetched,
-}: Readonly<PodcastProps>) {
+}: Readonly<{
+  podcastData: PodcastChannel;
+}>) {
   const [activeAudio, setActiveAudio] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState<string | null>(null);
 
@@ -33,7 +29,7 @@ export default function PodcastPage({
       <header className="border-b border-foreground-200 pb-8 text-left">
         <div className="mb-2 flex flex-col items-center gap-8">
           <Image
-            src={podcastData.image.url}
+            src={podcastData?.image}
             alt={podcastData.title}
             width={128}
             height={128}
@@ -70,7 +66,7 @@ export default function PodcastPage({
           Összes epizód
         </h2>
         <div className="space-y-4">
-          {podcastData.items.map((episode) => (
+          {podcastData.items?.map((episode) => (
             <div
               key={episode.guid}
               className="flex flex-col overflow-hidden border-b transition-transform duration-300"
@@ -78,7 +74,7 @@ export default function PodcastPage({
               <div className="flex items-center gap-2">
                 <div className="relative min-w-fit">
                   <Image
-                    src={episode.image || podcastData.image.url}
+                    src={episode.image || podcastData.image}
                     alt={episode.title}
                     width={80}
                     height={80}

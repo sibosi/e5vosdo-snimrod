@@ -1,7 +1,0 @@
-.bgcolor {
-  background-color: hsl(
-    var(--nextui-foreground) /
-      var(--nextui-foreground-opacity, var(--tw-text-opacity))
-  );
-  --tw-bg-opacity: 0.8;
-}

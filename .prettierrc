@@ -1,4 +1,0 @@
-{
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "purge": ["./**/*.{tsx,ts,jsx,js}"]
-}

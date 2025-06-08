@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, useColorScheme } from 'react-native';
 import useDynamicColors from './hooks/useDynamicColors';
 
 export default function MainScreen() {
@@ -7,13 +7,15 @@ export default function MainScreen() {
 
   const colorEntries = Object.entries(colors);
 
+  const scheme = useColorScheme();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>All Dynamic Colors</Text>
+      <Text style={styles.title}>All Dynamic Colors {scheme}</Text>
       <FlatList
         data={colorEntries}
         keyExtractor={([name]) => name}
-        numColumns={2}
+        numColumns={3}
         renderItem={({ item }) => {
           const [name, value] = item;
           return (

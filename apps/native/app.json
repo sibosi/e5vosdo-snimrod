@@ -5,9 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "experiments.reactCanary": true,
+
     "expo": {
       "name": "e5vosdo-snimrod",
       "slug": "e5vosdo-snimrod",

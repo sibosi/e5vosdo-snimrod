@@ -7,6 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "experiments.reactCanary": true,
     "expo": {
       "name": "e5vosdo-snimrod",
       "slug": "e5vosdo-snimrod",

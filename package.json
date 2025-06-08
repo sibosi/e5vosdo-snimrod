@@ -13,23 +13,33 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "@types/react": "^19.1.6",
+    "@types/react": "19.0.0",
     "@types/react-native": "^0.72.8",
     "autoprefixer": "^10.4.21",
     "eslint": "^8.0.0",
     "metro": "^0.82.4",
     "metro-config": "^0.82.4",
     "postcss": "^8.5.4",
-    "prettier": "^2.0.0",
+    "prettier": "^2.8.8",
     "tailwindcss": "^3.4.17",
     "turbo": "^2.5.4",
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "date-fns": "^4.1.0",
     "nativewind": "^4.1.23",
-    "react": "^19.1.0",
+    "react": "19.0.0",
     "react-native": "^0.79.3",
+    "react-native-async-storage": "^0.0.1",
     "react-native-reanimated": "^3.16.2",
     "react-native-safe-area-context": "^5.4.1"
+  },
+  "overrides": {
+    "react": "19.0.0"
+  },
+  "resolutions": {
+    "react": "19.0.0",
+    "react-native-renderer": "19.0.0"
   }
 }

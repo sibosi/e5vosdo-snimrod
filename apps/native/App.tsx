@@ -1,10 +1,10 @@
-import { View, Text, Pressable } from "react-native";
-import { User } from "@repo/types";
-import { Button } from "@repo/ui";
-import "./global.css";
+import { View, Text, Pressable } from 'react-native';
+import { Button } from '@repo/ui/index';
+import { MenuInSection } from '@repo/ui/src/android/Menu';
+import './global.css';
 
 export default function App() {
-  const demoUser: User = { id: "1", name: "Sibosi", email: "Sibosi@idk.hu" };
+  const demoUser = { id: '1', name: 'Sibosi', email: 'Sibosi@idk.hu' };
 
   return (
     <View className="flex-1 justify-center items-center bg-white">
@@ -17,6 +17,8 @@ export default function App() {
         <Text className="text-white text-center text-lg">Huge Button</Text>
       </Pressable>
       <Button />
+
+      <MenuInSection selfUser={undefined} />
     </View>
   );
 }

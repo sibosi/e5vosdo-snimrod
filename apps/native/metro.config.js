@@ -1,21 +1,42 @@
-// apps/native/metro.config.js
-const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
-const path = require("path");
+const { getDefaultConfig } = require('expo/metro-config');
+const { withNativeWind } = require('nativewind/metro');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
+const path = require('path');
 
 const projectRoot = __dirname;
-const monorepoRoot = path.resolve(projectRoot, "../..");
-const defaultConfig = getDefaultConfig(projectRoot);
+const monorepoRoot = path.resolve(projectRoot, '../..');
 
-defaultConfig.watchFolders = [
+const config = getDefaultConfig(projectRoot);
+
+// 1) tell Metro about all of the workspaces/folders we want to watch
+config.watchFolders = [
   monorepoRoot,
-  path.resolve(monorepoRoot, "packages/ui"),
-  path.resolve(monorepoRoot, "packages/types"),
+  path.join(monorepoRoot, 'packages/ui'),
+  path.join(monorepoRoot, 'packages/resources'),
+  path.join(monorepoRoot, 'packages/types'),
 ];
 
-defaultConfig.resolver.nodeModulesPaths = [
-  path.resolve(monorepoRoot, "node_modules"),
-  path.resolve(projectRoot, "node_modules"),
-];
+// 2) point module resolution at our monorepo packages and avoid double React Native
+config.resolver = {
+  ...config.resolver,
+  nodeModulesPaths: [
+    path.join(monorepoRoot, 'node_modules'),
+    path.join(projectRoot, 'node_modules'),
+  ],
+  extraNodeModules: {
+    // alias your packages
+    '@repo/ui': path.join(monorepoRoot, 'packages/ui'),
+    '@repo/resources': path.join(monorepoRoot, 'packages/resources'),
+    '@repo/types': path.join(monorepoRoot, 'packages/types'),
+    // ensure all RN imports resolve to the single copy in this app
+    'react-native': path.join(projectRoot, 'node_modules/react-native'),
+  },
+  // block any RN copies from other workspaces
+  blockList: exclusionList([
+    new RegExp(`${monorepoRoot}/node_modules/react-native/.*`),
+  ]),
+  // you can extend if you have custom extensions
+  sourceExts: [...config.resolver.sourceExts, 'cjs', 'json'],
+};
 
-module.exports = withNativeWind(defaultConfig, { input: "./global.css" });
+module.exports = withNativeWind(config, { input: './global.css' });

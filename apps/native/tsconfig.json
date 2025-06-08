@@ -3,13 +3,7 @@
   "compilerOptions": {
     "jsx": "react-native",
     "outDir": "build",
-    "baseUrl": ".",
-    "paths": {
-      "@repo/types": ["../../packages/types/src"],
-      "@repo/ui": ["../../packages/ui/src"],
-      "@repo/config": ["../../packages/config/src"],
-      "@repo/utils": ["../../packages/utils/src"]
-    }
+    "baseUrl": "../.."
   },
   "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],
   "exclude": ["node_modules"]

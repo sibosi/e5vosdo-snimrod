@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "react-native",
     "jsxImportSource": "nativewind",
-    "types": ["nativewind/types", "react-native"]
+    "types": ["nativewind/types", "react-native"],
+    "baseUrl": "../.."
   },
   "include": ["../../**/*.ts", "../../**/*.tsx", "nativewind-env.d.ts"],
   "exclude": ["node_modules"]

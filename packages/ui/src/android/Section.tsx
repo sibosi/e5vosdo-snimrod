@@ -88,7 +88,6 @@ export const Section: React.FC<SectionProps> = ({
     }
   };
 
-  // Side component rendering
   const renderSide = () => {
     if (sideComponent) return sideComponent;
     if (newVersion && isOpen) {

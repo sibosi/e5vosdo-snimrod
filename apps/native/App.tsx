@@ -1,24 +1,23 @@
-import { View, Text, Pressable } from 'react-native';
-import { Button } from '@repo/ui/index';
-import { MenuInSection } from '@repo/ui/src/android/Menu';
-import './global.css';
+import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
+import { useColorScheme } from 'react-native';
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import MainScreen from './MainScreen';
 
 export default function App() {
-  const demoUser = { id: '1', name: 'Sibosi', email: 'Sibosi@idk.hu' };
+  const colorScheme = useColorScheme();
+  // ha nem adsz át semmit, Android 12+ alatt valóban a rendszer által generált dinamikus színeket kapod vissza
+  const { theme } = useMaterial3Theme();
+
+  // theme.light / theme.dark innen már MD3 kulcsokat tartalmaz:
+  // theme.light.primaryContainer, theme.light.onPrimaryContainer, theme.light.secondaryContainer, stb.
+  const paperTheme =
+    colorScheme === 'dark'
+      ? { ...MD3DarkTheme, colors: theme.dark }
+      : { ...MD3LightTheme, colors: theme.light };
 
   return (
-    <View className="flex-1 justify-center items-center bg-white">
-      <Text className="text-2xl font-bold mb-4">Hello, {demoUser.name}!</Text>
-      <Pressable className="bg-blue-500 p-4 rounded-lg">
-        <Text className="text-white text-center">Hi</Text>
-      </Pressable>
-
-      <Pressable className="bg-green-500 p-8 rounded-lg mt-4">
-        <Text className="text-white text-center text-lg">Huge Button</Text>
-      </Pressable>
-      <Button />
-
-      <MenuInSection selfUser={undefined} />
-    </View>
+    <PaperProvider theme={paperTheme}>
+      <MainScreen />
+    </PaperProvider>
   );
 }

@@ -15,7 +15,8 @@ import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Chip } from "@heroui/react";
-import UnderTestingAlert from "@/components/home/underTestingAlert";
+import FinalCountdown from "@/components/home/finalCountdown";
+import { Alert } from "@/components/home/alert";
 
 const PageHeadContent = ({
   selfUser,
@@ -28,7 +29,7 @@ const PageHeadContent = ({
   if (selfUser === null)
     return (
       <Tray>
-        <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+        <h1 className="text-selfprimary-900 text-3xl font-bold md:text-4xl">
           Sajnáljuk, valamilyen hiba történt. Kérjük, próbáld újra később!
         </h1>
       </Tray>
@@ -36,10 +37,10 @@ const PageHeadContent = ({
 
   return (
     <Tray>
-      <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+      <h1 className="text-selfprimary-900 text-3xl font-bold md:text-4xl">
         Hiányolsz valamit? <br />
         Netán a híreket? <br />
-        <span className="bg-gradient-to-r from-selfprimary-900 to-selfsecondary-300 bg-clip-text text-transparent">
+        <span className="from-selfprimary-900 to-selfsecondary-300 bg-gradient-to-r bg-clip-text text-transparent">
           Vagy az órarendedet?
         </span>
         <LoginButton />
@@ -52,7 +53,7 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <PageHeadContent selfUser={selfUser} />
+      <FinalCountdown />
 
       {gate(selfUser, "user", "boolean") && (
         <Section
@@ -67,7 +68,17 @@ export default async function Home() {
           }
         >
           <div className="max-w-md">
-            <UnderTestingAlert />
+            <Alert
+              icon={false}
+              className="border-selfsecondary-300 bg-selfsecondary-100"
+            >
+              <a
+                href="https://docs.google.com/spreadsheets/d/1097V-LMPhvk4vhOe8B_zUEp2Fpf7mtGs"
+                className="text-selfsecondary-700"
+              >
+                Az aktuális teremcseréket itt találod. ➜
+              </a>
+            </Alert>
           </div>
           <HeadTimetable selfUser={selfUser} />
         </Section>

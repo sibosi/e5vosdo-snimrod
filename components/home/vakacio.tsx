@@ -11,7 +11,7 @@ export const Vakacio = ({ date }: { date: string }) => {
   ];
 
   return (
-    <p className="m-auto max-w-fit bg-gradient-to-l from-[#fdd273] to-[#ff7033] bg-clip-text pb-6 text-center text-5xl font-bold text-transparent transition-all duration-500 ease-in-out">
+    <p className="from-selfsecondary-200 to-selfsecondary-500 m-auto max-w-fit bg-gradient-to-l bg-clip-text pb-6 pt-2 text-center text-5xl font-bold text-transparent transition-all duration-500 ease-in-out">
       {"VAKÁCIÓ!!!".substring(timeLeft)}
     </p>
   );

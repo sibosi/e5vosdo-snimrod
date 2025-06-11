@@ -1,5 +1,5 @@
 "use client";
-import { Log, User, UserType } from "@/db/dbreq";
+import { Log, UserType } from "@/db/dbreq";
 import getUserClass from "@/public/getUserClass";
 import {
   Button,
@@ -67,47 +67,43 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
   const [selectedUserLogs, setSelectedUserLogs] = useState<Log[]>([]);
 
   async function addUserPermission(email: any, permission: string) {
-    const response = await fetch(`/api/addUserPermission`, {
+    fetch(`/api/addUserPermission`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, permission: permission }),
-    });
-    setReloadUsers(true);
+    }).then(() => setReloadUsers(true));
   }
 
   async function removeUserPermission(email: any, permission: string) {
-    const response = await fetch(`/api/removeUserPermissions`, {
+    fetch(`/api/removeUserPermissions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, permission: permission }),
-    });
-    setReloadUsers(true);
+    }).then(() => setReloadUsers(true));
   }
 
   async function addTicket(email: any, ticket: string) {
-    const response = await fetch(`/api/addTicket`, {
+    fetch(`/api/addTicket`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, ticket: ticket }),
-    });
-    setReloadUsers(true);
+    }).then(() => setReloadUsers(true));
   }
 
   async function deleteTicket(email: any, ticket: string) {
-    const response = await fetch(`/api/deleteTicket`, {
+    fetch(`/api/deleteTicket`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, ticket: ticket }),
-    });
-    setReloadUsers(true);
+    }).then(() => setReloadUsers(true));
   }
 
   useEffect(() => {
@@ -120,7 +116,6 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
       user.username.toLowerCase().includes(searchName.toLowerCase()),
     );
     setUsers(sortUsers(filteredUsers));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchName]);
 
   async function reload() {
@@ -134,8 +129,6 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
 
   useEffect(() => {
     reload();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reloadUsers]);
 
   return (

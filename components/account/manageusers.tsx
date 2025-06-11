@@ -154,7 +154,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
               setSelectedUser(user);
               setSelectedUserLogs([]);
             }}
-            className="rounded-3xl bg-selfprimary-50 p-6 text-left"
+            className="overflow-hidden rounded-3xl bg-selfprimary-50 p-6 text-left"
           >
             <div className="flex justify-between">
               <Image

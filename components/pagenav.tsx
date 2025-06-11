@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
-import "../styles/globals.css";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -109,18 +108,50 @@ const tabs = [pages.podcast, pages.events, pages.home, pages.clubs, pages.me];
 
 export const PageNav = () => {
   const pathname = usePathname();
-
   const [currentPage, setCurrentPage] = useState(() =>
     tabs.find((page) => page.route === pathname),
   );
 
+  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [highlightStyle, setHighlightStyle] = useState<{
+    left: number;
+    width: number;
+  }>({
+    left: 0,
+    width: 0,
+  });
+
   useEffect(() => {
-    setCurrentPage(tabs.find((page) => page.route === pathname));
+    const newPage = tabs.find((page) => page.route === pathname);
+    setCurrentPage(newPage);
+
+    if (newPage) {
+      const index = tabs.indexOf(newPage);
+      const el = itemRefs.current[index];
+      if (el) {
+        const parentRect = el.parentElement?.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        if (parentRect) {
+          const left = elRect.left - parentRect.left;
+          const width = elRect.width;
+          setHighlightStyle({ left, width });
+        } else {
+          setHighlightStyle({ left: el.offsetLeft, width: el.offsetWidth });
+        }
+      }
+    }
   }, [pathname]);
 
   return (
-    <div className="myglass fixed bottom-6 z-40 w-auto items-center rounded-full p-2 shadow-xl md:hidden">
+    <div className="myglass fixed bottom-6 z-50 w-auto items-center rounded-full p-2 shadow-xl md:hidden">
       <div className="relative mx-auto flex h-full max-w-lg items-center justify-around gap-3.5 font-medium">
+        <motion.div
+          className="absolute bottom-0 top-0 rounded-full bg-selfprimary-100"
+          animate={{ left: highlightStyle.left, width: highlightStyle.width }}
+          initial={false}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          style={{ position: "absolute" }}
+        />
         {tabs.map((page, index) => {
           const isActive = currentPage === page;
           return (
@@ -129,9 +160,12 @@ export const PageNav = () => {
               href={page.route}
               aria-current={isActive ? "page" : undefined}
               className="relative inline-flex flex-col items-center justify-center p-3.5"
+              ref={(el) => {
+                itemRefs.current[index] = el;
+              }}
             >
               <div
-                className={`z-50 text-xl ${
+                className={`text-xl ${
                   isActive
                     ? "text-selfprimary-700"
                     : "text-foreground hover:text-selfprimary-700"
@@ -139,14 +173,6 @@ export const PageNav = () => {
               >
                 {page.icon}
               </div>
-              {isActive && (
-                <motion.div
-                  layoutId="nav-highlight"
-                  className="absolute inset-0 z-40 rounded-full bg-selfprimary-100"
-                  initial={false}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              )}
             </Link>
           );
         })}

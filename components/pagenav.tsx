@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import "../styles/globals.css";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 const ICON_SIZE = 20;
 
@@ -64,7 +65,7 @@ const pages = {
         className="bi bi-wrench-adjustable-circle"
         viewBox="0 0 16 16"
       >
-        <path d="M12.496 8a4.5 4.5 0 0 1-1.703 3.526L9.497 8.5l2.959-1.11q.04.3.04.61" />
+        <path d="M12.496 8a4.5 4.5 0 0 1-1.703 3.526L9.497 8.5l2.959-1.10q.04.3.04.61" />
         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-1 0a7 7 0 1 0-13.202 3.249l1.988-1.657a4.5 4.5 0 0 1 7.537-4.623L7.497 6.5l1 2.5 1.333 3.11c-.56.251-1.18.39-1.833.39a4.5 4.5 0 0 1-1.592-.29L4.747 14.2A7 7 0 0 0 15 8m-8.295.139a.25.25 0 0 0-.288-.376l-1.5.5.159.474.808-.27-.595.894a.25.25 0 0 0 .287.376l.808-.27-.595.894a.25.25 0 0 0 .287.376l1.5-.5-.159-.474-.808.27.596-.894a.25.25 0 0 0-.288-.376l-.808.27z" />
       </svg>
     ),
@@ -118,23 +119,37 @@ export const PageNav = () => {
   }, [pathname]);
 
   return (
-    <div className="myglass fixed bottom-6 z-50 w-auto items-center rounded-full p-0.5 md:hidden">
-      <div className="mx-auto flex h-full max-w-lg items-center justify-around gap-3.5 font-medium">
-        {tabs.map((page, index) => (
-          <Link
-            key={index}
-            href={page.route}
-            className={`group inline-flex flex-col items-center justify-center p-3.5 ${
-              currentPage === page
-                ? "rounded-full bg-selfprimary-100 text-selfprimary-700"
-                : "text-foreground"
-            }`}
-          >
-            <div className="text-xl hover:text-selfprimary-700">
-              {page.icon}
-            </div>
-          </Link>
-        ))}
+    <div className="myglass fixed bottom-6 z-40 w-auto items-center rounded-full p-2 shadow-xl md:hidden">
+      <div className="relative mx-auto flex h-full max-w-lg items-center justify-around gap-3.5 font-medium">
+        {tabs.map((page, index) => {
+          const isActive = currentPage === page;
+          return (
+            <Link
+              key={index}
+              href={page.route}
+              aria-current={isActive ? "page" : undefined}
+              className="relative inline-flex flex-col items-center justify-center p-3.5"
+            >
+              <div
+                className={`z-50 text-xl ${
+                  isActive
+                    ? "text-selfprimary-700"
+                    : "text-foreground hover:text-selfprimary-700"
+                }`}
+              >
+                {page.icon}
+              </div>
+              {isActive && (
+                <motion.div
+                  layoutId="nav-highlight"
+                  className="absolute inset-0 z-40 rounded-full bg-selfprimary-100"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

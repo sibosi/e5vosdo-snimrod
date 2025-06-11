@@ -17,6 +17,7 @@ import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Chip } from "@heroui/react";
 import FinalCountdown from "@/components/home/finalCountdown";
 import { Alert } from "@/components/home/alert";
+import PodcastDrop from "@/components/PodcastDrop";
 
 const PageHeadContent = ({
   selfUser,
@@ -29,7 +30,7 @@ const PageHeadContent = ({
   if (selfUser === null)
     return (
       <Tray>
-        <h1 className="text-selfprimary-900 text-3xl font-bold md:text-4xl">
+        <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
           Sajnáljuk, valamilyen hiba történt. Kérjük, próbáld újra később!
         </h1>
       </Tray>
@@ -37,10 +38,10 @@ const PageHeadContent = ({
 
   return (
     <Tray>
-      <h1 className="text-selfprimary-900 text-3xl font-bold md:text-4xl">
+      <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
         Hiányolsz valamit? <br />
         Netán a híreket? <br />
-        <span className="from-selfprimary-900 to-selfsecondary-300 bg-gradient-to-r bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-selfprimary-900 to-selfsecondary-300 bg-clip-text text-transparent">
           Vagy az órarendedet?
         </span>
         <LoginButton />
@@ -52,8 +53,10 @@ const PageHeadContent = ({
 export default async function Home() {
   const selfUser = await getAuth();
   return (
-    <div>
+    <div className="">
       <FinalCountdown />
+
+      <PodcastDrop />
 
       {gate(selfUser, "user", "boolean") && (
         <Section

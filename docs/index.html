@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karbantartás - E5vös DÖ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --selfprimary-50: #e6f0fa;
+            --selfprimary-100: #cce1f5;
+            --selfprimary-200: #99c3eb;
+            --selfprimary-300: #66a5e0;
+            --selfprimary-900: #0d47a1;
+            --selfsecondary-300: #ff9e80;
+            --foreground: #11181c;
+            --background: #f8fafc;
+            --tw-text-opacity: 1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--foreground);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(153, 195, 235, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 80% 80%, rgba(255, 158, 128, 0.1) 0%, transparent 30%);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(204, 225, 245, 0.5);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 6px rgba(13, 71, 161, 0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--selfprimary-900), var(--selfsecondary-300));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+            position: relative;
+        }
+        
+        .gradient-text::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(135deg, var(--selfprimary-900), var(--selfsecondary-300));
+            transform: scaleX(0.7);
+            transform-origin: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .gradient-text:hover::after {
+            transform: scaleX(1);
+        }
+        
+        .tray {
+            background-color: var(--selfprimary-50);
+            border-radius: 1rem;
+            padding: 1.8rem;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .tray:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 71, 161, 0.1);
+        }
+        
+        .maintenance-info {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: rgba(17, 24, 28, 0.9);
+        }
+        
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .button {
+            background-color: var(--selfprimary-200);
+            color: var(--foreground);
+            padding: 0.9rem 1.8rem;
+            border-radius: 0.8rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid transparent;
+            box-shadow: 0 2px 10px rgba(13, 71, 161, 0.1);
+        }
+        
+        .button:hover {
+            background-color: var(--selfprimary-300);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.15);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .instagram-button {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+        
+        .instagram-button:hover {
+            background: linear-gradient(45deg, #e38a2e 0%, #d55d35 25%, #c9233b 50%, #b91f5c 75%, #a7167a 100%);
+        }
+        
+        .feedback-button {
+            background-color: white;
+            color: var(--selfprimary-900);
+            border: 1px solid var(--selfprimary-200);
+        }
+        
+        .feedback-button:hover {
+            background-color: var(--selfprimary-50);
+            border-color: var(--selfprimary-300);
+        }
+        
+        .footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: var(--foreground);
+            opacity: 0.75;
+            border-top: 1px solid rgba(204, 225, 245, 0.3);
+            width: 100%;
+            transition: opacity 0.3s ease;
+        }
+        
+        .footer:hover {
+            opacity: 1;
+        }
+        
+        .footer a {
+            color: var(--selfprimary-900);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .footer a:hover {
+            color: var(--selfsecondary-300);
+            text-decoration: underline;
+        }
+        
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .maintenance-info {
+                font-size: 1rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <main>
+            <div class="logo-container">
+                <img src="logo.svg" width="100" class="logo" alt="E5vös DÖ Logo">
+                <h1 class="title">
+                    <span class="gradient-text">Valami készül...</span>
+                </h1>
+            </div>
+            
+            <div class="tray">
+                <div class="maintenance-info">
+                    <p>Az oldal jelenleg karbantartás alatt áll.</p>
+                    <p>Kérjük nézz vissza később!</p>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <a href="https://instagram.com/e5vosdo/" class="button instagram-button">
+                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    Kövess minket Instagramon
+                </a>
+                <a href="https://forms.gle/XdMtAx6fsubWEBW97" class="button feedback-button">
+                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z"/>
+                    </svg>
+                    Visszajelzés küldése
+                </a>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Fejleszti: <a href="https://linktr.ee/snimrod" target="_blank" rel="noopener noreferrer">Simon Nimród</a></p>
+        </footer>
+    </div>
+</body>
+</html>

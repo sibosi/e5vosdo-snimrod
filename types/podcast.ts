@@ -2,11 +2,7 @@ export interface PodcastChannel {
   title: string;
   description: string;
   link: string;
-  image: {
-    url: string;
-    title: string;
-    link: string;
-  };
+  image: string;
   author: string;
   copyright: string;
   language: string;

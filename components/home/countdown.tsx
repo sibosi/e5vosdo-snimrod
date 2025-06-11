@@ -31,17 +31,17 @@ export const Countdown = ({ date }: { date: string }) => {
       };
     } else {
       timeLeft = {
-        days: "#",
-        hours: "#",
-        minutes: "#",
-        seconds: "#",
+        days: "0",
+        hours: "0",
+        minutes: "0",
+        seconds: "0",
       };
     }
     return timeLeft;
   };
 
   return (
-    <div className="grid auto-cols-max grid-flow-col gap-5 pb-12 text-center text-foreground">
+    <div className="text-foreground grid auto-cols-max grid-flow-col gap-5 text-center">
       <div className="flex flex-col items-center">
         <span className="countdown font-mono text-5xl">{timeLeft.days}</span>
         nap

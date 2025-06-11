@@ -10,7 +10,7 @@ INSERT INTO alerts (text, className, padding, icon)
 VALUES
     (
         "<a href='https://docs.google.com/spreadsheets/d/1097V-LMPhvk4vhOe8B_zUEp2Fpf7mtGs' className='text-selfprimary-700'>Az aktuális teremcseréket itt találod.</a>",
-        "bg-selfprimary-100 border-selfprimary-300 mx-5 text-md",
+        "bg-selfprimary-100 border-selfprimary-300 hidden mx-5 text-md",
         1,
         NULL
     );

@@ -74,9 +74,20 @@ export const useTimetable = ({
   const [selectedDay, setSelectedDay] = useState<DayType>(() => {
     if (initialDay) return initialDay;
 
-    const today = new Date().getDay() - 1;
+    const now = new Date();
+    const todayAt1515 = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      15,
+      15,
+      0,
+      0,
+    );
+    const today = now.getDay() - 1;
     const dayIndex = [-1, 5].includes(today) ? 0 : today;
-    return days[dayIndex > 4 ? 0 : dayIndex];
+    const dayIndexAdjusted = todayAt1515 < now ? dayIndex + 1 : dayIndex;
+    return days[dayIndexAdjusted > 4 ? 0 : dayIndexAdjusted];
   });
 
   useEffect(() => {

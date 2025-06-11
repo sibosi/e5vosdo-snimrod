@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
-import "../styles/globals.css";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 const ICON_SIZE = 20;
 
@@ -64,7 +64,7 @@ const pages = {
         className="bi bi-wrench-adjustable-circle"
         viewBox="0 0 16 16"
       >
-        <path d="M12.496 8a4.5 4.5 0 0 1-1.703 3.526L9.497 8.5l2.959-1.11q.04.3.04.61" />
+        <path d="M12.496 8a4.5 4.5 0 0 1-1.703 3.526L9.497 8.5l2.959-1.10q.04.3.04.61" />
         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-1 0a7 7 0 1 0-13.202 3.249l1.988-1.657a4.5 4.5 0 0 1 7.537-4.623L7.497 6.5l1 2.5 1.333 3.11c-.56.251-1.18.39-1.833.39a4.5 4.5 0 0 1-1.592-.29L4.747 14.2A7 7 0 0 0 15 8m-8.295.139a.25.25 0 0 0-.288-.376l-1.5.5.159.474.808-.27-.595.894a.25.25 0 0 0 .287.376l.808-.27-.595.894a.25.25 0 0 0 .287.376l1.5-.5-.159-.474-.808.27.596-.894a.25.25 0 0 0-.288-.376l-.808.27z" />
       </svg>
     ),
@@ -108,45 +108,74 @@ const tabs = [pages.podcast, pages.events, pages.home, pages.clubs, pages.me];
 
 export const PageNav = () => {
   const pathname = usePathname();
-
   const [currentPage, setCurrentPage] = useState(() =>
     tabs.find((page) => page.route === pathname),
   );
 
+  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [highlightStyle, setHighlightStyle] = useState<{
+    left: number;
+    width: number;
+  }>({
+    left: 0,
+    width: 0,
+  });
+
   useEffect(() => {
-    setCurrentPage(tabs.find((page) => page.route === pathname));
+    const newPage = tabs.find((page) => page.route === pathname);
+    setCurrentPage(newPage);
+
+    if (newPage) {
+      const index = tabs.indexOf(newPage);
+      const el = itemRefs.current[index];
+      if (el) {
+        const parentRect = el.parentElement?.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        if (parentRect) {
+          const left = elRect.left - parentRect.left;
+          const width = elRect.width;
+          setHighlightStyle({ left, width });
+        } else {
+          setHighlightStyle({ left: el.offsetLeft, width: el.offsetWidth });
+        }
+      }
+    }
   }, [pathname]);
 
-  const getTabRadius = (index: number, isActive: boolean) => {
-    if (!isActive) return "";
-    if (index === 0) return "rounded-r-3xl rounded-l-lg";
-    if (index === tabs.length - 1) return "rounded-l-3xl rounded-r-lg";
-    return "rounded-3xl";
-  };
-
   return (
-    <div className="fixed bottom-0 z-50 h-14 w-[90%] items-center md:hidden">
-      <div className="myglass h-12 rounded-lg border-1 border-gray-500">
-        <div
-          className={`grid h-full max-w-lg grid-cols-${tabs.length} mx-auto font-medium`}
-        >
-          {tabs.map((page, index) => (
+    <div className="myglass fixed bottom-6 z-50 w-auto items-center rounded-full p-2 shadow-xl md:hidden">
+      <div className="relative mx-auto flex h-full max-w-lg items-center justify-around gap-3.5 font-medium">
+        <motion.div
+          className="absolute bottom-0 top-0 rounded-full bg-selfprimary-100"
+          animate={{ left: highlightStyle.left, width: highlightStyle.width }}
+          initial={false}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          style={{ position: "absolute" }}
+        />
+        {tabs.map((page, index) => {
+          const isActive = currentPage === page;
+          return (
             <Link
               key={index}
               href={page.route}
-              className={`group inline-flex flex-col items-center justify-center px-5 ${
-                currentPage === page
-                  ? "bg-selfprimary-100 text-selfprimary-700 " +
-                    getTabRadius(index, true)
-                  : "text-foreground"
-              }`}
+              aria-current={isActive ? "page" : undefined}
+              className="relative inline-flex flex-col items-center justify-center p-3.5"
+              ref={(el) => {
+                itemRefs.current[index] = el;
+              }}
             >
-              <div className="text-xl hover:text-selfprimary-700">
+              <div
+                className={`text-xl ${
+                  isActive
+                    ? "text-selfprimary-700"
+                    : "text-foreground hover:text-selfprimary-700"
+                }`}
+              >
                 {page.icon}
               </div>
             </Link>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );

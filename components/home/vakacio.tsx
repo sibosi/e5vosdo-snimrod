@@ -12,7 +12,7 @@ export const Vakacio = ({ date }: { date: string }) => {
 
   return (
     <p className="from-selfsecondary-200 to-selfsecondary-500 mx-auto max-w-fit bg-gradient-to-l bg-clip-text pt-2 text-center text-5xl font-bold text-transparent transition-all duration-500 ease-in-out">
-      {"VAKÁCIÓ!!!".substring(timeLeft)}
+      {"VAKÁC--IÓ!".substring(timeLeft)}
     </p>
   );
 };

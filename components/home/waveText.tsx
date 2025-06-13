@@ -22,8 +22,8 @@ export const WaveText = ({ text }: { text: string }) => {
   const minFontSize = 24;
   const speed = 0.008;
 
-  const containerRef = useRef(null);
-  const titleRef = useRef(null);
+  const containerRef = useRef(null) as any;
+  const titleRef = useRef(null) as any;
 
   const spansRef = useRef<(HTMLSpanElement | null)[]>([]);
   const timeRef = useRef(0);
@@ -37,18 +37,12 @@ export const WaveText = ({ text }: { text: string }) => {
 
   const chars = text.split("");
 
-  const dist = (a, b) => {
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  };
-
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: any) => {
       cursorRef.current.x = e.clientX;
       cursorRef.current.y = e.clientY;
     };
-    const handleTouchMove = (e) => {
+    const handleTouchMove = (e: any) => {
       const t = e.touches[0];
       cursorRef.current.x = t.clientX;
       cursorRef.current.y = t.clientY;
@@ -215,7 +209,9 @@ export const WaveText = ({ text }: { text: string }) => {
         {chars.map((char, i) => (
           <span
             key={i}
-            ref={(el) => (spansRef.current[i] = el)}
+            ref={(el) => {
+              spansRef.current[i] = el;
+            }}
             data-char={char}
             style={{
               display: "inline-block",

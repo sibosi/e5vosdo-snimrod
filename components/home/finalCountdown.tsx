@@ -1,11 +1,19 @@
 import React from "react";
 import { Countdown } from "./countdown";
-import { Vakacio } from "./waveText";
+import { WaveText } from "./waveText";
+import { getAuth } from "@/db/dbreq";
+import { gate } from "@/db/permissions";
+import { getVacationText, Vakacio } from "./vakacio";
 
-const FinalCountdown = ({ date }: { date: string }) => {
+const FinalCountdown = async ({ date }: { date: string }) => {
+  const selfUser = await getAuth();
   return (
     <div className="mb-4 flex flex-col items-center justify-center gap-4">
-      <Vakacio date={date} />
+      {gate(selfUser, "tester", "boolean") ? (
+        <WaveText text={getVacationText(date)} />
+      ) : (
+        <Vakacio date={date} />
+      )}
       <Countdown date={date} />
     </div>
   );

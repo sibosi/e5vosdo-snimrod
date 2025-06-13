@@ -2,29 +2,8 @@
 // source: https://github.com/DavidHDev/react-bits/blob/main/src/content/TextAnimations/TextPressure/TextPressure.jsx
 import { useEffect, useRef, useState } from "react";
 
-function getText(date: Date): string {
-  const now = new Date();
-  const targetDate = new Date(date);
-  const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
-  let weekdaysLeft = 0;
-  const temp = new Date(now);
-  while (temp < targetDate) {
-    const dayOfWeek = temp.getDay();
-    if (dayOfWeek !== 5 && dayOfWeek !== 6) weekdaysLeft++;
-    temp.setTime(temp.getTime() + MILLISECONDS_IN_DAY);
-  }
-
-  const fullText = "VAKÁCVAKÁCIÓ!";
-  const displayedText = fullText.substring(weekdaysLeft);
-  return displayedText;
-}
-
-const Vakacio = ({ date }: { date: string }) => {
-  const displayedText = getText(new Date(date));
-
-  const text = displayedText;
+export const WaveText = ({ text }: { text: string }) => {
   const fontFamily = "Compressa VF";
-  // This font is just an example, you should not use it in commercial projects.
   const fontUrl =
     "https://res.cloudinary.com/dr6lvwubh/raw/upload/v1529908256/CompressaPRO-GX.woff2";
 
@@ -39,14 +18,12 @@ const Vakacio = ({ date }: { date: string }) => {
 
   const strokeColor = "#FF0000";
   const className = "";
-  const [textColor, setTextColor] = useState("#FFFFFF");
 
   const minFontSize = 24;
-  const speed = 0.005;
+  const speed = 0.008;
 
   const containerRef = useRef(null);
   const titleRef = useRef(null);
-  // const spansRef = useRef([]);
 
   const spansRef = useRef<(HTMLSpanElement | null)[]>([]);
   const timeRef = useRef(0);
@@ -251,5 +228,3 @@ const Vakacio = ({ date }: { date: string }) => {
     </div>
   );
 };
-
-export { Vakacio };

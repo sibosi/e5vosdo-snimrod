@@ -1,18 +1,255 @@
-export const Vakacio = ({ date }: { date: string }) => {
+"use client";
+// source: https://github.com/DavidHDev/react-bits/blob/main/src/content/TextAnimations/TextPressure/TextPressure.jsx
+import { useEffect, useRef, useState } from "react";
+
+function getText(date: Date): string {
   const now = new Date();
   const targetDate = new Date(date);
   const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
   let weekdaysLeft = 0;
-
-  while (now < targetDate) {
-    const dayOfWeek = now.getDay();
+  const temp = new Date(now);
+  while (temp < targetDate) {
+    const dayOfWeek = temp.getDay();
     if (dayOfWeek !== 5 && dayOfWeek !== 6) weekdaysLeft++;
-    now.setTime(now.getTime() + MILLISECONDS_IN_DAY);
+    temp.setTime(temp.getTime() + MILLISECONDS_IN_DAY);
   }
 
+  const fullText = "VAKÁCVAKÁCIÓ!";
+  const displayedText = fullText.substring(weekdaysLeft);
+  return displayedText;
+}
+
+const Vakacio = ({ date }: { date: string }) => {
+  const displayedText = getText(new Date(date));
+
+  const text = displayedText;
+  const fontFamily = "Compressa VF";
+  // This font is just an example, you should not use it in commercial projects.
+  const fontUrl =
+    "https://res.cloudinary.com/dr6lvwubh/raw/upload/v1529908256/CompressaPRO-GX.woff2";
+
+  const width = true;
+  const weight = true;
+  const italic = true;
+  const alpha = false;
+
+  const flex = true;
+  const stroke = false;
+  const scale = false;
+
+  const strokeColor = "#FF0000";
+  const className = "";
+  const [textColor, setTextColor] = useState("#FFFFFF");
+
+  const minFontSize = 24;
+  const speed = 0.005;
+
+  const containerRef = useRef(null);
+  const titleRef = useRef(null);
+  // const spansRef = useRef([]);
+
+  const spansRef = useRef<(HTMLSpanElement | null)[]>([]);
+  const timeRef = useRef(0);
+
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const cursorRef = useRef({ x: 0, y: 0 });
+
+  const [fontSize, setFontSize] = useState(minFontSize);
+  const [scaleY, setScaleY] = useState(1);
+  const [lineHeight, setLineHeight] = useState(1);
+
+  const chars = text.split("");
+
+  const dist = (a, b) => {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      cursorRef.current.x = e.clientX;
+      cursorRef.current.y = e.clientY;
+    };
+    const handleTouchMove = (e) => {
+      const t = e.touches[0];
+      cursorRef.current.x = t.clientX;
+      cursorRef.current.y = t.clientY;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+    if (containerRef.current) {
+      const { left, top, width, height } =
+        containerRef.current.getBoundingClientRect();
+      mouseRef.current.x = left + width / 2;
+      mouseRef.current.y = top + height / 2;
+      cursorRef.current.x = mouseRef.current.x;
+      cursorRef.current.y = mouseRef.current.y;
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, []);
+
+  const setSize = () => {
+    if (!containerRef.current || !titleRef.current) return;
+
+    const { width: containerW, height: containerH } =
+      containerRef.current.getBoundingClientRect();
+
+    let newFontSize = containerW / (chars.length / 2);
+    newFontSize = Math.max(newFontSize, minFontSize);
+
+    setFontSize(newFontSize);
+    setScaleY(1);
+    setLineHeight(1);
+
+    requestAnimationFrame(() => {
+      if (!titleRef.current) return;
+      const textRect = titleRef.current.getBoundingClientRect();
+
+      if (scale && textRect.height > 0) {
+        const yRatio = containerH / textRect.height;
+        setScaleY(yRatio);
+        setLineHeight(yRatio);
+      }
+    });
+  };
+
+  useEffect(() => {
+    setSize();
+    window.addEventListener("resize", setSize);
+    return () => window.removeEventListener("resize", setSize);
+    // eslint-disable-next-line
+  }, [scale, text]);
+
+  useEffect(() => {
+    let rafId: number;
+    const animate = () => {
+      timeRef.current += speed;
+
+      if (titleRef.current) {
+        const titleRect = titleRef.current.getBoundingClientRect();
+        const maxDist = titleRect.width / 2;
+
+        spansRef.current.forEach((span, i) => {
+          if (!span) return;
+
+          // compute a 0–maxDist oscillation per letter
+          const phase = (i / spansRef.current.length) * Math.PI * 2;
+          const wave = Math.sin(timeRef.current + phase); // –1..1
+          const d = ((wave + 1) / 2) * maxDist; // 0..maxDist
+
+          // reuse your getAttr and variation logic
+          const getAttr = (
+            distance: number,
+            minVal: number,
+            maxVal: number,
+          ) => {
+            const val = maxVal - Math.abs((maxVal * distance) / maxDist);
+            return Math.max(minVal, val + minVal);
+          };
+
+          const wdth = width ? Math.floor(getAttr(d, 5, 200)) : 100;
+          const wght = weight ? Math.floor(getAttr(d, 100, 900)) : 400;
+          const italVal = italic ? getAttr(d, 0, 1).toFixed(2) : "0";
+          const alphaVal = alpha ? getAttr(d, 0, 1).toFixed(2) : "1";
+
+          span.style.opacity = alphaVal;
+          span.style.fontVariationSettings = `\'wght\' ${wght}, \'wdth\' ${wdth}, \'ital\' ${italVal}`;
+        });
+      }
+
+      rafId = requestAnimationFrame(animate);
+    };
+
+    animate();
+    return () => cancelAnimationFrame(rafId);
+  }, [width, weight, italic, alpha, chars.length]);
+
+  const dynamicClassName = [
+    className,
+    flex ? "myflex" : "",
+    stroke ? "stroke" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <p className="mx-auto max-w-fit bg-gradient-to-l from-selfsecondary-200 to-selfsecondary-500 bg-clip-text pt-2 text-center text-5xl font-bold text-transparent transition-all duration-500 ease-in-out">
-      {"VAKÁCIÓ!".substring(weekdaysLeft)}
-    </p>
+    <div
+      ref={containerRef}
+      className="h-full max-w-sm"
+      style={{
+        //position: "absolute",
+        width: "100%",
+        height: "100%",
+        background: "transparent",
+      }}
+    >
+      <style>{`
+        @font-face {
+          font-family: '${fontFamily}';
+          src: url('${fontUrl}');
+          font-style: normal;
+        }
+
+        .myflex {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .stroke span {
+          position: relative;
+        }
+        .stroke span::after {
+          content: attr(data-char);
+          position: absolute;
+          left: 0;
+          top: 0;
+          color: transparent;
+          z-index: -1;
+          -webkit-text-stroke-width: 3px;
+          -webkit-text-stroke-color: ${strokeColor};
+        }
+      `}</style>
+
+      <h1
+        ref={titleRef}
+        className={`text-pressure-title text-selfprimary-400 ${dynamicClassName}`}
+        style={{
+          fontFamily,
+          textTransform: "uppercase",
+          fontSize: fontSize,
+          lineHeight,
+          transform: `scale(1, ${scaleY})`,
+          transformOrigin: "center top",
+          margin: 0,
+          textAlign: "center",
+          userSelect: "none",
+          whiteSpace: "nowrap",
+          fontWeight: 100,
+          width: "100%",
+        }}
+      >
+        {chars.map((char, i) => (
+          <span
+            key={i}
+            ref={(el) => (spansRef.current[i] = el)}
+            data-char={char}
+            style={{
+              display: "inline-block",
+            }}
+          >
+            {char}
+          </span>
+        ))}
+      </h1>
+    </div>
   );
 };
+
+export { Vakacio };

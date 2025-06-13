@@ -1,6 +1,6 @@
 import React from "react";
 import { Countdown } from "./countdown";
-import { Vakacio } from "./vakacio";
+import { Vakacio } from "./waveText";
 
 const FinalCountdown = ({ date }: { date: string }) => {
   return (

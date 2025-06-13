@@ -54,7 +54,7 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div className="">
-      <FinalCountdown />
+      <FinalCountdown date="2025-06-20T09:00:00Z" />
 
       <PodcastDrop />
 

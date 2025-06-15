@@ -20,7 +20,7 @@ export const WaveText = ({ text }: { text: string }) => {
   const className = "";
 
   const minFontSize = 24;
-  const speed = 0.008;
+  const speed = 0.014;
 
   const containerRef = useRef(null) as any;
   const titleRef = useRef(null) as any;

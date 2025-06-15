@@ -15,6 +15,11 @@ const defaultChromas: { [key: string]: number } = {
   secondary: 50, // 87
 };
 
+const blockedColors = [
+  [267, 71], // primary
+  [305, 87], // secondary
+];
+
 const tones = [
   "20",
   "50",
@@ -35,17 +40,28 @@ export const loadPalette = (
   hue?: number,
   chroma?: number,
 ) => {
-  const colorHue =
+  const colorHuePre =
     hue ||
     Number(localStorage.getItem(`${colorName}Hue`)) ||
     defaultHues[colorName] ||
     255;
 
-  const colorChroma =
+  const colorChromaPre =
     chroma ||
     Number(localStorage.getItem(`${colorName}Chroma`)) ||
     defaultChromas[colorName] ||
     50;
+
+  const colorHue = blockedColors.some(
+    (blocked) => blocked[0] === colorHuePre && blocked[1] === colorChromaPre,
+  )
+    ? defaultHues[colorName]
+    : colorHuePre;
+  const colorChroma = blockedColors.some(
+    (blocked) => blocked[0] === colorHuePre && blocked[1] === colorChromaPre,
+  )
+    ? defaultChromas[colorName]
+    : colorChromaPre;
 
   document.documentElement.style.setProperty(
     `--color-${colorName}`,

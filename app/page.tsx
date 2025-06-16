@@ -56,8 +56,6 @@ export default async function Home() {
     <div className="">
       <FinalCountdown date="2025-06-20T09:00:00Z" />
 
-      <PodcastDrop />
-
       {gate(selfUser, "user", "boolean") && (
         <Section
           title="Órarend"

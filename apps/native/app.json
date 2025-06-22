@@ -8,7 +8,6 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "experiments.reactCanary": true,
-
     "expo": {
       "name": "e5vosdo-snimrod",
       "slug": "e5vosdo-snimrod",
@@ -34,6 +33,24 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-    }
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/Outfit/Outfit_100Thin.ttf",
+            "node_modules/@expo-google-fonts/outfit/Outfit_200ExtraLight.ttf",
+            "node_modules/@expo-google-fonts/outfit/Outfit_300Light.ttf",
+            "node_modules/@expo-google-fonts/outfit/Outfit_400Regular.ttf",
+            "node_modules/@expo-google-fonts/outfit/Outfit_500Medium.ttf",
+            "node_modules/@expo-google-fonts/outfit/Outfit_600SemiBold.ttf",
+            "node_modules/@expo-google-fonts/outfit/Outfit_700Bold.ttf",
+            "node_modules/@expo-google-fonts/outfit/Outfit_800ExtraBold.ttf",
+            "node_modules/@expo-google-fonts/outfit/Outfit_900Black.ttf"
+          ]
+        }
+      ]
+    ]
   }
 }

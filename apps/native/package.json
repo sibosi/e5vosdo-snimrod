@@ -9,12 +9,17 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/outfit": "^0.4.2",
     "expo": "~53.0.10",
+    "expo-font": "~13.3.1",
     "expo-status-bar": "~2.2.3",
     "nativewind": "^4.1.23",
     "react-native": "0.79.3",
     "react-native-reanimated": "^3.16.2",
+    "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "^5.4.1",
+    "react-native-svg-transformer": "^1.5.1",
+    "swr": "^2.3.3",
     "tailwindcss": "^3.4.17"
   },
   "devDependencies": {

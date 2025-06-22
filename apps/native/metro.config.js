@@ -6,7 +6,19 @@ const path = require('path');
 const projectRoot = __dirname;
 const monorepoRoot = path.resolve(projectRoot, '../..');
 
-const config = getDefaultConfig(projectRoot);
+const defaultConfig = getDefaultConfig(projectRoot);
+
+defaultConfig.transformer = {
+  ...defaultConfig.transformer,
+  babelTransformerPath: require.resolve('react-native-svg-transformer'),
+};
+defaultConfig.resolver = {
+  ...defaultConfig.resolver,
+  assetExts: defaultConfig.resolver.assetExts.filter((ext) => ext !== 'svg'),
+  sourceExts: [...defaultConfig.resolver.sourceExts, 'svg'],
+};
+
+const config = defaultConfig;
 
 // 1) tell Metro about all of the workspaces/folders we want to watch
 config.watchFolders = [

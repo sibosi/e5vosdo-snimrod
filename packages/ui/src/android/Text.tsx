@@ -1,3 +1,4 @@
+import useDynamicColors from 'apps/native/hooks/useDynamicColors';
 import React from 'react';
 import { Text as RNText, TextProps, TextStyle } from 'react-native';
 
@@ -31,12 +32,16 @@ const fontFamilys = {
 const Text: React.FC<TextProps> = (props) => {
   const { style, ...rest } = props;
   const fontWeight = String((style as TextStyle)?.fontWeight ?? '400'); // Default to regular if no fontWeight is provided
+  const colors = useDynamicColors();
+  const color = (style as TextStyle).color ?? colors.onSurface;
+
   return (
     <RNText
       style={[
         {
           fontFamily: fontFamilys[fontWeight as keyof typeof fontFamilys],
           fontWeight: undefined,
+          color: color,
         },
         style,
       ]}

@@ -34,6 +34,11 @@ const Text: React.FC<TextProps> = (props) => {
   const fontWeight = String((style as TextStyle)?.fontWeight ?? '400');
   const colors = useDynamicColors();
   const color = (style as TextStyle)?.color ?? colors.onSurface;
+  const filteredStyle = Object.fromEntries(
+    Object.entries(style ?? {}).filter(
+      ([key]) => !['fontFamily', 'fontWeight', 'color'].includes(key)
+    )
+  );
 
   return (
     <RNText
@@ -43,7 +48,7 @@ const Text: React.FC<TextProps> = (props) => {
           fontWeight: undefined,
           color: color,
         },
-        style,
+        filteredStyle,
       ]}
       {...rest}
     />

@@ -1,20 +1,20 @@
 {
   "expo": {
-    "name": "@/native",
-    "slug": "native",
+    "name": "Eötvös DÖ",
+    "slug": "e5vosdo-snimrod",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
+    "scheme": "e5vosdo-snimrod",
     "newArchEnabled": true,
     "experiments.reactCanary": true,
-    "expo": {
-      "name": "e5vosdo-snimrod",
-      "slug": "e5vosdo-snimrod",
-      "version": "1.0.0",
-      "entryPoint": "index.ts",
-      "platforms": ["ios", "android", "web"]
-    },
+    "entryPoint": "index.ts",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -28,7 +28,34 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "e5vosdo-snimrod"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "e5vosdo-snimrod"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+      "package": "com.snimrod.e5vosdosnimrod"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -36,21 +63,16 @@
     },
     "plugins": [
       [
-        "expo-font",
+        "expo-dev-client",
         {
-          "fonts": [
-            "node_modules/@expo-google-fonts/Outfit/Outfit_100Thin.ttf",
-            "node_modules/@expo-google-fonts/outfit/Outfit_200ExtraLight.ttf",
-            "node_modules/@expo-google-fonts/outfit/Outfit_300Light.ttf",
-            "node_modules/@expo-google-fonts/outfit/Outfit_400Regular.ttf",
-            "node_modules/@expo-google-fonts/outfit/Outfit_500Medium.ttf",
-            "node_modules/@expo-google-fonts/outfit/Outfit_600SemiBold.ttf",
-            "node_modules/@expo-google-fonts/outfit/Outfit_700Bold.ttf",
-            "node_modules/@expo-google-fonts/outfit/Outfit_800ExtraBold.ttf",
-            "node_modules/@expo-google-fonts/outfit/Outfit_900Black.ttf"
-          ]
+          "launchMode": "most-recent"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ea69be18-5b37-4eb8-8e89-9d199ef86da6"
+      }
+    }
   }
 }

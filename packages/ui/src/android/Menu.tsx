@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
 import menzaMenu from '@repo/resources/mindenkorimenu.json';
 import { PossibleUserType } from '@repo/types/index';
 import { Section } from './Section'; // Import the Section component
+import useDynamicColors from '@repo/hooks/useDynamicColors'; // Import the custom hook for dynamic colors
+import ArrowIcon from 'packages/icons/src/arrow.svg';
+import Text from './Text';
 
 // Utility to format dates
 function formatDate(date: Date, simple = false) {
@@ -27,33 +30,67 @@ const mindenkorimenu = menzaMenu as unknown as MenuType;
 
 // MenuCard component
 const MenuCard = ({ menu, items }: { menu: 'A' | 'B'; items: string[] }) => {
-  const bg = menu === 'A' ? 'bg-blue-100' : 'bg-orange-100';
-  const textColor = menu === 'A' ? 'text-blue-700' : 'text-orange-700';
+  const colors = useDynamicColors();
+  const backgroundColor =
+    menu === 'A' ? colors.secondaryContainer : colors.tertiaryContainer;
+  const textColor =
+    menu === 'A' ? colors.onSecondaryContainer : colors.onTertiaryContainer;
+  const borderColor = colors.outlineVariant;
+
   return (
-    <View className={`flex-1 m-2 p-4 rounded-xl ${bg} items-center`}>
-      <View className="w-10 h-10 items-center justify-center">
-        <Text className={`text-2xl font-bold ${textColor}`}>{menu}</Text>
+    <View
+      style={{
+        flex: 1,
+        padding: 16,
+        borderRadius: 12,
+        backgroundColor,
+        alignItems: 'center',
+      }}
+    >
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 36,
+            fontWeight: '700',
+            color: textColor,
+          }}
+        >
+          {menu}
+        </Text>
       </View>
-      <View className="mt-2 w-full">
+      <View style={{ marginTop: 8, width: '100%' }}>
         {items.length > 0 ? (
           items.map((fogas, i) =>
             fogas ? (
               <Text
                 key={i}
-                className={`py-1 ${
-                  i > 0
-                    ? menu === 'A'
-                      ? 'border-t border-blue-400'
-                      : 'border-t border-orange-400'
-                    : ''
-                }`}
+                style={{
+                  paddingVertical: 4,
+                  borderTopWidth: i > 0 ? 1 : 0,
+                  borderTopColor: borderColor,
+                  textAlign: 'center',
+                }}
               >
                 {fogas}
               </Text>
             ) : null
           )
         ) : (
-          <Text className={`py-1 font-light ${textColor}`}>
+          <Text
+            style={{
+              paddingVertical: 4,
+              fontWeight: '300',
+              color: textColor,
+              textAlign: 'center',
+            }}
+          >
             Nincs információ
           </Text>
         )}
@@ -76,16 +113,43 @@ const DatePicker = ({
     setDate(newDate);
   };
 
+  const colors = useDynamicColors();
+
   return (
-    <View className="flex-row items-center bg-blue-100 rounded-full p-2">
-      <TouchableOpacity onPress={() => changeDate(-1)} className="px-2">
-        <Text className="text-blue-700">◀︎</Text>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: colors.primaryContainer,
+        borderRadius: 9999,
+        paddingHorizontal: 8,
+        gap: 8,
+        height: 32,
+      }}
+    >
+      <TouchableOpacity onPress={() => changeDate(-1)}>
+        <ArrowIcon
+          width={16}
+          height={16}
+          fill={colors.onPrimaryContainer}
+          rotation={90}
+        />
       </TouchableOpacity>
-      <Text className="text-blue-700 font-medium">
+      <Text
+        style={{
+          color: colors.onPrimaryContainer,
+          fontWeight: '500',
+        }}
+      >
         {formatDate(date, true)}
       </Text>
-      <TouchableOpacity onPress={() => changeDate(1)} className="px-2">
-        <Text className="text-blue-700">▶︎</Text>
+      <TouchableOpacity onPress={() => changeDate(1)}>
+        <ArrowIcon
+          width={16}
+          height={16}
+          fill={colors.onPrimaryContainer}
+          rotation={270}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -115,7 +179,14 @@ export const Menu = ({
   const dayMenu = mindenkorimenu[key] || { A: [], B: [], nap: key };
 
   return (
-    <View className="flex-row">
+    <View
+      style={{
+        flexDirection: 'row',
+        gap: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       {realMenu !== 'B' && <MenuCard menu="A" items={dayMenu.A} />}
       {realMenu !== 'A' && <MenuCard menu="B" items={dayMenu.B} />}
     </View>

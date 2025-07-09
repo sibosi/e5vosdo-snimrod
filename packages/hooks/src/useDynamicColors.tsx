@@ -53,7 +53,6 @@ const definitions = [
 
   ['InverseSurface', 'system_inverse_surface'],
   ['InverseOnSurface', 'system_inverse_on_surface'],
-  ['InversePrimary', 'system_inverse_primary'],
 
   ['Outline', 'system_outline'],
   ['OutlineVariant', 'system_outline_variant'],

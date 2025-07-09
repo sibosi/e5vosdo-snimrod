@@ -1,0 +1,25 @@
+{
+  "plugins": ["expo-web-browser"],
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
+      "backgroundColor": "#ffffff"
+    },
+    "edgeToEdgeEnabled": true,
+    "intentFilters": [
+      {
+        "action": "VIEW",
+        "data": [
+          {
+            "scheme": "e5vosdo-snimrod"
+          }
+        ],
+        "category": ["BROWSABLE", "DEFAULT"]
+      }
+    ],
+    "package": "com.snimrod.e5vosdosnimrod",
+    "config": {
+      "googleServicesFile": "./google-services.json"
+    }
+  }
+}

@@ -38,3 +38,8 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+android/local.properties
+android/*.keystore
+android/app/*.keystore
+android/app/google-services.json

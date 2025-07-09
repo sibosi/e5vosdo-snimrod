@@ -1,6 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, useColorScheme } from 'react-native';
-import useDynamicColors from './hooks/useDynamicColors';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  useColorScheme,
+  ScrollView,
+} from 'react-native';
+import useDynamicColors from '@repo/hooks/useDynamicColors';
+import { Menu, MenuInSection } from '@repo/ui/src/android/Menu';
+import Timetable from '@repo/ui/src/android/InsideDateContext/Timetable';
+import { Events } from '@repo/ui/src/android/Events';
+import GoogleSignIn from '@repo/ui/src/android/SignIn';
+import { MenuTray } from '@repo/ui/src/android/InsideDateContext/MenuTray';
+import { DateProvider } from '@repo/ui/context/DateContext';
+import GoogleLogin from '@repo/ui/src/android/SignIn';
 
 export default function MainScreen() {
   const colors = useDynamicColors();
@@ -10,34 +24,87 @@ export default function MainScreen() {
   const scheme = useColorScheme();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>All Dynamic Colors {scheme}</Text>
-      <FlatList
-        data={colorEntries}
-        keyExtractor={([name]) => name}
-        numColumns={3}
-        renderItem={({ item }) => {
-          const [name, value] = item;
-          return (
-            <View style={styles.colorItem}>
-              <View style={[styles.colorPreview, { backgroundColor: value }]} />
-              <Text style={styles.colorName}>{name}</Text>
-              <Text style={styles.colorValue}>{String(value)}</Text>
-            </View>
-          );
-        }}
-        contentContainerStyle={styles.grid}
-      />
+    <View style={[styles.container, { backgroundColor: colors.surface }]}>
+      <GoogleLogin />
+      <DateProvider>
+        <Timetable
+          style={{ padding: 16 }}
+          selfUser={{
+            name: 'Nimród Simon',
+            EJG_code: '2023C25EJG462',
+            username: 'nimrod.simon',
+            nickname: 'Nimród',
+            email: 'simon.nimrod.zalan@e5vos.hu',
+            image: 'https://avatars.githubusercontent.com/u/81036480?v=4',
+            last_login: '2023-10-01T12:00:00Z',
+            permissions: ['view_timetable', 'view_events'],
+            food_menu: '',
+            coming_year: 2024,
+            class_character: '10.A',
+            order_number: 1,
+            tickets: [],
+            hidden_lessons: [],
+            default_group: null,
+            push_permission: true,
+            push_about_games: true,
+            push_about_timetable: true,
+          }}
+        />
+        <MenuTray style={{ paddingHorizontal: 16 }} />
+        <ScrollView horizontal style={{ gap: 8, marginTop: 16 }}>
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              backgroundColor: colors.primary,
+            }}
+          />
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              backgroundColor: colors.secondary,
+            }}
+          />
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              backgroundColor: colors.primary,
+            }}
+          />
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              backgroundColor: colors.secondary,
+            }}
+          />
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              backgroundColor: colors.primary,
+            }}
+          />
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              backgroundColor: colors.secondary,
+            }}
+          />
+        </ScrollView>
+      </DateProvider>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
-    paddingTop: 40,
-    backgroundColor: '#fff',
+    // padding: 16,
+    // paddingTop: 40,
+    // fontFamily: 'Outfit',
   },
   title: {
     fontSize: 20,

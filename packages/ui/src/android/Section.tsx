@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import Text from './Text';
 import {
   View,
-  Text,
   TouchableOpacity,
   LayoutAnimation,
   Platform,
   UIManager,
+  StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useDynamicColors from '@repo/hooks/useDynamicColors'; // Import the custom hook for dynamic colors
+import ArrowIcon from 'packages/icons/src/arrow.svg';
 
-// Section component for React Native with NativeWind
+// Section component for React Native with inline styles
 interface SectionProps {
   title: string;
   defaultStatus?: 'opened' | 'closed';
   dropdownable?: boolean;
   children: React.ReactNode;
-  className?: string;
-  titleClassName?: string;
+  style?: any;
+  titleStyle?: any;
   savable?: boolean;
   chip?: React.ReactNode;
   newVersion?: React.ReactNode;
@@ -42,8 +45,8 @@ export const Section: React.FC<SectionProps> = ({
   defaultStatus = 'opened',
   dropdownable = true,
   children,
-  className = '',
-  titleClassName = '',
+  style = {},
+  titleStyle = {},
   savable = true,
   chip,
   newVersion,
@@ -54,6 +57,14 @@ export const Section: React.FC<SectionProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(defaultStatus === 'opened');
   const [isNewVersion, setIsNewVersion] = useState(false);
+  const colors = useDynamicColors();
+
+  titleStyle = {
+    ...titleStyle,
+    color: colors.onSurface,
+    fontSize: 24,
+    fontWeight: '600',
+  };
 
   // Load status from AsyncStorage
   useEffect(() => {
@@ -92,27 +103,37 @@ export const Section: React.FC<SectionProps> = ({
     if (sideComponent) return sideComponent;
     if (newVersion && isOpen) {
       return (
-        <View className="flex-row space-x-2">
+        <View style={styles.flexRow}>
           <TouchableOpacity
             onPress={() => updateVersion(false)}
-            className={`px-2 py-1 rounded ${
-              !isNewVersion ? 'bg-primary-100' : ''
-            }`}
+            style={[
+              styles.versionButton,
+              !isNewVersion && styles.activeVersionButton,
+            ]}
           >
             <Text
-              className={isNewVersion ? 'text-primary-500' : 'text-primary-900'}
+              style={
+                isNewVersion
+                  ? styles.inactiveVersionText
+                  : styles.activeVersionText
+              }
             >
               {oldVersionName}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => updateVersion(true)}
-            className={`px-2 py-1 rounded ${
-              isNewVersion ? 'bg-primary-100' : ''
-            }`}
+            style={[
+              styles.versionButton,
+              isNewVersion && styles.activeVersionButton,
+            ]}
           >
             <Text
-              className={isNewVersion ? 'text-primary-900' : 'text-primary-500'}
+              style={
+                isNewVersion
+                  ? styles.activeVersionText
+                  : styles.inactiveVersionText
+              }
             >
               {newVersionName}
             </Text>
@@ -123,36 +144,91 @@ export const Section: React.FC<SectionProps> = ({
     return null;
   };
 
+  const containerStyle = [
+    styles.container,
+    isCard && styles.card,
+    isOpen ? styles.openContainer : styles.closedContainer,
+    style,
+  ];
+
   return (
-    <View
-      className={`overflow-hidden ${
-        isCard ? 'bg-primary-50 rounded-2xl p-6' : ''
-      } ${isOpen ? 'py-4 text-foreground' : 'py-0 text-gray-500'} ${className}`}
-    >
-      <View className="flex-row justify-between items-center">
+    <View style={containerStyle}>
+      <View style={styles.header}>
         <TouchableOpacity
           onPress={toggleDropdown}
-          className="flex-row items-center space-x-2"
+          style={styles.titleContainer}
         >
           {dropdownable && (
-            <Text
-              className={`text-2xl transform ${
-                isOpen ? '' : 'rotate-180'
-              } text-primary-500`}
-            >
-              ⌄
-            </Text>
+            <View style={[!isOpen && styles.arrowRotated]}>
+              <ArrowIcon width={24} height={24} fill={colors.primary} />
+            </View>
           )}
-          <Text className={titleClassName}>{title}</Text>
-          {chip && <View className="ml-2">{chip}</View>}
+          <Text style={titleStyle}>{title}</Text>
+          {chip && <View style={styles.chipContainer}>{chip}</View>}
         </TouchableOpacity>
         {renderSide()}
       </View>
       {isOpen && (
-        <View className="mt-3">
+        <View style={styles.contentContainer}>
           {newVersion && isNewVersion ? newVersion : children}
         </View>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    overflow: 'hidden',
+  },
+  card: {
+    backgroundColor: '#f8fafc', // primary-50
+    borderRadius: 16,
+    padding: 24,
+  },
+  openContainer: {
+    paddingVertical: 16,
+  },
+  closedContainer: {
+    paddingVertical: 0,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  arrow: {
+    color: '#6366f1', // primary-500
+  },
+  arrowRotated: {
+    transform: [{ rotate: '180deg' }],
+  },
+  chipContainer: {
+    marginLeft: 8,
+  },
+  contentContainer: {
+    marginTop: 4,
+  },
+  flexRow: {
+    flexDirection: 'row',
+  },
+  versionButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  activeVersionButton: {
+    backgroundColor: '#eff6ff', // primary-100
+  },
+  activeVersionText: {
+    color: '#1e3a8a', // primary-900
+  },
+  inactiveVersionText: {
+    color: '#6366f1', // primary-500
+  },
+});

@@ -18,7 +18,8 @@
       "@repo/resources/*": ["packages/resources/src/*"],
       "@repo/ui/*": ["packages/ui/src/*"],
       "@repo/utils/*": ["packages/utils/src/*"],
-      "@repo/types/*": ["packages/types/src/*"]
+      "@repo/types/*": ["packages/types/src/*"],
+      "@repo/hooks/*": ["packages/hooks/src/*"]
     }
   },
   "include": ["packages/**/*", "apps/**/*"]

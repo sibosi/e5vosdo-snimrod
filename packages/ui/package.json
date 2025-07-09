@@ -9,7 +9,7 @@
     "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
-    "expo": "~53.0.10",
+    "expo": "~53.0.18",
     "expo-status-bar": "~2.2.3",
     "nativewind": "^4.1.23",
     "react-native": "0.79.3",
@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "react": "^19.0.0",
     "typescript": "~5.8.3"
   },
   "private": true

@@ -26,6 +26,8 @@ export default function GoogleAuth() {
       '464331822983-p21vj910vg9heqbg9n8qr79vslp8o0ln.apps.googleusercontent.com',
     androidClientId:
       '464331822983-ec2iv4ik89lfv7l5nsv817flgnhdp0ks.apps.googleusercontent.com',
+    iosClientId:
+      '464331822983-uf37n8sn3d4vkhg43trfspkl0pej5qv9.apps.googleusercontent.com',
     scopes: ['openid', 'profile', 'email'],
   });
 

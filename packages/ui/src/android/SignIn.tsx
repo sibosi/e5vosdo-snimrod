@@ -1,38 +1,132 @@
 import React from 'react';
-import { Button } from 'react-native';
+import {
+  View,
+  Button,
+  Alert,
+  Text,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
-import { makeRedirectUri, ResponseType } from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import * as AuthSession from 'expo-auth-session';
 
-export default function GoogleLogin() {
-  const redirectUri = makeRedirectUri({
-    useProxy: true,
-    scheme: 'e5vosdo-snimrod', // az app.json-ban definiált scheme
+WebBrowser.maybeCompleteAuthSession();
+
+type UserInfo = {
+  name: string;
+  email: string;
+  picture: string;
+};
+
+export default function GoogleAuth() {
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId:
+      '464331822983-p21vj910vg9heqbg9n8qr79vslp8o0ln.apps.googleusercontent.com',
+    androidClientId:
+      '464331822983-ec2iv4ik89lfv7l5nsv817flgnhdp0ks.apps.googleusercontent.com',
+    scopes: ['openid', 'profile', 'email'],
   });
 
-  const [request, response, promptAsync] = Google.useAuthRequest(
-    {
-      clientId:
-        '464331822983-p21vj910vg9heqbg9n8qr79vslp8o0ln.apps.googleusercontent.com', // → a Web OAuth kliensed
-      androidClientId:
-        '464331822983-ec2iv4ik89lfv7l5nsv817flgnhdp0ks.apps.googleusercontent.com',
-      iosClientId: 'IOS_CLIENT_ID.apps.googleusercontent.com', // ha iOS-t is később csinálsz
-      responseType: ResponseType.IdToken,
-      redirectUri,
-    },
-    { useProxy: true }
-  );
+  const [userInfo, setUserInfo] = React.useState<UserInfo | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (response?.type === 'success') {
-      console.log('auth:', response.authentication);
+    if (response?.type === 'success' && response.authentication) {
+      const { accessToken } = response.authentication;
+      setLoading(true);
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+        .then((res) => res.json())
+        .then((data: UserInfo) => {
+          setUserInfo({
+            name: data.name,
+            email: data.email,
+            picture: data.picture,
+          });
+        })
+        .catch((err) => {
+          Alert.alert('Hiba a userinfo lekéréskor', err.message);
+        })
+        .finally(() => setLoading(false));
     }
   }, [response]);
 
+  const handleLogout = async () => {
+    if (response?.type !== 'success' || !response.authentication?.accessToken)
+      return;
+
+    try {
+      await AuthSession.revokeAsync(
+        {
+          token: response.authentication.accessToken,
+        },
+        {
+          revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
+        }
+      );
+    } catch (err) {
+      console.warn('Revoke hiba:', err);
+    }
+
+    setUserInfo(null);
+    Alert.alert('Kijelentkezve');
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (userInfo)
+    return (
+      <View style={styles.container}>
+        <Image source={{ uri: userInfo.picture }} style={styles.avatar} />
+        <Text style={styles.name}>{userInfo.name}</Text>
+        <Text style={styles.email}>{userInfo.email}</Text>
+        <Button title="Logout" onPress={handleLogout} />
+      </View>
+    );
+
   return (
-    <Button
-      title="Sign in with Google"
-      disabled={!request}
-      onPress={() => promptAsync()}
-    />
+    <View>
+      <Button
+        title="Sign in with Google"
+        onPress={() => promptAsync()}
+        disabled={!request}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 12,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  email: {
+    fontSize: 14,
+    marginBottom: 12,
+  },
+});

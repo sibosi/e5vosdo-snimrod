@@ -26,6 +26,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="e5vosdo-snimrod"/>
         <data android:scheme="exp+e5vosdo-snimrod"/>
+        <data android:scheme="com.snimrod.e5vosdosnimrod"/>
       </intent-filter>
       <intent-filter data-generated="true">
         <action android:name="android.intent.action.VIEW"/>

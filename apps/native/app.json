@@ -10,11 +10,7 @@
     "newArchEnabled": true,
     "experiments.reactCanary": true,
     "entryPoint": "index.ts",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -37,10 +33,7 @@
               "scheme": "e5vosdo-snimrod"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -49,10 +42,7 @@
               "scheme": "e5vosdo-snimrod"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "package": "com.snimrod.e5vosdosnimrod"
@@ -62,6 +52,7 @@
       "bundler": "metro"
     },
     "plugins": [
+      "@react-native-google-signin/google-signin",
       [
         "expo-dev-client",
         {

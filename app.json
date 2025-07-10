@@ -9,6 +9,7 @@
     "intentFilters": [
       {
         "action": "VIEW",
+        "autoVerify": true,
         "data": [
           {
             "scheme": "e5vosdo-snimrod"
@@ -17,9 +18,6 @@
         "category": ["BROWSABLE", "DEFAULT"]
       }
     ],
-    "package": "com.snimrod.e5vosdosnimrod",
-    "config": {
-      "googleServicesFile": "./google-services.json"
-    }
+    "package": "com.snimrod.e5vosdosnimrod"
   }
 }

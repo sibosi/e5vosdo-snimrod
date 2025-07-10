@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@expo-google-fonts/outfit": "^0.4.2",
+    "@react-native-google-signin/google-signin": "^15.0.0",
     "expo": "~53.0.10",
     "expo-auth-session": "~6.2.1",
     "expo-dev-client": "~5.2.4",
     "expo-font": "~13.3.1",
+    "expo-random": "^14.0.1",
     "expo-status-bar": "~2.2.3",
     "nativewind": "^4.1.23",
     "react": "19.0.0",

@@ -44,7 +44,7 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return null; // vagy egy betöltési képernyő, ha szükséges
+    return <Text>Loading...</Text>; // ideiglenes szöveg, amíg a betűtípusok betöltődnek
   }
 
   return (

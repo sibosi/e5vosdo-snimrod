@@ -1,5 +1,7 @@
 {
-  "plugins": ["expo-web-browser"],
+  "plugins": [
+    "expo-web-browser"
+  ],
   "android": {
     "adaptiveIcon": {
       "foregroundImage": "./assets/adaptive-icon.png",
@@ -15,9 +17,22 @@
             "scheme": "e5vosdo-snimrod"
           }
         ],
-        "category": ["BROWSABLE", "DEFAULT"]
+        "category": [
+          "BROWSABLE",
+          "DEFAULT"
+        ]
       }
     ],
     "package": "com.snimrod.e5vosdosnimrod"
+  },
+  "extra": {
+    "eas": {
+      "projectId": "ea69be18-5b37-4eb8-8e89-9d199ef86da6"
+    }
+  },
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "com.snimrod.e5vosdosnimrod"
+    }
   }
 }

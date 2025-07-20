@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { PlatformColor, useColorScheme } from 'react-native';
+import { Platform, PlatformColor, useColorScheme } from 'react-native';
+import defaultPalette from './material-theme.json';
 
 const definitions = [
   ['Primary', 'system_palette_key_color_primary'],
@@ -76,6 +77,9 @@ export default function useDynamicColors(): DynamicColors {
   const scheme = useColorScheme();
 
   return useMemo(() => {
+    if (Platform.OS !== 'android')
+      return defaultPalette.schemes.light as unknown as DynamicColors;
+
     const colors = {} as DynamicColors;
 
     definitions.forEach(([attr, resBase]) => {

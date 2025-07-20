@@ -8,13 +8,12 @@ import {
   ScrollView,
 } from 'react-native';
 import useDynamicColors from '@repo/hooks/useDynamicColors';
-import { Menu, MenuInSection } from '@repo/ui/src/android/Menu';
-import Timetable from '@repo/ui/src/android/InsideDateContext/Timetable';
-import { Events } from '@repo/ui/src/android/Events';
-import GoogleSignIn from '@repo/ui/src/android/SignIn';
-import { MenuTray } from '@repo/ui/src/android/InsideDateContext/MenuTray';
-import { DateProvider } from '@repo/ui/context/DateContext';
-import GoogleLogin from '@repo/ui/src/android/SignIn';
+import { Menu, MenuInSection } from './ui/Menu';
+import Timetable from './ui/DateContext/Timetable';
+import { Events } from './ui/Events';
+import { MenuTray } from './ui/DateContext/MenuTray';
+import { DateProvider } from './ui/DateContext/DateContext';
+import GoogleLogin from './ui/SignIn';
 
 export default function MainScreen() {
   const colors = useDynamicColors();

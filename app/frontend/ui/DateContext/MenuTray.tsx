@@ -6,7 +6,7 @@ import menzaMenu from '@repo/resources/mindenkorimenu.json';
 import { PossibleUserType } from '@repo/types/index';
 import useDynamicColors from '@repo/hooks/useDynamicColors';
 import Text from '../Text';
-import { useDateContext } from '../../context/DateContext';
+import { useDateContext } from './DateContext';
 
 type MenuType = Record<string, { A: string[]; B: string[]; nap: string }>;
 const mindenkorimenu = menzaMenu as unknown as MenuType;

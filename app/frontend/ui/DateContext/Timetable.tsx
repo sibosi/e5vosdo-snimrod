@@ -15,7 +15,7 @@ import Text from '../Text';
 import useDynamicColors from '@repo/hooks/useDynamicColors';
 import DatePicker from './DatePicker';
 import { useEffect } from 'react';
-import { useDateContext } from '@repo/ui/context/DateContext';
+import { useDateContext } from './DateContext';
 
 function extendLessonWithSubstitutions(
   lesson: TimetableLesson,

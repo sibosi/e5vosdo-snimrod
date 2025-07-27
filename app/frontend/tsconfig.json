@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "react-native",
     "outDir": "build",
-    "baseUrl": "../.."
+    "baseUrl": "../..",
+    "types": ["react-native", "./types/svg"]
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

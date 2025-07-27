@@ -6,7 +6,7 @@ import menzaMenu from '@repo/resources/mindenkorimenu.json';
 import { PossibleUserType } from '@repo/types/index';
 import { Section } from './Section'; // Import the Section component
 import useDynamicColors from '../hooks/useDynamicColors'; // Import the custom hook for dynamic colors
-import ArrowIcon from 'packages/icons/src/arrow.svg';
+import ArrowIcon from '../assets/arrow.svg';
 import Text from './Text';
 
 // Utility to format dates

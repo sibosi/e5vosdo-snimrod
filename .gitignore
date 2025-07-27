@@ -11,6 +11,7 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+.service-account-key.json
 
 # Testing
 coverage

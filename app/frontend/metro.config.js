@@ -25,7 +25,6 @@ config.watchFolders = [
   monorepoRoot,
   path.join(monorepoRoot, 'packages/resources'),
   path.join(monorepoRoot, 'packages/types'),
-  path.join(monorepoRoot, 'packages/hooks'),
   //  path.resolve(__dirname, '../../node_modules'),
 ];
 
@@ -37,7 +36,6 @@ config.resolver.nodeModulesPaths = [
 config.resolver.extraNodeModules = {
   '@repo/resources': path.join(monorepoRoot, 'packages/resources'),
   '@repo/types': path.join(monorepoRoot, 'packages/types'),
-  '@repo/hooks': path.join(monorepoRoot, 'packages/hooks'),
   'react-native': path.join(projectRoot, 'node_modules/react-native'),
 };
 

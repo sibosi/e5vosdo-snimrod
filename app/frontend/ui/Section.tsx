@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import useDynamicColors from '@repo/hooks/useDynamicColors'; // Import the custom hook for dynamic colors
+import useDynamicColors from '../hooks/useDynamicColors'; // Import the custom hook for dynamic colors
 import ArrowIcon from 'packages/icons/src/arrow.svg';
 
 // Section component for React Native with inline styles

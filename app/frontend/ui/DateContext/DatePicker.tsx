@@ -2,7 +2,7 @@ import { View, TouchableOpacity } from 'react-native';
 import ArrowIcon from '../../assets/arrow.svg';
 import Text from '../Text';
 import { useDateContext } from './DateContext';
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from '../../hooks/useDynamicColors';
 
 export default function DatePicker() {
   const colors = useDynamicColors();

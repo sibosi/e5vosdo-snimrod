@@ -1,4 +1,4 @@
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from '../hooks/useDynamicColors';
 import React, { useState } from 'react';
 import {
   View,

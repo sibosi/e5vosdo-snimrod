@@ -1,7 +1,7 @@
 import { TouchableOpacity } from 'react-native';
 import Text from './Text';
 import { ChipProps } from '@repo/types/index';
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from '../hooks/useDynamicColors';
 
 export default function Chip({
   children,

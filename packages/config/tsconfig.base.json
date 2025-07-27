@@ -16,8 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@repo/resources/*": ["packages/resources/src/*"],
-      "@repo/types/*": ["packages/types/src/*"],
-      "@repo/hooks/*": ["packages/hooks/src/*"]
+      "@repo/types/*": ["packages/types/src/*"]
     }
   },
   "include": ["packages/**/*", "apps/**/*"]

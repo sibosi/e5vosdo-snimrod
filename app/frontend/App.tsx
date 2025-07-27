@@ -15,7 +15,7 @@ import {
 } from '@expo-google-fonts/outfit';
 import { useFonts } from 'expo-font';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from './hooks/useDynamicColors';
 
 export default function App() {
   const colorScheme = useColorScheme();

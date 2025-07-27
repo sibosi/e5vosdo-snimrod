@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { hu } from 'date-fns/locale';
 import menzaMenu from '@repo/resources/mindenkorimenu.json';
 import { PossibleUserType } from '@repo/types/index';
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from '../../hooks/useDynamicColors';
 import Text from '../Text';
 import { useDateContext } from './DateContext';
 

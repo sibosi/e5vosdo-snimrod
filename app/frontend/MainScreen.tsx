@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from './hooks/useDynamicColors';
 import Timetable from './ui/DateContext/Timetable';
 import { MenuTray } from './ui/DateContext/MenuTray';
 import { DateProvider } from './ui/DateContext/DateContext';

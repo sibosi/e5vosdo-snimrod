@@ -1,4 +1,4 @@
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from '../hooks/useDynamicColors';
 import React from 'react';
 import { Text as RNText, TextProps, TextStyle } from 'react-native';
 

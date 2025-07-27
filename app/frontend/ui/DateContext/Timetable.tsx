@@ -7,12 +7,12 @@ import {
 import {
   TeacherChangesByDate,
   useSubstitutions,
-} from '@repo/hooks/useSubstitutions';
+} from '../../hooks/useSubstitutions';
 import { PossibleUserType, TimetableLesson } from '@repo/types/index';
-import { DayType, useTimetable } from '@repo/hooks/useTimetable';
+import { DayType, useTimetable } from '../../hooks/useTimetable';
 import Alert from '../Alert';
 import Text from '../Text';
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from '../../hooks/useDynamicColors';
 import DatePicker from './DatePicker';
 import { useEffect } from 'react';
 import { useDateContext } from './DateContext';

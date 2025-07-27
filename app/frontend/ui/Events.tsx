@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { useEvents } from '@repo/hooks/useEvents';
+import { useEvents } from '../hooks/useEvents';
 import { SideCard } from './SideCard';
 import { Section } from './Section';
 import Text from './Text';
 import Chip from './Chip';
-import useDynamicColors from '@repo/hooks/useDynamicColors';
+import useDynamicColors from '../hooks/useDynamicColors';
 
 const shortWeekday: { [key: string]: string } = {
   hétfő: 'hétf.',

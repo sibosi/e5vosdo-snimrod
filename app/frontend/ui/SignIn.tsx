@@ -11,16 +11,13 @@ import {
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
+import { useAuth } from './AuthContext';
 
 WebBrowser.maybeCompleteAuthSession();
 
-type UserInfo = {
-  name: string;
-  email: string;
-  picture: string;
-};
-
 export default function GoogleAuth() {
+  const { userInfo, isLoading, setIsLoading, login, logout } = useAuth();
+
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId:
       '464331822983-p21vj910vg9heqbg9n8qr79vslp8o0ln.apps.googleusercontent.com',
@@ -29,32 +26,32 @@ export default function GoogleAuth() {
     iosClientId:
       '464331822983-uf37n8sn3d4vkhg43trfspkl0pej5qv9.apps.googleusercontent.com',
     scopes: ['openid', 'profile', 'email'],
+    // responseType: AuthSession.ResponseType.IdToken, // Request ID token for secure auth
   });
-
-  const [userInfo, setUserInfo] = React.useState<UserInfo | null>(null);
-  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (response?.type === 'success' && response.authentication) {
-      const { accessToken } = response.authentication;
-      setLoading(true);
+      const { accessToken, idToken } = response.authentication;
+      setIsLoading(true);
       fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
         .then((res) => res.json())
-        .then((data: UserInfo) => {
-          setUserInfo({
+        .then((data: any) => {
+          const userInfo = {
             name: data.name,
             email: data.email,
             picture: data.picture,
-          });
+          };
+          // Use the login function from AuthContext
+          login(userInfo, idToken || '', accessToken || '');
         })
         .catch((err) => {
           Alert.alert('Hiba a userinfo lekéréskor', err.message);
         })
-        .finally(() => setLoading(false));
+        .finally(() => setIsLoading(false));
     }
-  }, [response]);
+  }, [response, login, setIsLoading]);
 
   const handleLogout = async () => {
     if (response?.type !== 'success' || !response.authentication?.accessToken)
@@ -73,11 +70,11 @@ export default function GoogleAuth() {
       console.warn('Revoke hiba:', err);
     }
 
-    setUserInfo(null);
+    logout(); // Use logout from AuthContext
     Alert.alert('Kijelentkezve');
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" />
@@ -92,6 +89,14 @@ export default function GoogleAuth() {
         <Text style={styles.name}>{userInfo.name}</Text>
         <Text style={styles.email}>{userInfo.email}</Text>
         <Button title="Logout" onPress={handleLogout} />
+        {!(
+          response?.type !== 'success' || !response.authentication?.accessToken
+        ) && (
+          <>
+            <Text>Refresh token: {response?.authentication?.refreshToken}</Text>
+            <Text>Access token: {response?.authentication?.accessToken}</Text>
+          </>
+        )}
       </View>
     );
 

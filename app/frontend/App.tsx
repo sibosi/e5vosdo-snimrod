@@ -2,6 +2,9 @@ import { Text, useColorScheme } from 'react-native';
 import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import MainScreen from './MainScreen';
+import EventsScreen from './EventsScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   Outfit_100Thin,
   Outfit_200ExtraLight,
@@ -17,9 +20,10 @@ import { useFonts } from 'expo-font';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useDynamicColors from './hooks/useDynamicColors';
 
+const Stack = createNativeStackNavigator();
+
 export default function App() {
   const colorScheme = useColorScheme();
-  // ha nem adsz át semmit, Android 12+ alatt valóban a rendszer által generált dinamikus színeket kapod vissza
   const { theme } = useMaterial3Theme();
   const colors = useDynamicColors();
 
@@ -44,7 +48,7 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>; // ideiglenes szöveg, amíg a betűtípusok betöltődnek
+    return <Text>Loading...</Text>;
   }
 
   return (
@@ -53,7 +57,20 @@ export default function App() {
         edges={['top', 'bottom']}
         style={{ flex: 1, backgroundColor: colors.surface }}
       >
-        <MainScreen />
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Main">
+            <Stack.Screen
+              name="Main"
+              component={MainScreen}
+              options={{ title: 'Főoldal' }}
+            />
+            <Stack.Screen
+              name="Events"
+              component={EventsScreen}
+              options={{ title: 'Events' }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
       </SafeAreaView>
     </PaperProvider>
   );

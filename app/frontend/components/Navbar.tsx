@@ -58,28 +58,29 @@ const NavbarForPhone = () => {
   };
 
   useEffect(() => {
-      try {
-        const state = navigation.getState();
-        if (state?.routes && state.routes.length > 0) {
-          const routeName = state.routes[state.index]?.name || 'Main';
-          setCurrentTitle(PageTitles[routeName] ?? 'E5vös DÖ');
-        }
-      } catch (error) {
-        console.log('Error getting initial state:', error);
-        setCurrentTitle('E5vös DÖ');
+    try {
+      const state = navigation.getState();
+      if (state?.routes && state.routes.length > 0) {
+        const routeName = state.routes[state.index]?.name || 'Main';
+        setCurrentTitle(PageTitles[routeName] ?? 'E5vös DÖ');
       }
-  
-      const unsubscribe = navigation.addListener('state', (e) => {
-        try {
-          const routeName = e.data?.state?.routes?.[e.data.state.index]?.name || 'Main';
-          setCurrentTitle(PageTitles[routeName] ?? 'E5vös DÖ');
-        } catch (error) {
-          console.log('Error in state listener:', error);
-        }
-      });
-  
-      return unsubscribe;
-    }, [navigation]);
+    } catch (error) {
+      console.log('Error getting initial state:', error);
+      setCurrentTitle('E5vös DÖ');
+    }
+
+    const unsubscribe = navigation.addListener('state', (e) => {
+      try {
+        const routeName =
+          e.data?.state?.routes?.[e.data.state.index]?.name || 'Main';
+        setCurrentTitle(PageTitles[routeName] ?? 'E5vös DÖ');
+      } catch (error) {
+        console.log('Error in state listener:', error);
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={[styles.navbar, { backgroundColor: colors.surface }]}>
@@ -192,14 +193,10 @@ export const Navbar = ({
   }, []);
 
   if (isMobile) {
-    return (
-      <NavbarForPhone />
-    );
+    return <NavbarForPhone />;
   }
 
-  return (
-    <NavbarForDesktop />
-  );
+  return <NavbarForDesktop />;
 };
 
 const styles = StyleSheet.create({

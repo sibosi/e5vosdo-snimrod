@@ -9,7 +9,11 @@ export default function DisplayProfile() {
   const [error, setError] = React.useState<string | null>(null);
 
   const fetchProfile = React.useCallback(async () => {
-    console.log('[Debug] fetchProfile start', { isLoggedIn, tokenLength: idToken?.length, tokenSnippet: idToken?.slice(0, 20) });
+    console.log('[Debug] fetchProfile start', {
+      isLoggedIn,
+      tokenLength: idToken?.length,
+      tokenSnippet: idToken?.slice(0, 20),
+    });
     if (!isLoggedIn || !idToken) {
       console.log('[Debug] Not logged in or missing idToken');
       setProfile(null);
@@ -25,10 +29,10 @@ export default function DisplayProfile() {
       console.log('[Debug] Sending fetch request', { url });
       const response = await fetch(url, {
         method: 'GET',
-        credentials: 'include',    // include cookies for NextAuth session
+        credentials: 'include', // include cookies for NextAuth session
         headers: {
           Authorization: `Bearer ${idToken}`,
-          module: "event",
+          module: 'event',
           Accept: 'application/json',
         },
       });
@@ -83,8 +87,14 @@ export default function DisplayProfile() {
 
   return (
     <View style={{ padding: 16 }}>
-      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>DisplayProfile</Text>
-      <Button title="Refresh Profile" onPress={fetchProfile} disabled={loading} />
+      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>
+        DisplayProfile
+      </Text>
+      <Button
+        title="Refresh Profile"
+        onPress={fetchProfile}
+        disabled={loading}
+      />
       {loading && <Text>Loading...</Text>}
       {error && <Text style={{ color: 'red' }}>Error: {error}</Text>}
       <Text>Profile type: {typeof profile}</Text>

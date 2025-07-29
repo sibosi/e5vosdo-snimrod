@@ -23,7 +23,6 @@ import PageNav from './components/PageNav';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './ui/AuthContext';
 
-
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -57,32 +56,32 @@ export default function App() {
 
   return (
     <PaperProvider theme={paperTheme}>
-          <AuthProvider>
-      <SafeAreaView
-        edges={['top', 'bottom']}
-        style={{ flex: 1, backgroundColor: colors.surface }}
-      > 
-        <NavigationContainer>
-          <Navbar />
-          <Stack.Navigator
-            initialRouteName="Main"
-            screenOptions={{ headerShown: false }}
-          >
-            <Stack.Screen
-              name="Main"
-              component={MainScreen}
-              options={{ title: 'Főoldal' }}
-            />
-            <Stack.Screen
-              name="Events"
-              component={EventsScreen}
-              options={{ title: 'Events' }}
-            />
-          </Stack.Navigator>
-          <PageNav /> 
-        </NavigationContainer>
-      </SafeAreaView>
-      </AuthProvider> 
+      <AuthProvider>
+        <SafeAreaView
+          edges={['top', 'bottom']}
+          style={{ flex: 1, backgroundColor: colors.surface }}
+        >
+          <NavigationContainer>
+            <Navbar />
+            <Stack.Navigator
+              initialRouteName="Main"
+              screenOptions={{ headerShown: false }}
+            >
+              <Stack.Screen
+                name="Main"
+                component={MainScreen}
+                options={{ title: 'Főoldal' }}
+              />
+              <Stack.Screen
+                name="Events"
+                component={EventsScreen}
+                options={{ title: 'Events' }}
+              />
+            </Stack.Navigator>
+            <PageNav />
+          </NavigationContainer>
+        </SafeAreaView>
+      </AuthProvider>
     </PaperProvider>
-  )
+  );
 }

@@ -105,7 +105,8 @@ export default function PageNav() {
 
     const unsubscribe = navigation.addListener('state', (e) => {
       try {
-        const routeName = e.data?.state?.routes?.[e.data.state.index]?.name || 'Main';
+        const routeName =
+          e.data?.state?.routes?.[e.data.state.index]?.name || 'Main';
         setCurrentRoute(routeName);
       } catch (error) {
         console.log('Error in state listener:', error);

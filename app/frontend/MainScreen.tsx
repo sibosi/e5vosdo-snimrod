@@ -18,42 +18,39 @@ export default function MainScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<StackParamList, 'Main'>>();
 
-
   return (
-
-
-        <ScrollView
-          style={[styles.container, { flex: 1, backgroundColor: colors.surface }]}
-        >
-          <GoogleLogin />
-          <DateProvider>
-            <Timetable
-              style={{ padding: 16 }}
-              selfUser={{
-                name: 'Nimród Simon',
-                EJG_code: '2023C25EJG462',
-                username: 'nimrod.simon',
-                nickname: 'Nimród',
-                email: 'simon.nimrod.zalan@e5vos.hu',
-                image: 'https://avatars.githubusercontent.com/u/81036480?v=4',
-                last_login: '2023-10-01T12:00:00Z',
-                permissions: ['view_timetable', 'view_events'],
-                food_menu: '',
-                coming_year: 2024,
-                class_character: '10.A',
-                order_number: 1,
-                tickets: [],
-                hidden_lessons: [],
-                default_group: null,
-                push_permission: true,
-                push_about_games: true,
-                push_about_timetable: true,
-              }}
-            />
-            <MenuTray style={{ paddingHorizontal: 16 }} />
-            <DisplayProfile />
-          </DateProvider>
-        </ScrollView>
+    <ScrollView
+      style={[styles.container, { flex: 1, backgroundColor: colors.surface }]}
+    >
+      <GoogleLogin />
+      <DateProvider>
+        <Timetable
+          style={{ padding: 16 }}
+          selfUser={{
+            name: 'Nimród Simon',
+            EJG_code: '2023C25EJG462',
+            username: 'nimrod.simon',
+            nickname: 'Nimród',
+            email: 'simon.nimrod.zalan@e5vos.hu',
+            image: 'https://avatars.githubusercontent.com/u/81036480?v=4',
+            last_login: '2023-10-01T12:00:00Z',
+            permissions: ['view_timetable', 'view_events'],
+            food_menu: '',
+            coming_year: 2024,
+            class_character: '10.A',
+            order_number: 1,
+            tickets: [],
+            hidden_lessons: [],
+            default_group: null,
+            push_permission: true,
+            push_about_games: true,
+            push_about_timetable: true,
+          }}
+        />
+        <MenuTray style={{ paddingHorizontal: 16 }} />
+        <DisplayProfile />
+      </DateProvider>
+    </ScrollView>
   );
 }
 

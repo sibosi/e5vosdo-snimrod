@@ -1,9 +1,9 @@
 import { View, Text, Button } from 'react-native';
 import React from 'react';
-import { useAuth } from '../AuthContext';
+import { useAccountId } from '../AuthContext';
 
 export default function DisplayProfile() {
-  const { idToken, isLoggedIn, refreshTrigger } = useAuth();
+  const { idToken, isLoggedIn, refreshTrigger } = useAccountId();
   const [profile, setProfile] = React.useState<any>();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);

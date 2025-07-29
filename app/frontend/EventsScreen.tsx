@@ -1,12 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import PageNav from './components/PageNav';
 
 const EventsScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Hello world!</Text>
-      <PageNav currentRoute="Events" />
     </View>
   );
 };

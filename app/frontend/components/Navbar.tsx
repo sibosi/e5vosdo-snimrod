@@ -11,30 +11,10 @@ import ChangingComponent from './ChangingComponent';
 import Logo from '../assets/logo.svg';
 
 interface NavbarProps {
-  selfUser: PossibleUserType;
   className?: string;
   isActiveHeadSpace?: boolean;
 }
 
-// GetApp Component (simplified PWA button)
-const GetApp = ({ size = 'medium' }: { size?: 'small' | 'medium' }) => {
-  const iconSize = size === 'small' ? 20 : 24;
-
-  return (
-    <TouchableOpacity style={styles.getAppButton}>
-      <Svg
-        width={iconSize}
-        height={iconSize}
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <Path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
-      </Svg>
-    </TouchableOpacity>
-  );
-};
-
-// HelloMessage Component
 const HelloMessage = ({
   selfUser,
   size = 'md',
@@ -63,21 +43,7 @@ const HelloMessage = ({
   );
 };
 
-// LiveScore Component (placeholder)
-const LiveScore = () => {
-  const colors = useDynamicColors();
-
-  return (
-    <View style={styles.liveScoreContainer}>
-      <Text style={[styles.liveScoreText, { color: colors.primary }]}>
-        Live Score
-      </Text>
-    </View>
-  );
-};
-
 const NavbarForPhone = ({
-  selfUser,
   className,
   isActiveHeadSpace,
 }: NavbarProps) => {
@@ -103,29 +69,21 @@ const NavbarForPhone = ({
   return (
     <View style={[styles.navbar, { backgroundColor: colors.surface }]}>
       <View style={styles.navbarContent}>
-        <View style={styles.leftContent}>
-          <GetApp size="small" />
-        </View>
-
         <View style={styles.centerContent}>
           <ChangingComponent
             startComponent={
               <HelloMessage selfUser={selfUser} size="sm" padding={false} />
             }
             endComponent={
-              isActiveHeadSpace ? (
-                <LiveScore />
-              ) : (
-                <TouchableOpacity
-                  style={styles.titleContainer}
-                  onPress={() => navigation.navigate('Main' as never)}
-                >
-                  <Logo />
-                  <Text style={[styles.title, { color: colors.onSurface }]}>
-                    {currentTitle}
-                  </Text>
-                </TouchableOpacity>
-              )
+              <TouchableOpacity
+                style={styles.titleContainer}
+                onPress={() => navigation.navigate('Main' as never)}
+              >
+                <Logo />
+                <Text style={[styles.title, { color: colors.onSurface }]}>
+                  {currentTitle}
+                </Text>
+              </TouchableOpacity>
             }
           />
         </View>
@@ -153,16 +111,12 @@ const NavbarForPhone = ({
   );
 };
 
-const NavbarForDesktop = ({
-  selfUser,
-  className,
-  isActiveHeadSpace,
-}: NavbarProps) => {
+const NavbarForDesktop = ({ selfUser, className }: NavbarProps) => {
   const colors = useDynamicColors();
   const navigation = useNavigation();
 
-  // Navigation items (you can customize these based on your app's structure)
   const navItems = [
+    { href: 'Main', label: 'Főoldal' },
     { href: 'Events', label: 'Események' },
     { href: 'Clubs', label: 'Szakkörök' },
     { href: 'Me', label: 'Profilom' },
@@ -172,28 +126,12 @@ const NavbarForDesktop = ({
     <View style={[styles.navbar, { backgroundColor: colors.surface }]}>
       <View style={styles.desktopContent}>
         <View style={styles.leftSection}>
-          {!selfUser?.permissions.includes('user') ? (
-            <TouchableOpacity
-              style={styles.logoContainer}
-              onPress={() => navigation.navigate('Main' as never)}
-            >
-              <Logo />
-              <Text style={[styles.logoText, { color: colors.onSurface }]}>
-                E5
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.userSection}>
-              <HelloMessage selfUser={selfUser} size="sm" padding={false} />
-              {selfUser?.permissions.includes('tester') && (
-                <Chip version="secondary" size="sm">
-                  <Text>Tesztverzió</Text>
-                </Chip>
-              )}
-            </View>
-          )}
-
-          <GetApp size={isActiveHeadSpace ? 'small' : 'medium'} />
+          <TouchableOpacity
+            style={styles.logoContainer}
+            onPress={() => navigation.navigate('Main' as never)}
+          >
+            <Logo height={44} width={44} />
+          </TouchableOpacity>
 
           <View style={styles.navLinks}>
             {navItems.map((item) => (
@@ -223,7 +161,6 @@ const NavbarForDesktop = ({
 };
 
 export const Navbar = ({
-  selfUser,
   className,
 }: Omit<NavbarProps, 'isActiveHeadSpace'>) => {
   const { pageSettings } = usePageSettings();

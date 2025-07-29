@@ -19,6 +19,8 @@ import {
 import { useFonts } from 'expo-font';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useDynamicColors from './hooks/useDynamicColors';
+import PageNav from './components/PageNav';
+import Navbar from './components/Navbar';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +60,7 @@ export default function App() {
         style={{ flex: 1, backgroundColor: colors.surface }}
       >
         <NavigationContainer>
+          <Navbar />
           <Stack.Navigator
             initialRouteName="Main"
             screenOptions={{ headerShown: false }}
@@ -73,8 +76,9 @@ export default function App() {
               options={{ title: 'Events' }}
             />
           </Stack.Navigator>
+          <PageNav />
         </NavigationContainer>
       </SafeAreaView>
     </PaperProvider>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -85,14 +85,35 @@ let isInitialized = false;
 const globalHighlightLeft = new Animated.Value(0);
 const globalHighlightWidth = new Animated.Value(60);
 
-interface PageNavProps {
-  readonly currentRoute?: string;
-}
-
-export default function PageNav({ currentRoute = 'Main' }: PageNavProps) {
+export default function PageNav() {
   const navigation = useNavigation();
   const itemRefs = useRef<(View | null)[]>([]);
   const colors = useDynamicColors();
+  const [currentRoute, setCurrentRoute] = useState('Main');
+
+  useEffect(() => {
+    try {
+      const state = navigation.getState();
+      if (state?.routes && state.routes.length > 0) {
+        const routeName = state.routes[state.index]?.name || 'Main';
+        setCurrentRoute(routeName);
+      }
+    } catch (error) {
+      console.log('Error getting initial state:', error);
+      setCurrentRoute('Main');
+    }
+
+    const unsubscribe = navigation.addListener('state', (e) => {
+      try {
+        const routeName = e.data?.state?.routes?.[e.data.state.index]?.name || 'Main';
+        setCurrentRoute(routeName);
+      } catch (error) {
+        console.log('Error in state listener:', error);
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     const newPage = tabs.find((page) => page.route === currentRoute);

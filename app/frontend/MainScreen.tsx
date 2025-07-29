@@ -46,7 +46,6 @@ export default function MainScreen() {
   return (
     <AuthProvider>
       <View style={{ flex: 1 }}>
-        <Navbar selfUser={selfUser} />
         <ScrollView
           style={[styles.container, { backgroundColor: colors.surface }]}
         >
@@ -127,7 +126,6 @@ export default function MainScreen() {
             <DisplayProfile />
           </DateProvider>
         </ScrollView>
-        <PageNav currentRoute="Main" />
       </View>
     </AuthProvider>
   );

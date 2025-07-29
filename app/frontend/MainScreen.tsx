@@ -21,14 +21,10 @@ export default function MainScreen() {
 
   return (
 
-      <View style={{ flex: 1 }}>
+
         <ScrollView
-          style={[styles.container, { backgroundColor: colors.surface }]}
+          style={[styles.container, { flex: 1, backgroundColor: colors.surface }]}
         >
-          <Button
-            title="Go to Events"
-            onPress={() => navigation.navigate('Events')}
-          />
           <GoogleLogin />
           <DateProvider>
             <Timetable
@@ -55,54 +51,9 @@ export default function MainScreen() {
               }}
             />
             <MenuTray style={{ paddingHorizontal: 16 }} />
-            <ScrollView horizontal style={{ gap: 8, marginTop: 16 }}>
-              <View
-                style={{
-                  width: 100,
-                  height: 100,
-                  backgroundColor: colors.primary,
-                }}
-              />
-              <View
-                style={{
-                  width: 100,
-                  height: 100,
-                  backgroundColor: colors.secondary,
-                }}
-              />
-              <View
-                style={{
-                  width: 100,
-                  height: 100,
-                  backgroundColor: colors.primary,
-                }}
-              />
-              <View
-                style={{
-                  width: 100,
-                  height: 100,
-                  backgroundColor: colors.secondary,
-                }}
-              />
-              <View
-                style={{
-                  width: 100,
-                  height: 100,
-                  backgroundColor: colors.primary,
-                }}
-              />
-              <View
-                style={{
-                  width: 100,
-                  height: 100,
-                  backgroundColor: colors.secondary,
-                }}
-              />
-            </ScrollView>
             <DisplayProfile />
           </DateProvider>
         </ScrollView>
-      </View>
   );
 }
 

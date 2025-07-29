@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import Text from '../ui/Text';
+import Text from './ui/Text';
 import { useNavigation } from '@react-navigation/native';
 import Svg, { Path } from 'react-native-svg';
 import useDynamicColors from '../hooks/useDynamicColors';
-import Chip from '../ui/Chip';
+import Chip from './ui/Chip';
 import { PossibleUserType } from '@repo/types/index';
 import ChangingComponent from './ChangingComponent';
 import Logo from '../assets/logo.svg';

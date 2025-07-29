@@ -5,7 +5,7 @@ import { hu } from 'date-fns/locale';
 import menzaMenu from '@repo/resources/mindenkorimenu.json';
 import { PossibleUserType } from '@repo/types/index';
 import useDynamicColors from '../../hooks/useDynamicColors';
-import Text from '../Text';
+import Text from '../ui/Text';
 import { useDateContext } from './DateContext';
 
 type MenuType = Record<string, { A: string[]; B: string[]; nap: string }>;

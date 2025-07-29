@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useEvents } from '../hooks/useEvents';
-import { SideCard } from './SideCard';
-import { Section } from './Section';
-import Text from './Text';
-import Chip from './Chip';
+import { SideCard } from './ui/SideCard';
+import { Section } from './ui/Section';
+import Text from './ui/Text';
+import Chip from './ui/Chip';
 import useDynamicColors from '../hooks/useDynamicColors';
 
 const shortWeekday: { [key: string]: string } = {

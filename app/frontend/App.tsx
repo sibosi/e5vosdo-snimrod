@@ -1,8 +1,8 @@
 import { Text, useColorScheme } from 'react-native';
 import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
-import MainScreen from './MainScreen';
-import EventsScreen from './EventsScreen';
+import MainScreen from './screens/MainScreen';
+import EventsScreen from './screens/EventsScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
@@ -21,7 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import useDynamicColors from './hooks/useDynamicColors';
 import PageNav from './components/PageNav';
 import Navbar from './components/Navbar';
-import { AuthProvider } from './ui/AuthContext';
+import { AuthProvider } from './components/AuthContext';
 
 const Stack = createNativeStackNavigator();
 

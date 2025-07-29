@@ -5,8 +5,8 @@ import {
 } from '../hooks/useSubstitutions';
 import { PossibleUserType, TimetableLesson } from '@repo/types/index';
 import { useTimetable } from '../hooks/useTimetable';
-import Alert from './Alert';
-import Text from './Text';
+import Alert from './ui/Alert';
+import Text from './ui/Text';
 import useDynamicColors from '../hooks/useDynamicColors';
 
 function extendLessonWithSubstitutions(

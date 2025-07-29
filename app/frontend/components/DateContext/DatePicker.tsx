@@ -1,6 +1,6 @@
 import { View, TouchableOpacity } from 'react-native';
 import ArrowIcon from '../../assets/arrow.svg';
-import Text from '../Text';
+import Text from '../ui/Text';
 import { useDateContext } from './DateContext';
 import useDynamicColors from '../../hooks/useDynamicColors';
 

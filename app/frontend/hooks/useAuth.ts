@@ -1,6 +1,6 @@
 import { PossibleUserType } from '@repo/types/index';
 import { useState, useEffect } from 'react';
-import { useAccountId } from '../ui/AuthContext';
+import { useAccountId } from '../components/AuthContext';
 
 interface UseAuthReturn {
   selfUser: PossibleUserType | null;

@@ -11,12 +11,12 @@ import {
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
-import { useAuth } from './AuthContext';
+import { useAccountId } from './AuthContext';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function GoogleAuth() {
-  const { userInfo, isLoading, setIsLoading, login, logout } = useAuth();
+  const { userInfo, isLoading, setIsLoading, login, logout } = useAccountId();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId:

@@ -21,6 +21,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import useDynamicColors from './hooks/useDynamicColors';
 import PageNav from './components/PageNav';
 import Navbar from './components/Navbar';
+import { AuthProvider } from './ui/AuthContext';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -55,10 +57,11 @@ export default function App() {
 
   return (
     <PaperProvider theme={paperTheme}>
+          <AuthProvider>
       <SafeAreaView
         edges={['top', 'bottom']}
         style={{ flex: 1, backgroundColor: colors.surface }}
-      >
+      > 
         <NavigationContainer>
           <Navbar />
           <Stack.Navigator
@@ -76,9 +79,10 @@ export default function App() {
               options={{ title: 'Events' }}
             />
           </Stack.Navigator>
-          <PageNav />
+          <PageNav /> 
         </NavigationContainer>
       </SafeAreaView>
+      </AuthProvider> 
     </PaperProvider>
   )
 }

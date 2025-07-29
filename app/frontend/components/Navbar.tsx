@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import Text from '../ui/Text';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Svg, { Path } from 'react-native-svg';
 import useDynamicColors from '../hooks/useDynamicColors';
-import { usePageSettings } from '../hooks/usePageSettings';
 import Chip from '../ui/Chip';
 import { PossibleUserType } from '@repo/types/index';
 import ChangingComponent from './ChangingComponent';
 import Logo from '../assets/logo.svg';
+import { useAuth } from '../hooks/useAuth';
 
 interface NavbarProps {
   className?: string;
-  isActiveHeadSpace?: boolean;
 }
 
 const HelloMessage = ({
@@ -43,13 +42,11 @@ const HelloMessage = ({
   );
 };
 
-const NavbarForPhone = ({
-  className,
-  isActiveHeadSpace,
-}: NavbarProps) => {
+const NavbarForPhone = () => {
   const colors = useDynamicColors();
-  const route = useRoute();
   const navigation = useNavigation();
+  const { selfUser } = useAuth();
+  const [currentTitle, setCurrentTitle] = useState('E5vös DÖ');
 
   const PageTitles: Record<string, string> = {
     Main: 'E5vös DÖ',
@@ -60,11 +57,29 @@ const NavbarForPhone = ({
     AdminPage: 'Admin panel',
   };
 
-  const [currentTitle, setCurrentTitle] = useState('E5vös DÖ');
-
   useEffect(() => {
-    setCurrentTitle(PageTitles[route.name] ?? 'E5vös DÖ');
-  }, [route.name]);
+      try {
+        const state = navigation.getState();
+        if (state?.routes && state.routes.length > 0) {
+          const routeName = state.routes[state.index]?.name || 'Main';
+          setCurrentTitle(PageTitles[routeName] ?? 'E5vös DÖ');
+        }
+      } catch (error) {
+        console.log('Error getting initial state:', error);
+        setCurrentTitle('E5vös DÖ');
+      }
+  
+      const unsubscribe = navigation.addListener('state', (e) => {
+        try {
+          const routeName = e.data?.state?.routes?.[e.data.state.index]?.name || 'Main';
+          setCurrentTitle(PageTitles[routeName] ?? 'E5vös DÖ');
+        } catch (error) {
+          console.log('Error in state listener:', error);
+        }
+      });
+  
+      return unsubscribe;
+    }, [navigation]);
 
   return (
     <View style={[styles.navbar, { backgroundColor: colors.surface }]}>
@@ -111,7 +126,7 @@ const NavbarForPhone = ({
   );
 };
 
-const NavbarForDesktop = ({ selfUser, className }: NavbarProps) => {
+const NavbarForDesktop = ({ className }: NavbarProps) => {
   const colors = useDynamicColors();
   const navigation = useNavigation();
 
@@ -163,9 +178,6 @@ const NavbarForDesktop = ({ selfUser, className }: NavbarProps) => {
 export const Navbar = ({
   className,
 }: Omit<NavbarProps, 'isActiveHeadSpace'>) => {
-  const { pageSettings } = usePageSettings();
-  const isActiveHeadSpace = pageSettings?.headspace === 1;
-
   const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
@@ -181,20 +193,12 @@ export const Navbar = ({
 
   if (isMobile) {
     return (
-      <NavbarForPhone
-        selfUser={selfUser}
-        className={className}
-        isActiveHeadSpace={isActiveHeadSpace}
-      />
+      <NavbarForPhone />
     );
   }
 
   return (
-    <NavbarForDesktop
-      selfUser={selfUser}
-      className={className}
-      isActiveHeadSpace={isActiveHeadSpace}
-    />
+    <NavbarForDesktop />
   );
 };
 

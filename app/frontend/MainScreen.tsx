@@ -10,20 +10,43 @@ import { AuthProvider } from './ui/AuthContext';
 import GoogleLogin from './ui/SignIn';
 import DisplayProfile from './ui/dev/DisplayProfile';
 import PageNav from './components/PageNav';
+import { Navbar } from './components/Navbar';
 
 type StackParamList = {
   Main: undefined;
   Events: undefined;
 };
-
 export default function MainScreen() {
   const colors = useDynamicColors();
   const navigation =
     useNavigation<NativeStackNavigationProp<StackParamList, 'Main'>>();
 
+  // Example user object (you should get this from your auth context)
+  const selfUser = {
+    name: 'Nimród Simon',
+    EJG_code: '2023C25EJG462',
+    username: 'nimrod.simon',
+    nickname: 'Nimród',
+    email: 'simon.nimrod.zalan@e5vos.hu',
+    image: 'https://avatars.githubusercontent.com/u/81036480?v=4',
+    last_login: '2023-10-01T12:00:00Z',
+    permissions: ['view_timetable', 'view_events', 'user', 'tester'],
+    food_menu: '',
+    coming_year: 2024,
+    class_character: '10.A',
+    order_number: 1,
+    tickets: [],
+    hidden_lessons: [],
+    default_group: null,
+    push_permission: true,
+    push_about_games: true,
+    push_about_timetable: true,
+  };
+
   return (
     <AuthProvider>
       <View style={{ flex: 1 }}>
+        <Navbar selfUser={selfUser} />
         <ScrollView
           style={[styles.container, { backgroundColor: colors.surface }]}
         >

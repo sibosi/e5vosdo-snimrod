@@ -58,7 +58,10 @@ export default function App() {
         style={{ flex: 1, backgroundColor: colors.surface }}
       >
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Main">
+          <Stack.Navigator
+            initialRouteName="Main"
+            screenOptions={{ headerShown: false }}
+          >
             <Stack.Screen
               name="Main"
               component={MainScreen}

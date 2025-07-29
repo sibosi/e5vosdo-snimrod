@@ -16,6 +16,7 @@ import useDynamicColors from '../../hooks/useDynamicColors';
 import DatePicker from './DatePicker';
 import { useEffect } from 'react';
 import { useDateContext } from './DateContext';
+import { useAuth } from 'app/frontend/hooks/useAuth';
 
 function extendLessonWithSubstitutions(
   lesson: TimetableLesson,
@@ -49,15 +50,15 @@ function extendLessonWithSubstitutions(
 
 const Timetable = ({
   style,
-  selfUser,
 }: {
   style?: ViewStyle;
-  selfUser: PossibleUserType;
 }) => {
-  if (!selfUser) return null;
-  const studentCode = selfUser.EJG_code;
-
+  const { selfUser } = useAuth()
+  const colors = useDynamicColors();
+  const { date, setDate } = useDateContext();
   const { tableData: substitutions, isLoaded } = useSubstitutions();
+
+  const studentCode = selfUser?.EJG_code;
   const {
     timetable,
     isLoading,
@@ -67,9 +68,7 @@ const Timetable = ({
     days,
     isConfigured,
   } = useTimetable({ studentCode });
-  const colors = useDynamicColors();
 
-  const { date, setDate } = useDateContext();
 
   useEffect(() => {
     setSelectedDay(
@@ -78,6 +77,8 @@ const Timetable = ({
         .replace(/^./, (char) => char.toUpperCase()) as DayType
     );
   }, [date]);
+
+  if (!selfUser) return null;
 
   if (isConfigured === null || !isLoaded) {
     return (

@@ -26,7 +26,18 @@ const HelloMessage = ({
   const colors = useDynamicColors();
   const textSize = size === 'sm' ? 14 : 16;
 
-  if (!selfUser) return null;
+  if (!selfUser) return (
+    <View style={[styles.helloContainer, padding && { padding: 8 }]}>
+      <Text
+        style={[
+          styles.helloText,
+          { color: colors.onSurface, fontSize: textSize },
+        ]}
+      >
+        Helló Eötvös Népe!
+      </Text>
+    </View>
+  );
 
   return (
     <View style={[styles.helloContainer, padding && { padding: 8 }]}>
@@ -95,32 +106,13 @@ const NavbarForPhone = () => {
                 style={styles.titleContainer}
                 onPress={() => navigation.navigate('Main' as never)}
               >
-                <Logo />
+                <Logo height={44} width={44} />
                 <Text style={[styles.title, { color: colors.onSurface }]}>
                   {currentTitle}
                 </Text>
               </TouchableOpacity>
             }
           />
-        </View>
-
-        <View style={styles.rightContent}>
-          {selfUser?.permissions.includes('tester') && (
-            <View style={styles.chipContainer}>
-              <Chip version="secondary" size="sm">
-                <View style={styles.chipContent}>
-                  <Svg
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <Path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0m6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l3.5-3.5a.5.5 0 0 0-.708 0" />
-                  </Svg>
-                </View>
-              </Chip>
-            </View>
-          )}
         </View>
       </View>
     </View>
@@ -192,9 +184,7 @@ export const Navbar = ({
     return () => subscription?.remove();
   }, []);
 
-  if (isMobile) {
-    return <NavbarForPhone />;
-  }
+  if (isMobile) return <NavbarForPhone />;
 
   return <NavbarForDesktop />;
 };
@@ -280,8 +270,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 30,
+    fontWeight: '900',
   },
   helloContainer: {
     alignItems: 'center',

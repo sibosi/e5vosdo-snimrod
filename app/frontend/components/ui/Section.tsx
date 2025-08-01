@@ -9,8 +9,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import useDynamicColors from '../../hooks/useDynamicColors'; // Import the custom hook for dynamic colors
-import ArrowIcon from 'packages/icons/src/arrow.svg';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import useDynamicColors from 'app/frontend/hooks/useDynamicColors';
 
 // Section component for React Native with inline styles
 interface SectionProps {
@@ -160,7 +160,7 @@ export const Section: React.FC<SectionProps> = ({
         >
           {dropdownable && (
             <View style={[!isOpen && styles.arrowRotated]}>
-              <ArrowIcon width={24} height={24} fill={colors.primary} />
+              <SimpleLineIcons name="arrow-down" size={24} style={{ color: colors.primary }} />
             </View>
           )}
           <Text style={titleStyle}>{title}</Text>

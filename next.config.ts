@@ -34,6 +34,10 @@ const nextConfig: NextConfig = {
           "localhost",
         protocol: "https",
       },
+      {
+        hostname: "picsum.photos",
+        protocol: "https",
+      },
     ],
   },
   typescript: {

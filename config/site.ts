@@ -34,6 +34,10 @@ export const siteConfig = {
       href: "/clubs",
     },
     {
+      label: "Média",
+      href: "/media",
+    },
+    {
       label: "Profilom",
       href: "/me",
     },

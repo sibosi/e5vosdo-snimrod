@@ -1,7 +1,7 @@
 // media/page.tsx
 import { getAuth } from "@/db/dbreq";
 import PleaseLogin from "../me/redirectToLogin";
-import PhotoGrid from "./PhotoGrid";
+import PhotoGrid from "./PhotoGridPre";
 
 interface PhotoType {
   id: number;
@@ -26,31 +26,33 @@ const MediaPage = async () => {
   if (!selfUser) return <PleaseLogin />;
 
   // klónozd az alapokat, és itt generáld meg egyszer a randomokat
-  const photos: PhotoType[] = [ ...INITIAL_PHOTOS ];
+  const photos: PhotoType[] = [...INITIAL_PHOTOS];
 
   for (let i = 0; i < 200; i++) {
     // Create varied aspect ratios like in the reference image
     const aspectRatios = [
-      { w: 300, h: 200 },  // landscape
-      { w: 200, h: 300 },  // portrait
-      { w: 250, h: 250 },  // square
-      { w: 400, h: 250 },  // wide landscape
-      { w: 200, h: 400 },  // tall portrait
+      { w: 300, h: 200 }, // landscape
+      { w: 200, h: 300 }, // portrait
+      { w: 250, h: 250 }, // square
+      { w: 400, h: 250 }, // wide landscape
+      { w: 200, h: 400 }, // tall portrait
     ];
-    
+
     const ratio = aspectRatios[Math.floor(Math.random() * aspectRatios.length)];
     photos.push({
       id: i + 5,
       url: `https://picsum.photos/seed/${i + 5}/${ratio.w}/${ratio.h}`,
       title: `Photo ${i + 5}`,
       width: ratio.w,
-      height: ratio.h
+      height: ratio.h,
     });
   }
 
-  return <div
-  suppressHydrationWarning
-  ><PhotoGrid photos={photos} /></div>;
+  return (
+    <div suppressHydrationWarning>
+      <PhotoGrid photos={photos} />
+    </div>
+  );
 };
 
 export default MediaPage;

@@ -6,8 +6,19 @@ const PhotoGrid = dynamic(() => import("./PhotoGrid"), {
   loading: () => <div>Loading...</div>,
 });
 
-const PhotoGridWrapper = () => {
-  return <PhotoGrid />;
+const PhotoGridWrapper = ({
+  NEXT_PUBLIC_GOOGLE_API_KEY,
+  NEXT_PUBLIC_MEDIA_FOLDER_ID,
+}: {
+  NEXT_PUBLIC_GOOGLE_API_KEY: string;
+  NEXT_PUBLIC_MEDIA_FOLDER_ID: string;
+}) => {
+  return (
+    <PhotoGrid
+      NEXT_PUBLIC_GOOGLE_API_KEY={NEXT_PUBLIC_GOOGLE_API_KEY}
+      NEXT_PUBLIC_MEDIA_FOLDER_ID={NEXT_PUBLIC_MEDIA_FOLDER_ID}
+    />
+  );
 };
 
 export default PhotoGridWrapper;

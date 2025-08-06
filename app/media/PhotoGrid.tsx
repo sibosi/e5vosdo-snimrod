@@ -14,7 +14,13 @@ interface DriveFile {
   mimeType: string;
 }
 
-const PhotoGrid: React.FC = () => {
+const PhotoGrid = ({
+  NEXT_PUBLIC_MEDIA_FOLDER_ID,
+  NEXT_PUBLIC_GOOGLE_API_KEY,
+}: {
+  NEXT_PUBLIC_MEDIA_FOLDER_ID: string;
+  NEXT_PUBLIC_GOOGLE_API_KEY: string;
+}) => {
   const [files, setFiles] = useState<DriveFile[]>([]);
   const [token, setToken] = useState<string>();
 

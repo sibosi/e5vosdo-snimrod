@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import React from "react";
+import { useImageToken } from "@/hooks/useImageToken";
 
 interface DriveImage {
   id: string;
@@ -15,6 +16,7 @@ const MasonryGrid: React.FC = () => {
   );
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const { getImageUrl } = useImageToken();
 
   React.useEffect(() => {
     const loadImages = async () => {
@@ -52,7 +54,7 @@ const MasonryGrid: React.FC = () => {
             onClick={() => setSelectedImageId(image.id)}
           >
             <Image
-              src={`/api/drive/image/${image.id}`}
+              src={getImageUrl(image.id)}
               alt={image.name}
               fill
               className="h-auto w-full object-cover"
@@ -76,7 +78,7 @@ const MasonryGrid: React.FC = () => {
       </button>
       <div className="relative w-full max-w-3xl">
         <Image
-          src={`/api/drive/image/${selectedImage.id}`}
+          src={getImageUrl(selectedImage.id)}
           alt={selectedImage.name}
           width={800}
           height={600}

@@ -1,6 +1,7 @@
 import { getAuth } from "@/db/dbreq";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
+import { verifyImageToken } from "@/db/imageAuth";
 
 type Params = {
   fileId: string;
@@ -10,13 +11,27 @@ export async function GET(
   request: Request,
   context: { params: Promise<Params> },
 ) {
-  const selfUser = await getAuth();
   const fileId = (await context.params).fileId;
+  const url = new URL(request.url);
+  const token = url.searchParams.get("token");
 
-  if (!selfUser)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!fileId)
     return NextResponse.json({ error: "File ID is required" }, { status: 400 });
+
+  if (token) {
+    const tokenPayload = verifyImageToken(token);
+    if (!tokenPayload) {
+      return NextResponse.json(
+        { error: "Invalid or expired token" },
+        { status: 401 },
+      );
+    }
+  } else {
+    const selfUser = await getAuth();
+    if (!selfUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
   if (!process.env.SERVICE_ACCOUNT_EMAIL)
     return NextResponse.json(
       { error: "SERVICE_ACCOUNT_EMAIL is not set in environment" },

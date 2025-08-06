@@ -38,8 +38,19 @@ const nextConfig: NextConfig = {
         hostname: "picsum.photos",
         protocol: "https",
       },
+      {
+        hostname: "127.0.0.1",
+        protocol: "https",
+      },
+      {
+        hostname: "localhost",
+        protocol: "https",
+      },
+      {
+        hostname: "e5vosdo.hu",
+        protocol: "https",
+      },
     ],
-    domains: ["localhost", "127.0.0.1", "e5vosdo.hu"],
   },
   typescript: {
     ignoreBuildErrors: process.env.IGNORE_BUILD_ERRORS === "true",

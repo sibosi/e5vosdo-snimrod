@@ -26,12 +26,12 @@ export async function GET(
         fileId,
         alt: "media",
         supportsAllDrives: true,
-        includeItemsFromAllDrives: true,
       },
       { responseType: "stream" },
     );
-    const stream = driveRes.data as NodeJS.ReadableStream;
+    const stream = driveRes.data;
 
+    // @ts-expect-error - The types are compatible but TypeScript doesn't think so.
     return new Response(stream, {
       headers: {
         "Content-Type":

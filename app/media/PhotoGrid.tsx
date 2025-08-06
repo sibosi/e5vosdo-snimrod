@@ -16,15 +16,15 @@ interface DriveFile {
 
 const PhotoGrid = ({
   NEXT_PUBLIC_MEDIA_FOLDER_ID,
-  NEXT_PUBLIC_GOOGLE_API_KEY,
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID,
 }: {
   NEXT_PUBLIC_MEDIA_FOLDER_ID: string;
-  NEXT_PUBLIC_GOOGLE_API_KEY: string;
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: string;
 }) => {
   const [files, setFiles] = useState<DriveFile[]>([]);
   const [token, setToken] = useState<string>();
 
-  console.log("Environment:", NEXT_PUBLIC_GOOGLE_API_KEY);
+  console.log("Google Client ID:", NEXT_PUBLIC_GOOGLE_CLIENT_ID);
   console.log("Media Folder ID:", NEXT_PUBLIC_MEDIA_FOLDER_ID);
   console.log("Current origin:", window.location.origin);
   console.log("Current hostname:", window.location.hostname);
@@ -39,7 +39,6 @@ const PhotoGrid = ({
     gapi.load("client", () => {
       gapi.client
         .init({
-          apiKey: NEXT_PUBLIC_GOOGLE_API_KEY,
           discoveryDocs: [
             "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
           ],
@@ -78,16 +77,34 @@ const PhotoGrid = ({
 
   const onSuccess = (credentialResponse: CredentialResponse) => {
     console.log("Google Login Success:", credentialResponse);
-    console.log("Credential type:", typeof credentialResponse.credential);
-    console.log(
-      "Full credential response:",
-      JSON.stringify(credentialResponse, null, 2),
-    );
 
-    const accessToken = credentialResponse.credential!; // JWT, de gapi.client.setToken elvégzi a munkát
-    setToken(accessToken);
-    initClient(accessToken);
-    alert("Login Successful");
+    // For Google Drive API access, we need to use the OAuth flow to get an access token
+    // The credential from GoogleLogin is a JWT ID token, not an access token
+    console.log("Starting OAuth flow for Drive API access...");
+
+    // Request additional scopes for Drive API
+    gapi.load("auth2", () => {
+      gapi.auth2
+        .init({
+          client_id: NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        })
+        .then(() => {
+          const authInstance = gapi.auth2.getAuthInstance();
+          return authInstance.signIn({
+            scope: "https://www.googleapis.com/auth/drive.readonly",
+          });
+        })
+        .then((googleUser: any) => {
+          const accessToken = googleUser.getAuthResponse().access_token;
+          console.log("Got access token for Drive API");
+          setToken(accessToken);
+          initClient(accessToken);
+        })
+        .catch((error: any) => {
+          console.error("OAuth error:", error);
+          alert(`OAuth Error: ${error.message || error}`);
+        });
+    });
   };
 
   if (!token) {
@@ -105,13 +122,15 @@ const PhotoGrid = ({
           </p>
           <ul className="ml-6 list-disc">
             <li>http://local.e5vos.hu:3000</li>
+            <li>https://e5vosdo.hu</li>
             <li>
               https://humble-space-parakeet-qxgp4jj4xgxhx94w-3000.app.github.dev
             </li>
           </ul>
           <p className="mt-2 text-sm text-gray-600">
-            If you see a "origin not allowed" error, add the current origin
-            above to your Google OAuth client settings.
+            If you see a "client ID not found" error, make sure you have set up
+            a Google OAuth client ID (not API key) and added the current origin
+            above to your OAuth client settings.
           </p>
         </div>
         <GoogleLogin
@@ -128,7 +147,7 @@ const PhotoGrid = ({
         const url = `https://www.googleapis.com/drive/v3/files/${f.id}?alt=media&supportsAllDrives=true`;
         return (
           <div key={f.id} className="relative h-0 w-full pb-[100%]">
-            <Image src={url} alt={f.name!} fill className="object-cover" />
+            <Image src={url} alt={f.name} fill className="object-cover" />
           </div>
         );
       })}

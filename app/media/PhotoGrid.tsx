@@ -16,15 +16,15 @@ interface DriveFile {
 
 const PhotoGrid = ({
   NEXT_PUBLIC_MEDIA_FOLDER_ID,
-  NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_ID,
 }: {
   NEXT_PUBLIC_MEDIA_FOLDER_ID: string;
-  NEXT_PUBLIC_GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_ID: string;
 }) => {
   const [files, setFiles] = useState<DriveFile[]>([]);
   const [token, setToken] = useState<string>();
 
-  console.log("Google Client ID:", NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+  console.log("Google Client ID:", GOOGLE_CLIENT_ID);
   console.log("Media Folder ID:", NEXT_PUBLIC_MEDIA_FOLDER_ID);
   console.log("Current origin:", window.location.origin);
   console.log("Current hostname:", window.location.hostname);
@@ -86,7 +86,7 @@ const PhotoGrid = ({
     gapi.load("auth2", () => {
       gapi.auth2
         .init({
-          client_id: NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          client_id: GOOGLE_CLIENT_ID,
         })
         .then(() => {
           const authInstance = gapi.auth2.getAuthInstance();

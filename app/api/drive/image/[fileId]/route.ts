@@ -1,47 +1,15 @@
-import { getAuth } from "@/db/dbreq";
+export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
-import { verifyImageToken } from "@/db/imageAuth";
-
-type Params = {
-  fileId: string;
-};
 
 export async function GET(
   request: Request,
-  context: { params: Promise<Params> },
+  { params }: { params: { fileId: string } },
 ) {
-  const fileId = (await context.params).fileId;
-  const url = new URL(request.url);
-  const token = url.searchParams.get("token");
-
-  if (!fileId)
-    return NextResponse.json({ error: "File ID is required" }, { status: 400 });
-
-  if (token) {
-    const tokenPayload = verifyImageToken(token);
-    if (!tokenPayload) {
-      return NextResponse.json(
-        { error: "Invalid or expired token" },
-        { status: 401 },
-      );
-    }
-  } else {
-    const selfUser = await getAuth();
-    if (!selfUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const { fileId } = params;
+  if (!fileId) {
+    return NextResponse.json({ error: "Hiányzó fileId" }, { status: 400 });
   }
-  if (!process.env.SERVICE_ACCOUNT_EMAIL)
-    return NextResponse.json(
-      { error: "SERVICE_ACCOUNT_EMAIL is not set in environment" },
-      { status: 500 },
-    );
-  if (!process.env.SERVICE_ACCOUNT_KEY_STR)
-    return NextResponse.json(
-      { error: "SERVICE_ACCOUNT_KEY_STR is not set in environment" },
-      { status: 500 },
-    );
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -54,13 +22,21 @@ export async function GET(
 
   try {
     const driveRes = await drive.files.get(
-      { fileId, alt: "media" },
-      { responseType: "arraybuffer" },
+      {
+        fileId,
+        alt: "media",
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true,
+      },
+      { responseType: "stream" },
     );
-    return new Response(driveRes.data as any, {
+    const stream = driveRes.data as NodeJS.ReadableStream;
+
+    return new Response(stream, {
       headers: {
         "Content-Type":
           driveRes.headers["content-type"] || "application/octet-stream",
+        "Cache-Control": "public, max-age=86400, immutable",
       },
     });
   } catch (err: any) {

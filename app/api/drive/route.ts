@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 
@@ -21,23 +22,15 @@ export async function GET() {
 
   const res = await drive.files.list({
     q: `'${folderId}' in parents and trashed=false`,
-    fields: "files(id,name,mimeType)",
+    fields: "files(id,name,mimeType,webContentLink)",
     supportsAllDrives: true,
     includeItemsFromAllDrives: true,
   });
 
   const files = res.data.files || [];
-  const withLinks = await Promise.all(
-    files.map(async (f) => {
-      const meta = await drive.files.get({
-        fileId: f.id!,
-        fields: "webContentLink",
-        supportsAllDrives: true,
-        supportsTeamDrives: true,
-      });
-      return { id: f.id!, name: f.name!, url: meta.data.webContentLink! };
-    }),
-  );
+  const imageFiles = files
+    .filter((f) => f.mimeType?.startsWith("image/"))
+    .map((f) => ({ id: f.id!, name: f.name!, url: f.webContentLink! }));
 
-  return NextResponse.json({ files: withLinks });
+  return NextResponse.json({ files: imageFiles });
 }

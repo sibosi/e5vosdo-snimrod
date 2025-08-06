@@ -7,6 +7,7 @@ import {
   ThemeProvider as NextThemesProvider,
   ThemeProviderProps,
 } from "next-themes";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
@@ -17,7 +18,13 @@ export function Providers({ children, themeProps }: Readonly<ProvidersProps>) {
 
   return (
     <HeroUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+      <NextThemesProvider {...themeProps}>
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID!}
+        >
+          {children}
+        </GoogleOAuthProvider>
+      </NextThemesProvider>
     </HeroUIProvider>
   );
 }

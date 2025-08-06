@@ -1,12 +1,12 @@
 import { getAuth } from "@/db/dbreq";
 import PleaseLogin from "../me/redirectToLogin";
-import PhotoGrid from "./PhotoGrid";
+import PhotoGridWrapper from "./PhotoGridWrapper";
 
 const MediaPage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
-  return <PhotoGrid />;
+  return <PhotoGridWrapper />;
 };
 
 export default MediaPage;

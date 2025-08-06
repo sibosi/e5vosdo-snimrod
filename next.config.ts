@@ -73,7 +73,11 @@ const nextConfig: NextConfig = {
       bodySizeLimit: 1024 * 1024 * 10, // 10MB
     },
   },
-  allowedDevOrigins: ["http://localhost:3000", "http://127.0.0.1:3000"],
+  allowedDevOrigins: [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "local.e5vos.hu",
+  ],
 };
 
 module.exports = withBundleAnalyzer(nextConfig);

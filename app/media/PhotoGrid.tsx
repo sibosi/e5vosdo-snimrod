@@ -24,8 +24,8 @@ const PhotoGrid = ({
   const [files, setFiles] = useState<DriveFile[]>([]);
   const [token, setToken] = useState<string>();
 
-  console.log("Environment:", process.env.NEXT_PUBLIC_GOOGLE_API_KEY);
-  console.log("Media Folder ID:", process.env.NEXT_PUBLIC_MEDIA_FOLDER_ID);
+  console.log("Environment:", NEXT_PUBLIC_GOOGLE_API_KEY);
+  console.log("Media Folder ID:", NEXT_PUBLIC_MEDIA_FOLDER_ID);
   console.log("Current origin:", window.location.origin);
   console.log("Current hostname:", window.location.hostname);
   console.log("Current protocol:", window.location.protocol);
@@ -39,7 +39,7 @@ const PhotoGrid = ({
     gapi.load("client", () => {
       gapi.client
         .init({
-          apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+          apiKey: NEXT_PUBLIC_GOOGLE_API_KEY,
           discoveryDocs: [
             "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
           ],
@@ -50,7 +50,7 @@ const PhotoGrid = ({
           console.log("Token set successfully");
           // Listázás
           return gapi.client.drive.files.list({
-            q: `'${process.env.NEXT_PUBLIC_MEDIA_FOLDER_ID}' in parents and trashed=false`,
+            q: `'${NEXT_PUBLIC_MEDIA_FOLDER_ID}' in parents and trashed=false`,
             fields: "files(id,name,mimeType)",
             pageSize: 100,
             supportsAllDrives: true,

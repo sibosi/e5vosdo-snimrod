@@ -4,9 +4,9 @@ import { google } from "googleapis";
 
 export async function GET(
   request: Request,
-  { params }: { params: { fileId: string } },
+  context: { params: Promise<{ fileId: string }> },
 ) {
-  const { fileId } = params;
+  const { fileId } = await context.params;
   if (!fileId) {
     return NextResponse.json({ error: "Hiányzó fileId" }, { status: 400 });
   }

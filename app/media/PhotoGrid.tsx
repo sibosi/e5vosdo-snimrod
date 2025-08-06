@@ -1,40 +1,32 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import React from "react";
-import { useImageToken } from "@/hooks/useImageToken";
 
-interface DriveImage {
+interface ImageFile {
   id: string;
   name: string;
-  mimeType: string;
+  url: string;
 }
 
-const MasonryGrid: React.FC = () => {
-  const [images, setImages] = React.useState<DriveImage[]>([]);
-  const [selectedImageId, setSelectedImageId] = React.useState<string | null>(
-    null,
-  );
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-  const { getImageUrl } = useImageToken();
+const PhotoWall: React.FC = () => {
+  const [images, setImages] = useState<ImageFile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    const loadImages = async () => {
+  useEffect(() => {
+    const load = async () => {
       try {
         const res = await fetch("/api/drive/");
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
-        const imgs: DriveImage[] = data.files.filter((f: any) =>
-          f.mimeType.startsWith("image/"),
-        );
-        setImages(imgs);
+        if (!res.ok) throw new Error(data.error || "Hiba");
+        setImages(data.files);
       } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    loadImages();
+    load();
   }, []);
 
   if (loading) return <p className="p-4 text-center">Betöltés...</p>;
@@ -43,52 +35,23 @@ const MasonryGrid: React.FC = () => {
   if (images.length === 0)
     return <p className="p-4 text-center">Nincsenek képek.</p>;
 
-  if (selectedImageId === null) {
-    return (
-      <div className="flex w-fit flex-wrap justify-center gap-4">
-        {images.map((image) => (
-          <button
-            key={image.id}
-            className="relative bg-selfprimary-500"
-            style={{ width: 100, height: 100 }}
-            onClick={() => setSelectedImageId(image.id)}
-          >
-            <Image
-              src={getImageUrl(image.id)}
-              alt={image.name}
-              fill
-              className="h-auto w-full object-cover"
-            />
-          </button>
-        ))}
-      </div>
-    );
-  }
-
-  const selectedImage = images.find((img) => img.id === selectedImageId);
-  if (!selectedImage) return <p>Image not found</p>;
-
   return (
-    <div className="flex flex-col items-center">
-      <button
-        className="mb-4 rounded bg-selfprimary-500 px-4 py-2 text-white"
-        onClick={() => setSelectedImageId(null)}
-      >
-        Back to Grid
-      </button>
-      <div className="relative w-full max-w-3xl">
-        <Image
-          src={getImageUrl(selectedImage.id)}
-          alt={selectedImage.name}
-          width={800}
-          height={600}
-          className="h-auto w-full object-cover"
-          priority={false}
-          quality={100}
-        />
-      </div>
+    <div className="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      {images.map((img) => (
+        <div
+          key={img.id}
+          className="relative h-0 w-full overflow-hidden rounded pb-[100%] shadow"
+        >
+          <Image
+            src={img.url}
+            alt={img.name}
+            fill
+            className="object-cover transition-transform hover:scale-105"
+          />
+        </div>
+      ))}
     </div>
   );
 };
 
-export default MasonryGrid;
+export default PhotoWall;

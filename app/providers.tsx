@@ -19,9 +19,7 @@ export function Providers({ children, themeProps }: Readonly<ProvidersProps>) {
   return (
     <HeroUIProvider navigate={router.push}>
       <NextThemesProvider {...themeProps}>
-        <GoogleOAuthProvider
-          clientId={process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID!}
-        >
+        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
           {children}
         </GoogleOAuthProvider>
       </NextThemesProvider>

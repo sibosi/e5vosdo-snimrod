@@ -39,6 +39,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
       },
     ],
+    domains: ["localhost", "127.0.0.1", "e5vosdo.hu"],
   },
   typescript: {
     ignoreBuildErrors: process.env.IGNORE_BUILD_ERRORS === "true",

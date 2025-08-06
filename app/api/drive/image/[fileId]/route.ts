@@ -13,12 +13,20 @@ export async function GET(
   const selfUser = await getAuth();
   const fileId = (await context.params).fileId;
 
-  if (!selfUser) {
+  if (!selfUser)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  if (!fileId) {
+  if (!fileId)
     return NextResponse.json({ error: "File ID is required" }, { status: 400 });
-  }
+  if (!process.env.SERVICE_ACCOUNT_EMAIL)
+    return NextResponse.json(
+      { error: "SERVICE_ACCOUNT_EMAIL is not set in environment" },
+      { status: 500 },
+    );
+  if (!process.env.SERVICE_ACCOUNT_KEY_STR)
+    return NextResponse.json(
+      { error: "SERVICE_ACCOUNT_KEY_STR is not set in environment" },
+      { status: 500 },
+    );
 
   const auth = new google.auth.GoogleAuth({
     credentials: {

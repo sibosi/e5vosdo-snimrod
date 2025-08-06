@@ -5,6 +5,10 @@ export async function GET() {
   try {
     const folderId = process.env.MEDIA_FOLDER_ID;
     if (!folderId) throw new Error("MEDIA_FOLDER_ID is not set in environment");
+    if (!process.env.SERVICE_ACCOUNT_EMAIL)
+      throw new Error("SERVICE_ACCOUNT_EMAIL is not set in environment");
+    if (!process.env.SERVICE_ACCOUNT_KEY_STR)
+      throw new Error("SERVICE_ACCOUNT_KEY_STR is not set in environment");
 
     const auth = new google.auth.GoogleAuth({
       credentials: {

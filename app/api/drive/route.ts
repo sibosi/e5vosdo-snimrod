@@ -9,7 +9,7 @@ export async function GET() {
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.SERVICE_ACCOUNT_KEY?.replace(/\\n/g, "\n"),
+        private_key: process.env.SERVICE_ACCOUNT_KEY_STR?.replace(/\\n/g, "\n"),
       },
       scopes: ["https://www.googleapis.com/auth/drive.readonly"],
     });

@@ -113,7 +113,7 @@ const PhotoGrid = ({
   if (!token) {
     return (
       <div>
-        <GoogleOAuthLogin />
+        <GoogleOAuthLogin NEXT_PUBLIC_GOOGLE_CLIENT_ID={GOOGLE_CLIENT_ID} />
         <div className="mb-4 rounded border border-yellow-400 bg-yellow-100 p-4">
           <p>
             <strong>Current Origin:</strong>{" "}

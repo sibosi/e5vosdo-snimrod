@@ -4,7 +4,11 @@ import { loadGapiInsideDOM, loadAuth2 } from "gapi-script";
 // import { UserCard } from "./UserCard";
 // import "./GoogleLogin.css";
 
-export const GoogleOAuthLogin = () => {
+export const GoogleOAuthLogin = ({
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+}: {
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID: string;
+}) => {
   const [user, setUser] = useState<any>(null);
   const [gapi, setGapi] = useState<any>(null);
 
@@ -20,11 +24,7 @@ export const GoogleOAuthLogin = () => {
     if (!gapi) return;
 
     const setAuth2 = async () => {
-      const auth2 = await loadAuth2(
-        gapi,
-        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-        "",
-      );
+      const auth2 = await loadAuth2(gapi, NEXT_PUBLIC_GOOGLE_CLIENT_ID, "");
       if (auth2.isSignedIn.get()) {
         updateUser(auth2.currentUser.get());
       } else {
@@ -39,11 +39,7 @@ export const GoogleOAuthLogin = () => {
 
     if (!user) {
       const setAuth2 = async () => {
-        const auth2 = await loadAuth2(
-          gapi,
-          process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-          "",
-        );
+        const auth2 = await loadAuth2(gapi, NEXT_PUBLIC_GOOGLE_CLIENT_ID, "");
         attachSignin(document.getElementById("customBtn"), auth2);
       };
       setAuth2();

@@ -7,6 +7,7 @@ import {
 } from "@react-oauth/google";
 import Image from "next/image";
 import { gapi } from "gapi-script";
+import { GoogleOAuthLogin } from "./GoogleOAuthLogin";
 
 interface DriveFile {
   id: string;
@@ -39,6 +40,8 @@ const PhotoGrid = ({
     gapi.load("client", () => {
       gapi.client
         .init({
+          apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+          clientId: GOOGLE_CLIENT_ID,
           discoveryDocs: [
             "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
           ],
@@ -47,7 +50,6 @@ const PhotoGrid = ({
           console.log("Google API client initialized successfully");
           gapi.client.setToken({ access_token: accessToken });
           console.log("Token set successfully");
-          // Listázás
           return gapi.client.drive.files.list({
             q: `'${NEXT_PUBLIC_MEDIA_FOLDER_ID}' in parents and trashed=false`,
             fields: "files(id,name,mimeType)",
@@ -87,6 +89,7 @@ const PhotoGrid = ({
       gapi.auth2
         .init({
           client_id: GOOGLE_CLIENT_ID,
+          apiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
         })
         .then(() => {
           const authInstance = gapi.auth2.getAuthInstance();
@@ -110,6 +113,7 @@ const PhotoGrid = ({
   if (!token) {
     return (
       <div>
+        <GoogleOAuthLogin />
         <div className="mb-4 rounded border border-yellow-400 bg-yellow-100 p-4">
           <p>
             <strong>Current Origin:</strong>{" "}

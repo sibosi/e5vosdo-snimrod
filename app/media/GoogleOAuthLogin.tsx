@@ -5,8 +5,8 @@ import { loadGapiInsideDOM, loadAuth2 } from "gapi-script";
 // import "./GoogleLogin.css";
 
 export const GoogleOAuthLogin = () => {
-  const [user, setUser] = useState(null);
-  const [gapi, setGapi] = useState(null);
+  const [user, setUser] = useState<any>(null);
+  const [gapi, setGapi] = useState<any>(null);
 
   useEffect(() => {
     const loadGapi = async () => {

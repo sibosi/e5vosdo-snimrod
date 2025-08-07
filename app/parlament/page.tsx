@@ -14,7 +14,7 @@ const ParlamentPage = async () => {
     );
 
   return (
-    <div className="font-semibold text-foreground">
+    <div className="space-y-4 font-semibold text-foreground">
       <NewParlament />
       <ParlamentsList />
     </div>

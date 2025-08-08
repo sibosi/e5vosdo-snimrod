@@ -36,6 +36,7 @@ const ParlamentIDClient = ({
   const [previousParlamentDelegates, setPreviousParlamentDelegates] = useState<
     Record<string, string[]>
   >({});
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     // Fetch previous parlament participants for suggestions
@@ -145,12 +146,34 @@ const ParlamentIDClient = ({
   return (
     <Tray title={initialParlament.title} colorVariant="dark">
       <p>Időpont: {initialParlament.date}</p>
-      <Link
-        className="mt-2 rounded-md bg-selfsecondary-200 px-2 py-1 text-foreground"
-        href="/parlament"
-      >
-        Vissza
-      </Link>
+
+      <div className="flex flex-wrap gap-2">
+        <Link
+          className="mt-2 rounded-xl bg-foreground-200 px-4 py-2 text-foreground"
+          href="/parlament"
+        >
+          Vissza
+        </Link>
+
+        <Button
+          className="mt-2"
+          color={isEditing ? "danger" : "success"}
+          onPress={() => setIsEditing(!isEditing)}
+        >
+          {isEditing ? "Szerkesztés befejezése" : "Szerkesztés indítása"}
+        </Button>
+
+        <Button
+          radius="sm"
+          className="mt-2 bg-selfsecondary-200 px-1 text-foreground"
+          onPress={() => deleteParlament(initialParlament.id)}
+          isDisabled={
+            !Object.values(selectedUser).every((group) => group.length === 0)
+          }
+        >
+          Üres parlament törlése
+        </Button>
+      </div>
 
       <div>
         {EJG_CLASSES.map((group) => (
@@ -164,20 +187,23 @@ const ParlamentIDClient = ({
               >
                 {group}
               </div>
-              <SearchUser
-                addCustomParticipant={true}
-                onSelectEmail={(email) => {
-                  registerToParlament(email, group);
-                }}
-                usersNameByEmail={usersNameByEmail}
-                label="Képviselő keresése"
-                placeholder="Írj be egy résztvevőt..."
-                size="sm"
-              />
+
+              {isEditing && (
+                <SearchUser
+                  addCustomParticipant={true}
+                  onSelectEmail={(email) => {
+                    registerToParlament(email, group);
+                  }}
+                  usersNameByEmail={usersNameByEmail}
+                  label="Képviselő keresése"
+                  placeholder="Írj be egy résztvevőt..."
+                  size="sm"
+                />
+              )}
             </div>
 
             <div>
-              {previousParlamentDelegates[group]?.length ? (
+              {previousParlamentDelegates[group]?.length && isEditing ? (
                 <div>
                   {previousParlamentDelegates[group]
                     .filter((email) => !selectedUser[group]?.includes(email))
@@ -197,12 +223,15 @@ const ParlamentIDClient = ({
 
             <div>
               {selectedUser[group]?.length ? (
-                <div>
+                <div className="flex flex-wrap gap-2">
                   {selectedUser[group].map((email) => (
                     <Button
                       key={email}
-                      color="success"
-                      onPress={() => unregisterFromParlament(email, group)}
+                      className={!isEditing ? "cursor-not-allowed" : ""}
+                      color={isEditing ? "success" : "default"}
+                      onPress={() =>
+                        isEditing && unregisterFromParlament(email, group)
+                      }
                     >
                       {email}
                     </Button>
@@ -215,14 +244,6 @@ const ParlamentIDClient = ({
           </div>
         ))}
       </div>
-
-      <Button
-        radius="sm"
-        className="mt-2 bg-selfsecondary-200 px-1 text-foreground"
-        onPress={() => deleteParlament(initialParlament.id)}
-      >
-        Parlament törlése
-      </Button>
     </Tray>
   );
 };

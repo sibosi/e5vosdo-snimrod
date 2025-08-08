@@ -42,10 +42,7 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
       title: "Megjelenés",
       content: <AppearanceSettings />,
     },
-    {
-      title: "Haladó beállítások",
-      content: <AdvancedSettings />,
-    },
+    // {title: "Haladó beállítások", content: <AdvancedSettings />},
   ];
 
   return (

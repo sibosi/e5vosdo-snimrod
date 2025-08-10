@@ -44,6 +44,17 @@ const NotificationSettings = ({
     },
     setState: () => void,
   ) {
+    const hasGeneralChanged =
+      settings.push_permission !== undefined &&
+      settings.push_permission != isPushEnabled;
+    const hasGamesChanged =
+      settings.push_about_games !== undefined &&
+      settings.push_about_games != isPushAboutGames;
+    const hasTimetableChanged =
+      settings.push_about_timetable !== undefined &&
+      settings.push_about_timetable != isPushAboutTimetable;
+    if (!hasGeneralChanged && !hasGamesChanged && !hasTimetableChanged) return;
+
     fetch("/api/editMySettings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

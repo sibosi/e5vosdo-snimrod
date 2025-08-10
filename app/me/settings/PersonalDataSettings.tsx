@@ -1,10 +1,18 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { Input, Link, RadioGroup, Radio, InputOtp } from "@heroui/react";
-import saveSettings, { SettingsProps } from "./saveSettings";
 import { Alert } from "@/components/home/alert";
+import { UserType } from "@/db/dbreq";
 
-const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
+const PersonalDataSettings = ({
+  selfUser,
+  setIsSaveNeeded,
+  setSaveSettings,
+}: {
+  selfUser: UserType;
+  setIsSaveNeeded: (isSaveNeeded: boolean) => void;
+  setSaveSettings: (save: () => void) => void;
+}) => {
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
   const [nicknameError, setNicknameError] = useState<string>("");
   const [studentCode, setStudentCode] = useState<string>(
@@ -15,6 +23,11 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
   const [code78OM, setCode78OM] = useState<string>(
     localStorage.getItem("78OM") ?? "",
   );
+  const [initialSettings] = useState(() => ({
+    nickname,
+    studentCode,
+    foodMenu,
+  }));
 
   useEffect(() => {
     if (code78OM.length === 2) {
@@ -26,7 +39,7 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
     /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/.test(username);
   const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]+$/.test(code);
 
-  const handleSave = useCallback(() => {
+  const saveSettings = useCallback(() => {
     if (nicknameError || studentCodeError) return;
     if (
       nickname === selfUser.nickname &&
@@ -34,28 +47,36 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
       foodMenu === selfUser.food_menu
     )
       return;
-    saveSettings({
-      settings: {
-        nickname,
-        EJG_code: studentCode.length === 13 ? studentCode : "",
-        food_menu: foodMenu,
-      },
-      reload: true,
+
+    fetch("/api/editMySettings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        settings: {
+          nickname,
+          EJG_code: studentCode.length === 13 ? studentCode : "",
+          food_menu: foodMenu,
+        },
+      }),
+    }).then(async (response) => {
+      if (response.ok) window.location.reload();
+      else alert("Hiba történt a mentés során.");
     });
-  }, [
-    nickname,
-    studentCode,
-    foodMenu,
-    nicknameError,
-    studentCodeError,
-    selfUser.nickname,
-    selfUser.EJG_code,
-    selfUser.food_menu,
-  ]);
+  }, [nickname, studentCode, foodMenu, selfUser]);
 
   useEffect(() => {
-    setSaveSettings(() => handleSave);
-  }, [handleSave, setSaveSettings]);
+    setSaveSettings(() => saveSettings);
+  }, [saveSettings]);
+
+  useEffect(() => {
+    const value = {
+      nickname,
+      studentCode,
+      foodMenu,
+    };
+
+    setIsSaveNeeded(JSON.stringify(value) !== JSON.stringify(initialSettings));
+  }, [nickname, studentCode, foodMenu]);
 
   return (
     <div>
@@ -88,8 +109,7 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
                 color={nicknameError ? "danger" : "primary"}
                 placeholder="Felhasználónév"
                 value={nickname}
-                onChange={(e) => {
-                  const value = e.target.value;
+                onValueChange={(value) => {
                   setNickname(value.substring(0, 10));
                   if (!isAlphabetic(value)) {
                     setNicknameError(

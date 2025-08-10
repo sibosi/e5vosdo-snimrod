@@ -689,20 +689,6 @@ export async function setHiddenLessons(lessonsId: number[]) {
   );
 }
 
-export async function getDefaultGroup() {
-  const email = (await getAuth())?.email;
-  const REQ1 = `SELECT default_group FROM users WHERE email = ?;`;
-  return (await dbreq(REQ1, [email]))[0].default_group;
-}
-
-export async function editDefaultGroup(group: number | null) {
-  const email = (await getAuth())?.email;
-  return await dbreq(`UPDATE users SET default_group = ? WHERE email = ?;`, [
-    group,
-    email,
-  ]);
-}
-
 export async function getFreeRooms(
   day: "H" | "K" | "SZ" | "CS" | "P",
   time: string,
@@ -750,8 +736,6 @@ export const apireq = {
   editMySettings: { req: editMySettings, perm: ["user"] },
   getMyClassTimetable: { req: getMyClassTimetable, perm: ["user"] },
   setHiddenLessons: { req: setHiddenLessons, perm: ["user"] },
-  getDefaultGroup: { req: getDefaultGroup, perm: ["user"] },
-  editDefaultGroup: { req: editDefaultGroup, perm: ["user"] },
   addTicket: { req: addTicket, perm: ["admin"] },
   deleteTicket: { req: deleteTicket, perm: ["admin"] },
   getFreeRooms: { req: getFreeRooms, perm: ["user"] },
@@ -811,13 +795,6 @@ export const defaultApiReq = async (req: string, body: any) => {
   if (req === "setHiddenLessons") {
     const { lessonsId } = body;
     return await setHiddenLessons(lessonsId);
-  }
-  if (req === "getDefaultGroup") {
-    return await getDefaultGroup();
-  }
-  if (req === "editDefaultGroup") {
-    const { group } = body;
-    return await editDefaultGroup(group);
   }
   if (req === "addTicket") {
     const { email, ticket } = body;

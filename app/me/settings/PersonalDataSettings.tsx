@@ -28,6 +28,13 @@ const PersonalDataSettings = ({
     OM5,
   }));
 
+  console.log("Saving settings:", {
+    nickname,
+    studentCode,
+    foodMenu,
+    OM5,
+  });
+
   const isAlphabetic = (username: string): boolean =>
     /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/.test(username);
   const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]+$/.test(code);
@@ -37,7 +44,8 @@ const PersonalDataSettings = ({
     if (
       nickname === selfUser.nickname &&
       studentCode === selfUser.EJG_code &&
-      foodMenu === selfUser.food_menu
+      foodMenu === selfUser.food_menu &&
+      OM5 === selfUser.OM5
     )
       return;
 
@@ -67,10 +75,11 @@ const PersonalDataSettings = ({
       nickname,
       studentCode,
       foodMenu,
+      OM5,
     };
 
     setIsSaveNeeded(JSON.stringify(value) !== JSON.stringify(initialSettings));
-  }, [nickname, studentCode, foodMenu]);
+  }, [nickname, studentCode, foodMenu, OM5]);
 
   return (
     <div>

@@ -56,25 +56,24 @@ export interface AlertType {
 export async function addLog(action: string, message?: string) {
   const email = await getEmail();
   return await dbreq(
-    `INSERT INTO logs (time, user, action, message) VALUES ('${new Date().toJSON()}', '${email}', '${action}', '${
-      message ?? ""
-    }');`,
+    `INSERT INTO logs (time, user, action, message) VALUES (?, ?, ?, ?);`,
+    [new Date().toJSON(), email, action, message ?? ""],
   );
 }
 
 export async function getLogs(max: number = 10) {
   addLog("getLogs");
   if (!(await getAuth())?.permissions.includes("admin")) return;
-  return (await dbreq(
-    `SELECT * FROM logs ORDER BY id DESC LIMIT ${max};`,
-  )) as Log[];
+  return (await dbreq(`SELECT * FROM logs ORDER BY id DESC LIMIT ?;`, [
+    max,
+  ])) as Log[];
 }
 
 export async function getUserLogs(email: string) {
   addLog("getUserLogs", email);
-  return (await dbreq(
-    `SELECT * FROM logs WHERE user = '${email}' ORDER BY id DESC;`,
-  )) as Log[];
+  return (await dbreq(`SELECT * FROM logs WHERE user = ? ORDER BY id DESC;`, [
+    email,
+  ])) as Log[];
 }
 
 export async function getUsers() {
@@ -89,7 +88,7 @@ export async function getUsersName() {
 export async function getUser(email: string | undefined) {
   if (!email) return;
   return (
-    (await dbreq(`SELECT * FROM \`users\` WHERE email = '${email}'`)) as User[]
+    (await dbreq(`SELECT * FROM \`users\` WHERE email = ?`, [email])) as User[]
   )[0];
 }
 
@@ -130,17 +129,17 @@ export async function getAuth(email?: string | undefined) {
       if (!session?.user) return;
       const authEmail = session.user.email;
 
-      const response = (await dbreq(
-        `SELECT * FROM \`users\` WHERE email = '${authEmail}'`,
-      )) as User[];
+      const response = (await dbreq(`SELECT * FROM \`users\` WHERE email = ?`, [
+        authEmail,
+      ])) as User[];
 
       if (response.length === 0) await addUser();
 
       return response[0];
     } else {
-      const response = (await dbreq(
-        `SELECT * FROM \`users\` WHERE email = '${email}'`,
-      )) as User[];
+      const response = (await dbreq(`SELECT * FROM \`users\` WHERE email = ?`, [
+        email,
+      ])) as User[];
 
       if (response.length === 0) await addUser();
 
@@ -151,7 +150,6 @@ export async function getAuth(email?: string | undefined) {
     return null;
   }
 }
-
 export async function hasPermission(
   email: string | undefined,
   functionname: string,
@@ -218,10 +216,7 @@ export async function updateUser(user: User | undefined, isLogin = false) {
     INSERT INTO \`users\` (
       \`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`,
       \`permissions\`, \`notifications\`, \`tickets\`, \`hidden_lessons\`
-    ) VALUES (
-      '${user.name}', '${user.name.split(" ")[0]}', '${user.email}', '${user.image}', '${user.name}', '${date}',
-      '["user"]', '{ "new": [1], "read": [], "sent": [] }', '["EJG_code_edit"]', '[]'
-    )
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       \`username\` = VALUES(\`username\`),
       \`name\` = VALUES(\`name\`),
@@ -229,7 +224,18 @@ export async function updateUser(user: User | undefined, isLogin = false) {
       \`last_login\` = VALUES(\`last_login\`);
   `;
 
-  await dbreq(query);
+  await dbreq(query, [
+    user.name,
+    user.name.split(" ")[0],
+    user.email,
+    user.image,
+    user.name,
+    date,
+    JSON.stringify(["user"]),
+    JSON.stringify({ new: [1], read: [], sent: [] }),
+    JSON.stringify(["EJG_code_edit"]),
+    JSON.stringify([]),
+  ]);
   return null;
 }
 
@@ -244,9 +250,10 @@ export async function addUserPermission(
   if (((await getUser(email)) as any).permissions.includes(permission))
     return "The user already has this permission";
 
-  const REQ1 = `UPDATE users SET permissions = JSON_ARRAY_APPEND(permissions, '$', '${permission}') WHERE \`email\` = '${email}';`;
-
-  return await dbreq(REQ1);
+  return await dbreq(
+    `UPDATE users SET permissions = JSON_ARRAY_APPEND(permissions, '$', ?) WHERE \`email\` = ?;`,
+    [permission, email],
+  );
 }
 
 export async function removeUserPermissions(
@@ -257,14 +264,16 @@ export async function removeUserPermissions(
 
   addLog("removeUserPermissions", email + " " + permission);
 
-  const REQ2 = `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', '${permission}'))) WHERE email = '${email}';`;
-
-  return await dbreq(REQ2);
+  return await dbreq(
+    `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', ?))) WHERE email = ?;`,
+    [permission, email],
+  );
 }
 
 export async function getUsersEmailByPermission(permission: string) {
   const response = await dbreq(
-    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`,
+    `SELECT email FROM users WHERE JSON_CONTAINS(permissions, JSON_QUOTE(?), '$')`,
+    [permission],
   );
   let emails: string[] = [];
   response.map((user: { email: string }) => emails.push(user.email));
@@ -281,9 +290,9 @@ export async function getUsersEmailWherePushAboutGames() {
 }
 
 export async function getNotificationById(id: number) {
-  const response = (await dbreq(
-    `SELECT * FROM notifications WHERE id = ${id}`,
-  )) as any[];
+  const response = (await dbreq(`SELECT * FROM notifications WHERE id = ?`, [
+    id,
+  ])) as any[];
   const notification: {
     id: number;
     title: string;
@@ -298,7 +307,7 @@ export async function getNotificationById(id: number) {
 export async function getUserNotificationsIds() {
   const email = (await getAuth())?.email;
   const response = (
-    await dbreq(`SELECT notifications FROM users WHERE email = '${email}'`)
+    await dbreq(`SELECT notifications FROM users WHERE email = ?`, [email])
   )[0].notifications as number[];
   return response;
 }
@@ -308,7 +317,8 @@ export async function getUserNotifications() {
   if (!email) return;
 
   const notifications: any = await dbreq(
-    `SELECT notifications FROM users WHERE email = '${email}'`,
+    `SELECT notifications FROM users WHERE email = ?`,
+    [email],
   );
 
   const {
@@ -319,9 +329,7 @@ export async function getUserNotifications() {
 
   const getNotifications = async (ids: number[]) => {
     if (!ids.length) return [];
-    return await dbreq(
-      `SELECT * FROM notifications WHERE id IN (${ids.join(",")})`,
-    );
+    return await dbreq(`SELECT * FROM notifications WHERE id IN (?);`, [ids]);
   };
 
   const [newNotifications, readNotifications, sentNotifications] =
@@ -340,30 +348,37 @@ export async function getUserNotifications() {
 
 export async function addServiceWorker(serviceWorker: any) {
   const email = (await getAuth())?.email;
-  const REQ1 = `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', JSON_OBJECT('endpoint', '${serviceWorker.endpoint}', 'expirationTime', '${serviceWorker.expirationTime}', 'keys', JSON_OBJECT('p256dh', '${serviceWorker.keys.p256dh}', 'auth', '${serviceWorker.keys.auth}'))) WHERE email = '${email}';`;
-
-  return await dbreq(REQ1);
+  return await dbreq(
+    `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', JSON_OBJECT('endpoint', ?, 'expirationTime', ?, 'keys', JSON_OBJECT('p256dh', ?, 'auth', ?))) WHERE email = ?;`,
+    [
+      serviceWorker.endpoint,
+      serviceWorker.expirationTime,
+      serviceWorker.keys.p256dh,
+      serviceWorker.keys.auth,
+      email,
+    ],
+  );
 }
 
 export async function removeServiceWorker(serviceWorker: any, email: string) {
   let users_service_workers = (
-    await dbreq(`SELECT service_workers FROM users WHERE email = '${email}'`)
+    await dbreq(`SELECT service_workers FROM users WHERE email = ?`, [email])
   )[0].service_workers;
 
   users_service_workers = users_service_workers.filter(
     (sw: any) => sw.endpoint !== serviceWorker.endpoint,
   );
 
-  const REQ1 = `UPDATE users SET service_workers = '${JSON.stringify(
-    users_service_workers,
-  )}' WHERE email = '${email}';`;
-
-  return await dbreq(REQ1);
+  return await dbreq(
+    `UPDATE users SET service_workers = CAST(? AS JSON) WHERE email = ?;`,
+    [JSON.stringify(users_service_workers), email],
+  );
 }
 
 export async function getServiceWorkersByPermission(permission: string) {
   const users_service_workers: { service_workers: [] }[] = await dbreq(
-    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, '"${permission}"', '$')`,
+    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, JSON_QUOTE(?), '$')`,
+    [permission],
   );
   let service_workers: any[] = [];
   users_service_workers.forEach((user: { service_workers: [] }) =>
@@ -375,7 +390,8 @@ export async function getServiceWorkersByPermission(permission: string) {
 
 export async function getServiceWorkersByEmail(email: string) {
   const response = await dbreq(
-    `SELECT service_workers FROM users WHERE email = '${email}'`,
+    `SELECT service_workers FROM users WHERE email = ?`,
+    [email],
   );
   return response[0].service_workers;
 }
@@ -388,10 +404,10 @@ export async function checkPushAuth(auth: string) {
 }
 export async function addPushAuth(auth: string) {
   const isExist =
-    ((await dbreq(`SELECT * FROM push_auths WHERE auth = '${auth}';`)) as any[])
+    ((await dbreq(`SELECT * FROM push_auths WHERE auth = ?;`, [auth])) as any[])
       .length > 0;
   if (isExist) return true;
-  return await dbreq(`INSERT INTO push_auths (auth) VALUES ('${auth}');`);
+  return await dbreq(`INSERT INTO push_auths (auth) VALUES (?);`, [auth]);
 }
 
 export async function newPush(email: string, payload: any) {
@@ -413,20 +429,18 @@ export async function markAsRead(id: number) {
   const email = (await getAuth())?.email;
 
   const new_notifications = (
-    await dbreq(`SELECT notifications FROM users WHERE email = '${email}'`)
+    await dbreq(`SELECT notifications FROM users WHERE email = ?`, [email])
   )[0].notifications.new;
 
   const filtered_new_notifications = new_notifications.filter(
     (nid: number) => nid !== id,
   );
 
-  const REQ1 = `UPDATE users SET notifications = JSON_SET(notifications, '$.new', JSON_ARRAY(${filtered_new_notifications.join(
-    ", ",
-  )})) WHERE email = '${email}';`;
-
-  const REQ2 = `UPDATE users SET notifications = JSON_SET(notifications, '$.read', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.read'), '$', ${id})) WHERE email = '${email}';`;
-
-  return [await dbreq(REQ1), await dbreq(REQ2)];
+  const placeholders = filtered_new_notifications.map(() => "?").join(", ");
+  const req1 = `UPDATE users SET notifications = JSON_SET(notifications, '$.new', JSON_ARRAY(${placeholders})) WHERE email = ?;`;
+  const req2 = `UPDATE users SET notifications = JSON_SET(notifications, '$.read', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.read'), '$', ?)) WHERE email = ?;`;
+  await dbreq(req1, [...filtered_new_notifications, email]);
+  return [await dbreq(req2, [id, email])];
 }
 
 export async function newNotificationByEmails(
@@ -449,18 +463,40 @@ export async function newNotificationByEmails(
     valid_receiving_emails = receiving_emails;
   }
 
-  const REQ1 = `INSERT INTO notifications (title, message, sender_email, receiving_emails, time) VALUES ('${title}', '${message}', '${sender_email}', '${
-    '["' + valid_receiving_emails.join('", "') + '"]'
-  }', '${new Date().toJSON()}');`;
-  const REQ2 = `SET @notification_id = LAST_INSERT_ID();`;
-  const REQ3 = `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = @notification_id) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$') SET users.notifications = JSON_SET(users.notifications, '$.new', JSON_ARRAY_APPEND(JSON_EXTRACT(users.notifications, '$.new'), '$', CAST(@notification_id AS JSON)));`;
-  const REQ4 = `SELECT * FROM notifications WHERE id = @notification_id;`;
-  // Add the notification to the sender's sent notifications
-  const REQ5 = `UPDATE users SET notifications = JSON_SET(notifications, '$.sent', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.sent'), '$', CAST(@notification_id AS JSON))) WHERE email = '${sender_email}';`;
+  await multipledbreq(async (conn) => {
+    // Insert notification
+    const [ins]: any = await conn.execute(
+      `INSERT INTO notifications (title, message, sender_email, receiving_emails, time) VALUES (?, ?, ?, CAST(? AS JSON), ?);`,
+      [
+        title,
+        message,
+        sender_email,
+        JSON.stringify(valid_receiving_emails),
+        new Date().toJSON(),
+      ],
+    );
+    const notification_id = ins.insertId;
 
-  const MAINRRQ = [REQ1, REQ2, REQ3, REQ4, REQ5];
+    // Update recipients' new notifications using a join on the inserted row
+    await conn.execute(
+      `UPDATE users JOIN (SELECT receiving_emails FROM notifications WHERE id = ?) AS n ON JSON_CONTAINS(n.receiving_emails, JSON_QUOTE(users.email), '$')
+       SET users.notifications = JSON_SET(users.notifications, '$.new', JSON_ARRAY_APPEND(JSON_EXTRACT(users.notifications, '$.new'), '$', CAST(? AS JSON)));`,
+      [notification_id, notification_id],
+    );
 
-  await multipledbreq(MAINRRQ);
+    // Add to sender's sent
+    await conn.execute(
+      `UPDATE users SET notifications = JSON_SET(notifications, '$.sent', JSON_ARRAY_APPEND(JSON_EXTRACT(notifications, '$.sent'), '$', CAST(? AS JSON))) WHERE email = ?;`,
+      [notification_id, sender_email],
+    );
+
+    // Return inserted notification
+    const [row]: any = await conn.execute(
+      `SELECT * FROM notifications WHERE id = ?;`,
+      [notification_id],
+    );
+    return row[0];
+  });
 
   valid_receiving_emails.forEach(async (email) => {
     if (payload !== "") {
@@ -524,24 +560,27 @@ export async function newNotificationByNames(
 
 export async function addTicket(email: string, ticket: string) {
   addLog("addTicket", email + " " + ticket);
-  const REQ1 = `UPDATE users SET tickets = JSON_ARRAY_APPEND(tickets, '$', '${ticket}') WHERE email = '${email}';`;
-
-  return await dbreq(REQ1);
+  return await dbreq(
+    `UPDATE users SET tickets = JSON_ARRAY_APPEND(tickets, '$', ?) WHERE email = ?;`,
+    [ticket, email],
+  );
 }
 
 export async function removeTicket(ticket: string) {
   addLog("removeTicket", ticket);
   const email = (await getAuth())?.email;
-  const REQ1 = `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', '${ticket}'))) WHERE email = '${email}';`;
-
-  return await dbreq(REQ1);
+  return await dbreq(
+    `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', ?))) WHERE email = ?;`,
+    [ticket, email],
+  );
 }
 
 export async function deleteTicket(email: string, ticket: string) {
   addLog("deleteTicket", email + " " + ticket);
-  const REQ1 = `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', '${ticket}'))) WHERE email = '${email}';`;
-
-  return await dbreq(REQ1);
+  return await dbreq(
+    `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', ?))) WHERE email = ?;`,
+    [ticket, email],
+  );
 }
 
 export async function editMySettings({
@@ -631,7 +670,8 @@ export async function getMyClassTimetable(EJG_class: string) {
   }
 
   const response = (await dbreq(
-    `SELECT * FROM timetable WHERE JSON_CONTAINS(JSON_EXTRACT(EJG_classes, '$[1]'), '"${EJG_class}"', '$')`,
+    `SELECT * FROM timetable WHERE JSON_CONTAINS(JSON_EXTRACT(EJG_classes, '$[1]'), JSON_QUOTE(?), '$')`,
+    [EJG_class],
   )) as Lesson[];
 
   response.forEach((lesson) => {
@@ -643,25 +683,24 @@ export async function getMyClassTimetable(EJG_class: string) {
 
 export async function setHiddenLessons(lessonsId: number[]) {
   const email = (await getAuth())?.email;
-  const REQ1 = `UPDATE users SET hidden_lessons = '${JSON.stringify(
-    lessonsId,
-  )}' WHERE email = '${email}';`;
-
-  return await dbreq(REQ1);
+  return await dbreq(
+    `UPDATE users SET hidden_lessons = CAST(? AS JSON) WHERE email = ?;`,
+    [JSON.stringify(lessonsId), email],
+  );
 }
 
 export async function getDefaultGroup() {
   const email = (await getAuth())?.email;
-  const REQ1 = `SELECT default_group FROM users WHERE email = '${email}';`;
-
-  return (await dbreq(REQ1))[0].default_group;
+  const REQ1 = `SELECT default_group FROM users WHERE email = ?;`;
+  return (await dbreq(REQ1, [email]))[0].default_group;
 }
 
 export async function editDefaultGroup(group: number | null) {
   const email = (await getAuth())?.email;
-  const REQ1 = `UPDATE users SET default_group = ${group} WHERE email = '${email}';`;
-
-  return await dbreq(REQ1);
+  return await dbreq(`UPDATE users SET default_group = ? WHERE email = ?;`, [
+    group,
+    email,
+  ]);
 }
 
 export async function getFreeRooms(
@@ -674,7 +713,8 @@ export async function getFreeRooms(
 
   const occupiedRooms = (
     (await dbreq(
-      `SELECT DISTINCT room FROM timetable WHERE day = '${day}' AND start_time = '${time}';`,
+      `SELECT DISTINCT room FROM timetable WHERE day = ? AND start_time = ?;`,
+      [day, time],
     )) as { room: string }[]
   ).map((room) => room.room);
 

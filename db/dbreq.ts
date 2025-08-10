@@ -681,14 +681,6 @@ export async function getMyClassTimetable(EJG_class: string) {
   return response;
 }
 
-export async function setHiddenLessons(lessonsId: number[]) {
-  const email = (await getAuth())?.email;
-  return await dbreq(
-    `UPDATE users SET hidden_lessons = CAST(? AS JSON) WHERE email = ?;`,
-    [JSON.stringify(lessonsId), email],
-  );
-}
-
 export async function getFreeRooms(
   day: "H" | "K" | "SZ" | "CS" | "P",
   time: string,
@@ -735,7 +727,6 @@ export const apireq = {
   checkPushAuth: { req: checkPushAuth, perm: ["user"] },
   editMySettings: { req: editMySettings, perm: ["user"] },
   getMyClassTimetable: { req: getMyClassTimetable, perm: ["user"] },
-  setHiddenLessons: { req: setHiddenLessons, perm: ["user"] },
   addTicket: { req: addTicket, perm: ["admin"] },
   deleteTicket: { req: deleteTicket, perm: ["admin"] },
   getFreeRooms: { req: getFreeRooms, perm: ["user"] },
@@ -791,10 +782,6 @@ export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getMyClassTimetable") {
     const { EJG_class } = body;
     return await getMyClassTimetable(EJG_class);
-  }
-  if (req === "setHiddenLessons") {
-    const { lessonsId } = body;
-    return await setHiddenLessons(lessonsId);
   }
   if (req === "addTicket") {
     const { email, ticket } = body;

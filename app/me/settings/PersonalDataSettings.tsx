@@ -64,7 +64,7 @@ const PersonalDataSettings = ({
       if (response.ok) window.location.reload();
       else alert("Hiba történt a mentés során.");
     });
-  }, [nickname, studentCode, foodMenu, selfUser]);
+  }, [nickname, studentCode, foodMenu, selfUser, OM5]);
 
   useEffect(() => {
     setSaveSettings(() => saveSettings);

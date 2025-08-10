@@ -599,7 +599,6 @@ export async function editMySettings({
 
   addLog("editMySettings");
 
-  // Build a parameterized UPDATE to avoid SQL injection
   const setClauses: string[] = [];
   const params: any[] = [];
 
@@ -641,6 +640,11 @@ export async function editMySettings({
     params.push(
       ["A", "B"].includes(settings.food_menu) ? settings.food_menu : null,
     );
+  }
+
+  if (settings.OM5) {
+    setClauses.push("OM5 = ?");
+    params.push(settings.OM5);
   }
 
   if (setClauses.length === 0) return "No changes";

@@ -20,20 +20,13 @@ const PersonalDataSettings = ({
   );
   const [studentCodeError, setStudentCodeError] = useState<string>("");
   const [foodMenu, setFoodMenu] = useState<string>(selfUser.food_menu);
-  const [code78OM, setCode78OM] = useState<string>(
-    localStorage.getItem("78OM") ?? "",
-  );
+  const [OM5, setOM5] = useState<string>(selfUser.OM5 ?? "");
   const [initialSettings] = useState(() => ({
     nickname,
     studentCode,
     foodMenu,
+    OM5,
   }));
-
-  useEffect(() => {
-    if (code78OM.length === 2) {
-      localStorage.setItem("78OM", code78OM);
-    }
-  }, [code78OM]);
 
   const isAlphabetic = (username: string): boolean =>
     /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/.test(username);
@@ -56,6 +49,7 @@ const PersonalDataSettings = ({
           nickname,
           EJG_code: studentCode.length === 13 ? studentCode : "",
           food_menu: foodMenu,
+          OM5: OM5,
         },
       }),
     }).then(async (response) => {
@@ -87,15 +81,7 @@ const PersonalDataSettings = ({
           a beállításaid módosítását.
         </Alert>
       )}
-      <Alert
-        icon={false}
-        className="mt-2 border-selfsecondary-300 bg-selfsecondary-100"
-      >
-        Az OM azonosító a diákigazolványodon található személyes adat.
-        Adatvédelmi okokból ezt az adatot kizárólag az eszközödön tároljuk, nem
-        fiókhoz kötött. Amennyiben egy mások eszközön jelentkezel be, azon újra
-        meg kell adnod ezt az adatot.
-      </Alert>
+
       <table className="table gap-y-2">
         <tbody>
           <tr>
@@ -139,9 +125,6 @@ const PersonalDataSettings = ({
               >
                 Google fiók profilképének állítása
               </Link>
-              <p className="text-sm">
-                (A profilkép jelenleg csak így változtatható)
-              </p>
             </td>
           </tr>
           <tr>
@@ -170,13 +153,9 @@ const PersonalDataSettings = ({
             </td>
           </tr>
           <tr>
-            <th className="font-semibold">OM azonosító 7. és 8. számjegye:</th>
+            <th className="font-semibold">OM azonosító utolsó 5 számjegye:</th>
             <td>
-              <InputOtp
-                length={2}
-                value={code78OM}
-                onValueChange={setCode78OM}
-              />
+              <InputOtp length={5} value={OM5} onValueChange={setOM5} />
             </td>
           </tr>
           <tr>

@@ -280,14 +280,6 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                         <th scope="row">Jegyek</th>
                         <td>{selectedUser.tickets.join(", ")}</td>
                       </tr>
-                      <tr>
-                        <th scope="row">Rejtett órák</th>
-                        <td>{selectedUser.hidden_lessons.length} db</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">Alapcsoport</th>
-                        <td>{selectedUser.default_group}</td>
-                      </tr>
                     </tbody>
                   </table>
                 </div>

@@ -27,8 +27,6 @@ export interface User {
   class_character: string;
   order_number: number;
   tickets: string[];
-  hidden_lessons: number[];
-  default_group: number | null;
   push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
@@ -215,8 +213,8 @@ export async function updateUser(user: User | undefined, isLogin = false) {
   const query = `
     INSERT INTO \`users\` (
       \`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`,
-      \`permissions\`, \`notifications\`, \`tickets\`, \`hidden_lessons\`
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      \`permissions\`, \`notifications\`, \`tickets\`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       \`username\` = VALUES(\`username\`),
       \`name\` = VALUES(\`name\`),
@@ -234,7 +232,6 @@ export async function updateUser(user: User | undefined, isLogin = false) {
     JSON.stringify(["user"]),
     JSON.stringify({ new: [1], read: [], sent: [] }),
     JSON.stringify(["EJG_code_edit"]),
-    JSON.stringify([]),
   ]);
   return null;
 }

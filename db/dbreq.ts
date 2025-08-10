@@ -21,6 +21,7 @@ export interface User {
   last_login: string;
   permissions: string[];
   EJG_code: string;
+  OM5: string | null;
   food_menu: string;
   coming_year: number;
   class_character: string;
@@ -549,6 +550,7 @@ export async function editMySettings({
   settings: {
     nickname?: string;
     EJG_code?: string;
+    OM5?: string;
     food_menu?: string;
     push_permission?: boolean;
     push_about_games?: boolean;
@@ -561,7 +563,9 @@ export async function editMySettings({
 
   addLog("editMySettings");
 
-  let request = "UPDATE users SET ";
+  // Build a parameterized UPDATE to avoid SQL injection
+  const setClauses: string[] = [];
+  const params: any[] = [];
 
   const valid_EJG_code = selfUser.tickets.includes("EJG_code_edit")
     ? settings.EJG_code
@@ -572,33 +576,43 @@ export async function editMySettings({
     selfUser.EJG_code != settings.EJG_code
   ) {
     await removeTicket("EJG_code_edit");
-    request += `EJG_code = '${valid_EJG_code}', `;
+    setClauses.push("EJG_code = ?");
+    params.push(valid_EJG_code);
   }
 
   console.log(JSON.stringify(settings));
 
-  if (settings.push_permission !== undefined)
-    request += `push_permission = ${settings.push_permission ? 1 : 0}, `;
+  if (settings.push_permission !== undefined) {
+    setClauses.push("push_permission = ?");
+    params.push(settings.push_permission ? 1 : 0);
+  }
 
-  if (settings.push_about_games !== undefined)
-    request += `push_about_games = ${settings.push_about_games ? 1 : 0}, `;
-  if (settings.push_about_timetable !== undefined)
-    request += `push_about_timetable = ${settings.push_about_timetable ? 1 : 0}, `;
+  if (settings.push_about_games !== undefined) {
+    setClauses.push("push_about_games = ?");
+    params.push(settings.push_about_games ? 1 : 0);
+  }
+  if (settings.push_about_timetable !== undefined) {
+    setClauses.push("push_about_timetable = ?");
+    params.push(settings.push_about_timetable ? 1 : 0);
+  }
 
-  if (settings.nickname) request += `nickname = '${settings.nickname}', `;
-  if (settings.food_menu !== undefined)
-    request += `food_menu = ${
-      ["A", "B"].includes(settings.food_menu)
-        ? "'" + settings.food_menu + "'"
-        : "NULL"
-    }, `;
+  if (settings.nickname) {
+    setClauses.push("nickname = ?");
+    params.push(settings.nickname);
+  }
+  if (settings.food_menu !== undefined) {
+    setClauses.push("food_menu = ?");
+    params.push(
+      ["A", "B"].includes(settings.food_menu) ? settings.food_menu : null,
+    );
+  }
 
-  if (request === "UPDATE users SET ") return "No changes";
-  request = request.slice(0, -2);
-  request += ` WHERE email = '${email}';`;
+  if (setClauses.length === 0) return "No changes";
+  const request = `UPDATE users SET ${setClauses.join(", ")} WHERE email = ?;`;
+  params.push(email);
 
   console.log(request);
-  console.log(await dbreq(request));
+  console.log(await dbreq(request, params));
 
   return null;
 }

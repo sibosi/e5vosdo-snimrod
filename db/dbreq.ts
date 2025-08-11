@@ -345,52 +345,59 @@ export async function getUserNotifications() {
 
 export async function addServiceWorker(serviceWorker: any) {
   const email = (await getAuth())?.email;
+  if (!email) return;
+
+  // Ensure idempotency per (owner_email, endpoint)
+  await dbreq(
+    `DELETE FROM service_workers WHERE owner_email = ? AND endpoint = ?;`,
+    [email, serviceWorker.endpoint],
+  );
+
   return await dbreq(
-    `UPDATE users SET service_workers = JSON_ARRAY_APPEND(service_workers, '$', JSON_OBJECT('endpoint', ?, 'expirationTime', ?, 'keys', JSON_OBJECT('p256dh', ?, 'auth', ?))) WHERE email = ?;`,
+    `INSERT INTO service_workers (owner_email, auth, p256dh, endpoint, expiration_time) VALUES (?, ?, ?, ?, ?);`,
     [
-      serviceWorker.endpoint,
-      serviceWorker.expirationTime,
-      serviceWorker.keys.p256dh,
-      serviceWorker.keys.auth,
       email,
+      serviceWorker.keys?.auth ?? null,
+      serviceWorker.keys?.p256dh ?? null,
+      serviceWorker.endpoint,
+      serviceWorker.expirationTime ?? null,
     ],
   );
 }
 
 export async function removeServiceWorker(serviceWorker: any, email: string) {
-  let users_service_workers = (
-    await dbreq(`SELECT service_workers FROM users WHERE email = ?`, [email])
-  )[0].service_workers;
-
-  users_service_workers = users_service_workers.filter(
-    (sw: any) => sw.endpoint !== serviceWorker.endpoint,
-  );
-
   return await dbreq(
-    `UPDATE users SET service_workers = CAST(? AS JSON) WHERE email = ?;`,
-    [JSON.stringify(users_service_workers), email],
+    `DELETE FROM service_workers WHERE owner_email = ? AND endpoint = ?;`,
+    [email, serviceWorker.endpoint],
   );
 }
 
 export async function getServiceWorkersByPermission(permission: string) {
-  const users_service_workers: { service_workers: [] }[] = await dbreq(
-    `SELECT service_workers FROM users WHERE JSON_CONTAINS(permissions, JSON_QUOTE(?), '$')`,
+  const rows: any[] = await dbreq(
+    `SELECT sw.endpoint, sw.expiration_time, sw.p256dh, sw.auth
+     FROM service_workers sw
+     JOIN users u ON u.email = sw.owner_email
+     WHERE JSON_CONTAINS(u.permissions, JSON_QUOTE(?), '$');`,
     [permission],
   );
-  let service_workers: any[] = [];
-  users_service_workers.forEach((user: { service_workers: [] }) =>
-    user.service_workers.map((sw: any) => service_workers.push(sw)),
-  );
 
-  return service_workers;
+  return rows.map((row) => ({
+    endpoint: row.endpoint,
+    expirationTime: row.expiration_time,
+    keys: { p256dh: row.p256dh, auth: row.auth },
+  }));
 }
 
 export async function getServiceWorkersByEmail(email: string) {
-  const response = await dbreq(
-    `SELECT service_workers FROM users WHERE email = ?`,
+  const rows: any[] = await dbreq(
+    `SELECT endpoint, expiration_time, p256dh, auth FROM service_workers WHERE owner_email = ?;`,
     [email],
   );
-  return response[0].service_workers;
+  return rows.map((row) => ({
+    endpoint: row.endpoint,
+    expirationTime: row.expiration_time,
+    keys: { p256dh: row.p256dh, auth: row.auth },
+  }));
 }
 
 export async function checkPushAuth(auth: string) {
@@ -410,7 +417,7 @@ export async function addPushAuth(auth: string) {
 export async function newPush(email: string, payload: any) {
   addLog("newPush", email + " " + JSON.stringify(payload));
   const service_workers = await getServiceWorkersByEmail(email);
-  service_workers.map(async (sw: any) => {
+  service_workers.forEach(async (sw: any) => {
     try {
       await webPush.sendNotification(sw, payload);
     } catch (error) {

@@ -39,7 +39,9 @@ export async function getParlaments(selfUser: UserType) {
 
 export async function getParlament(selfUser: UserType, parlamentId: number) {
   gate(selfUser, ["head_of_parlament", "delegate", "delegate_counter"]);
-  return await dbreq(`SELECT * FROM parlaments WHERE id = ${parlamentId};`);
+  return (
+    await dbreq(`SELECT * FROM parlaments WHERE id = ${parlamentId};`)
+  )[0] as Parlament;
 }
 
 export async function registerToParlament(

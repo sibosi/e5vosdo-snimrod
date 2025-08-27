@@ -1,10 +1,18 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { Input, Link, RadioGroup, Radio, InputOtp } from "@heroui/react";
-import saveSettings, { SettingsProps } from "./saveSettings";
 import { Alert } from "@/components/home/alert";
+import { UserType } from "@/db/dbreq";
 
-const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
+const PersonalDataSettings = ({
+  selfUser,
+  setIsSaveNeeded,
+  setSaveSettings,
+}: {
+  selfUser: UserType;
+  setIsSaveNeeded: (isSaveNeeded: boolean) => void;
+  setSaveSettings: (save: () => void) => void;
+}) => {
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
   const [nicknameError, setNicknameError] = useState<string>("");
   const [studentCode, setStudentCode] = useState<string>(
@@ -12,50 +20,66 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
   );
   const [studentCodeError, setStudentCodeError] = useState<string>("");
   const [foodMenu, setFoodMenu] = useState<string>(selfUser.food_menu);
-  const [code78OM, setCode78OM] = useState<string>(
-    localStorage.getItem("78OM") ?? "",
-  );
+  const [OM5, setOM5] = useState<string>(selfUser.OM5 ?? "");
+  const [initialSettings] = useState(() => ({
+    nickname,
+    studentCode,
+    foodMenu,
+    OM5,
+  }));
 
-  useEffect(() => {
-    if (code78OM.length === 2) {
-      localStorage.setItem("78OM", code78OM);
-    }
-  }, [code78OM]);
+  console.log("Saving settings:", {
+    nickname,
+    studentCode,
+    foodMenu,
+    OM5,
+  });
 
   const isAlphabetic = (username: string): boolean =>
     /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/.test(username);
   const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]+$/.test(code);
 
-  const handleSave = useCallback(() => {
+  const saveSettings = useCallback(() => {
     if (nicknameError || studentCodeError) return;
     if (
       nickname === selfUser.nickname &&
       studentCode === selfUser.EJG_code &&
-      foodMenu === selfUser.food_menu
+      foodMenu === selfUser.food_menu &&
+      OM5 === selfUser.OM5
     )
       return;
-    saveSettings({
-      settings: {
-        nickname,
-        EJG_code: studentCode.length === 13 ? studentCode : "",
-        food_menu: foodMenu,
-      },
-      reload: true,
+
+    fetch("/api/editMySettings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        settings: {
+          nickname,
+          EJG_code: studentCode.length === 13 ? studentCode : "",
+          food_menu: foodMenu,
+          OM5: OM5,
+        },
+      }),
+    }).then(async (response) => {
+      if (response.ok) window.location.reload();
+      else alert("Hiba történt a mentés során.");
     });
-  }, [
-    nickname,
-    studentCode,
-    foodMenu,
-    nicknameError,
-    studentCodeError,
-    selfUser.nickname,
-    selfUser.EJG_code,
-    selfUser.food_menu,
-  ]);
+  }, [nickname, studentCode, foodMenu, selfUser, OM5]);
 
   useEffect(() => {
-    setSaveSettings(() => handleSave);
-  }, [handleSave, setSaveSettings]);
+    setSaveSettings(() => saveSettings);
+  }, [saveSettings]);
+
+  useEffect(() => {
+    const value = {
+      nickname,
+      studentCode,
+      foodMenu,
+      OM5,
+    };
+
+    setIsSaveNeeded(JSON.stringify(value) !== JSON.stringify(initialSettings));
+  }, [nickname, studentCode, foodMenu, OM5]);
 
   return (
     <div>
@@ -66,15 +90,7 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
           a beállításaid módosítását.
         </Alert>
       )}
-      <Alert
-        icon={false}
-        className="mt-2 border-selfsecondary-300 bg-selfsecondary-100"
-      >
-        Az OM azonosító a diákigazolványodon található személyes adat.
-        Adatvédelmi okokból ezt az adatot kizárólag az eszközödön tároljuk, nem
-        fiókhoz kötött. Amennyiben egy mások eszközön jelentkezel be, azon újra
-        meg kell adnod ezt az adatot.
-      </Alert>
+
       <table className="table gap-y-2">
         <tbody>
           <tr>
@@ -88,8 +104,7 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
                 color={nicknameError ? "danger" : "primary"}
                 placeholder="Felhasználónév"
                 value={nickname}
-                onChange={(e) => {
-                  const value = e.target.value;
+                onValueChange={(value) => {
                   setNickname(value.substring(0, 10));
                   if (!isAlphabetic(value)) {
                     setNicknameError(
@@ -119,9 +134,6 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
               >
                 Google fiók profilképének állítása
               </Link>
-              <p className="text-sm">
-                (A profilkép jelenleg csak így változtatható)
-              </p>
             </td>
           </tr>
           <tr>
@@ -150,13 +162,9 @@ const PersonalDataSettings = ({ selfUser, setSaveSettings }: SettingsProps) => {
             </td>
           </tr>
           <tr>
-            <th className="font-semibold">OM azonosító 7. és 8. számjegye:</th>
+            <th className="font-semibold">OM azonosító utolsó 5 számjegye:</th>
             <td>
-              <InputOtp
-                length={2}
-                value={code78OM}
-                onValueChange={setCode78OM}
-              />
+              <InputOtp length={5} value={OM5} onValueChange={setOM5} />
             </td>
           </tr>
           <tr>

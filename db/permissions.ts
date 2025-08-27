@@ -17,9 +17,9 @@ user: elementary API access
 student: no value
 admin: access to all API endpoints & permission management
 organiser: E5N system - can view the list of signupers
-head_of_parlament: can manage parlements
-delegate: can see the list of parlements
-delegate_counter: can register delegates to parlements
+head_of_parlament: can manage parlaments
+delegate: can see the list of parlaments
+delegate_counter: can register delegates to parlaments
 matchOrganiser: can manage matches
 */
 

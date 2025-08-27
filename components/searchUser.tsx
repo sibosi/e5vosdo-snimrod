@@ -8,12 +8,14 @@ export default function SearchUser({
   label,
   placeholder,
   size,
+  addCustomParticipant = false,
 }: Readonly<{
   usersNameByEmail: Record<string, string>;
   onSelectEmail: (email: string) => void;
   label?: string;
   placeholder?: string;
   size?: "sm" | "md" | "lg";
+  addCustomParticipant?: boolean;
 }>) {
   const [searchValue, setSearchValue] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
@@ -35,6 +37,8 @@ export default function SearchUser({
 
   useEffect(() => {
     const results = filter(searchValue);
+    if (addCustomParticipant && results.length < 2)
+      results.push(`${searchValue} (Nem regisztrált)`);
     setFilteredEmails(results);
     setHighlightedIndex(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,7 +103,7 @@ export default function SearchUser({
                 highlightedIndex === index ? "bg-selfprimary-200" : ""
               }`}
             >
-              <p className="font-bold">{usersNameByEmail[email]}</p>
+              <p className="font-bold">{usersNameByEmail[email] ?? email}</p>
               <p className="text-xs font-thin">{email}</p>
             </button>
           ))}

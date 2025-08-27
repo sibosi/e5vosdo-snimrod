@@ -4,7 +4,9 @@ import { Button } from "@heroui/react";
 import React, { useState } from "react";
 
 const NewParlament = () => {
-  const [newParlamentDate, setNewParlamentDate] = useState("");
+  const [newParlamentDate, setNewParlamentDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
 
   function createParlament(date?: string) {
     const parlamentTitle = `Parlament - ${date ?? newParlamentDate}`;
@@ -15,7 +17,7 @@ const NewParlament = () => {
         title: parlamentTitle,
       }),
       headers: {
-        module: "parlement",
+        module: "parlament",
       },
     }).then((res) => {
       if (res.ok) {
@@ -29,18 +31,8 @@ const NewParlament = () => {
 
   return (
     <Tray title="Parlament létrehozása">
-      <Button
-        radius="sm"
-        className="mt-2 bg-selfprimary-200 px-1 text-foreground"
-        onPress={() => {
-          createParlament(new Date().toISOString().split("T")[0]);
-        }}
-      >
-        Mai parlament létrehozása - {new Date().toISOString().split("T")[0]}
-      </Button>
-      <br />
       <label className="text-foreground" htmlFor="newParlamentDate">
-        Dátum:
+        Kérjük adja meg a parlament időpontját:
       </label>
       <input
         className="w-full rounded-md p-1"
@@ -51,8 +43,8 @@ const NewParlament = () => {
       />
 
       <Button
-        radius="sm"
-        className="mt-2 bg-selfprimary-200 px-1 text-foreground"
+        className="mt-2"
+        color="primary"
         onPress={() => createParlament()}
         isDisabled={!newParlamentDate}
       >

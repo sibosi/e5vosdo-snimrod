@@ -8,8 +8,7 @@ import {
   DrawerFooter,
   Button,
 } from "@heroui/react";
-import React, { useState } from "react";
-import AdvancedSettings from "./settings/AdvancedSettings";
+import React, { useEffect, useState } from "react";
 import AppearanceSettings from "./settings/AppearanceSettings";
 import NotificationSettings from "./settings/NotificationSettings";
 import PersonalDataSettings from "./settings/PersonalDataSettings";
@@ -20,33 +19,45 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
   const [activeSection, setActiveSection] = useState<number | null>(null);
   const [saveSettingsCallback, setSaveSettingsCallback] =
     useState<() => void>();
+  const [reloadNeeded, setReloadNeeded] = useState(false);
+  const [isSaveNeeded, setIsSaveNeeded] = useState(false);
 
   const sections: {
     title: string;
+    saveAble: boolean;
     content: React.ReactNode;
   }[] = [
     {
       title: "Személyes adatok",
+      saveAble: true,
       content: (
         <PersonalDataSettings
           selfUser={selfUser}
+          setIsSaveNeeded={setIsSaveNeeded}
           setSaveSettings={setSaveSettingsCallback}
         />
       ),
     },
     {
       title: "Értesítések",
-      content: <NotificationSettings selfUser={selfUser} />,
+      saveAble: false,
+      content: (
+        <NotificationSettings
+          selfUser={selfUser}
+          setReloadNeeded={setReloadNeeded}
+        />
+      ),
     },
     {
       title: "Megjelenés",
+      saveAble: false,
       content: <AppearanceSettings />,
     },
-    {
-      title: "Haladó beállítások",
-      content: <AdvancedSettings />,
-    },
   ];
+
+  useEffect(() => {
+    if (reloadNeeded) window.location.reload();
+  }, [activeSection]);
 
   return (
     <>
@@ -129,23 +140,22 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
                   <h2>{sections[activeSection].title}</h2>
                 </DrawerHeader>
                 <DrawerBody>{sections[activeSection].content}</DrawerBody>
-                <DrawerFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Bezárás
-                  </Button>
-                  <Button
-                    color={saveSettingsCallback ? "primary" : "default"}
-                    onPress={() => {
-                      if (saveSettingsCallback !== undefined) {
-                        saveSettingsCallback();
-                      }
-                      onClose();
-                    }}
-                    isDisabled={saveSettingsCallback === undefined}
-                  >
-                    Mentés
-                  </Button>
-                </DrawerFooter>
+                {sections[activeSection].saveAble && (
+                  <DrawerFooter>
+                    <Button
+                      color={saveSettingsCallback ? "primary" : "default"}
+                      isDisabled={!isSaveNeeded}
+                      onPress={() => {
+                        if (saveSettingsCallback !== undefined) {
+                          saveSettingsCallback();
+                        }
+                        onClose();
+                      }}
+                    >
+                      Mentés
+                    </Button>
+                  </DrawerFooter>
+                )}
               </>
             )}
           </DrawerContent>

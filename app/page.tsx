@@ -62,23 +62,14 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus="closed"
           savable={true}
-          chip={
-            <Chip color="secondary" size="sm">
-              Előnézet
-            </Chip>
-          }
         >
           <div className="max-w-md">
             <Alert
               icon={false}
               className="border-selfsecondary-300 bg-selfsecondary-100"
             >
-              <a
-                href="https://docs.google.com/spreadsheets/d/1097V-LMPhvk4vhOe8B_zUEp2Fpf7mtGs"
-                className="text-selfsecondary-700"
-              >
-                Az aktuális teremcseréket itt találod. ➜
-              </a>
+              A látható órarend nem végleges, és csak tájékoztató jellegű. A
+              hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
             </Alert>
           </div>
           <HeadTimetable selfUser={selfUser} />

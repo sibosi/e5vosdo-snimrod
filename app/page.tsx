@@ -14,10 +14,10 @@ import Footer from "@/components/footer";
 import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
-import { Chip } from "@heroui/react";
-import FinalCountdown from "@/components/home/finalCountdown";
 import { Alert } from "@/components/home/alert";
-import PodcastDrop from "@/components/PodcastDrop";
+import { WaveText } from "@/components/home/waveText";
+import { getVacationText } from "@/components/home/vakacio";
+import EventSpotlight from "@/components/events/eventSpotlight";
 
 const PageHeadContent = ({
   selfUser,
@@ -25,7 +25,7 @@ const PageHeadContent = ({
   selfUser: UserType | null | undefined;
 }) => {
   if (selfUser?.permissions.includes("user"))
-    return <Carousel data={[]} selfUser={selfUser} />;
+    return <EventSpotlight eventId={62} />; // <Carousel data={[]} selfUser={selfUser} />;
 
   if (selfUser === null)
     return (
@@ -54,7 +54,11 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div className="">
-      <FinalCountdown date="2025-06-20T09:00:00Z" />
+      <div className="mb-4 flex flex-col items-center justify-center gap-4">
+        <WaveText text={getVacationText("2025-06-20T09:00:00Z")} />
+      </div>
+
+      <PageHeadContent selfUser={selfUser} />
 
       {gate(selfUser, "user", "boolean") && (
         <Section

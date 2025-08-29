@@ -24,6 +24,12 @@ export async function getEvents() {
   return (await dbreq("SELECT * FROM events_active")) as EventType[];
 }
 
+export async function getEvent(selfUser: UserType, id: number) {
+  return (
+    await dbreq(`SELECT * FROM events_active WHERE id = ?`, [id])
+  )[0] as EventType;
+}
+
 export async function getPreviewEvent(selfUser: UserType, id: number) {
   gate(selfUser, "admin");
   const resp = (await dbreq(

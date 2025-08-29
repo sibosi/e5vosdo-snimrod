@@ -17,15 +17,13 @@ import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert } from "@/components/home/alert";
 import { WaveText } from "@/components/home/waveText";
 import { getVacationText } from "@/components/home/vakacio";
-import EventSpotlight from "@/components/events/eventSpotlight";
 
 const PageHeadContent = ({
   selfUser,
 }: {
   selfUser: UserType | null | undefined;
 }) => {
-  if (selfUser?.permissions.includes("user"))
-    return <EventSpotlight eventId={62} />; // <Carousel data={[]} selfUser={selfUser} />;
+  if (selfUser?.permissions.includes("user")) return null; //<Carousel data={[]} selfUser={selfUser} />;
 
   if (selfUser === null)
     return (

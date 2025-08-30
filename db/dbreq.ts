@@ -55,7 +55,7 @@ export async function addLog(action: string, message?: string) {
   const email = await getEmail();
   return await dbreq(
     `INSERT INTO logs (time, user, action, message) VALUES (?, ?, ?, ?);`,
-    [new Date().toJSON(), email, action, message ?? ""],
+    [new Date().toJSON(), email ?? null, action, message ?? ""],
   );
 }
 

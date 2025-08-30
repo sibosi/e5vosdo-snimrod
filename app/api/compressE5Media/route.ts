@@ -1,9 +1,10 @@
 // app/api/drive-sync/route.ts
 import { NextResponse } from "next/server";
 import { getDriveClient } from "@/db/autobackup";
-import { getOriginalImagesFileID, upsertMediaImage } from "@/db/mediaimages";
+import { getOriginalImagesFileID, upsertMediaImage } from "@/db/mediaImages";
 import sharp from "sharp";
 import { Readable } from "stream";
+import { getAuth } from "@/db/dbreq";
 
 const ORIGINAL_MEDIA_FOLDER_ID =
   process.env.NEXT_PUBLIC_ORIGINAL_MEDIA_FOLDER_ID;
@@ -145,6 +146,9 @@ async function compressToTargetBytes(
 }
 
 export async function GET() {
+  const selfUser = await getAuth();
+  if (!selfUser)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!ORIGINAL_MEDIA_FOLDER_ID || !COMPRESSED_MEDIA_FOLDER_ID) {
     return NextResponse.json(
       { error: "Missing folder ID in env" },
@@ -281,7 +285,7 @@ export async function GET() {
       const compressedDriveId = uploadRes.data?.id as string | undefined;
 
       // --- DB upsert a külön modulból ---
-      await upsertMediaImage({
+      await upsertMediaImage(selfUser, {
         original_drive_id: fileId,
         original_file_name: fileName,
         color,

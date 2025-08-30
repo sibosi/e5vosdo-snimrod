@@ -1,6 +1,8 @@
 import { dbreq } from "./db";
+import { UserType } from "./dbreq";
+import { gate } from "./permissions";
 
-export interface MediaImage {
+export interface MediaImageType {
   id?: number;
   datetime?: string;
   original_drive_id: string;
@@ -25,6 +27,13 @@ export async function getOriginalImagesFileID() {
   return images.map((image) => image.original_drive_id);
 }
 
+export async function getImages(selfUser: UserType) {
+  gate(selfUser, "user");
+  return (await dbreq(
+    "SELECT * FROM media_images ORDER BY datetime DESC",
+  )) as MediaImageType[];
+}
+
 /**
  * Beszúrja vagy frissíti az eredeti kép -> tömörített kép párosítást.
  * Ha már létezik a sor original_drive_id alapján, frissíti a tömörített részét.
@@ -40,14 +49,17 @@ export async function getOriginalImagesFileID() {
  * Visszatérési érték: a dbreq eredménye (insert/update result) — projekted dbreq implementationje
  * szerint ez lehet insertId/ok packet vagy eredmény objektum.
  */
-export async function upsertMediaImage(params: {
-  original_drive_id: string;
-  original_file_name?: string | null;
-  color?: string | null;
-  compressed_drive_id: string;
-  compressed_file_name?: string | null;
-  compressed_square_size?: number | null;
-}) {
+export async function upsertMediaImage(
+  selfUser: UserType,
+  params: {
+    original_drive_id: string;
+    original_file_name?: string | null;
+    color?: string | null;
+    compressed_drive_id: string;
+    compressed_file_name?: string | null;
+    compressed_square_size?: number | null;
+  },
+) {
   const {
     original_drive_id,
     original_file_name = null,
@@ -56,6 +68,8 @@ export async function upsertMediaImage(params: {
     compressed_file_name = null,
     compressed_square_size = null,
   } = params;
+
+  gate(selfUser, "user");
 
   const sql = `
     INSERT INTO media_images
@@ -84,6 +98,7 @@ export async function upsertMediaImage(params: {
  * Visszaad egy tömbnyi eredményt (dbreq visszatérési értékei alapján).
  */
 export async function bulkUpsertMediaImages(
+  selfUser: UserType,
   items: Array<{
     original_drive_id: string;
     original_file_name?: string | null;
@@ -93,13 +108,14 @@ export async function bulkUpsertMediaImages(
     compressed_square_size?: number | null;
   }>,
 ) {
+  gate(selfUser, "user");
   const results = [];
   for (const it of items) {
     // soronként hívjuk az upsertet: egyszerű és robusztus (ha szeretnéd, batch SQL-t is írhatunk)
     // Nem kérdezek rá up-front — az API-d a feldolgozásnál hívja majd ezt.
     // (Ha párhuzamos feldolgozás lesz, ügyelj a DB connection-limitre.)
     // eslint-disable-next-line no-await-in-loop
-    const res = await upsertMediaImage(it);
+    const res = await upsertMediaImage(selfUser, it);
     results.push(res);
   }
   return results;

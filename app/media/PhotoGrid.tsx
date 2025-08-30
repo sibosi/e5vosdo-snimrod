@@ -1,85 +1,102 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { gapi } from "gapi-script";
 
-interface DriveFile {
-  id: string;
-  name: string;
-  mimeType: string;
+import { MediaImageType } from "@/db/mediaImages";
+import React, { useEffect, useState } from "react";
+
+type TokenClientType = {
+  requestAccessToken: (opts?: { prompt?: string }) => void;
+};
+
+declare global {
+  interface Window {
+    google?: any;
+  }
 }
 
-// Component to handle authenticated image loading
 const AuthenticatedImage = ({
   fileId,
   fileName,
-  authInstance,
+  accessToken,
+  bgColor,
 }: {
   fileId: string;
   fileName: string;
-  authInstance: any;
+  accessToken: string | null;
+  bgColor?: string;
 }) => {
   const [imageSrc, setImageSrc] = useState<string>("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadImage = async () => {
-      if (!authInstance?.isSignedIn?.get()) {
-        setError(true);
-        setLoading(false);
-        return;
-      }
+    let isMounted = true;
+    if (!accessToken) {
+      setError("No access token");
+      setLoading(false);
+      return;
+    }
 
+    const controller = new AbortController();
+
+    const load = async () => {
       try {
-        const accessToken = authInstance.currentUser
-          .get()
-          .getAuthResponse().access_token;
-        const response = await fetch(
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch(
           `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`,
           {
+            method: "GET",
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
+            signal: controller.signal,
           },
         );
 
-        if (response.ok) {
-          const blob = await response.blob();
-          const imageUrl = URL.createObjectURL(blob);
-          setImageSrc(imageUrl);
-        } else {
-          setError(true);
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`Drive file fetch failed: ${res.status} ${text}`);
         }
-      } catch (err) {
-        console.error("Error loading image:", err);
-        setError(true);
+
+        const blob = await res.blob();
+        if (!isMounted) return;
+        const url = URL.createObjectURL(blob);
+        setImageSrc(url);
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
+        console.error("Error fetching image:", err);
+        setError(err.message || String(err));
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    loadImage();
+    load();
 
-    // Cleanup function to revoke object URL
     return () => {
+      isMounted = false;
+      controller.abort();
       if (imageSrc) {
         URL.revokeObjectURL(imageSrc);
       }
     };
-  }, [fileId, authInstance]);
+  }, [fileId, accessToken]);
 
   if (loading) {
     return (
-      <div className="flex h-[100px] w-[100px] items-center justify-center bg-gray-200 text-sm text-gray-500">
-        <p>Loading...</p>
+      <div
+        style={{ backgroundColor: bgColor ?? "gray" }}
+        className="flex h-[100px] w-[100px] items-center justify-center text-sm text-gray-500"
+      >
+        <p>Betöltés...</p>
       </div>
     );
   }
-
   if (error || !imageSrc) {
     return (
       <div className="flex h-[100px] w-[100px] items-center justify-center bg-red-100 text-sm text-red-500">
-        <p>Failed to load</p>
+        <p>Failed</p>
       </div>
     );
   }
@@ -95,245 +112,154 @@ const AuthenticatedImage = ({
   );
 };
 
-const PhotoGrid = ({
-  NEXT_PUBLIC_MEDIA_FOLDER_ID,
-  GOOGLE_CLIENT_ID,
-  NEXT_PUBLIC_GOOGLE_API_KEY,
-}: {
-  NEXT_PUBLIC_MEDIA_FOLDER_ID: string;
-  GOOGLE_CLIENT_ID: string;
-  NEXT_PUBLIC_GOOGLE_API_KEY: string;
-}) => {
-  const [files, setFiles] = useState<DriveFile[]>([]);
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [authInstance, setAuthInstance] = useState<any>(null);
+const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [tokenClient, setTokenClient] = useState<TokenClientType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const [imageFiles, setImageFiles] = useState<MediaImageType[]>();
 
-  console.log("Google Client ID:", GOOGLE_CLIENT_ID);
-  console.log("Media Folder ID:", NEXT_PUBLIC_MEDIA_FOLDER_ID);
-  console.log(
-    "Current origin:",
-    typeof window !== "undefined" ? window.location.origin : "SSR",
-  );
-  console.log(
-    "Current hostname:",
-    typeof window !== "undefined" ? window.location.hostname : "SSR",
-  );
-  console.log(
-    "Current protocol:",
-    typeof window !== "undefined" ? window.location.protocol : "SSR",
-  );
-  console.log(
-    "Current port:",
-    typeof window !== "undefined" ? window.location.port : "SSR",
-  );
+  function loadImages() {
+    fetch("/api/getImages", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        module: "mediaImages",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setImageFiles(data);
+        } else {
+          console.error("Invalid response:", data);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching images:", err);
+      });
+  }
 
   useEffect(() => {
-    let isMounted = true;
+    loadImages();
+  }, []);
 
-    const initializeGoogleAPI = async () => {
+  useEffect(() => {
+    let mounted = true;
+
+    const loadGsi = () => {
+      return new Promise<void>((resolve, reject) => {
+        if (window.google && window.google.accounts && mounted) {
+          resolve();
+          return;
+        }
+        const s = document.createElement("script");
+        s.src = "https://accounts.google.com/gsi/client";
+        s.async = true;
+        s.defer = true;
+        s.onload = () => resolve();
+        s.onerror = (e) => reject(new Error("Failed to load GSI script"));
+        document.head.appendChild(s);
+      });
+    };
+
+    const init = async () => {
       try {
-        // Prevent multiple initializations
-        if (!isMounted) return;
+        await loadGsi();
 
-        await new Promise((resolve) => {
-          gapi.load("auth2:client", resolve);
-        });
+        if (!mounted) return;
 
-        if (!isMounted) return;
-
-        // Check if auth2 is already initialized
-        let auth2;
-        try {
-          auth2 = gapi.auth2.getAuthInstance();
-          if (!auth2?.isSignedIn) {
-            // Sign out any existing session first to clean state
-            if (auth2) {
-              await auth2.signOut();
+        const client = (window.google as any).accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: "https://www.googleapis.com/auth/drive.readonly",
+          callback: (resp: any) => {
+            if (resp.error) {
+              console.error("Token client callback error:", resp);
+              setError(resp.error_description || resp.error || "Token error");
+              return;
             }
-            auth2 = await gapi.auth2.init({
-              client_id: GOOGLE_CLIENT_ID,
-              scope: "https://www.googleapis.com/auth/drive.readonly",
-            });
-          }
-        } catch (initError) {
-          console.log(
-            "Auth instance not found, initializing new one:",
-            initError,
-          );
-          // If getAuthInstance fails, try to initialize
-          auth2 = await gapi.auth2.init({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: "https://www.googleapis.com/auth/drive.readonly",
-          });
-        }
-
-        if (!isMounted) return;
-
-        await gapi.client.init({
-          apiKey: NEXT_PUBLIC_GOOGLE_API_KEY,
-          discoveryDocs: [
-            "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
-          ],
+            setAccessToken(resp.access_token);
+          },
         });
 
-        if (!isMounted) return;
-
-        setAuthInstance(auth2);
-        setIsSignedIn(auth2.isSignedIn.get());
+        setTokenClient(client);
         setLoading(false);
-
-        // Listen for sign-in state changes
-        auth2.isSignedIn.listen((signedIn: boolean) => {
-          if (isMounted) {
-            setIsSignedIn(signedIn);
-          }
-        });
-
-        // If already signed in, load files
-        if (auth2.isSignedIn.get()) {
-          await loadFiles();
-        }
-      } catch (error: any) {
-        console.error("Failed to initialize Google API:", error);
-        console.error("Error details:", {
-          message: error.message,
-          details: error.details || "No details available",
-          error: error.error || "No error code",
-          stack: error.stack,
-        });
-        if (isMounted) {
-          setError(
-            `Failed to initialize Google API: ${error.message || error}`,
-          );
-          setLoading(false);
-        }
+      } catch (err: any) {
+        console.error("Init GIS failed:", err);
+        setError(err.message || String(err));
+        setLoading(false);
       }
     };
 
-    initializeGoogleAPI();
+    init();
 
-    // Cleanup function
     return () => {
-      isMounted = false;
+      mounted = false;
     };
   }, []);
 
-  const loadFiles = async () => {
-    try {
-      setError("");
-      const response = await gapi.client.drive.files.list({
-        q: `'${NEXT_PUBLIC_MEDIA_FOLDER_ID}' in parents and trashed=false`,
-        fields: "files(id,name,mimeType)",
-        pageSize: 100,
-        supportsAllDrives: true,
-        includeItemsFromAllDrives: true,
-      });
-
-      console.log("Google Drive API response:", response);
-      const imageFiles =
-        response.result.files?.filter((f: any) =>
-          f.mimeType?.startsWith("image/"),
-        ) || [];
-      setFiles(imageFiles);
-    } catch (error: any) {
-      console.error("Google Drive API error:", error);
-      setError(`Failed to load files: ${error.message}`);
+  const signIn = () => {
+    setError("");
+    if (!tokenClient) {
+      setError("Token client not initialized");
+      return;
     }
-  };
-
-  const signIn = async () => {
     try {
-      console.log("Attempting to sign in...");
-      if (authInstance) {
-        console.log("Auth instance available, calling signIn()");
-        const result = await authInstance.signIn();
-        console.log("Sign in result:", result);
-        await loadFiles();
-      } else {
-        console.error("No auth instance available");
-        setError("Authentication not initialized. Please reload the page.");
-      }
-    } catch (error: any) {
-      console.error("Sign in error:", error);
-      console.error("Sign in error details:", {
-        message: error.message,
-        details: error.details || "No details available",
-        error: error.error || "No error code",
-      });
-      setError(`Sign in failed: ${error.message || error}`);
+      tokenClient.requestAccessToken({ prompt: "" });
+    } catch (err: any) {
+      console.error("requestAccessToken error:", err);
+      setError(err.message || String(err));
     }
   };
 
   const signOut = () => {
-    if (authInstance) {
-      authInstance.signOut();
-      setFiles([]);
-    }
+    setAccessToken(null);
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div>Loading Google API...</div>
-      </div>
-    );
+    return <div className="p-8">Loading auth...</div>;
   }
 
   if (error) {
     return (
-      <div className="mb-4 rounded border border-red-400 bg-red-100 p-4">
+      <div className="mb-4 rounded-3xl border-2 border-red-400 bg-red-100 p-4">
         <p className="text-red-700">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+          className="mt-2 rounded bg-red-500 px-4 py-2 text-white"
         >
-          Reload Page
+          Újratöltés
         </button>
       </div>
     );
   }
 
-  if (!isSignedIn) {
+  if (!accessToken) {
     return (
       <div className="mx-auto max-w-2xl p-6">
-        <div className="mb-4 rounded border border-yellow-400 bg-yellow-100 p-4">
-          <h3 className="font-bold text-yellow-800">
-            OAuth Configuration Info
+        <div className="mb-4 rounded-3xl border-2 border-selfprimary-400 bg-selfprimary-100 p-4">
+          <h3 className="mb-2 font-bold text-selfprimary-800">
+            Helló az Eötvös Média fotói közt!
           </h3>
           <p>
-            <strong>Current Origin:</strong>{" "}
-            {typeof window !== "undefined"
-              ? window.location.origin
-              : "Loading..."}
+            A média korábbi oldala sajnálatos módon megszűnt, így a médiabrigád
+            fotóit mostantól itt találhatod meg. A jelenlegi szerver és
+            tárhelykapacitások miatt a médiás fotókhoz a Google Drive
+            segítségével lehet hozzáférni, ezért a továbblépéshez bejelentkezés
+            és Google Drive hozzáférés szükséges.
           </p>
-          <p>
-            <strong>Client ID:</strong> {GOOGLE_CLIENT_ID}
-          </p>
-          <p>
-            <strong>Expected Origins for this Client ID:</strong>
-          </p>
-          <ul className="ml-6 list-disc text-sm">
-            <li>http://local.e5vos.hu:3000</li>
-            <li>https://e5vosdo.hu</li>
-            <li>
-              https://humble-space-parakeet-qxgp4jj4xgxhx94w-3000.app.github.dev
-            </li>
-          </ul>
-          <p className="mt-2 text-sm text-yellow-700">
-            <strong>Important:</strong> If you see "origin not allowed" errors,
-            the current origin needs to be added to your Google OAuth client
-            settings in the Google Cloud Console.
+          <p className="mt-2 text-sm text-selfprimary-700">
+            Győződj meg róla, hogy a böngésző nem blokkolja a popupokat vagy a
+            harmadik fél sütiket (privát mód is okozhat problémát).
           </p>
         </div>
 
         <div className="text-center">
           <button
             onClick={signIn}
-            className="rounded-lg bg-blue-500 px-6 py-3 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="rounded-lg bg-selfprimary-500 px-6 py-3 text-selfprimary-50"
           >
-            Sign in with Google to view photos
+            Bejelentkezés
           </button>
         </div>
       </div>
@@ -343,33 +269,42 @@ const PhotoGrid = ({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Photo Gallery</h1>
-        <button
-          onClick={signOut}
-          className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-        >
-          Sign Out
-        </button>
+        <h1 className="text-2xl font-bold">Eötvös Média - Galéria</h1>
+        <div>
+          <button
+            onClick={signOut}
+            className="rounded bg-gray-500 px-4 py-2 text-white"
+          >
+            Kijelentkezés
+          </button>
+        </div>
       </div>
 
-      {files.length === 0 ? (
+      {imageFiles === undefined && (
+        <div className="p-8 text-center">
+          <p>Képek betöltése...</p>
+        </div>
+      )}
+
+      {imageFiles?.length === 0 ? (
         <div className="p-8 text-center">
           <p>No images found in the media folder.</p>
           <button
-            onClick={loadFiles}
-            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            onClick={() => loadImages()}
+            className="mt-4 rounded bg-selfprimary-500 px-4 py-2 text-selfprimary-50"
           >
-            Refresh
+            Újratöltés
           </button>
         </div>
       ) : (
         <div className="flex flex-wrap justify-center gap-2">
-          {files.map((f) => (
+          {imageFiles?.map((f) => (
             <AuthenticatedImage
-              key={f.id}
-              fileId={f.id}
-              fileName={f.name}
-              authInstance={authInstance}
+              key={f.compressed_drive_id}
+              fileId={f.compressed_drive_id}
+              fileName={f.compressed_file_name ?? "image"}
+              accessToken={accessToken}
+              bgColor={f.color}
             />
           ))}
         </div>

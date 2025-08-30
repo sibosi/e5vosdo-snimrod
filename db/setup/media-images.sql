@@ -10,3 +10,7 @@ CREATE TABLE IF NOT EXISTS media_images (
 
 --@block
 SELECT * FROM media_images;
+
+--@block
+-- delete all
+DELETE FROM media_images;

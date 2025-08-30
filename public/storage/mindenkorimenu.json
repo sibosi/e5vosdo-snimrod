@@ -1,1 +1,259 @@
-{}
+{
+  "2025.09.01": {
+    "A": ["Zöldséges burgonyaleves", "Milánói spagetti", "Gyümölcs"],
+    "B": [
+      "Zöldséges burgonyaleves",
+      "Paprikás csirkemell",
+      "Galuska",
+      "Gyümölcs"
+    ],
+    "nap": "Monday"
+  },
+  "2025.09.02": {
+    "A": ["Fahéjas szilvaleves", "Tavaszi rizses hús", "Kovászos uborka"],
+    "B": [
+      "Fahéjas szilvaleves",
+      "Sajtos halszelet",
+      "Párolt rizs",
+      "Tartár mártás"
+    ],
+    "nap": "Tuesday"
+  },
+  "2025.09.03": {
+    "A": [
+      "Daragaluska leves",
+      "Kelkáposzta főzelék",
+      "Fűszeres csirkemell csíkok",
+      "Tk. kenyér"
+    ],
+    "B": [
+      "Daragaluskaleves",
+      "Paradicsomos húsgombóc",
+      "Főtt burgonya 1/2adag"
+    ],
+    "nap": "Wednesday"
+  },
+  "2025.09.04": {
+    "A": [
+      "Karfiolkrémleves",
+      "Levesgyöngy",
+      "Grillezett sertés borda",
+      "Párolt zöldköret"
+    ],
+    "B": [
+      "Karfiolkrémleves levesgyöngy",
+      "Sült csirkecomb",
+      "Jázmin rizs",
+      "Kovászos uborka"
+    ],
+    "nap": "Thursday"
+  },
+  "2025.09.05": {
+    "A": ["Fejtett bableves", "Mákos nudli", "Vanília sodó", "Gyümölcs"],
+    "B": ["Fejtett bableves", "Császármorzsa", "Baracklekvár", "Gyümölcs"],
+    "nap": "Friday"
+  },
+  "2025.09.08": {
+    "A": [
+      "Reszelt tésztaleves",
+      "Zöldbabfőzelék",
+      "Panírozott pulyka tallér",
+      "Tk. kenyér"
+    ],
+    "B": ["Reszelt tésztaleves", "Székelykáposzta", "Tk. kenyér"],
+    "nap": "Monday"
+  },
+  "2025.09.09": {
+    "A": [
+      "Francia hagymaleves",
+      "Kruton",
+      "Csirke gyros",
+      "Joghurtos öntet",
+      "Friss vegyes saláta",
+      "Petrezselymes burgonya (1/2)"
+    ],
+    "B": [
+      "Hagymaleves zsemlekocka",
+      "Csíki aprópecsenye",
+      "Petrezselymes burgonya"
+    ],
+    "nap": "Tuesday"
+  },
+  "2025.09.10": {
+    "A": ["100%-os gyümölcslé", "Francia sertésragu", "Bulgur"],
+    "B": [
+      "100%-os gyümölcslé",
+      "Párizsi csirkemellfilé",
+      "Jázmin rizs",
+      "Csemege uborka"
+    ],
+    "nap": "Wednesday"
+  },
+  "2025.09.11": {
+    "A": [
+      "Vegyes gyümölcsleves (alma-körte)",
+      "Rántott halporció",
+      "Jázmin rizs",
+      "Tartár mártás"
+    ],
+    "B": ["Vegyes gyümölcsleves", "Tarhonyáshús", "Vitamin saláta"],
+    "nap": "Thursday"
+  },
+  "2025.09.12": {
+    "A": [
+      "Tavaszi zöldségleves",
+      "Spenótos ricottás ravioli sajtmártással",
+      "Gyümölcs"
+    ],
+    "B": ["Tavaszi zöldségleves", "Aranygaluska", "Tejsodó", "Gyümölcs"],
+    "nap": "Friday"
+  },
+  "2025.09.15": {
+    "A": [
+      "Jókai bableves",
+      "Tk. Kenyér",
+      "Szilvatöltelékes gombóc",
+      "Fahéj szórat",
+      "Gyümölcs"
+    ],
+    "B": [
+      "Jókai bableves",
+      "Piskóta kocka. Csoki öntet",
+      "Tk. Kenyér",
+      "Gyümölcs"
+    ],
+    "nap": "Monday"
+  },
+  "2025.09.16": {
+    "A": [
+      "Köménymagleves",
+      "Kruton",
+      "Húsgombóc savanyú káposztával",
+      "Tk. kenyér"
+    ],
+    "B": [
+      "Köménymagleves zsemlekocka",
+      "Burgonyafőzelék",
+      "Sertéspörkölt",
+      "Tk.kenyér"
+    ],
+    "nap": "Tuesday"
+  },
+  "2025.09.17": {
+    "A": [
+      "Csontleves cérnametélttel",
+      "Főtt sertés szelet",
+      "Meggymártás",
+      "Főtt burgonya (150g)"
+    ],
+    "B": [
+      "Csontleves cérnametélttel",
+      "Dijoni mustáros sertésborda",
+      "Főtt burgonya"
+    ],
+    "nap": "Wednesday"
+  },
+  "2025.09.18": {
+    "A": ["Tejfölös gombaleves", "Mexikói csirkeragu", "Párolt rizs"],
+    "B": [
+      "Tejfölös gombaleves",
+      "Tonhalrúdak rántva",
+      "Párolt rizs",
+      "Tartár mártás"
+    ],
+    "nap": "Thursday"
+  },
+  "2025.09.19": {
+    "A": [
+      "Karotta krémleves",
+      "Pirított tökmag",
+      "Vega rakott karfiol sajttal",
+      "Gyümölcs"
+    ],
+    "B": [
+      "Zöldborsóleves",
+      "Bolognai makaróni (vega)",
+      "Sajt szórás",
+      "Gyümölcs"
+    ],
+    "nap": "Friday"
+  },
+  "2025.09.22": {
+    "A": ["Tárkonyos sertésragu leves", "Káposztás kocka", "Gyümölcs"],
+    "B": ["Tárkonyos sertésragu leves", "Tejbendara", "Kakaószórással"],
+    "nap": "Monday"
+  },
+  "2025.09.23": {
+    "A": [
+      "100%-os gyümölcslé",
+      "Roston harcsa szelet",
+      "Kukoricás jázminrizs",
+      "Citromfű mártás"
+    ],
+    "B": [
+      "100%-os gyümölcslé",
+      "Grillfűszeres csirkemellfilé",
+      "Kukoricás rizs",
+      "Vitamin saláta"
+    ],
+    "nap": "Tuesday"
+  },
+  "2025.09.24": {
+    "A": [
+      "Paradicsomleves betűtésztával",
+      "Májas sertés aprópecsenye",
+      "Főtt burgonya",
+      "Uborka saláta"
+    ],
+    "B": [
+      "Paradicsomleves betűtésztával",
+      "Brassói aprópecsenye",
+      "Uborka saláta"
+    ],
+    "nap": "Wednesday"
+  },
+  "2025.09.25": {
+    "A": [
+      "Orjaleves eperlevéllel",
+      "Füstölt sajtos brokkolis csirkemellfilé",
+      "Bulgur"
+    ],
+    "B": ["Orjaleves eperlevéllel", "Vadas pulykaragu", "Főtt tészta"],
+    "nap": "Thursday"
+  },
+  "2025.09.26": {
+    "A": [
+      "Magyaros gombaleves",
+      "Zöldborsófőzelék",
+      "Főtt tojás",
+      "Tk. kenyér"
+    ],
+    "B": [
+      "Magyaros gombaleves",
+      "Rántott sajt",
+      "Jázmin rizs",
+      "Tartár mártás"
+    ],
+    "nap": "Friday"
+  },
+  "2025.09.29": {
+    "A": [
+      "Alföldi gulyásleves",
+      "Tk. Kenyér",
+      "Túrós csusza sült szalonnával",
+      "Tejfölös öntet",
+      "Gyümölcs"
+    ],
+    "B": ["Alföldi gulyásleves", "Bécsi fánk 2db", "Tk. Kenyér", "Gyümölcs"],
+    "nap": "Monday"
+  },
+  "2025.09.30": {
+    "A": [
+      "Magyaros karalábéleves",
+      "Tejszínes sonkás pulykaragu",
+      "Párolt rizs"
+    ],
+    "B": ["Magyaros karalábéleves", "Szerb rizseshús", "Vitamin saláta"],
+    "nap": "Tuesday"
+  }
+}

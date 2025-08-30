@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaImageType } from "@/db/valminagyonrandom";
+import { MediaImageType } from "@/db/mediaPhotos";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 type TokenClientType = {
@@ -136,7 +136,7 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        module: "mediaImages",
+        module: "mediaPhotos",
       },
     })
       .then((res) => res.json())

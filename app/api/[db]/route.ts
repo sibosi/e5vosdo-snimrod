@@ -19,7 +19,7 @@ const modules = {
   images: import("@/db/images"),
   matches: import("@/db/matches"),
   pageSettings: import("@/db/pageSettings"),
-  mediaImages: import("@/db/valminagyonrandom"),
+  mediaPhotos: import("@/db/mediaPhotos"),
 };
 
 export const GET = async (

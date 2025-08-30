@@ -80,7 +80,7 @@ const AuthenticatedImage = ({
 
   if (error || !imageSrc) {
     return (
-      <div className="relative h-0 w-full pb-[100%]">
+      <div className="relative h-[100px] w-[100px] pb-[100%]">
         <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-red-100">
           <div className="text-sm text-red-500">Failed to load</div>
         </div>
@@ -89,13 +89,13 @@ const AuthenticatedImage = ({
   }
 
   return (
-    <div className="relative h-0 w-full pb-[100%]">
-      <img
-        src={imageSrc}
-        alt={fileName}
-        className="absolute inset-0 h-full w-full rounded-lg object-cover"
-      />
-    </div>
+    <img
+      src={imageSrc}
+      alt={fileName}
+      width={100}
+      height={100}
+      className="inset-0"
+    />
   );
 };
 
@@ -367,7 +367,7 @@ const PhotoGrid = ({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="flex flex-wrap justify-center gap-2">
           {files.map((f) => (
             <AuthenticatedImage
               key={f.id}

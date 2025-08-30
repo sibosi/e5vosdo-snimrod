@@ -1,7 +1,7 @@
 // app/api/drive-sync/route.ts
 import { NextResponse } from "next/server";
 import { getDriveClient } from "@/db/autobackup";
-import { getOriginalImagesFileID, upsertMediaImage } from "@/db/mediaImages";
+import { getOriginalImagesFileID, upsertMediaImage } from "@/db/media-Images";
 import sharp from "sharp";
 import { Readable } from "stream";
 import { getAuth } from "@/db/dbreq";

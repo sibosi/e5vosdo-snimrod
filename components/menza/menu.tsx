@@ -34,7 +34,8 @@ function formatDate(date: Date, simple = false) {
       })
       .replaceAll(". ", "/")
       .replaceAll(".", "")
-      .replaceAll("/", ".");
+      .replaceAll("/", ".")
+      .replaceAll(",", ".");
   }
   return date
     .toLocaleDateString("hu")
@@ -102,11 +103,11 @@ const DatePicker = ({
   }
   return (
     <div className="flex h-8 items-center gap-2 rounded-full bg-selfprimary-100 px-2 text-center text-base font-medium text-selfprimary-700">
-      <button onClick={() => changeDate(-1)}>
+      <button className="h-full w-fit" onClick={() => changeDate(-1)}>
         <Arrow className="rotate-90" />
       </button>
       {formatDate(date, true)}
-      <button onClick={() => changeDate(1)}>
+      <button className="h-full w-fit" onClick={() => changeDate(1)}>
         <Arrow className="-rotate-90" />
       </button>
     </div>

@@ -1,4 +1,5 @@
 {
   "plugins": ["prettier-plugin-tailwindcss"],
-  "purge": ["./**/*.{tsx,ts,jsx,js}"]
+  "purge": ["./**/*.{tsx,ts,jsx,js}"],
+  "tailwindConfig": "./tailwind.config.ts"
 }

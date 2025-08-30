@@ -14,18 +14,16 @@ import Footer from "@/components/footer";
 import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
-import { Chip } from "@heroui/react";
-import FinalCountdown from "@/components/home/finalCountdown";
 import { Alert } from "@/components/home/alert";
-import PodcastDrop from "@/components/PodcastDrop";
+import { WaveText } from "@/components/home/waveText";
+import { getVacationText } from "@/components/home/vakacio";
 
 const PageHeadContent = ({
   selfUser,
 }: {
   selfUser: UserType | null | undefined;
 }) => {
-  if (selfUser?.permissions.includes("user"))
-    return <Carousel data={[]} selfUser={selfUser} />;
+  if (selfUser?.permissions.includes("user")) return null; //<Carousel data={[]} selfUser={selfUser} />;
 
   if (selfUser === null)
     return (
@@ -54,7 +52,11 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div className="">
-      <FinalCountdown date="2025-06-20T09:00:00Z" />
+      <div className="mb-4 flex flex-col items-center justify-center gap-4">
+        <WaveText text={getVacationText("2025-06-20T09:00:00Z")} />
+      </div>
+
+      <PageHeadContent selfUser={selfUser} />
 
       {gate(selfUser, "user", "boolean") && (
         <Section
@@ -62,23 +64,14 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus="closed"
           savable={true}
-          chip={
-            <Chip color="secondary" size="sm">
-              Előnézet
-            </Chip>
-          }
         >
           <div className="max-w-md">
             <Alert
               icon={false}
               className="border-selfsecondary-300 bg-selfsecondary-100"
             >
-              <a
-                href="https://docs.google.com/spreadsheets/d/1097V-LMPhvk4vhOe8B_zUEp2Fpf7mtGs"
-                className="text-selfsecondary-700"
-              >
-                Az aktuális teremcseréket itt találod. ➜
-              </a>
+              A látható órarend nem végleges, és csak tájékoztató jellegű. A
+              hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
             </Alert>
           </div>
           <HeadTimetable selfUser={selfUser} />

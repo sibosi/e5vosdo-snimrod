@@ -66,24 +66,20 @@ const AuthenticatedImage = ({
         URL.revokeObjectURL(imageSrc);
       }
     };
-  }, [fileId, authInstance, imageSrc]);
+  }, [fileId, authInstance]);
 
   if (loading) {
     return (
-      <div className="relative h-0 w-full pb-[100%]">
-        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gray-200">
-          <div className="text-sm text-gray-500">Loading...</div>
-        </div>
+      <div className="flex h-[100px] w-[100px] items-center justify-center bg-gray-200 text-sm text-gray-500">
+        <p>Loading...</p>
       </div>
     );
   }
 
   if (error || !imageSrc) {
     return (
-      <div className="relative h-[100px] w-[100px] pb-[100%]">
-        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-red-100">
-          <div className="text-sm text-red-500">Failed to load</div>
-        </div>
+      <div className="flex h-[100px] w-[100px] items-center justify-center bg-red-100 text-sm text-red-500">
+        <p>Failed to load</p>
       </div>
     );
   }
@@ -222,7 +218,7 @@ const PhotoGrid = ({
     return () => {
       isMounted = false;
     };
-  }, [GOOGLE_CLIENT_ID, NEXT_PUBLIC_GOOGLE_API_KEY]);
+  }, []);
 
   const loadFiles = async () => {
     try {

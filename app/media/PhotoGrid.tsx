@@ -1,6 +1,6 @@
 "use client";
 
-import { MediaImageType } from "@/db/media-Images";
+import { MediaImageType } from "@/db/valminagyonrandom";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 type TokenClientType = {

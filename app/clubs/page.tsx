@@ -1,6 +1,7 @@
 import { clubsConfig, clubsOrder } from "@/config/groups";
 import PopupCards from "@/components/popupcards";
 import { Alert } from "@/components/home/alert";
+import { Section } from "@/components/home/section";
 
 function sortClubs() {
   const sortedClubs = new Set();
@@ -16,15 +17,27 @@ function sortClubs() {
 export default function ClubsPage() {
   return (
     <>
-      <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
+      <h1 className="pb-8 text-center text-4xl font-semibold text-foreground max-md:hidden lg:text-5xl">
         Klubok és szakkörök
       </h1>
 
-      <Alert className="border-selfprimary-300 bg-selfprimary-100">
-        A kártyákra kattintva további információkat találsz a klubokról.
-      </Alert>
+      <h2 className="pb-8 text-center text-3xl font-semibold text-foreground lg:text-4xl">
+        Találkozz szeptember 5-én a KlubExpo-n a legújabb szakkör és
+        klubkínálattal!
+      </h2>
 
-      <PopupCards cards={sortClubs()} />
+      <Section
+        title="Tavalyi klubok"
+        savable={false}
+        defaultStatus="closed"
+        dropdownable={true}
+      >
+        <Alert className="border-selfprimary-300 bg-selfprimary-100">
+          A kártyákra kattintva további információkat találsz a klubokról.
+        </Alert>
+
+        <PopupCards cards={sortClubs()} />
+      </Section>
     </>
   );
 }

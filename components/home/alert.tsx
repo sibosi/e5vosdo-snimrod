@@ -16,7 +16,7 @@ export const Alert = ({
   return (
     <div
       className={
-        "w-fit rounded-lg border-3 text-sm text-foreground shadow-md " +
+        "flex w-fit items-center gap-2 rounded-lg border-3 text-sm text-foreground shadow-md " +
         (padding && "mb-3 px-3 py-2") +
         " " +
         className
@@ -41,7 +41,7 @@ export const Alert = ({
           />
         </svg>
       )}
-      <div className="inline">{children}</div>
+      <div>{children}</div>
     </div>
   );
 };

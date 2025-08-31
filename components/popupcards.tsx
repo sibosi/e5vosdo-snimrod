@@ -18,6 +18,7 @@ import {
   FacebookIcon,
   GithubIcon,
   InstagramIcon,
+  LikeIcon,
   LinkIcon,
   PhoneIcon,
   SpotifyIcon,
@@ -224,7 +225,7 @@ const PopupCards = ({
               className="bg-selfprimary-300"
               onPress={() => setShowingCard(null)}
             >
-              Ok
+              <LikeIcon />
             </Button>
           </ModalFooter>
         </ModalContent>

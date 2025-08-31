@@ -11,11 +11,12 @@ import {
 import { loadPalette } from "./themePicker";
 
 interface ThemeSwitchProps {
+  text?: string;
   className?: string;
   classNames?: SwitchProps["classNames"];
 }
 
-const ThemeSwitch: FC<ThemeSwitchProps> = () => {
+const ThemeSwitch: FC<ThemeSwitchProps> = ({ text, className, classNames }) => {
   const [theme, setIsDarkMode] = useState(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       return localStorage.getItem("theme") || "system";
@@ -63,9 +64,9 @@ const ThemeSwitch: FC<ThemeSwitchProps> = () => {
   };
 
   return (
-    <div
+    <button
       onClick={toggleTheme}
-      className="fill-foreground-500 transition-all duration-300 ease-in-out hover:fill-foreground-600"
+      className={`fill-foreground-500 transition-all duration-300 ease-in-out hover:fill-foreground-600 ${className}`}
     >
       {theme === "dark" ? (
         <MoonFilledIcon size={22} />
@@ -74,7 +75,9 @@ const ThemeSwitch: FC<ThemeSwitchProps> = () => {
       ) : (
         <SystemThemeIcon size={22} />
       )}
-    </div>
+
+      <span>{text}</span>
+    </button>
   );
 };
 

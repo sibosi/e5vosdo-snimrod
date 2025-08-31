@@ -109,6 +109,8 @@ const NavbarForDesktop = ({
   className?: string;
   isActiveHeadSpace: boolean;
 }) => {
+  const pathname = usePathname();
+
   return (
     <NextUINavbar
       maxWidth="xl"
@@ -117,15 +119,11 @@ const NavbarForDesktop = ({
     >
       <NavbarContent className="fixed basis-full" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
-          {!selfUser?.permissions.includes("user") ? (
-            <NextLink
-              className="flex items-center justify-start gap-1"
-              href="/"
-            >
-              <Logo />
-              <p className="block- hidden p-2 font-bold text-foreground">E5</p>
-            </NextLink>
-          ) : (
+          <NextLink className="flex items-center justify-start gap-1" href="/">
+            <Logo />
+            <p className="block- hidden p-2 font-bold text-foreground">E5</p>
+          </NextLink>
+          {selfUser?.permissions.includes("user") && (
             <>
               <HelloMessage selfUser={selfUser} size="sm" padding={false} />
               {selfUser?.permissions.includes("tester") && (
@@ -138,15 +136,11 @@ const NavbarForDesktop = ({
 
           <GetApp size={isActiveHeadSpace ? "small" : "medium"} />
         </NavbarBrand>
-        <ul className="ml-2 flex justify-start gap-4">
+        <ul className="ml-2 flex justify-start">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
-                className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
-                )}
-                color="foreground"
+                className={`${pathname === item.href ? "font-bold text-selfprimary-600" : "text-foreground"} p-2 hover:bg-selfprimary-200`}
                 href={item.href}
               >
                 {item.label}

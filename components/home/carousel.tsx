@@ -185,7 +185,7 @@ export default function Carousel({
   return (
     <div className="mb-2 p-0 transition-all">
       <div className={clicked === null ? "flex" : ""}>
-        {clicked === null && realData.length > 2 && (
+        {clicked === null && realData.length > 1 && (
           <button
             className="bottom-0 top-0 z-10 my-auto -mr-10 ml-2 h-8 w-8 rounded-full bg-selfprimary-50 p-1 text-selfprimary-700 max-md:hidden"
             title="Vissza"
@@ -263,7 +263,7 @@ export default function Carousel({
             </Link>
           )}
         </div>
-        {clicked === null && realData.length > 2 && (
+        {clicked === null && realData.length > 1 && (
           <button
             className="bottom-0 top-0 z-10 my-auto -ml-10 mr-2 h-8 w-8 rounded-full bg-selfprimary-50 p-1 text-selfprimary-700 max-md:hidden"
             title="Tovább"

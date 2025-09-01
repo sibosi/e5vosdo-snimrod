@@ -120,7 +120,7 @@ export default async function RootLayout({
               <OnCSSBug />
               {children}
             </main>
-            <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
+            <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3 max-md:-mt-4 max-md:pb-12">
               <Link
                 isExternal
                 className="flex items-center gap-1 pb-14 text-current"
@@ -129,7 +129,7 @@ export default async function RootLayout({
               >
                 <span className="text-default-600">Fejlesztette</span>
                 <p className="text-selfprimary">Simon Nimród</p>
-                <span className="text-default-600">10.C</span>
+                <span className="text-default-600">11.C</span>
               </Link>
               <br />
               <PageNav />

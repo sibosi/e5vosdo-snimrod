@@ -261,6 +261,10 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                         <td>{selectedUser.EJG_code}</td>
                       </tr>
                       <tr>
+                        <th scope="row">OM5</th>
+                        <td>{selectedUser.OM5}</td>
+                      </tr>
+                      <tr>
                         <th scope="row">Étkezési menü</th>
                         <td>{selectedUser.food_menu}</td>
                       </tr>

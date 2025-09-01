@@ -55,7 +55,9 @@ export const useTimetable = ({
   const [selectedDay, setSelectedDay] = useState<DayType>(() => {
     if (initialDay) return initialDay;
 
+    // Day indexes: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     const now = new Date();
+    if (now.getDay() === 0 || now.getDay() === 6) return "Hétfő";
     const todayAt1515 = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -65,10 +67,11 @@ export const useTimetable = ({
       0,
       0,
     );
-    const today = now.getDay() - 1;
-    const dayIndex = [-1, 5].includes(today) ? 0 : today;
-    const dayIndexAdjusted = todayAt1515 < now ? dayIndex + 1 : dayIndex;
-    return days[dayIndexAdjusted > 4 ? 0 : dayIndexAdjusted];
+    const todayName = days[now.getDay() - 1];
+    const tomorrowName = days[now.getDay()];
+    const isItAfter1515 = todayAt1515 < now;
+    if (isItAfter1515) return tomorrowName;
+    return todayName;
   });
 
   const { data, error } = useSWR<TimetableWeek>("/api/timetable", fetcher, {

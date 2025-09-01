@@ -49,7 +49,9 @@ const getUserClass = (selfUser: User | undefined) => {
 
   const evfolyam =
     Math.floor(
-      (new Date().getTime() - new Date("2023/08/01").getTime()) / msInAYear,
+      (new Date().getTime() -
+        new Date(selfUser.coming_year + "/08/01").getTime()) /
+        msInAYear,
     ) + (yearByClassCharacter[selfUser.class_character] ?? 0);
 
   return evfolyam + "." + selfUser.class_character;

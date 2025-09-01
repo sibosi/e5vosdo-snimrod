@@ -15,15 +15,14 @@ import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert } from "@/components/home/alert";
-import { WaveText } from "@/components/home/waveText";
-import { getVacationText } from "@/components/home/vakacio";
 
 const PageHeadContent = ({
   selfUser,
 }: {
   selfUser: UserType | null | undefined;
 }) => {
-  if (selfUser?.permissions.includes("user")) return null; //<Carousel data={[]} selfUser={selfUser} />;
+  if (selfUser?.permissions.includes("user"))
+    return <Carousel data={[]} selfUser={selfUser} />;
 
   if (selfUser === null)
     return (
@@ -51,11 +50,7 @@ const PageHeadContent = ({
 export default async function Home() {
   const selfUser = await getAuth();
   return (
-    <div className="">
-      <div className="mb-4 flex flex-col items-center justify-center gap-4">
-        <WaveText text={getVacationText("2025-06-20T09:00:00Z")} />
-      </div>
-
+    <div>
       <PageHeadContent selfUser={selfUser} />
 
       {gate(selfUser, "user", "boolean") && (
@@ -70,11 +65,11 @@ export default async function Home() {
               icon={false}
               className="border-selfsecondary-300 bg-selfsecondary-100"
             >
-              A látható órarend nem végleges, és csak tájékoztató jellegű. A
-              hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
+             Az alább látható órarend nem hivatalos és nem feltétlenül aktuális. A hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
             </Alert>
+            {selfUser?.permissions.includes("user") && <HeadTimetable selfUser={selfUser} />}
           </div>
-          <HeadTimetable selfUser={selfUser} />
+          
         </Section>
       )}
 

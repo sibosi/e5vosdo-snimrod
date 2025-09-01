@@ -1,5 +1,5 @@
 import { getAuth } from "@/db/dbreq";
-import PleaseLogin from "../me/redirectToLogin";
+import PleaseLogin from "../../(e5vosdo)/me/redirectToLogin";
 import PhotoGridWrapper from "./PhotoGridWrapper";
 
 const MediaPage = async () => {

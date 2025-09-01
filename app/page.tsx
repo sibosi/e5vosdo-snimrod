@@ -67,7 +67,7 @@ export default async function Home() {
             >
              A hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
             </Alert>
-            {selfUser?.permissions.includes("tester") && <HeadTimetable selfUser={selfUser} />}
+            {selfUser?.permissions.includes("user") && <HeadTimetable selfUser={selfUser} />}
           </div>
           
         </Section>

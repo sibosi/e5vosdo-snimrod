@@ -65,7 +65,7 @@ export default async function Home() {
               icon={false}
               className="border-selfsecondary-300 bg-selfsecondary-100"
             >
-             A hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
+             Az alább látható órarend nem hivatalos és nem feltétlenül aktuális. A hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
             </Alert>
             {selfUser?.permissions.includes("user") && <HeadTimetable selfUser={selfUser} />}
           </div>

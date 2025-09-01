@@ -20,7 +20,7 @@ export interface User {
   image: string;
   last_login: string;
   permissions: string[];
-  EJG_code: string;
+  EJG_code: string | null;
   OM5: string | null;
   food_menu: string;
   coming_year: number;
@@ -608,18 +608,16 @@ export async function editMySettings({
 
   const setClauses: string[] = [];
   const params: any[] = [];
-
-  const valid_EJG_code = selfUser.tickets.includes("EJG_code_edit")
-    ? settings.EJG_code
-    : selfUser.EJG_code;
+  const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]{13}$/.test(code);
 
   if (
     selfUser.tickets.includes("EJG_code_edit") &&
-    selfUser.EJG_code != settings.EJG_code
+    selfUser.EJG_code != settings.EJG_code &&
+    isValidEJGCode(settings.EJG_code ?? "")
   ) {
     await removeTicket("EJG_code_edit");
     setClauses.push("EJG_code = ?");
-    params.push(valid_EJG_code);
+    params.push(settings.EJG_code);
   }
 
   console.log(JSON.stringify(settings));

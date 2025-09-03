@@ -10,7 +10,8 @@ export interface MediaImageType {
   color?: string;
   compressed_drive_id: string;
   compressed_file_name?: string;
-  compressed_square_size?: number;
+  compressed_width: number;
+  compressed_height: number;
 }
 
 export async function getCompressedImagesFileID() {
@@ -44,7 +45,8 @@ export async function getImages(selfUser: UserType) {
  * - color (opcionális)
  * - compressed_drive_id (kötelező)
  * - compressed_file_name (opcionális)
- * - compressed_square_size (opcionális)
+ * - compressed_width (kötelező)
+ * - compressed_height (kötelező)
  *
  * Visszatérési érték: a dbreq eredménye (insert/update result) — projekted dbreq implementationje
  * szerint ez lehet insertId/ok packet vagy eredmény objektum.
@@ -57,7 +59,8 @@ export async function upsertMediaImage(
     color?: string | null;
     compressed_drive_id: string;
     compressed_file_name?: string | null;
-    compressed_square_size?: number | null;
+    compressed_width: number;
+    compressed_height: number;
   },
 ) {
   const {
@@ -66,19 +69,21 @@ export async function upsertMediaImage(
     color = null,
     compressed_drive_id,
     compressed_file_name = null,
-    compressed_square_size = null,
+    compressed_width,
+    compressed_height,
   } = params;
 
   gate(selfUser, "user");
 
   const sql = `
     INSERT INTO media_images
-      (datetime, original_drive_id, original_file_name, color, compressed_drive_id, compressed_file_name, compressed_square_size)
-    VALUES (NOW(), ?, ?, ?, ?, ?, ?)
+      (datetime, original_drive_id, original_file_name, color, compressed_drive_id, compressed_file_name, compressed_width, compressed_height)
+    VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       compressed_drive_id = VALUES(compressed_drive_id),
       compressed_file_name = VALUES(compressed_file_name),
-      compressed_square_size = VALUES(compressed_square_size),
+      compressed_width = VALUES(compressed_width),
+      compressed_height = VALUES(compressed_height),
       color = VALUES(color),
       datetime = VALUES(datetime)
   `;
@@ -89,7 +94,8 @@ export async function upsertMediaImage(
     color,
     compressed_drive_id,
     compressed_file_name,
-    compressed_square_size,
+    compressed_width,
+    compressed_height,
   ]);
 }
 
@@ -105,7 +111,8 @@ export async function bulkUpsertMediaImages(
     color?: string | null;
     compressed_drive_id: string;
     compressed_file_name?: string | null;
-    compressed_square_size?: number | null;
+    compressed_width: number;
+    compressed_height: number;
   }>,
 ) {
   gate(selfUser, "user");

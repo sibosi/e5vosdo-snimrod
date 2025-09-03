@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS media_images (
     color VARCHAR(50),
     compressed_drive_id VARCHAR(255) NOT NULL UNIQUE,
     compressed_file_name VARCHAR(255),
-    compressed_square_size INT
+    compressed_width INT,
+    compressed_height INT
 );
 
 --@block
@@ -14,3 +15,4 @@ SELECT * FROM media_images;
 --@block
 -- delete all
 DELETE FROM media_images;
+

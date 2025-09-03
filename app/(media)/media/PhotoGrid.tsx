@@ -82,11 +82,15 @@ const AuthenticatedImage = ({
   fileName,
   accessToken,
   bgColor,
+  width,
+  height,
 }: {
   fileId: string;
   fileName: string;
   accessToken: string | null;
   bgColor?: string;
+  width: number;
+  height: number;
 }) => {
   const {
     url: imageSrc,
@@ -97,8 +101,8 @@ const AuthenticatedImage = ({
   if (loading) {
     return (
       <div
-        style={{ backgroundColor: bgColor ?? "gray" }}
-        className="flex h-[100px] w-[100px] items-center justify-center text-sm text-gray-500"
+        style={{ backgroundColor: bgColor ?? "gray", width, height }}
+        className="flex items-center justify-center text-sm text-gray-500"
       >
         <p>Betöltés...</p>
       </div>
@@ -106,7 +110,10 @@ const AuthenticatedImage = ({
   }
   if (error || !imageSrc) {
     return (
-      <div className="flex h-[100px] w-[100px] items-center justify-center bg-red-100 text-sm text-red-500">
+      <div
+        style={{ width, height }}
+        className="flex items-center justify-center bg-red-100 text-sm text-red-500"
+      >
         <p>Failed</p>
       </div>
     );
@@ -116,9 +123,9 @@ const AuthenticatedImage = ({
     <img
       src={imageSrc}
       alt={fileName}
-      width={100}
-      height={100}
-      className="inset-0 cursor-pointer"
+      width={width}
+      height={height}
+      className="cursor-pointer object-cover"
     />
   );
 };
@@ -130,6 +137,19 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
   const [error, setError] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<MediaImageType[]>();
   const [selected, setSelected] = useState<MediaImageType | null>(null);
+  const [containerWidth, setContainerWidth] = useState(1200);
+
+  // Hook to track container width
+  useEffect(() => {
+    const updateWidth = () => {
+      const width = Math.min(window.innerWidth - 32, 1200); // 64px for padding
+      setContainerWidth(width);
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
 
   function loadImages() {
     fetch("/api/getImages", {
@@ -161,7 +181,7 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
 
     const loadGsi = () => {
       return new Promise<void>((resolve, reject) => {
-        if (window.google && window.google.accounts && mounted) {
+        if (window.google?.accounts && mounted) {
           resolve();
           return;
         }
@@ -181,7 +201,7 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
 
         if (!mounted) return;
 
-        const client = (window.google as any).accounts.oauth2.initTokenClient({
+        const client = window.google.accounts.oauth2.initTokenClient({
           client_id: GOOGLE_CLIENT_ID,
           scope: "https://www.googleapis.com/auth/drive.readonly",
           callback: (resp: any) => {
@@ -229,6 +249,80 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
   };
 
   const closeModal = useCallback(() => setSelected(null), []);
+
+  // Function to organize images into rows with max height of 200px
+  const organizeImagesIntoRows = useCallback(
+    (images: MediaImageType[]) => {
+      const rows: Array<
+        Array<MediaImageType & { displayWidth: number; displayHeight: number }>
+      > = [];
+      const maxRowHeight = 150;
+      const gap = 8; // Gap between images
+      const minImagesPerRow = 3; // Minimum images per row to ensure good layout
+
+      let currentRow: Array<
+        MediaImageType & { displayWidth: number; displayHeight: number }
+      > = [];
+      let currentRowWidth = 0;
+
+      images.forEach((image, index) => {
+        const aspectRatio = image.compressed_width / image.compressed_height;
+        const imageHeight = maxRowHeight;
+        const imageWidth = imageHeight * aspectRatio;
+
+        // If adding this image would exceed container width, finalize current row
+        if (
+          currentRowWidth + imageWidth + currentRow.length * gap >
+            containerWidth &&
+          currentRow.length >= minImagesPerRow
+        ) {
+          // Scale down the current row to fit exactly
+          const totalGaps = (currentRow.length - 1) * gap;
+          const availableWidth = containerWidth - totalGaps;
+          const scaleFactor = availableWidth / currentRowWidth;
+
+          currentRow.forEach((img) => {
+            img.displayWidth *= scaleFactor;
+            img.displayHeight *= scaleFactor;
+          });
+
+          rows.push(currentRow);
+          currentRow = [];
+          currentRowWidth = 0;
+        }
+
+        currentRow.push({
+          ...image,
+          displayWidth: imageWidth,
+          displayHeight: imageHeight,
+        });
+        currentRowWidth += imageWidth;
+
+        // If this is the last image, finalize the row
+        if (index === images.length - 1 && currentRow.length > 0) {
+          // For the last row, we might not scale to full width to avoid overly stretched images
+          const totalGaps = (currentRow.length - 1) * gap;
+          const availableWidth = containerWidth - totalGaps;
+          if (currentRowWidth > availableWidth) {
+            const scaleFactor = availableWidth / currentRowWidth;
+            currentRow.forEach((img) => {
+              img.displayWidth *= scaleFactor;
+              img.displayHeight *= scaleFactor;
+            });
+          }
+          rows.push(currentRow);
+        }
+      });
+
+      return rows;
+    },
+    [containerWidth],
+  );
+
+  const imageRows = useMemo(() => {
+    if (!imageFiles) return [];
+    return organizeImagesIntoRows(imageFiles);
+  }, [imageFiles, organizeImagesIntoRows]);
 
   useEffect(() => {
     if (!selected) return;
@@ -349,22 +443,28 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
           </button>
         </div>
       ) : (
-        <div className="flex flex-wrap justify-center gap-2">
-          {imageFiles?.map((f) => (
-            <button
-              key={f.compressed_drive_id}
-              type="button"
-              className="focus:outline-none"
-              onClick={() => setSelected(f)}
-              title="Megnyitás nagyban"
-            >
-              <AuthenticatedImage
-                fileId={f.compressed_drive_id}
-                fileName={f.compressed_file_name ?? "image"}
-                accessToken={accessToken}
-                bgColor={f.color}
-              />
-            </button>
+        <div className="space-y-2">
+          {imageRows.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex justify-center gap-2">
+              {row.map((image) => (
+                <button
+                  key={image.compressed_drive_id}
+                  type="button"
+                  className="focus:outline-none"
+                  onClick={() => setSelected(image)}
+                  title="Megnyitás nagyban"
+                >
+                  <AuthenticatedImage
+                    fileId={image.compressed_drive_id}
+                    fileName={image.compressed_file_name ?? "image"}
+                    accessToken={accessToken}
+                    bgColor={image.color}
+                    width={Math.round(image.displayWidth)}
+                    height={Math.round(image.displayHeight)}
+                  />
+                </button>
+              ))}
+            </div>
           ))}
         </div>
       )}

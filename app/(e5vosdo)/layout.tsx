@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
-import { Providers } from "../providers";
+import { Providers } from "@/app/providers";
 import { Navbar } from "@/components/navbar/navbar";
 import { Link } from "@heroui/react";
 import { headers } from "next/headers";
@@ -15,9 +15,9 @@ import { addLog, getAuth, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/cookie";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
-import RunClientSide from "../runClientSide";
+import RunClientSide from "@/app/runClientSide";
 import MaintenanceGate from "@/components/home/maintenanceGate";
-import RunClientSideWrapper from "../runClientSideWrapper";
+import RunClientSideWrapper from "@/app/runClientSideWrapper";
 
 export const dynamic = "force-dynamic";
 

@@ -78,7 +78,9 @@ export default function CameraUpload({
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoadingCamera, setIsLoadingCamera] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [facingMode, setFacingMode] = useState<"user" | "environment">("environment");
+  const [facingMode, setFacingMode] = useState<"user" | "environment">(
+    "environment",
+  );
   const [canFlipCamera, setCanFlipCamera] = useState(false);
 
   const startCamera = useCallback(async () => {
@@ -89,8 +91,10 @@ export default function CameraUpload({
     try {
       // Ellenőrizzük, hogy milyen kamerák érhetők el
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoInputs = devices.filter(device => device.kind === 'videoinput');
-      
+      const videoInputs = devices.filter(
+        (device) => device.kind === "videoinput",
+      );
+
       // Ha több kamera elérhető, engedélyezzük a váltást
       setCanFlipCamera(videoInputs.length > 1);
 
@@ -144,11 +148,11 @@ export default function CameraUpload({
     // Váltsuk át a facing mode-ot
     const newFacingMode = facingMode === "environment" ? "user" : "environment";
     setFacingMode(newFacingMode);
-    
+
     // Állítsuk vissza az állapotokat
     setIsStreaming(false);
     setCapturedImage(null);
-    
+
     // Indítsuk újra a kamerát az új facing mode-dal
     setTimeout(() => {
       startCamera();

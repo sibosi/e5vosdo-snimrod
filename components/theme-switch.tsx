@@ -1,13 +1,13 @@
 "use client";
 
-import { FC } from "react";
+import React, { FC, useState } from "react";
 import { SwitchProps } from "@heroui/switch";
-import { useState } from "react";
 import {
   SunFilledIcon,
   MoonFilledIcon,
   SystemThemeIcon,
 } from "@/components/icons";
+import { reloadColors } from "@/app/runClientSide";
 
 interface ThemeSwitchProps {
   className?: string;
@@ -15,13 +15,20 @@ interface ThemeSwitchProps {
 }
 
 const ThemeSwitch: FC<ThemeSwitchProps> = () => {
-  const [theme, setTheme] = useState(() => {
+  const [theme, setTheme] = useState<"light" | "dark" | "system">(() => {
     if (typeof window !== "undefined" && window.localStorage) {
-      return localStorage.getItem("theme") || "system";
+      const storedValue = localStorage.getItem("theme");
+      return storedValue
+        ? (storedValue as "light" | "dark" | "system")
+        : "system";
     } else {
       return "system";
     }
   });
+
+  React.useEffect(() => {
+    reloadColors(theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     if (theme === "light") setTheme("dark");

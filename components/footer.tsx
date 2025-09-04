@@ -2,6 +2,7 @@ import { siteConfig } from "@/config/site";
 import React from "react";
 import { GithubIcon, InstagramIcon } from "./icons";
 import E5vosST from "@/public/groups/e5vosst.svg";
+import E5Media from "@/public/groups/media.jpg";
 import Image from "next/image";
 
 type ElementType = {
@@ -27,7 +28,23 @@ const Footer = () => {
 
   return (
     <div className="mb-2 rounded-2xl bg-selfprimary-100 p-2">
-      <div className="grid grid-flow-col grid-cols-4 grid-rows-3 justify-center gap-2">
+      <div className="grid grid-flow-col grid-cols-4 grid-rows-4 justify-center gap-2">
+        <a
+          href={siteConfig.links.mediaGallery}
+          className={STYLES + " col-span-4 row-span-1 flex"}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <Image
+              src={E5Media}
+              alt="Eötvös Média"
+              width={iconSize * 2}
+              height={iconSize * 2}
+              className="rounded-xl"
+            />
+            <p>Csekkold az Eötvös Média fotógalériáját!</p>
+          </div>
+        </a>
+
         <a href="/me" className={STYLES}>
           <svg {...SVGAttributes}>
             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />

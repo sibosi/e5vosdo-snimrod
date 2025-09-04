@@ -147,10 +147,10 @@ export default async function RootLayout({
 }
 
 async function logLogin(email: string | undefined | null) {
-  if (email) addLog("login", email);
+  if (email) addLog("login media-gallery", email);
   else
     addLog(
-      "login",
+      "login media-gallery",
       (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? // proxy mögül
         (await headers()).get("x-real-ip") ??
         "unknown ip",

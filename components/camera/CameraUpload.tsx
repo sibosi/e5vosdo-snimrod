@@ -47,6 +47,22 @@ const XIcon = () => (
   </svg>
 );
 
+const FlipCameraIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path d="M16 5l3 3m0 0l-3 3m3-3H3" />
+    <path d="M8 19l-3-3m0 0l3-3m-3 3h18" />
+    <path d="M14.5 2h-5L7 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3l-2.5-3z" />
+    <circle cx="12" cy="12" r="2" />
+  </svg>
+);
+
 interface CameraUploadProps {
   readonly onUpload: (file: File) => void;
   readonly isUploading?: boolean;
@@ -62,16 +78,25 @@ export default function CameraUpload({
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoadingCamera, setIsLoadingCamera] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("environment");
+  const [canFlipCamera, setCanFlipCamera] = useState(false);
 
   const startCamera = useCallback(async () => {
-    console.log("Starting camera...");
+    console.log("Starting camera with facing mode:", facingMode);
     setIsLoadingCamera(true);
     setIsStreaming(false);
 
     try {
+      // Ellenőrizzük, hogy milyen kamerák érhetők el
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter(device => device.kind === 'videoinput');
+      
+      // Ha több kamera elérhető, engedélyezzük a váltást
+      setCanFlipCamera(videoInputs.length > 1);
+
       // Get camera stream
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }, // Hátsó kamera előnyben
+        video: { facingMode: facingMode },
         audio: false,
       });
 
@@ -98,7 +123,7 @@ export default function CameraUpload({
       );
       setIsLoadingCamera(false);
     }
-  }, []);
+  }, [facingMode]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -108,6 +133,27 @@ export default function CameraUpload({
     setIsStreaming(false);
     setCapturedImage(null);
   }, []);
+
+  const flipCamera = useCallback(async () => {
+    // Állítsuk le a jelenlegi streamet
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+
+    // Váltsuk át a facing mode-ot
+    const newFacingMode = facingMode === "environment" ? "user" : "environment";
+    setFacingMode(newFacingMode);
+    
+    // Állítsuk vissza az állapotokat
+    setIsStreaming(false);
+    setCapturedImage(null);
+    
+    // Indítsuk újra a kamerát az új facing mode-dal
+    setTimeout(() => {
+      startCamera();
+    }, 100);
+  }, [facingMode, startCamera]);
 
   const capturePhoto = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -260,6 +306,17 @@ export default function CameraUpload({
             >
               Fényképezés
             </Button>
+            {canFlipCamera && (
+              <Button
+                color="secondary"
+                variant="flat"
+                onPress={flipCamera}
+                startContent={<FlipCameraIcon />}
+                size="sm"
+              >
+                {facingMode === "environment" ? "Előlapi" : "Hátsó"}
+              </Button>
+            )}
             <Button
               color="danger"
               variant="light"

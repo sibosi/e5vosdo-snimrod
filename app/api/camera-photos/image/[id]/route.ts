@@ -8,12 +8,16 @@ const imageCache = new Map<
 >();
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
+type Params = {
+  id: string;
+};
+
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
+  request: Request,
+  context: { params: Promise<Params> },
+): Promise<NextResponse> {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     if (!id) {
       return NextResponse.json(
@@ -26,7 +30,7 @@ export async function GET(
     const cached = imageCache.get(id);
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
       console.log(`Serving cached image for ID: ${id}`);
-      return new NextResponse(cached.buffer as any, {
+      return new NextResponse(new Uint8Array(cached.buffer), {
         status: 200,
         headers: {
           "Content-Type": cached.mimeType,
@@ -61,7 +65,7 @@ export async function GET(
     // Convert the stream to buffer
     const chunks: Buffer[] = [];
 
-    return new Promise((resolve, reject) => {
+    return new Promise<NextResponse>((resolve, reject) => {
       response.data.on("data", (chunk: Buffer) => {
         chunks.push(chunk);
       });
@@ -81,7 +85,7 @@ export async function GET(
         );
 
         resolve(
-          new NextResponse(buffer as any, {
+          new NextResponse(new Uint8Array(buffer), {
             status: 200,
             headers: {
               "Content-Type": mimeType,

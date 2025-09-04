@@ -4,6 +4,7 @@ import IDCard from "./IDCard";
 import PleaseLogin from "./redirectToLogin";
 import Tray from "@/components/tray";
 import Settings from "./Settings";
+import { gate } from "@/db/permissions";
 
 const MePage = async () => {
   const selfUser = await getAuth();
@@ -23,17 +24,22 @@ const MePage = async () => {
     {
       title: "Események",
       href: "/dev",
-      access: selfUser.permissions.includes("admin"),
+      access: gate(selfUser, "admin", "boolean") ?? false,
     },
     {
       title: "Parlamentek",
       href: "/parlament",
-      access: selfUser.permissions.includes("head_of_parlament"),
+      access: gate(selfUser, "head_of_parlament", "boolean") ?? false,
+    },
+    {
+      title: "Kamera",
+      href: "/camera",
+      access: gate(selfUser, "admin", "boolean") ?? false,
     },
     {
       title: "Mérkőzések",
       href: "/admin/matches",
-      access: selfUser.permissions.includes("matchOrganiser"),
+      access: gate(selfUser, "matchOrganiser", "boolean") ?? false,
     },
   ];
 

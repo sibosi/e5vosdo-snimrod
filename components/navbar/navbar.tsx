@@ -38,6 +38,7 @@ const NavbarForPhone = ({
     "/est": "E5 Podcast",
     "/admin/page": "Admin panel",
     "/media": "Média",
+    "/camera-gallery": "Kamera Galéria",
   };
 
   const pathname = usePathname();
@@ -146,7 +147,9 @@ const NavbarForDesktop = ({
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
-                  linkStyles({ color: currentPath === item.href ? "primary" : "foreground" }),
+                  linkStyles({
+                    color: currentPath === item.href ? "primary" : "foreground",
+                  }),
                   "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
                 )}
                 href={item.href}

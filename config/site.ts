@@ -34,6 +34,10 @@ export const siteConfig = {
       href: "/clubs",
     },
     {
+      label: "Kamera Galéria",
+      href: "/camera-gallery",
+    },
+    {
       label: "Média",
       href: "/media",
     },

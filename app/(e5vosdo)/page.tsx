@@ -15,6 +15,7 @@ import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert } from "@/components/home/alert";
+import CameraDisplay from "@/components/camera/CameraDisplay";
 
 const PageHeadContent = ({
   selfUser,
@@ -51,6 +52,8 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
+      <CameraDisplay autoRefresh={true} refreshInterval={30000} />
+
       <PageHeadContent selfUser={selfUser} />
 
       {gate(selfUser, "user", "boolean") && (
@@ -65,11 +68,14 @@ export default async function Home() {
               icon={false}
               className="border-selfsecondary-300 bg-selfsecondary-100"
             >
-             Az alább látható órarend nem hivatalos és nem feltétlenül aktuális. A hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
+              Az alább látható órarend nem hivatalos és nem feltétlenül
+              aktuális. A hivatalos ideiglenes órarend később, PDF-ben kerül
+              kiküldésre.
             </Alert>
-            {selfUser?.permissions.includes("user") && <HeadTimetable selfUser={selfUser} />}
+            {selfUser?.permissions.includes("user") && (
+              <HeadTimetable selfUser={selfUser} />
+            )}
           </div>
-          
         </Section>
       )}
 

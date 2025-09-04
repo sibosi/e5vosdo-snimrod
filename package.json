@@ -11,7 +11,8 @@
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
-    "compile": "tsc && node --trace-deprecation dist/src/app.js"
+    "compile": "tsc && node --trace-deprecation dist/src/app.js",
+    "setup-camera-drive": "tsx scripts/setup-camera-drive.ts"
   },
   "dependencies": {
     "@bradgarropy/next-google-analytics": "^1.0.2",
@@ -79,6 +80,7 @@
     "marked": "^16.2.1",
     "prettier": "3.5.1",
     "prettier-plugin-tailwindcss": "^0.6.9",
+    "tsx": "^4.20.5",
     "typescript": "^5.7.3"
   },
   "overrides": {

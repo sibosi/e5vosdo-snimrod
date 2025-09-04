@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addLog, getAuth, newNotificationByNames } from "@/db/dbreq";
 import { uploadImage } from "@/db/supabaseStorage";
+import { uploadImageToDrive } from "@/db/driveStorage";
 
 export async function POST(req: NextRequest) {
   const selfUser = await getAuth();
@@ -30,6 +31,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Special handling for camera photos - use Google Drive instead of Supabase
+    if (directory === "camera-photos") {
+      const cameraFolderId = process.env.CAMERA_PHOTOS_DRIVE_FOLDER_ID;
+      if (!cameraFolderId) {
+        return NextResponse.json(
+          { error: "Camera photos Drive folder ID not configured" },
+          { status: 500 },
+        );
+      }
+
+      return uploadImageToDrive(file, cameraFolderId);
+    }
+
+    // Regular upload to Supabase for other directories
     newNotificationByNames("Képet töltött fel", selfUser.email, ["admin"]);
 
     return uploadImage(file, "uploads", directory);

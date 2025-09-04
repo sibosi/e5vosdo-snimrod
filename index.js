@@ -15,7 +15,7 @@ if (cluster.isMaster) {
   cluster.on("exit", (worker, code, signal) => {
     console.log(`Worker process ${worker.process.pid} leállt.`);
     // Opció: Újraindíthatjuk az elhalt worker-t, ha szükséges:
-    // cluster.fork();
+    cluster.fork();
   });
 } else {
   const app = next({ dev: false });

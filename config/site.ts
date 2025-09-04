@@ -34,6 +34,10 @@ export const siteConfig = {
       href: "/clubs",
     },
     {
+      label: "Média",
+      href: "/media",
+    },
+    {
       label: "Profilom",
       href: "/me",
     },
@@ -45,6 +49,7 @@ export const siteConfig = {
     github: "https://github.com/sibosi",
     mypage: "https://linktr.ee/snimrod",
     instagram: "https://instagram.com/e5vosdo/",
+    mediaGallery: "/media",
     gdrive:
       "https://drive.google.com/drive/u/0/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA",
     feedback: "https://forms.gle/XdMtAx6fsubWEBW97",

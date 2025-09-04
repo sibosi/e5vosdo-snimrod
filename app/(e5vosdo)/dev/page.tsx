@@ -2,7 +2,7 @@ import { getAuth } from "@/db/dbreq";
 import {
   ManageActiveEvents,
   ManagePreviewEvents,
-} from "@/app/admin/users/eventManager";
+} from "@/app/(e5vosdo)/admin/users/eventManager";
 import PleaseLogin from "../me/redirectToLogin";
 
 const DevPage = async () => {

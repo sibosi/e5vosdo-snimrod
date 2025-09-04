@@ -6,7 +6,7 @@ import { Button } from "@heroui/react";
 import "@/components/navbar/headspace/timer.css";
 import CreateEditMatch from "./createEditMatch";
 import { Section } from "@/components/home/section";
-import { getMatchStage } from "@/app/foca12h/live/livescoreFull";
+import { getMatchStage } from "@/app/(e5vosdo)/foca12h/live/livescoreFull";
 
 function getBetweenContent(match: Match) {
   switch (match.status) {

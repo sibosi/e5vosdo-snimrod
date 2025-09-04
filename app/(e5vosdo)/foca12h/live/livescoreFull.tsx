@@ -3,7 +3,7 @@ import { Image } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import "@/components/navbar/headspace/timer.css";
 import { Match, Team } from "@/db/matches";
-import { getColorClass } from "@/app/admin/matches/manageTeams";
+import { getColorClass } from "@/app/(e5vosdo)/admin/matches/manageTeams";
 
 const LiveScore = () => {
   const [match, setMatch] = React.useState<Match>();

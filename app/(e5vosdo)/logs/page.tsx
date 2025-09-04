@@ -1,7 +1,7 @@
 import { getAuth, getLogs } from "@/db/dbreq";
 import { redirect } from "next/navigation";
 import LogTable from "./table";
-import { LineChartLogin24 } from "@/app/logs/login24h";
+import { LineChartLogin24 } from "@/app/(e5vosdo)/logs/login24h";
 import { LineChartLogin1h } from "./login1h";
 import { LineChartLoginBetween } from "./loginAuto";
 

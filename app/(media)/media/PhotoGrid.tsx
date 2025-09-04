@@ -139,10 +139,9 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
   const [selected, setSelected] = useState<MediaImageType | null>(null);
   const [containerWidth, setContainerWidth] = useState(1200);
 
-  // Hook to track container width
   useEffect(() => {
     const updateWidth = () => {
-      const width = Math.min(window.innerWidth - 32, 1200); // 64px for padding
+      const width = Math.min(window.innerWidth - 32, 1200); // 32px for padding
       setContainerWidth(width);
     };
 
@@ -250,15 +249,14 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
 
   const closeModal = useCallback(() => setSelected(null), []);
 
-  // Function to organize images into rows with max height of 200px
   const organizeImagesIntoRows = useCallback(
     (images: MediaImageType[]) => {
       const rows: Array<
         Array<MediaImageType & { displayWidth: number; displayHeight: number }>
       > = [];
       const maxRowHeight = 150;
-      const gap = 8; // Gap between images
-      const minImagesPerRow = 3; // Minimum images per row to ensure good layout
+      const gap = 8;
+      const minImagesPerRow = 3;
 
       let currentRow: Array<
         MediaImageType & { displayWidth: number; displayHeight: number }
@@ -270,13 +268,12 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
         const imageHeight = maxRowHeight;
         const imageWidth = imageHeight * aspectRatio;
 
-        // If adding this image would exceed container width, finalize current row
         if (
           currentRowWidth + imageWidth + currentRow.length * gap >
             containerWidth &&
           currentRow.length >= minImagesPerRow
         ) {
-          // Scale down the current row to fit exactly
+          // Scale the row
           const totalGaps = (currentRow.length - 1) * gap;
           const availableWidth = containerWidth - totalGaps;
           const scaleFactor = availableWidth / currentRowWidth;
@@ -298,9 +295,8 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
         });
         currentRowWidth += imageWidth;
 
-        // If this is the last image, finalize the row
+        // For the last row
         if (index === images.length - 1 && currentRow.length > 0) {
-          // For the last row, we might not scale to full width to avoid overly stretched images
           const totalGaps = (currentRow.length - 1) * gap;
           const availableWidth = containerWidth - totalGaps;
           if (currentRowWidth > availableWidth) {

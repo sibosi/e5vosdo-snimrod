@@ -34,7 +34,7 @@ const MePage = async () => {
     {
       title: "Kamera",
       href: "/camera",
-      access: gate(selfUser, "admin", "boolean") ?? false,
+      access: gate(selfUser, "kamera", "boolean") ?? false,
     },
     {
       title: "Mérkőzések",

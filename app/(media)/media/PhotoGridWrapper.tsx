@@ -16,12 +16,7 @@ const PhotoGridWrapper = ({
   GOOGLE_CLIENT_ID: string;
 }) => {
   return (
-    <div
-      className="py-8"
-      style={{
-        backgroundColor: "black",
-      }}
-    >
+    <div className="py-8">
       <PhotoGrid GOOGLE_CLIENT_ID={GOOGLE_CLIENT_ID} />
     </div>
   );

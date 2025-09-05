@@ -21,7 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      NODE_ENV: production
       FORCE_COLOR: "1"
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
@@ -55,8 +54,11 @@ jobs:
           node-version: 20
           cache: "npm"
 
-      - name: Install dependencies (root)
+      - name: Install dependencies (root, include dev)
         run: npm ci
+
+      - name: Set production env for build
+        run: echo "NODE_ENV=production" >> $GITHUB_ENV
 
       - name: Cache Turbo/Next build artifacts
         uses: actions/cache@v4
@@ -70,6 +72,12 @@ jobs:
 
       - name: Build web (Turbo)
         run: npm run web-build
+
+      - name: Fallback install turbo (if missing)
+        if: failure()
+        run: |
+          npm install turbo --no-save
+          npm run web-build
 
       - name: Upload production .next (artifact)
         if: success()

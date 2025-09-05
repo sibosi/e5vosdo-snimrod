@@ -1,5 +1,5 @@
 "use client";
-import { doLogout } from "@/actions/route";
+import { doLogout } from "@/apps/web/actions/route";
 import { Button, Chip } from "@heroui/react";
 import React from "react";
 import resetCache from "./PWA/resetCache";

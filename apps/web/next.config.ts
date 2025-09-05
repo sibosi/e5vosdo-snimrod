@@ -12,6 +12,8 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactProductionProfiling: true,
+  // Silence Next.js monorepo root inference warning by explicitly setting the tracing root
+  outputFileTracingRoot: path.join(__dirname, "..", ".."),
   images: {
     remotePatterns: [
       {

@@ -1,15 +1,28 @@
-name: Build on Push
+name: Build (web)
 
 on:
   push:
-    branches:
-      - "*"
+    branches: ["*"]
+    paths:
+      - "apps/web/**"
+      - "package.json"
+      - "package-lock.json"
+      - "turbo.json"
+      - "Dockerfile"
+      - ".github/workflows/build.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: build-web-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
     env:
+      NODE_ENV: production
+      FORCE_COLOR: "1"
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -19,32 +32,59 @@ jobs:
       BACKUP_FOLDER_ID: ${{ secrets.BACKUP_FOLDER_ID }}
       IGNORE_BUILD_ERRORS: ${{ secrets.IGNORE_BUILD_ERRORS }}
       FAKE_AUTH: ${{ secrets.FAKE_AUTH }}
-
       MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
       MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
       MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       ENCRYPTION_PASSWORD: ${{ secrets.ENCRYPTION_PASSWORD }}
-
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-
       PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
       PRIVATE_VAPID_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: "20"
+          fetch-depth: 1
 
-      - name: Install dependencies
-        run: npm install
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
 
-      - name: Run build
+      - name: Install dependencies (root)
+        run: npm ci
+
+      - name: Cache Turbo/Next build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            apps/web/.next/cache
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Build web (Turbo)
         run: npm run web-build
+
+      - name: Upload production .next (artifact)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-next-build
+          path: apps/web/.next
+          retention-days: 5
+
+      - name: Upload lockfiles (diagnostics)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lockfiles
+          path: |
+            package-lock.json
+            apps/web/package-lock.json
+          retention-days: 3

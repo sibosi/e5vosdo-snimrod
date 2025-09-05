@@ -1,56 +1,99 @@
-name: Build and Push Docker Image
+name: Docker Build & Push
 
 on:
   push:
     branches:
       - master
+      - monorepo
       - "*--builddocker*"
+    paths:
+      - "Dockerfile"
+      - "apps/web/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/docker-build-push.yml"
+  pull_request:
+    branches: [master, monorepo]
+    paths:
+      - "Dockerfile"
+      - "apps/web/**"
+      - "package.json"
+      - "package-lock.json"
   issue_comment:
     types: [created]
+  workflow_dispatch: {}
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/e5vosdo-snimrod
 
 jobs:
   build:
     if: >
       github.event_name == 'push' ||
+      github.event_name == 'pull_request' ||
       (
         github.event_name == 'issue_comment' &&
         contains(github.event.comment.body, 'run docker-build') &&
         github.event.issue.pull_request != null
       )
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: read
     steps:
       - name: Determine PR number
         if: github.event_name == 'issue_comment'
         id: get_pr_number
-        run: |
-          echo "pr_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+        run: echo "pr_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
 
-      - name: Checkout PR code
-        if: github.event_name == 'issue_comment'
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ steps.get_pr_number.outputs.pr_number }}/head
+          fetch-depth: 1
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/head', steps.get_pr_number.outputs.pr_number) || github.ref }}
 
-      - name: Checkout push code
-        if: github.event_name == 'push'
-        uses: actions/checkout@v3
+      - name: Set up QEMU (multi-arch)
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v4
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+            type=raw,value=monorepo,enable=${{ github.ref == 'refs/heads/monorepo' }}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+
+      - name: Build & (conditionally) Push
+        id: build
+        uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
-          tags: ghcr.io/${{ github.repository_owner }}/e5vosdo-snimrod:latest
+          push: ${{ github.event_name != 'pull_request' }}
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             AUTH_SECRET=${{ secrets.AUTH_SECRET }}
             AUTH_TRUST_HOST=${{ secrets.AUTH_TRUST_HOST }}
@@ -73,5 +116,10 @@ jobs:
             PUBLIC_VAPID_KEY=${{ secrets.PUBLIC_VAPID_KEY }}
             PRIVATE_VAPID_KEY=${{ secrets.PRIVATE_VAPID_KEY }}
 
-      - name: Log out from GHCR
+      - name: Image digest
+        if: steps.build.outputs.digest
+        run: echo Digest:\ ${{ steps.build.outputs.digest }}
+
+      - name: Logout
+        if: always() && github.event_name != 'pull_request'
         run: docker logout ghcr.io

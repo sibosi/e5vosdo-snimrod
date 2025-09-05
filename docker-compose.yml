@@ -1,7 +1,31 @@
 version: "3.8"
 services:
   app:
-    image: ghcr.io/e5vos/e5vosdo-snimrod:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        AUTH_SECRET: ${AUTH_SECRET}
+        AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+        SERVICE_ACCOUNT_KEY: ${SERVICE_ACCOUNT_KEY}
+        SERVICE_ACCOUNT_KEY_PATH: ${SERVICE_ACCOUNT_KEY_PATH}
+        BACKUP_FOLDER_ID: ${BACKUP_FOLDER_ID}
+        IGNORE_BUILD_ERRORS: ${IGNORE_BUILD_ERRORS}
+        FAKE_AUTH: ${FAKE_AUTH}
+        MYSQL_HOST: ${MYSQL_HOST}
+        MYSQL_PORT: ${MYSQL_PORT}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        ENCRYPTION_PASSWORD: ${ENCRYPTION_PASSWORD}
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+        PUBLIC_VAPID_KEY: ${PUBLIC_VAPID_KEY}
+        PRIVATE_VAPID_KEY: ${PRIVATE_VAPID_KEY}
+    image: e5vosdo-web:latest
     ports:
       - "3000:3000"
     env_file:
@@ -10,35 +34,6 @@ services:
     deploy:
       mode: replicated
       replicas: 3
-
-    watchtower:
-      image: containrrr/watchtower
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-      restart: unless-stopped
-      command: --cleanup --interval 300
-
-    secrets:
-      - AUTH_SECRET
-      - AUTH_TRUST_HOST
-      - GOOGLE_CLIENT_ID
-      - GOOGLE_CLIENT_SECRET
-      - SERVICE_ACCOUNT_KEY
-      - SERVICE_ACCOUNT_KEY_PATH
-      - BACKUP_FOLDER_ID
-      - IGNORE_BUILD_ERRORS
-      - FAKE_AUTH
-      - MYSQL_HOST
-      - MYSQL_PORT
-      - MYSQL_DATABASE
-      - MYSQL_USER
-      - MYSQL_PASSWORD
-      - ENCRYPTION_PASSWORD
-      - NEXT_PUBLIC_SUPABASE_URL
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY
-      - SUPABASE_SERVICE_ROLE_KEY
-      - PUBLIC_VAPID_KEY
-      - PRIVATE_VAPID_KEY
     environment:
       AUTH_SECRET: ${AUTH_SECRET}
       AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
@@ -60,6 +55,13 @@ services:
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
       PUBLIC_VAPID_KEY: ${PUBLIC_VAPID_KEY}
       PRIVATE_VAPID_KEY: ${PRIVATE_VAPID_KEY}
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    command: --cleanup --interval 300
 
 secrets:
   AUTH_SECRET:

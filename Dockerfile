@@ -26,7 +26,7 @@ ARG SUPABASE_SERVICE_ROLE_KEY
 ARG PUBLIC_VAPID_KEY
 ARG PRIVATE_VAPID_KEY
 
-RUN npm run build
+RUN npm run web-build
 
 # Stage 2: Production
 FROM node:lts-alpine

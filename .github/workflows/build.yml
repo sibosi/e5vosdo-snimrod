@@ -3,8 +3,6 @@ name: Monorepo CI
 on:
   push:
     branches: ["*"]
-  pull_request:
-    branches: ["*"]
 
 concurrency:
   group: monorepo-ci-${{ github.ref }}

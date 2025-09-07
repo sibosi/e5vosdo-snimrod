@@ -4,21 +4,12 @@ on:
   push:
     branches:
       - master
-      - monorepo
-      - "*--builddocker*"
     paths:
       - "Dockerfile"
       - "apps/web/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/docker-build-push.yml"
-  pull_request:
-    branches: [master, monorepo]
-    paths:
-      - "Dockerfile"
-      - "apps/web/**"
-      - "package.json"
-      - "package-lock.json"
   issue_comment:
     types: [created]
   workflow_dispatch: {}
@@ -28,13 +19,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/e5vosdo-snimrod
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/e5vosdo-snimrod:latest
 
 jobs:
   build:
     if: >
       github.event_name == 'push' ||
-      github.event_name == 'pull_request' ||
       (
         github.event_name == 'issue_comment' &&
         contains(github.event.comment.body, 'run docker-build') &&

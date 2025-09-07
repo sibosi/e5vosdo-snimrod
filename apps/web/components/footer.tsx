@@ -1,17 +1,7 @@
 import { siteConfig } from "@/apps/web/config/site";
 import React from "react";
-import { GithubIcon, InstagramIcon } from "./icons";
 import E5vosST from "@/public/groups/e5vosst.svg";
-import E5Media from "@/public/groups/media.jpg";
 import Image from "next/image";
-
-type ElementType = {
-  title: string;
-  url: string;
-  icon: React.ReactNode;
-  sizeX?: number;
-  sizeY?: number;
-};
 
 const iconSize = 30;
 const SVGAttributes = {
@@ -35,7 +25,7 @@ const Footer = () => {
         >
           <div className="flex items-center justify-center gap-2">
             <Image
-              src={E5Media}
+              src="/groups/media.jpg"
               alt="Eötvös Média"
               width={iconSize * 2}
               height={iconSize * 2}

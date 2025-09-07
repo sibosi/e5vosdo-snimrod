@@ -2,8 +2,12 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+
+const supabase =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 export interface ImageData {
   name: string;
@@ -29,6 +33,12 @@ export async function uploadImage(
   bucket: string,
   path: string = "images",
 ) {
+  if (!supabase)
+    return NextResponse.json(
+      { error: "Supabase not configured" },
+      { status: 500 },
+    );
+
   const sanitizedFileName = sanitizeFileName(file.name);
   const sanitizedPath = `${path}/${sanitizedFileName}`;
 
@@ -58,6 +68,13 @@ export async function getImages({
   bucket: string;
   folderPath: string;
 }) {
+  if (!supabase) {
+    return NextResponse.json(
+      { error: "Supabase not configured" },
+      { status: 500 },
+    );
+  }
+
   try {
     const { data, error } = await supabase.storage
       .from(bucket)

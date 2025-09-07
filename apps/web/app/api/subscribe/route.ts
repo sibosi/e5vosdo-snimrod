@@ -5,11 +5,13 @@ import webPush from "web-push";
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 
-webPush.setVapidDetails(
-  "mailto:spam.sibosi@gmail.com",
-  publicVapidKey,
-  privateVapidKey,
-);
+if (publicVapidKey && privateVapidKey) {
+  webPush.setVapidDetails(
+    "mailto:spam.sibosi@gmail.com",
+    publicVapidKey,
+    privateVapidKey,
+  );
+}
 
 export async function POST(req: NextRequest) {
   const { value: subscription } = (await req.body?.getReader().read()) as {
@@ -17,7 +19,7 @@ export async function POST(req: NextRequest) {
   };
   const subscriptionObj = JSON.parse(new TextDecoder().decode(subscription));
 
-  if (!subscriptionObj || !subscriptionObj.endpoint) {
+  if (!subscriptionObj?.endpoint) {
     return NextResponse.json({
       status: 400,
       error: "Subscription with a valid endpoint is required",

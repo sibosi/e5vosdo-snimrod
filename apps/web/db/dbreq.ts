@@ -6,11 +6,12 @@ import { backup } from "./autobackup";
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
 
-webPush.setVapidDetails(
-  "mailto:spam.sibosi@gmail.com",
-  publicVapidKey,
-  privateVapidKey,
-);
+if (publicVapidKey && privateVapidKey)
+  webPush.setVapidDetails(
+    "mailto:spam.sibosi@gmail.com",
+    publicVapidKey,
+    privateVapidKey,
+  );
 
 export interface User {
   name: string;

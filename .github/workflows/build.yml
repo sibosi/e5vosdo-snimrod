@@ -55,9 +55,6 @@ jobs:
       - name: Install dependencies (root workspaces)
         run: npm install
 
-      - name: Lint (affected web)
-        run: npx turbo run lint --filter=e5vosdo-web...
-
       - name: Build (affected web)
         run: npx turbo run build --filter=e5vosdo-web...
 

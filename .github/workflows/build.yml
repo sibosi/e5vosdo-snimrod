@@ -1,28 +1,22 @@
-name: Build (web)
+name: Monorepo CI
 
 on:
   push:
     branches: ["*"]
-    paths:
-      - "apps/web/**"
-      - "package.json"
-      - "package-lock.json"
-      - "turbo.json"
-      - "Dockerfile"
-      - ".github/workflows/build.yml"
-  workflow_dispatch: {}
+  pull_request:
+    branches: ["*"]
 
 concurrency:
-  group: build-web-${{ github.ref }}
+  group: monorepo-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
+    name: Build & Lint (web)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+
     env:
-      FORCE_COLOR: "1"
-      SHARP_IGNORE_GLOBAL_LIBVIPS: "1"
+      # Shared secrets & runtime env
       AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
       AUTH_TRUST_HOST: ${{ secrets.AUTH_TRUST_HOST }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -32,80 +26,67 @@ jobs:
       BACKUP_FOLDER_ID: ${{ secrets.BACKUP_FOLDER_ID }}
       IGNORE_BUILD_ERRORS: ${{ secrets.IGNORE_BUILD_ERRORS }}
       FAKE_AUTH: ${{ secrets.FAKE_AUTH }}
+
       MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
       MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
       MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       ENCRYPTION_PASSWORD: ${{ secrets.ENCRYPTION_PASSWORD }}
+
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
       PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
       PRIVATE_VAPID_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
+
+      # Turbo cache can leverage CI marker
+      TURBO_FORCE: true
+      CI: true
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0 # needed for turbo's changed files detection
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-
-      - name: Install dependencies (root, include dev)
-        run: npm ci
-
-      - name: Set production env for build
-        run: echo "NODE_ENV=production" >> $GITHUB_ENV
-
-      - name: Install native build prerequisites (sharp fallback)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential python3 make g++
-
-      - name: Ensure workspace deps (web)
-        run: npm ci --workspace=apps/web --include=dev --no-audit --no-fund
-
-      - name: Force reinstall sharp (if binary missing)
-        run: |
-          node -e "try{require('sharp');console.log('sharp already ok')}catch(e){process.exit(1)}" || npm install --workspace=apps/web --include=optional sharp@0.33.5
-
-      - name: Cache Turbo/Next build artifacts
-        uses: actions/cache@v4
-        with:
-          path: |
-            .turbo
-            apps/web/.next/cache
-          key: ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-
-      - name: Build web (Turbo)
-        run: npm run web-build
-
-      - name: Fallback install turbo (if missing)
-        if: failure()
-        run: |
-          npm install turbo --no-save
-          npm run web-build
-
-      - name: Upload production .next (artifact)
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-next-build
-          path: apps/web/.next
-          retention-days: 5
-
-      - name: Upload lockfiles (diagnostics)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lockfiles
-          path: |
+          cache: npm
+          cache-dependency-path: |
             package-lock.json
             apps/web/package-lock.json
-          retention-days: 3
+
+      - name: Restore Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
+            turbo-${{ runner.os }}-
+
+      - name: Install dependencies (root workspaces)
+        run: npm install
+
+      - name: Lint (affected web)
+        run: npx turbo run lint --filter=e5vosdo-web...
+
+      - name: Build (affected web)
+        run: npx turbo run build --filter=e5vosdo-web...
+
+      - name: Save Turbo cache
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+
+      - name: Summarize Build Output
+        if: success()
+        run: |
+          echo "Web build completed." >> $GITHUB_STEP_SUMMARY
+          echo "Commit: $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY

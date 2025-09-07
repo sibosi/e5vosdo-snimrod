@@ -3,6 +3,7 @@
   "name": "e5vosdo-snimrod",
   "packageManager": "npm@11.0.0",
   "scripts": {
+    "web-install": "cd apps/e5vosdo-web && npm install",
     "web-dev": "npx turbo run dev --filter=e5vosdo-web",
     "web-build": "npx turbo run build --filter=e5vosdo-web",
     "web-lint": "npx turbo run lint --filter=e5vosdo-web"

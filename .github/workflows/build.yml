@@ -39,8 +39,6 @@ jobs:
       PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
       PRIVATE_VAPID_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
 
-      # Turbo cache can leverage CI marker
-      TURBO_FORCE: true
       CI: true
 
     steps:
@@ -53,19 +51,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            apps/web/package-lock.json
-
-      - name: Restore Turbo cache
-        uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
-          restore-keys: |
-            turbo-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
-            turbo-${{ runner.os }}-
 
       - name: Install dependencies (root workspaces)
         run: npm install
@@ -75,13 +60,6 @@ jobs:
 
       - name: Build (affected web)
         run: npx turbo run build --filter=e5vosdo-web...
-
-      - name: Save Turbo cache
-        if: always()
-        uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: turbo-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
 
       - name: Summarize Build Output
         if: success()

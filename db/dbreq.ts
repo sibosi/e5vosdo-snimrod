@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
 import { backup } from "./autobackup";
+import { OAuth2Client } from "google-auth-library";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -105,46 +106,87 @@ export async function getEmail() {
   return authEmail;
 }
 
-export async function getAuth(email?: string | undefined) {
-  const addUser = async () => {
-    const selfAuth = await auth();
-    if (
-      !selfAuth?.user?.email ||
-      !selfAuth?.user?.name ||
-      !selfAuth?.user?.image
-    )
-      return;
-    await updateUser({
-      name: selfAuth.user.name,
-      email: selfAuth.user.email,
-      image: selfAuth.user.image,
-    } as User);
-  };
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export async function getAuth(
+  email?: string,
+  idToken?: string,
+): Promise<User | null> {
+  // 1) If mobile passed an ID token, verify it and extract payload
+  let verifiedEmail: string | undefined = email;
+  let verifiedName: string | undefined;
+  let verifiedImage: string | undefined;
+
+  if (idToken) {
+    try {
+      console.log("Verifying Google ID token...");
+      const ticket = await googleClient.verifyIdToken({
+        idToken,
+        audience: [
+          process.env.GOOGLE_CLIENT_ID ?? "",
+          process.env.GOOGLE_ANDROID_CLIENT_ID ?? "",
+          process.env.GOOGLE_IOS_CLIENT_ID ?? "",
+        ],
+      });
+      console.log("Ticket received!");
+      const payload = ticket.getPayload();
+      console.log("Payload OK");
+      if (!payload?.email) {
+        console.warn("Google ID token had no email");
+        return null;
+      }
+      verifiedEmail = payload.email;
+      console.log(verifiedEmail);
+      verifiedName = payload.name || undefined;
+      verifiedImage = payload.picture || undefined;
+    } catch (err) {
+      console.error("⚠️ Invalid Google ID token:", err);
+      return null;
+    }
+  }
 
   try {
-    if (!email) {
+    // 2) If we still have no email, try NextAuth cookie/JWT session
+    if (!verifiedEmail) {
       const session = await auth();
-      if (!session?.user) return;
-      const authEmail = session.user.email;
-
-      const response = (await dbreq(`SELECT * FROM \`users\` WHERE email = ?`, [
-        authEmail,
-      ])) as User[];
-
-      if (response.length === 0) await addUser();
-
-      return response[0];
-    } else {
-      const response = (await dbreq(`SELECT * FROM \`users\` WHERE email = ?`, [
-        email,
-      ])) as User[];
-
-      if (response.length === 0) await addUser();
-
-      return response[0];
+      if (!session?.user?.email) {
+        // not authenticated by either method
+        return null;
+      }
+      verifiedEmail = session.user.email;
+      verifiedName = session.user.name || undefined;
+      verifiedImage = session.user.image || undefined;
     }
+
+    console.log("Getting data...");
+
+    // 3) Query your users table
+    const rows = (await dbreq(
+      `SELECT * FROM \`users\` WHERE email = '${verifiedEmail}'`,
+    )) as User[];
+
+    // 4) If not found, insert (using whichever info we have)
+    if (rows.length === 0) {
+      console.log("No user");
+      // use updateUser (or your own upsert) to write name/email/image
+      await updateUser({
+        email: verifiedEmail,
+        name: verifiedName!,
+        image: verifiedImage!,
+      } as User);
+      // re‑query to get the full row (including any defaults, id, etc.)
+      const inserted = (await dbreq(
+        `SELECT * FROM \`users\` WHERE email = '${verifiedEmail}'`,
+      )) as User[];
+      console.log("Data received!");
+      return inserted[0] || null;
+    }
+
+    // 5) Return the existing user
+    console.log(JSON.stringify(rows));
+    return rows[0];
   } catch (e) {
-    console.log(e);
+    console.error("Error in getAuth:", e);
     return null;
   }
 }

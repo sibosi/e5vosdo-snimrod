@@ -7,7 +7,7 @@ import https from "https";
 export async function GET() {
   let cache: { data: any; timestamp: number } | null =
     (global as any)._ejgCache ?? null;
-  const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours
+  const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2h
 
   const now = Date.now();
   if (cache && now - cache.timestamp < CACHE_DURATION) {
@@ -28,15 +28,13 @@ export async function GET() {
 
 async function updater() {
   try {
-    // Create an HTTPS agent disabling certificate verification
     const httpsAgent = new https.Agent({
-      rejectUnauthorized: false, // WARNING: Disables SSL certificate verification
+      rejectUnauthorized: false, // Disables SSL certificate verification
     });
 
     console.log("Fetching events from EJG website...");
     const response = await fetch("https://www.ejg.hu/utemterv-aktualis/", {
       agent: httpsAgent,
-      // node-fetch doesn't support a 'cache' option, so remove if not needed
     });
 
     if (!response.ok) {
@@ -45,9 +43,6 @@ async function updater() {
     }
 
     const htmlContent = await response.text();
-    console.log(`Received HTML content (${htmlContent.length} bytes)`);
-
-    // Parse the HTML content to extract events
     const events = parseEventsFromHTML(htmlContent);
     console.log(`Parsed ${events.length} events from EJG`);
 
@@ -65,8 +60,30 @@ function parseEventsFromHTML(html: string): EventType[] {
   const $ = cheerio.load(html);
   const events: EventType[] = [];
 
+  let currentYearPeriodStarterYear = new Date().getUTCFullYear();
+
   try {
-    // Find the table rows containing events
+    $("h1").each((i, elem) => {
+      const text = $(elem).text().trim();
+      try {
+        currentYearPeriodStarterYear = Number(text.split("-")[0].slice(-4));
+      } catch (error) {
+        console.error("Error extracting year:", error);
+      }
+    });
+  } catch (error) {
+    console.error("Error processing header:", error);
+  }
+
+  function getYear(month: number) {
+    if (month < 0 || month > 11) throw new Error("Invalid month");
+    return month < new Date().getUTCMonth()
+      ? currentYearPeriodStarterYear + 1
+      : currentYearPeriodStarterYear;
+  }
+
+  try {
+    // Event rows
     $("table tr").each((i, row) => {
       try {
         // Skip header rows and rows with insufficient data
@@ -81,11 +98,10 @@ function parseEventsFromHTML(html: string): EventType[] {
         // Skip empty rows
         if (!dateCell || !titleCell) return;
 
-        // Parse the date (format: "hónap nap." e.g., "március 31.")
+        // Parse the date
         const dateParts = dateCell.split(" ");
         if (dateParts.length < 2) return;
 
-        // Map Hungarian month names to numbers
         const monthMap: { [key: string]: number } = {
           január: 0,
           február: 1,
@@ -102,20 +118,11 @@ function parseEventsFromHTML(html: string): EventType[] {
         };
 
         const month = monthMap[dateParts[0].toLowerCase()];
-        // Parse day, removing any trailing period
         const day = parseInt(dateParts[1].replace(/\D/g, ""));
 
-        // If valid date parts
         if (month !== undefined && !isNaN(day)) {
-          // Create date for the event, assuming current year or next if the month is earlier than current month
-          const currentDate = new Date();
-          const currentYear = currentDate.getFullYear();
+          const currentYear = getYear(month);
           let eventDate = new Date(currentYear, month, day);
-
-          // If the month is earlier than current month, assume it's for next year
-          if (eventDate < currentDate && month < currentDate.getMonth()) {
-            eventDate.setFullYear(currentYear + 1);
-          }
 
           // Parse time if available (format: "HH:MM")
           if (timeCell) {
@@ -129,7 +136,6 @@ function parseEventsFromHTML(html: string): EventType[] {
             }
           }
 
-          // Create an event object matching EventType
           const event: EventType = {
             id: 0,
             title: titleCell,
@@ -149,7 +155,6 @@ function parseEventsFromHTML(html: string): EventType[] {
         }
       } catch (rowError) {
         console.error("Error parsing row:", rowError);
-        // Continue processing other rows even if one fails
       }
     });
   } catch (parseError) {

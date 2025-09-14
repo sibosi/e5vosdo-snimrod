@@ -53,6 +53,6 @@ public/workbox-07a7b4f2.js
 /local/
 /db/setup/local/
 /tests/
-.service-account-key.json
+.*service-account*.json
 tmp.sql
 *.ignorethis

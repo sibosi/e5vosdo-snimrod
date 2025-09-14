@@ -7,14 +7,14 @@ import { siteConfig } from "@/config/site";
 
 const Login = () => {
   return !checkMessengerBrowser() ? (
-    <form action={doSocialLogin}>
+    <form action={doSocialLogin} className="flex justify-center">
       <Button
         type="submit"
         name="action"
         value="google"
         size="sm"
         onPress={resetCache}
-        className="rounded-badge w-full bg-selfprimary-300"
+        className="rounded-badge w-full max-w-md bg-selfprimary-300"
       >
         Bejelentkezés
       </Button>

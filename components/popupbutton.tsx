@@ -9,11 +9,11 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Link,
 } from "@heroui/react";
 
 type CardProps = {
   title: string;
+  datetime?: string;
   image?: string;
   details: React.ReactNode;
   makeStringToHTML?: boolean;
@@ -23,6 +23,7 @@ type CardProps = {
 
 export const PopupButton: React.FC<CardProps> = ({
   title,
+  datetime,
   image,
   details,
   makeStringToHTML,
@@ -54,6 +55,10 @@ export const PopupButton: React.FC<CardProps> = ({
                     />
                   )}
                 </div>
+
+                {typeof datetime === "string" && (
+                  <p>Időpont: {new Date(datetime).toLocaleString("hu-HU")}</p>
+                )}
 
                 <div className="overflow-auto fill-overlay py-6 text-left text-foreground md:max-h-[100%]">
                   <p className="text-md overflow-auto whitespace-pre-line pb-4">

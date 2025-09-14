@@ -37,6 +37,7 @@ const NavbarForPhone = ({
     "/me": "Profilom",
     "/est": "E5 Podcast",
     "/admin/page": "Admin panel",
+    "/media": "Média",
   };
 
   const pathname = usePathname();
@@ -109,6 +110,8 @@ const NavbarForDesktop = ({
   className?: string;
   isActiveHeadSpace: boolean;
 }) => {
+  const currentPath = usePathname();
+
   return (
     <NextUINavbar
       maxWidth="xl"
@@ -143,10 +146,9 @@ const NavbarForDesktop = ({
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
-                  linkStyles({ color: "foreground" }),
+                  linkStyles({ color: currentPath === item.href ? "primary" : "foreground" }),
                   "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
                 )}
-                color="foreground"
                 href={item.href}
               >
                 {item.label}

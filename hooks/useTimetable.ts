@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import { TimetableWeek } from "@/app/api/timetable/route";
 
@@ -26,7 +26,6 @@ export const periodTimes = {
 };
 
 interface UseTimetableProps {
-  studentCode?: string;
   initialDay?: DayType;
 }
 
@@ -38,24 +37,10 @@ interface UseTimetableReturn {
   setSelectedDay: (day: DayType) => void;
   periodTimes: typeof periodTimes;
   days: typeof days;
-  isConfigured: boolean | null;
 }
 
-const fetcher = async ([url, studentCode, password]: [
-  string,
-  string,
-  string,
-]) => {
-  if (!studentCode || !password) {
-    throw new Error("Missing credentials");
-  }
-
-  const response = await fetch(url, {
-    headers: {
-      "ejg-code": studentCode,
-      password: password,
-    },
-  });
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch timetable: ${response.statusText}`);
@@ -65,16 +50,14 @@ const fetcher = async ([url, studentCode, password]: [
 };
 
 export const useTimetable = ({
-  studentCode,
   initialDay,
 }: UseTimetableProps = {}): UseTimetableReturn => {
-  const [password, setPassword] = useState<string | null>(null);
-  const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
-
   const [selectedDay, setSelectedDay] = useState<DayType>(() => {
     if (initialDay) return initialDay;
 
+    // Day indexes: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     const now = new Date();
+    if (now.getDay() === 0 || now.getDay() === 6) return "Hétfő";
     const todayAt1515 = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -84,40 +67,27 @@ export const useTimetable = ({
       0,
       0,
     );
-    const today = now.getDay() - 1;
-    const dayIndex = [-1, 5].includes(today) ? 0 : today;
-    const dayIndexAdjusted = todayAt1515 < now ? dayIndex + 1 : dayIndex;
-    return days[dayIndexAdjusted > 4 ? 0 : dayIndexAdjusted];
+    const todayName = days[now.getDay() - 1];
+    const tomorrowName = days[now.getDay()];
+    const isItAfter1515 = todayAt1515 < now;
+    if (isItAfter1515) return tomorrowName;
+    return todayName;
   });
 
-  useEffect(() => {
-    const storedPassword = localStorage.getItem("78OM");
-    setPassword(storedPassword);
-
-    setIsConfigured(!!storedPassword && !!studentCode);
-  }, [studentCode]);
-
-  const shouldFetch = !!(isConfigured && studentCode && password);
-
-  const { data, error } = useSWR<TimetableWeek>(
-    shouldFetch ? ["/api/timetable", studentCode, password] : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      refreshInterval: 1000 * 60 * 60,
-      dedupingInterval: 1000 * 60 * 5,
-    },
-  );
+  const { data, error } = useSWR<TimetableWeek>("/api/timetable", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    refreshInterval: 1000 * 60 * 60,
+    dedupingInterval: 1000 * 60 * 5,
+  });
 
   return {
     timetable: data || null,
-    isLoading: shouldFetch && !data && !error,
+    isLoading: !data && !error,
     isError: error || null,
     selectedDay,
     setSelectedDay,
     periodTimes,
     days,
-    isConfigured,
   };
 };

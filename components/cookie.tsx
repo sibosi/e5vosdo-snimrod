@@ -1,5 +1,6 @@
 "use client";
 import { Button, Modal, ModalContent } from "@heroui/react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const checkCookie = () => {
@@ -43,8 +44,14 @@ const Cookie = () => {
       <ModalContent className="p-6 text-foreground">
         <p>
           Az oldal sütiket használ a felhasználói élmény javítása érdekében. 🍪
-          Az oldal használatával elfogadod a Cookie-kal kapcsolatos
-          irányelveinket.
+          Az oldal használatával elfogadod a{" "}
+          <Link href="/security" className="text-selfprimary-800">
+            Cookie-kal kapcsolatos irányelveinket
+          </Link>{" "}
+          és az{" "}
+          <Link href="/security" className="text-selfprimary-800">
+            adatvédelmi szabályzatunkat.
+          </Link>
         </p>
         <Button color="warning" onPress={acceptCookie}>
           🍪 Rendben 🍪

@@ -46,23 +46,12 @@ function extendLessonWithSubstitutions(
 const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
   const { selfUser } = props;
   if (!selfUser) return null;
-  const studentCode = selfUser.EJG_code;
-
   const { tableData: substitutions, isLoaded } = useSubstitutions();
 
-  const {
-    timetable,
-    isLoading,
-    isError,
-    selectedDay,
-    setSelectedDay,
-    days,
-    isConfigured,
-  } = useTimetable({
-    studentCode,
-  });
+  const { timetable, isLoading, isError, selectedDay, setSelectedDay, days } =
+    useTimetable();
 
-  if (isConfigured === null || !isLoaded) {
+  if (!isLoaded) {
     return (
       <div className="flex h-40 items-center justify-center">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-selfprimary"></div>
@@ -70,7 +59,7 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
     );
   }
 
-  if (!isConfigured) {
+  if (!selfUser.EJG_code || !selfUser.OM5) {
     return (
       <Alert className="border-selfprimary-300 bg-selfprimary-50">
         <Link href="/me">

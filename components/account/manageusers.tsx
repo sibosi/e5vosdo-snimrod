@@ -261,6 +261,10 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                         <td>{selectedUser.EJG_code}</td>
                       </tr>
                       <tr>
+                        <th scope="row">OM5</th>
+                        <td>{selectedUser.OM5}</td>
+                      </tr>
+                      <tr>
                         <th scope="row">Étkezési menü</th>
                         <td>{selectedUser.food_menu}</td>
                       </tr>
@@ -279,14 +283,6 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                       <tr>
                         <th scope="row">Jegyek</th>
                         <td>{selectedUser.tickets.join(", ")}</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">Rejtett órák</th>
-                        <td>{selectedUser.hidden_lessons.length} db</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">Alapcsoport</th>
-                        <td>{selectedUser.default_group}</td>
                       </tr>
                     </tbody>
                   </table>

@@ -111,7 +111,7 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export async function getAuth(
   email?: string,
   idToken?: string,
-): Promise<User | null> {
+): Promise<User | null | undefined> {
   // 1) If mobile passed an ID token, verify it and extract payload
   let verifiedEmail: string | undefined = email;
   let verifiedName: string | undefined;
@@ -151,7 +151,7 @@ export async function getAuth(
       const session = await auth();
       if (!session?.user?.email) {
         // not authenticated by either method
-        return null;
+        return;
       }
       verifiedEmail = session.user.email;
       verifiedName = session.user.name || undefined;

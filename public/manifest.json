@@ -1,26 +1,27 @@
 {
-  "short_name": "E5 DÖ",
-  "name": "Eötvös József Gimnázium Diákönkormányzat",
+  "short_name": "Eötvös DÖ",
+  "name": "Eötvös DÖ",
   "author": "Simon Nimród Zalán",
   "description": "Az Eötvös József Gimnázium Diákönkormányzatának hivatalos weboldala.",
   "lang": "hu",
   "dir": "ltr",
   "scope": "/",
-  "version": "0.0.2506.0.0",
+  "version": "0.0.2509.0.0",
   "required_sw_version": "0.0.2412.1.1.1",
-
   "start_url": "/",
   "id": "/",
   "display": "standalone",
-  "background_color": "#fff",
-  "theme_color": "#fff",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "favico.ico",
-      "sizes": "256x256"
+      "src": "https://e5vosdo.hu/ios/1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "android144.png",
+      "src": "https://e5vosdo.hu/android144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "monochrome"
@@ -28,16 +29,10 @@
   ],
   "screenshots": [
     {
-      "src": "screenshot.png",
+      "src": "https://e5vosdo.hu/screenshot.png",
       "sizes": "626x1021",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Application"
-    },
-    {
-      "src": "screenshot.png",
-      "sizes": "626x1021",
-      "type": "image/png",
       "label": "Application"
     }
   ]

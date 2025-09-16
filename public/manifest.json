@@ -18,7 +18,13 @@
       "src": "https://e5vosdo.hu/ios/1024.png",
       "sizes": "1024x1024",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "https://e5vosdo.hu/ios/1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "https://e5vosdo.hu/android144.png",

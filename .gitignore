@@ -1,6 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 .vscode
+hu.e5vosdo.snimrod
+android-settings.json
+com.myapp.pwa.zip
+hu.e5vosdo.snimrod.zip
 
 # dependencies
 /node_modules

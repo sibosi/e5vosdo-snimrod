@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "hu.e5vosdo.snimrod",
+        "sha256_cert_fingerprints": ["A1:8F:F6:35:81:06:F0:B1:C1:F2:96:6B:B3:61:06:C2:E2:84:F6:D3:44:A9:97:92:4A:10:0E:5E:F7:2F:6E:12"]
+      }
+    }]

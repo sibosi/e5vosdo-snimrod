@@ -12,8 +12,30 @@
   "start_url": "/",
   "id": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay"],
   "background_color": "#fff",
   "theme_color": "#fff",
+  "orientation": "natural",
+  "shortcuts": [
+    {
+      "name": "Profilom",
+      "url": "/me",
+      "description": "A saját profilom megtekintése",
+      "icons": [
+        {
+          "src": "icon-96x96.png",
+          "type": "image/png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+e5do",
+      "url": "/link?url=%s"
+    }
+  ],
   "icons": [
     {
       "src": "favico.ico",

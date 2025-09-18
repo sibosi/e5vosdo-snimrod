@@ -23,51 +23,105 @@ interface Group {
 }
 
 export const clubsOrder: string[] = [
-  "E5 StudenTalk",
+  "Közéleti vitaszakkör",
+  "Horgolás és relax",
+  "Egészségügyi szakkör",
+  "E5vös StudenTalk",
   "FLC EJG",
   "Filmklub",
-  "Eötvös Diák",
-  "EPAS",
+  "Eötvös Diák + Kreatív író műhely",
+  // "EPAS",
 
-  "ZöldBiz",
-  "Eötvös Média",
+  "Zöld Bizottság",
+  // "Eötvös Média",
 
   "Elsősegélynyújtó Diákkör",
 
-  "Eötvös Kosárlabdacsapat",
-  "Eötvös Vakondok",
-  "Kéktúra-szakkör",
+  "Röplabda csapat",
+  "Fiú Kosárlabdacsapat",
+  "Lány Kosárlabdacsapat",
+  // "Eötvös Vakondok",
+  "Kéktúra szakkör",
   "TársasTár",
   "Debate Club",
 
   "Színjátszó",
-  "Nekünk X",
+  // "Nekünk X",
 
   "Technikusi Szervezet",
   "Eötvös Alkotó Műhely",
 
   "MUN-Club",
-  "Bimun",
+  "BIMUN",
 
   "Sulirádió",
-  "Sakk - klub",
+  "E5vös Sakk",
 ];
 
 export const clubsConfig: Group[] = [
   {
-    title: "ZöldBiz",
+    // TODO: Solymoss Miklós
+    title: "Egészségügyi szakkör",
     details:
-      "A Zöld Bizottság egy diákokból álló szervezet, akikkel az a célunk, hogy minél környezettudatosabbá tegyük az iskola működését. Ezenkívül célunk, hogy bővítsük egymás tudását, figyelemfelkeltő és szórakoztató programokat szervezzünk környezettudatos témákban, és tudatos életre ösztönözzük diáktársaikat, a közösségi média eszközeivel is.",
+      "Orvosokat, rezidenseket, orvostanhallhatókat hívunk előadni, hogy bemutassák az egészségügy világát.",
+    description: "",
+    image: "",
+    links: [],
+    new: true,
+  },
+  {
+    // TODO: Timi
+    title: "Lány Kosárlabdacsapat",
+    details:
+      "Hetente kétszer, jó hangulatban együtt gyakoroljuk a labdakezelést, a dobásokat és a csapatjátékot. Valamint felkészülünk a budapesti amatőr és profi meccsekre is.",
+    description: "",
+    image: "",
+    links: [],
+    new: true,
+  },
+  {
+    // TODO: Morvai Gergely
+    title: "Röplabda csapat",
+    details: "Röplabda diákolimpiára felkészülés, a sport népszerűsítése.",
+    description: "",
+    image: "",
+    links: [],
+    new: true,
+  },
+  {
+    // TODO: Czirók Adrienn / Kámán Ildikó
+    title: "Horgolás és relax",
+    details:
+      "Van aki azért jön ide, mert tud horgolni.... van aki azért, mert nem tud horgolni.... van aki azért, mert szeret horgolni.... és van aki azért, mert csacsogni szeretne kicsit egy fárasztó nap után... :)) ",
+    description: "",
+    image: "",
+    links: [],
+    new: true,
+  },
+  {
+    // TODO: Varga Sándor
+    title: "Közéleti vitaszakkör",
+    details:
+      "Hétről-hétre egy-egy érdekes, közösen kiválasztott témát dolgozunk fel, amelyben megszerzett tudásod később sikereseb használhatod más vitafórumokon is.(a szakkör magyar nyelven zajlik, így a nylevi akadályoktól sem kell tartani) ",
+    description: "",
+    image: "",
+    links: [],
+    new: true,
+  },
+  {
+    title: "Zöld Bizottság",
+    details:
+      "A Zöldbizottság felelős elsősorban az Eötvös fenttarthatóbbá tevéséért. 2025ben elengedhetetlennek tartjuk, hogy ne legyen szívügye egy iskolának a Földünk jövője. A Zöldbiz lehetőségeket keres arra,hogy hogyan vonja be a diákságot, minél nagyobb és hatékonyabb környezet barát projektekbe.",
     image: "/groups/zoldbiz.png",
     description: "",
     links: [
       {
-        title: "ZöldBiz Facebook",
+        title: "Zöld Bizottság Facebook",
         value: "https://www.facebook.com/eotvos.zoldbiz",
         type: "facebook",
       },
       {
-        title: "ZöldBiz Instagram",
+        title: "Zöld Bizottság Instagram",
         value: "https://www.instagram.com/e5vos.zoldbiz/",
         type: "instagram",
       },
@@ -81,7 +135,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Debate Club",
     details:
-      "A Debate club egy lehetőség az Eötvös József Gimnázium diákjai számára, hogy jó hangulat és érdekes témák között fejlesszék a vita tudásukat angol nyelven. Heti egy alkalommal és számos csapatépítő programmal várunk minden érdeklődőt!",
+      "A Debate-club egy angol nyelven folyó vita klub, ahol rengeteg témán belül, heti foglalkozások keretében formális vitákat folytatunk le. A célunk, hogy minél többen megismerjék a versenyvita szépségét. Minden leendő Eötvösöst szívesen várunk egy-két vitázós, érvelős játékra, ahol belekóstolhattok a debate rejtelmeibe.",
     image: "/groups/debate.png",
     description: "",
     links: [
@@ -98,9 +152,9 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "Eötvös Diák",
+    title: "Eötvös Diák + Kreatív író műhely",
     details:
-      "Az Eötvös Diák iskolánk nagyrabecsült újsága, amelyet mi, a diákság írunk, illusztrálunk, tördelünk és szerkesztünk. Egyaránt megjelennek benne szépirodalmi, ismeretterjesztő, kritikai szövegek, illetve minden, ami foglalkoztatja az Eötvös Népét. Ha szeretnéd, hogy a te műved is szerepeljen a következő számban, keress minket Instagramon (@e5vosdiak) vagy e-mailben (pillar.blanka@e5vos.hu), és kapcsolódj be - akár év közben is!",
+      "Az Eötvös Diák az iskola nagy múltú, közel száz éves nyomtatott újságja. Várunk a laphoz, ha szívesen kipróbálnád magad újságíróként, szerkesztőként, rovatvezetőként, illusztrátorként, tördelőként, vagy szeretnéd közölni szépirodalmi munkáidat. Az Eötvös Diák együttműködik az iskolai podcasttel, és a kéthetente péntekenként tartott Kreatív író műhelyben is támogatást kaphatsz a cikkíráshoz; ezért nyugodtan jelentkezz egyszerre több szakkörbe is, ez nem jelent majd számodra többletterhelést. A szerkesztőség idén újralakul, és a tervezett négy lapszámban arra törekszünk majd, hogy színes, mindenkit foglalkoztató témákról tájékoztassuk az iskola nyilvánosságát.",
     image: "/groups/diak.jpg",
     description: "",
     links: [
@@ -124,7 +178,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Elsősegélynyújtó Diákkör",
     details:
-      "Elege van abból, hogy tehetetlen, mikor mindenki haldoklik maga körül? Esetleg Ön tervez elhalálozni? Azonnal, rutinosan használható tudást szeretne? Stresszhelyzetben is helyesen végezné el az Esmarch-féle műfogást? Naprakész, könnyen alkalmazható tudást szerezhet most velünk. Ha kedve úgy tartja, életeket menthet, ha nem, külön kívánságra speciális kínzási módszereket tanulhat.\n\nKomolyra fordítva a szót, nálunk megtanulhatsz csapatban dolgozni, részt vehetsz magas színvonalú versenyeken és egyéb rendezvényeken a Vöröskereszt szervezésében. Természettudományos érdeklődésűeknek különösen ajánjuk a részvételt, hisz az itt elhangzottak legnagyobb részben biológiára és a józan eszünkre támaszkodnak. Ha még nem is annyira hoz lázba a termtud, az itt átadott tudással a mindennapokban magabiztosnak érezheted magad elsősegélynyújtó képességeidben. Mindezekhez az elméleti és gyakorlati tudást, melyet akár jogosítvány megszerzésénél is hasznosíthatsz, családias légkörben egy befogadó és jófej közösség részeként szerezheted meg.\n\nCsatlakozz Te is az Elsősegélynyújtó Diákkörhöz!",
+      "Szeretnél hasznos tudást szerezni, amellyel akár életeket is menthetsz? Érdekel, hogyan kell gyorsan és helyesen cselekedni váratlan helyzetekben? Akkor csatlakozz az Elsősegélynyújtó Diákkörhöz! \nNálunk megtanulhatod az alapvető és speciális elsősegélynyújtási technikákat, kipróbálhatod magad valósághű szituációkban, és elsajátíthatod, hogyan kell csapatban együttműködni. Lehetőséged lesz versenyeken részt venni, és olyan ismereteket szerezni, amelyek a mindennapokban is életmentők lehetnek. \nA szakkör célja, hogy magabiztossá tegyen vészhelyzetekben, és megtanítson arra, hogyan tudsz másokon segíteni. Akár az iskolában, akár a mindennapi életben, ezek a készségek valódi értéket képviselnek. \nCsatlakozz hozzánk, és legyél Te is az, aki tudja, mit kell tenni, amikor mások segítségre szorulnak!",
     image: "/groups/elsosegely.jpg",
     description: "",
     links: [
@@ -146,28 +200,28 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "Kéktúra-szakkör",
+    title: "Kéktúraszakkör",
     details:
-      "Célunk, hogy eötvösös éveink során az Országos Kéktúra 1172,5 km hosszú útvonalát egy lelkes csapattal bejárjuk. Havonta általában 1 alkalom kerül megrendezésre, ezek változóan egynaposak vagy ottalvósak. Mindenképp ajánljuk szakkörünket, ha szereted az erdőt járni vagy csak kedvet érzel magadban ahhoz, hogy kiszakadj a szürke hétköznapokból, s eltölts egy napot egy vidám csapattal!",
+      "Szakkörünkben lehetőséged nyílik barátaiddal közösen végigjárni a kéktúra legszebb szakaszait, havonta egy, nem túl megterhelő, néha kétnapos túra keretében.",
     image: "/groups/kektura.jpg",
     description: "",
     links: [
       {
-        title: "Kéktúra-szakkör Facebook",
+        title: "Kéktúra szakkör Facebook",
         value: "https://www.facebook.com/groups/ejgkektura/",
         type: "facebook",
       },
       {
-        title: "Kéktúra-szakkör Instagram",
+        title: "Kéktúra szakkör Instagram",
         value: "https://www.instagram.com/tehen_kek",
         type: "instagram",
       },
     ],
   },
   {
-    title: "Eötvös Kosárlabdacsapat",
+    title: "Fiú Kosárlabdacsapat",
     details:
-      "Legyél te is az Eötvös amatőr kosárcsapatának tagja, és légy részese a diákolimpia első helyéért folyó éves küzdelemnek! Szívesen várunk mindenkit, aki szeretné magát kipróbálni a kosárpályán, illetve szeretne tagja lenni egy összetartó, egymást segítő, vidám közösségnek. Kezdők és haladók egyaránt jöhetnek, de fontos, hogy csak az játszhat a diákolimpia mérkőzésein, aki legalább 1 éve nem igazolt játékos, tehát nem tagja egyesületnek.",
+      "Milyen embereknek ajánljátok klubotokat? \nAkik kosaraznak/szeretnek kosarazni v akik nagyon magasak",
     image: "/groups/kosar.jpeg",
     description: "",
     links: [
@@ -220,7 +274,7 @@ export const clubsConfig: Group[] = [
   {
     title: "MUN-Club",
     details:
-      "Nálunk kipróbálhatod magad egy ENSZ delegált cipőjében, és fejlesztheted a public speaking képességed, az önbizalmad, az angol tudásod. Miközben nemzetközi problémákat és kríziseket oldasz meg, tanulhatsz a modern geopolitikáról, és arról, hogyan működik a nemzetközi diplomácia, és, hogy mit jelent felelős vezetőnek lenni (vagy éppen diktátornak). Velünk tarthatsz a nemzetközi konferenciákra, és az itthoniakra egyaránt. Ha még sosem próbáltad a munozást, akkor se aggódj, tapasztalt mentorokkal várunk, akik végigkísérnek a tanuláson! Sok szeretettel várunk téged is a közösségünkben!",
+      "Nálunk kipróbálhatod magad egy ENSZ delegált cipőjében, és fejlesztheted a public speaking képességed, az önbizalmad, az angol tudásod. Miközben nemzetközi problémákat és kríziseket oldasz meg, tanulhatsz a modern geopolitikáról, és arról, hogyan működik a nemzetközi diplomácia, és, hogy mit jelent felelős vezetőnek lenni (vagy éppen diktátornak). Velünk tarthatsz a nemzetközi konferenciákra, és az itthoniakra egyaránt. Tapasztalt mentorokkal várunk, akik végigkísérnek a tanuláson, hogy ne legyen nehézség megérteni a szabályokat. Várunk téged is szeretettel a közösségünkbe!",
     image: "/groups/munclub.png",
     description: "",
     links: [
@@ -262,7 +316,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Sulirádió",
     details:
-      "Mi irányítjuk az iskolai szünetekben és az Eötvös programjain a stúdiót. Mi vagyunk az iskola audió formájú hangulatfelelősei. Olyanokat várunk csapatunkba, akik képesek a közjót, az iskola hangulalát empatikus és alázatos módon szolgálni. Csatlakozz ha te is zenefelelős szeretnél lenni!",
+      "Szünetekben a stúdióból zenéket tesznek be a tagok, amelyek hangulatot adnak az iskolának.",
     image: "/groups/suliradio.png",
     description: "",
     links: [
@@ -279,15 +333,20 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "Sakk - klub",
+    title: "E5vös Sakk",
     details:
-      "Szeretsz sakkozni, de nincs kivel? Szeretnéd fejleszteni a sakk tudásod? Szeretnéd kipróbálni, fejleszteni játékod vagy taktikád? Akkor a legjobb helyen jársz! Itt elsajátíthatsz mindent a sakkozás alapjairól és egy CM-rel (Candidate Master) is találkozhatsz akár oktatóként, akár diákként. Már három oktatónk is van, és a résztvevők száma is egyre nő. Ha szeretnél egy vidám környezetben sakkozni barátaiddal és osztálytársaiddal jelentkezz a Sakk - klubba és mehet a parti.",
+      "Szeretsz sakkozni? \nSzeretnél megtanulni megnyitásokat, vagy kipróbálni magad a táblán? Akkor gyere az E5vös sakk szakkörre! \nJó hangulat, baráti társaság és izgalmas partik várnak rád, ahol a sulistársaiddal is összemérheted a tudásodat.",
     image: "/groups/sakk.jpg",
     description: "",
     links: [
       {
-        title: "Illés Gergő",
-        value: "illes.gergo@e5vos.hu",
+        title: "E5vos Sakk Instagram",
+        value: "https://www.instagram.com/e5vos_sakk/",
+        type: "instagram",
+      },
+      {
+        title: "Trautzsch Alexander",
+        value: "trautzsch.alexander.mathieu@e5vos.hu",
         type: "email",
       },
     ],
@@ -295,7 +354,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Színjátszó",
     details:
-      "Színt játszunk. Szeretjük az összes színt, a kéket, a pirosat, a zöldet, de még a khakit, meg a bézst is. Komolyra fordítva a szót, igyekszünk minden évben rendezni egy darabot -idén akár kettőt is?!-, és rengeteget játszunk. Minden péntek délután sokszínű gyakorlatokkal, és ikonikus játékokkal készülünk a darabra.",
+      "Heti egy alkalommal összegyűlik egy energikus, játékos és felszabadult közösség. Játszunk, improvizálunk és közben össze állítunk egy darabot amelyet mi magunk írtunk.",
     image: "/groups/szinjatszo.png",
     description: "",
     links: [
@@ -328,7 +387,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Technikusi Szervezet",
     details:
-      "Mi vagyunk a Technikusi Szervezet. Ott vagyunk mindenhol: évnyitó, évzáró, KMT, könnyűzenei, jazz koncert, M15, karácsony. Hangosítunk, fényezünk, videózunk, technikát gyártunk, rendezvényt szervezünk, újító technikai megoldásokkal állunk elő.",
+      "Mi vagyunk az Eötvös Technikusi Szervezet — ott vagyunk minden fontos eseménynél: évnyitó és évzáró, KiMitTud?, könnyűzenei és jazz koncertek, március 15-ei ünnepség, karácsony. Hangosítunk, fénytechnikát üzemeltetünk és tervezünk, videózunk, eszközöket építünk és fejlesztünk, valamint rendezvényeket szervezünk. Mindig új technikai megoldásokkal kísérletezünk, és örömmel várunk mindenkit, aki szeretne tanulni, alkotni és részese lenni a élmények létrehozásának.",
     image: "/groups/technikusi.png",
     description: "",
     links: [
@@ -364,10 +423,10 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "Bimun",
+    title: "BIMUN",
     image: "/groups/bimun.jpg",
     details:
-      "A BIMUN egy minden évben megrendezésre kerülő nemzetközi MUN-konferencia, melyet az iskola és az ide járó diákok szerveznek. Többféle módon is van lehetőség ebben részt venni. Lehet szervezői pozíciókra jelentkezni, akik az esemény megvalósításáért felelősek. Vannak olyan pozíciók is, akik a konferencia alatt segítik a sikerességét, például staffként, médiásként, pressesként, hostként, supervisorként. Ez azért nagy lehetőség a számunkra, mert így nem csak a konferenciára érkező résztvevők, hanem a szervezői gárda is találkozhatunk külföldi diákokkal, és akár életre szóló ismeretségeket köthetnek. Minden évben remek csapat áll össze, hogy megvalósítsa iskolánk egyik fontos rendezvényét.",
+      "A BIMUN szervezői csapata egy összetartó közösség, amely egy egész éven átívelő projektet valósít meg közösen. Mindenki a saját ötleteivel, kreativitásával és munkájával járul hozzá ahhoz, hogy egy felejthetetlen élmény szülessen. A BIMUN az Eötvösös élet egyik legkiemelkedőbb eseménye, ahol szervezőként és résztvevőként egyaránt új barátságokra, nemzetközi kapcsolatokra és rengeteg élményre tehetsz szert.",
     description: "",
     links: [
       {
@@ -405,10 +464,15 @@ export const clubsConfig: Group[] = [
   {
     title: "Eötvös Alkotó Műhely",
     details:
-      "Az V. Kerületi Eötvös József Gimnáziumban működő E5vös Alkotó Műhely egy tér a játékhoz, az alkotáshoz, a tanuláshoz, a mentoráláshoz, a feltaláláshoz. Másképp megfogalmazva a tanulás és az innováció helye. Ez a nyitott tanulói tér a diákok és tanárok számára egyaránt rendelkezésre áll a projektjeik és ötleteik megvalósításához. A Műhely hozzáférést biztosít egy egyedi alkotókörnyezethez, ami segít a különböző hard és soft skillek elsajátításában azáltal, hogy a legkorszerűbb technológiákhoz, szoftverekhez és anyagokhoz nyújt hozzáférést. Így az iskola polgárai képesek elkészíteni (szinte) akármit , amit csak el tudnak képzelni.",
+      "Több szakkör is indul: \nSzabad Műhely: Az év folyamán bárki bármikor résztvehet rajta akár alkalomszerűen ahl segítünk megvalósítani a terveiket, segítünk az iskolapolgárok IT problémáinak megoldásában. \n\nProjekt szakkör: A szabad Műhellyel egy időpontban a jelentkezőkkel közösen kiválasztunk egy tetszőleges projektet (arduino programozás, 3D nyomtatás, ...stb.) amelyet 2-3 hónapig folytatunk majd új témát választunk. \n\nRobotika szakkör: Ez egy olyan szakkör amelyet Majoros József tanárúr tart, ahol az ő segítségével lehetőség adódik akár nemzetközi szintű robotika versenyeken való indulás valamint felkészülés, mint például a WRO, CanSat,...",
     image: "/groups/eam.png",
     description: "",
     links: [
+      {
+        title: "Eötvös Alkotó Műhely Instagram",
+        value: "https://www.instagram.com/e5vosalkotomuhely/",
+        type: "instagram",
+      },
       {
         title: "Eötvös Alkotó Műhely Weboldal",
         value: "https://sites.google.com/e5vos.hu/e5vosalkotomuhely/",
@@ -417,7 +481,7 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "E5 StudenTalk",
+    title: "E5vös StudenTalk",
     details:
       "Az E5vös StudenTalk egy olyan csapat, amely izgalmas és gondolatébresztő podcastekkel látja el iskolánk diákjait.\nCélunk, hogy változatos témákkal, érdekes beszélgetésekkel és inspiráló vendégekkel szórakoztassunk és informáljunk benneteket.\nLegyen szó iskolai eseményekről, tanulmányi tippekről, aktuális társadalmi kérdésekről vagy akár könnyedebb, szórakoztató témákról, nálunk mindig találtok valami újat és izgalmasat.",
     image: "/groups/e5studentalk.png",
@@ -456,7 +520,7 @@ export const clubsConfig: Group[] = [
     image: "/groups/FLC.png",
     description: "",
     details:
-      "FLC: Nálunk betekintést nyerhetsz a pénzügyek világába, miközben fejlesztheted üzleti, marketing és értékesítési készségeidet. Különböző szakemberek által tartott előadásokon és csoportos foglalkozásokon vehetsz részt, ahol valódi pénzügyi kérdésekkel foglalkozhatsz, és tanulhatsz a modern gazdaságról. Ha még nem vagy jártas a témában, tapasztalt mentorok segítenek neked. Szeretettel várunk minden jelentkezőt!",
+      "A Financial Literacy Club lehetőséget biztosít a diákok pénzügyi és gazdasági ismereteinek fejlesztésére. Az FLC keretein belül többek között tanulmányi versenyekre, vendégelőadásokra és céglátogatásokra jelentkezhetnek az Eötvösös diákok, gyakorlati betekintést nyújtva a pénzügyi világba. \n\nA pénzügyi ismereteken túl a klub olyan alapvető készségek fejlesztésére összpontosít, mint a nyilvános beszéd, a vezetés, a prezentációs technikák, a csapatmunka és a kritikai gondolkodás. Ezek a készségek kulcsfontosságúak mind a tanulmányi, mind a szakmai sikerhez.",
     links: [
       {
         title: "FLC EJG Instagram",
@@ -464,14 +528,12 @@ export const clubsConfig: Group[] = [
         type: "instagram",
       },
     ],
-    new: true,
   },
   {
     title: "Filmklub",
     image: "/groups/filmklub.jpg",
     description: "",
-    details:
-      "Péntekenként, 15:30-tól bombasztikus filmeket nézünk mint egy nagy család és beszélgetünk is róluk.",
+    details: "Filmeket nézünk és értékelünk.",
     links: [
       {
         title: "Filmklub Instagram",
@@ -479,7 +541,6 @@ export const clubsConfig: Group[] = [
         type: "instagram",
       },
     ],
-    new: true,
   },
   {
     title: "EPAS",

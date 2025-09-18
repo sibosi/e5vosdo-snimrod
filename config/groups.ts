@@ -30,23 +30,23 @@ export const clubsOrder: string[] = [
   "FLC EJG",
   "Filmklub",
   "Eötvös Diák + Kreatív író műhely",
-  // "EPAS",
+  // "EPAS", // TODO: Boti
 
   "Zöld Bizottság",
-  // "Eötvös Média",
+  "Eötvös Média",
 
   "Elsősegélynyújtó Diákkör",
 
   "Röplabda csapat",
   "Fiú Kosárlabdacsapat",
   "Lány Kosárlabdacsapat",
-  // "Eötvös Vakondok",
+  // "Eötvös Vakondok", // TODO: Kornél
   "Kéktúra szakkör",
   "TársasTár",
   "Debate Club",
 
   "Színjátszó",
-  // "Nekünk X",
+  "Nekünk X",
 
   "Technikusi Szervezet",
   "Eötvös Alkotó Műhely",
@@ -240,7 +240,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Eötvös Média",
     details:
-      "Idén is lesz Eötvös Média! Mi dokumentáljuk az összes programot az Eötvösben. Ott vagyunk minden fontos eseményen, fotózunk, videózunk, megörökítjük az iskola legmeghatározóbb emlékeit. Gyere, csatlakozz hozzánk!",
+      "Idén is lesz Eötvös Média! Mi dokumentáljuk az összes programot az Eötvösben. Ott vagyunk minden fontos eseményen, fotózunk, videózunk, megörökítjük az iskola legmeghatározóbb emlékeit. Gyere, csatlakozz hozzánk! Jelentkezés / További információkért: mediabrigad@e5vos.hu",
     image: "/groups/media.jpg",
     description: "",
     links: [
@@ -260,13 +260,8 @@ export const clubsConfig: Group[] = [
         type: "email",
       },
       {
-        title: "Eötvös Média Levelezőlista",
-        value: "https://listmonk.e5vosmedia.hu/subscription/form",
-        type: "email",
-      },
-      {
         title: "Eötvös Média Weboldal",
-        value: "https://e5vosmedia.hu",
+        value: "https://e5vosdo.hu/media",
         type: "website",
       },
     ],
@@ -293,7 +288,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Nekünk X",
     details: "Iskolai közösségi szolgálatos órák összegyűjtésében segítünk.",
-    image: "/groups/old/nekunkx.jpg",
+    image: "/groups/nekunkx.png",
     description: "",
     links: [
       {
@@ -308,7 +303,7 @@ export const clubsConfig: Group[] = [
       },
       {
         title: "Nekünk X Weboldal",
-        value: "https://nekunk-x.site/",
+        value: "https://iksz.e5vosdo.hu/",
         type: "website",
       },
     ],

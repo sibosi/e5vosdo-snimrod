@@ -31,8 +31,8 @@
   ],
   "protocol_handlers": [
     {
-      "protocol": "web+e5do",
-      "url": "e5do?type=%s"
+      "protocol": "web+eotvosdo",
+      "url": "eotvosdo?type=%s"
     }
   ],
   "icons": [

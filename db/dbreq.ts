@@ -555,7 +555,7 @@ export async function newNotificationByEmails(
           message: title,
           body: title,
           icon: "favicon.ico",
-          badge: "favicon-16x16.ico",
+          badge: "favicon.ico",
         }),
       );
     }

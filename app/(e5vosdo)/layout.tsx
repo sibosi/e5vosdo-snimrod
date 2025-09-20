@@ -101,7 +101,7 @@ export default async function RootLayout({
               >
                 <span className="text-default-600">Fejlesztette</span>
                 <p className="text-selfprimary">Simon Nimród</p>
-                <span className="text-default-600">10.C</span>
+                <span className="text-default-600">11.C</span>
               </Link>
               <br />
               <PageNav />

@@ -1,7 +1,6 @@
 import { clubsConfig, clubsOrder } from "@/config/groups";
 import PopupCards from "@/components/popupcards";
 import { Alert } from "@/components/home/alert";
-import { Section } from "@/components/home/section";
 
 function sortClubs() {
   const sortedClubs = new Set();
@@ -26,18 +25,11 @@ export default function ClubsPage() {
         klubkínálattal!
       </h2>
 
-      <Section
-        title="Tavalyi klubok"
-        savable={false}
-        defaultStatus="closed"
-        dropdownable={true}
-      >
-        <Alert className="border-selfprimary-300 bg-selfprimary-100">
-          A kártyákra kattintva további információkat találsz a klubokról.
-        </Alert>
+      <Alert className="border-selfprimary-300 bg-selfprimary-100">
+        A kártyákra kattintva további információkat találsz a klubokról.
+      </Alert>
 
-        <PopupCards cards={sortClubs()} />
-      </Section>
+      <PopupCards cards={sortClubs()} />
     </>
   );
 }

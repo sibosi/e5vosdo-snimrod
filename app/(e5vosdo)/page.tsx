@@ -15,14 +15,15 @@ import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert } from "@/components/home/alert";
+import { getCarouselEvents } from "@/db/event";
 
-const PageHeadContent = ({
+const PageHeadContent = async ({
   selfUser,
 }: {
   selfUser: UserType | null | undefined;
 }) => {
   if (selfUser?.permissions.includes("user"))
-    return <Carousel data={[]} selfUser={selfUser} />;
+    return <Carousel data={await getCarouselEvents()} />;
 
   if (selfUser === null)
     return (
@@ -65,11 +66,14 @@ export default async function Home() {
               icon={false}
               className="border-selfsecondary-300 bg-selfsecondary-100"
             >
-             Az alább látható órarend nem hivatalos és nem feltétlenül aktuális. A hivatalos ideiglenes órarend később, PDF-ben kerül kiküldésre.
+              Az alább látható órarend nem hivatalos és nem feltétlenül
+              aktuális. A hivatalos ideiglenes órarend később, PDF-ben kerül
+              kiküldésre.
             </Alert>
-            {selfUser?.permissions.includes("user") && <HeadTimetable selfUser={selfUser} />}
+            {selfUser?.permissions.includes("user") && (
+              <HeadTimetable selfUser={selfUser} />
+            )}
           </div>
-          
         </Section>
       )}
 

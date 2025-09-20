@@ -18,6 +18,7 @@ import Alerts from "@/components/home/alerts";
 import RunClientSide from "@/app/runClientSide";
 import MaintenanceGate from "@/components/home/maintenanceGate";
 import RunClientSideWrapper from "@/app/runClientSideWrapper";
+import DesktopMenu from "@/components/home/desktopMenu";
 
 export const dynamic = "force-dynamic";
 
@@ -86,10 +87,13 @@ export default async function RootLayout({
 
             <Cookie />
             <Alerts />
-            <main className="container mx-auto max-w-7xl flex-grow bg-selfprimary-bg pl-3 pr-3 pt-4">
+            <main className="container mx-auto max-w-full flex-grow bg-selfprimary-bg px-3 pt-4">
               <OnCSSBug />
               <MaintenanceGate selfUser={selfUser} isActive={false}>
-                {children}
+                <div className="flex justify-start gap-3">
+                  <DesktopMenu />
+                  <div className="w-full max-w-7xl md:mx-auto">{children}</div>
+                </div>
               </MaintenanceGate>
             </main>
             <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">

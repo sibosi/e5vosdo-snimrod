@@ -84,18 +84,34 @@ export const clubsConfig: Group[] = [
     title: "Röplabda csapat",
     details: "Röplabda diákolimpiára felkészülés, a sport népszerűsítése.",
     description: "",
-    image: "",
-    links: [],
+    image: "/groups/roplabda.png",
+    links: [
+      {
+        title: "Röplabda csapat Instagram",
+        value: "https://www.instagram.com/e5vos_roplabda/",
+        type: "instagram",
+      },
+    ],
     new: true,
   },
   {
-    // TODO: Czirók Adrienn / Kámán Ildikó
     title: "Horgolás és relax",
     details:
       "Van aki azért jön ide, mert tud horgolni.... van aki azért, mert nem tud horgolni.... van aki azért, mert szeret horgolni.... és van aki azért, mert csacsogni szeretne kicsit egy fárasztó nap után... :)) ",
     description: "",
-    image: "",
-    links: [],
+    image: "/groups/horgoloszakkor.png",
+    links: [
+      {
+        title: "Czirók Adrienn",
+        value: "czirok.adrienn@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "Kámán Ildikó",
+        value: "kaman.ildiko@e5vos.hu",
+        type: "email",
+      },
+    ],
     new: true,
   },
   {

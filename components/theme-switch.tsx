@@ -10,7 +10,6 @@ import {
 import { reloadColors } from "@/app/runClientSide";
 
 interface ThemeSwitchProps {
-  text?: string;
   className?: string;
   classNames?: SwitchProps["classNames"];
 }
@@ -40,7 +39,7 @@ const ThemeSwitch: FC<ThemeSwitchProps> = () => {
   return (
     <button
       onClick={toggleTheme}
-      className={`fill-foreground-500 transition-all duration-300 ease-in-out hover:fill-foreground-600 ${className}`}
+      className="fill-foreground-500 transition-all duration-300 ease-in-out hover:fill-foreground-600"
     >
       {theme === "dark" && <MoonFilledIcon size={22} />}
       {theme === "light" && <SunFilledIcon size={22} />}{" "}

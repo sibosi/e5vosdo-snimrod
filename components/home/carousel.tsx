@@ -481,11 +481,11 @@ function DesktopCarousel({ data }: Readonly<{ data: EventType[] }>) {
       </div>
 
       <div
-        className="bg-selfprimary-100 p-4"
+        className="max-h-80 overflow-auto bg-selfprimary-100 p-4"
         style={{ display: imageLoaded ? "block" : "none" }}
       >
         <h2>{data[currentIndex].title}</h2>
-        <p className="mt-2 scroll-auto whitespace-pre-wrap">
+        <p className="mt-2 whitespace-pre-wrap">
           {parse(String(data[currentIndex].description))}
         </p>
       </div>
@@ -530,8 +530,24 @@ export default function Carousel({ data }: Readonly<{ data?: EventType[] }>) {
       });
   }, [data]);
 
+  const uploadContentEvent: EventType = {
+    id: 0,
+    title: "Esemény feltöltése",
+    description:
+      'Valamit kihagytunk? <a href="/creator" className="text-selfprimary-800 font-bold">Töltsd fel te!</a>',
+    time: new Date().toISOString(),
+    image: "/opinion.png",
+    show_time: new Date().toISOString(),
+    hide_time: new Date().toISOString(),
+    tags: [],
+  };
+
   if (typeof window === "undefined") return <></>;
   if (windowInnerWidth < 768)
     return <PhoneCarousel data={filterCarouselData(carouselData)} />;
-  return <DesktopCarousel data={filterCarouselData(carouselData)} />;
+  return (
+    <DesktopCarousel
+      data={[...filterCarouselData(carouselData), uploadContentEvent]}
+    />
+  );
 }

@@ -37,6 +37,7 @@ const NavbarForPhone = ({
     "/me": "Profilom",
     "/est": "E5 Podcast",
     "/admin/page": "Admin panel",
+    "/media": "Média",
   };
 
   const pathname = usePathname();
@@ -109,7 +110,7 @@ const NavbarForDesktop = ({
   className?: string;
   isActiveHeadSpace: boolean;
 }) => {
-  const pathname = usePathname();
+  const currentPath = usePathname();
 
   return (
     <NextUINavbar
@@ -140,7 +141,12 @@ const NavbarForDesktop = ({
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
-                className={`${pathname === item.href ? "font-bold text-selfprimary-600" : "text-foreground"} p-2 hover:bg-selfprimary-200`}
+                className={clsx(
+                  linkStyles({
+                    color: currentPath === item.href ? "primary" : "foreground",
+                  }),
+                  "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
+                )}
                 href={item.href}
               >
                 {item.label}

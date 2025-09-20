@@ -1,6 +1,6 @@
 {
   "name": "e5vosdo-snimrod",
-  "version": "0.0.2506.0",
+  "version": "0.0.2509.0.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -19,6 +19,7 @@
     "@material/material-color-utilities": "^0.3.0",
     "@react-aria/ssr": "^3.9.7",
     "@react-aria/visually-hidden": "^3.8.18",
+    "@react-oauth/google": "^0.12.2",
     "@react-stately/data": "^3.12.0",
     "@supabase/supabase-js": "^2.48.1",
     "@svgr/webpack": "^8.1.0",
@@ -37,6 +38,7 @@
     "express": "^4.21.2",
     "extract-colors": "^4.1.1",
     "framer-motion": "^11.17.0",
+    "gapi-script": "^1.2.0",
     "google-auth-library": "^9.15.1",
     "googleapis": "^144.0.0",
     "html-react-parser": "^5.2.2",

@@ -1,43 +1,78 @@
 {
-  "short_name": "E5 DÖ",
-  "name": "Eötvös József Gimnázium Diákönkormányzat",
+  "short_name": "Eötvös DÖ",
+  "name": "Eötvös DÖ",
   "author": "Simon Nimród Zalán",
   "description": "Az Eötvös József Gimnázium Diákönkormányzatának hivatalos weboldala.",
   "lang": "hu",
   "dir": "ltr",
   "scope": "/",
-  "version": "0.0.2506.0.0",
+  "version": "0.0.2509.0.3",
   "required_sw_version": "0.0.2412.1.1.1",
-
   "start_url": "/",
   "id": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay"],
   "background_color": "#fff",
   "theme_color": "#fff",
+  "orientation": "natural",
+  "shortcuts": [
+    {
+      "name": "Profilom",
+      "url": "/me",
+      "description": "A saját profilom megtekintése",
+      "icons": [
+        {
+          "src": "icons/96.png",
+          "type": "image/png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+eotvosdo",
+      "url": "eotvosdo?type=%s"
+    }
+  ],
   "icons": [
     {
-      "src": "favico.ico",
-      "sizes": "256x256"
+      "src": "icons/192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "android144.png",
-      "sizes": "144x144",
+      "src": "icons/192.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "monochrome"
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "monochrome any"
     }
   ],
   "screenshots": [
     {
-      "src": "screenshot.png",
+      "src": "https://e5vosdo.hu/screenshot.png",
       "sizes": "626x1021",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Application"
-    },
-    {
-      "src": "screenshot.png",
-      "sizes": "626x1021",
-      "type": "image/png",
       "label": "Application"
     }
   ]

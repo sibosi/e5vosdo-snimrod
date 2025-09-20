@@ -1,6 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 .vscode
+hu.e5vosdo.snimrod
+android-settings.json
+com.myapp.pwa.zip
+hu.e5vosdo.snimrod.zip
 
 # dependencies
 /node_modules
@@ -53,6 +57,6 @@ public/workbox-07a7b4f2.js
 /local/
 /db/setup/local/
 /tests/
-.service-account-key.json
+.*service-account*.json
 tmp.sql
 *.ignorethis

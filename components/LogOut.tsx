@@ -25,14 +25,16 @@ const DoorIcon = ({ size }: { size?: number | string }) => {
 
 export const LogoutButton = ({ className, size }: LogoutProps) => {
   return (
-    <form action={doLogout} className="max-w-min">
+    <form action={doLogout} className="flex justify-center">
       <Button
         type="submit"
         name="action"
         value="google"
         size={size ?? "sm"}
         onPress={resetCache}
-        className={"rounded-badge fill-selfprimary " + className}
+        className={
+          "rounded-badge w-full max-w-md bg-selfprimary-300 " + className
+        }
       >
         Kijelentkezés
       </Button>

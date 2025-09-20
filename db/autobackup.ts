@@ -3,19 +3,71 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
-function getDriveClient() {
-  if (!process.env.SERVICE_ACCOUNT_KEY && !process.env.SERVICE_ACCOUNT_KEY_PATH)
-    throw new Error("SERVICE_ACCOUNT_KEY környezeti változó nincs beállítva.");
-  const serviceAccount = JSON.parse(
-    process.env.SERVICE_ACCOUNT_KEY ??
-      fs.readFileSync(process.env.SERVICE_ACCOUNT_KEY_PATH as string, "utf8"),
-  );
+export function getDriveClient() {
+  // Prefer SERVICE_ACCOUNT_KEY (inline JSON or base64 JSON); fallback to SERVICE_ACCOUNT_KEY_PATH
+  const inline = (process.env.SERVICE_ACCOUNT_KEY || "").trim();
+  const keyPath = (process.env.SERVICE_ACCOUNT_KEY_PATH || "").trim();
 
+  if (!inline && !keyPath) {
+    throw new Error(
+      "SERVICE_ACCOUNT_KEY vagy SERVICE_ACCOUNT_KEY_PATH nincs beállítva (Google Drive service account).",
+    );
+  }
+
+  let raw = inline;
+  if (!raw && keyPath) {
+    try {
+      raw = fs.readFileSync(keyPath, "utf8");
+    } catch (e: any) {
+      throw new Error(
+        `SERVICE_ACCOUNT_KEY_PATH olvasási hiba: ${keyPath} — ${e?.message || e}`,
+      );
+    }
+  }
+
+  if (!raw?.trim()) {
+    throw new Error(
+      "SERVICE_ACCOUNT_KEY üres. Adj meg érvényes JSON-t vagy használd a SERVICE_ACCOUNT_KEY_PATH változót.",
+    );
+  }
+
+  // raw lehet: JSON szöveg vagy base64-kódolt JSON
+  let jsonText = raw.trim();
+  if (!jsonText.startsWith("{") || !jsonText.endsWith("}")) {
+    // próbáljuk base64-ként értelmezni
+    try {
+      jsonText = Buffer.from(jsonText, "base64").toString("utf8");
+    } catch {
+      // ha nem base64, megyünk tovább és majd a JSON.parse dob pontos hibát
+    }
+  }
+
+  let serviceAccount: any;
+  try {
+    serviceAccount = JSON.parse(jsonText);
+  } catch (e: any) {
+    throw new Error(
+      `SERVICE_ACCOUNT_KEY érvénytelen JSON. Ellenőrizd az értéket vagy a fájlt: ${e?.message || e}`,
+    );
+  }
+
+  const privateKey = (
+    serviceAccount.private_key as string | undefined
+  )?.replace(/\\n/g, "\n");
+  if (!serviceAccount.client_email || !privateKey) {
+    throw new Error(
+      "A service account JSON hiányos (client_email vagy private_key hiányzik).",
+    );
+  }
+
+  const scopes = ["https://www.googleapis.com/auth/drive"]; // full Drive access; adjust if needed
+  const subject = process.env.GOOGLE_IMPERSONATE_EMAIL || undefined; // optional domain-wide delegation
   const auth = new google.auth.JWT(
     serviceAccount.client_email,
     undefined,
-    serviceAccount.private_key,
-    ["https://www.googleapis.com/auth/drive.file"],
+    privateKey,
+    scopes,
+    subject,
   );
 
   return google.drive({ version: "v3", auth });

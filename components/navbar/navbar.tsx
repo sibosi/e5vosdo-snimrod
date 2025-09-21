@@ -146,7 +146,9 @@ const NavbarForDesktop = ({
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
-                  linkStyles({ color: currentPath === item.href ? "primary" : "foreground" }),
+                  linkStyles({
+                    color: currentPath === item.href ? "primary" : "foreground",
+                  }),
                   "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
                 )}
                 href={item.href}
@@ -178,18 +180,24 @@ export const Navbar = ({
   const isActiveHeadSpace = pageSettings?.headspace === 1;
 
   const [isMobile, setIsMobile] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
+    setIsClient(true);
+
     const handleResize = (): void => {
       setIsMobile(window.innerWidth < 768);
     };
 
-    window.addEventListener("resize", handleResize);
     handleResize();
+    window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  if (!isClient) return null;
 
   if (isMobile)
     return (

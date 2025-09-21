@@ -66,6 +66,16 @@ export default async function RootLayout({
         <link rel="icon" href="icon/512.png" sizes="512x512" />
         <link rel="icon" href="icon/192.png" sizes="192x192" />
         <meta name="darkreader-lock" />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: light)"
+          content="#ffffff"
+        />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: dark)"
+          content="#0b1220"
+        />
       </head>
 
       <body

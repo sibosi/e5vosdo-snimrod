@@ -118,7 +118,7 @@ const NavbarForDesktop = ({
       position="sticky"
       className={"top-0 " + className}
     >
-      <NavbarContent className="fixed basis-full" justify="start">
+      <NavbarContent className="fixed basis-full max-md:hidden" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
           {!selfUser?.permissions.includes("user") ? (
             <NextLink
@@ -183,21 +183,13 @@ export const Navbar = ({
   useEffect(() => {
     const handleResize = (): void => {
       setIsMobile(window.innerWidth < 768);
-      alert(window.innerWidth);
     };
-
-    window
-      .matchMedia("(orientation: portrait)")
-      .addEventListener("change", handleResize);
 
     window.addEventListener("resize", handleResize);
     handleResize();
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      window
-        .matchMedia("(orientation: portrait)")
-        .removeEventListener("change", handleResize);
     };
   }, []);
 

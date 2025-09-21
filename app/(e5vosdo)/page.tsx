@@ -60,6 +60,11 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus="closed"
           savable={true}
+          chip={
+            <Chip color="secondary" size="sm">
+              Nem hivatalos
+            </Chip>
+          }
         >
           <div className="max-w-md">
             <HeadTimetable selfUser={selfUser} />

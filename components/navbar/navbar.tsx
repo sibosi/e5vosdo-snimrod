@@ -180,24 +180,25 @@ export const Navbar = ({
   const isActiveHeadSpace = pageSettings?.headspace === 1;
 
   const [isMobile, setIsMobile] = useState(true);
-  const [isClient, setIsClient] = useState(false);
-
   useEffect(() => {
-    setIsClient(true);
-
     const handleResize = (): void => {
       setIsMobile(window.innerWidth < 768);
     };
 
-    handleResize();
+    window
+      .matchMedia("(orientation: portrait)")
+      .addEventListener("change", handleResize);
+
     window.addEventListener("resize", handleResize);
+    handleResize();
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      window
+        .matchMedia("(orientation: portrait)")
+        .removeEventListener("change", handleResize);
     };
   }, []);
-
-  if (!isClient) return null;
 
   if (isMobile)
     return (

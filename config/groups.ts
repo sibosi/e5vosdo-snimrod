@@ -23,14 +23,14 @@ interface Group {
 }
 
 export const clubsOrder: string[] = [
-  "Közéleti vitaszakkör",
+  "Közéleti vitaszakkör", // TODO: Varga Sándor
   "Horgolás és relax",
-  "Egészségügyi szakkör",
+  "MediGenX Egészségügyi Szakkör", // TODO: Morvai Gergely
   "E5vös StudenTalk",
   "FLC EJG",
   "Filmklub",
   "Eötvös Diák + Kreatív író műhely",
-  // "EPAS", // TODO: Boti
+  "EPAS", // TODO: Boti még változat rajta
 
   "Zöld Bizottság",
   "Eötvös Média",
@@ -40,7 +40,7 @@ export const clubsOrder: string[] = [
   "Röplabda csapat",
   "Fiú Kosárlabdacsapat",
   "Lány Kosárlabdacsapat",
-  // "Eötvös Vakondok", // TODO: Kornél
+  "Eötvös Vakondok",
   "Kéktúra szakkör",
   "TársasTár",
   "Debate Club",
@@ -60,23 +60,43 @@ export const clubsOrder: string[] = [
 
 export const clubsConfig: Group[] = [
   {
-    // TODO: Solymoss Miklós
-    title: "Egészségügyi szakkör",
+    title: "MediGenX Egészségügyi Szakkör",
     details:
-      "Orvosokat, rezidenseket, orvostanhallhatókat hívunk előadni, hogy bemutassák az egészségügy világát.",
+      "Mi vár rád a szakkörön? \n- Előadások orvosoktól és rezidensektől az egészségügy világáról \n- Útmutatás a magyar egyetemekről és a karrierlehetőségekről \n- Kérdezhetsz, kapcsolatokat építhetsz, inspirálódhatsz \n- Egy közösség, ahol mindenki ugyanazért a célért küzd",
     description: "",
-    image: "",
-    links: [],
+    image: "/groups/egeszsegugyiszakkor.jpg",
+    links: [
+      {
+        title: "MediGenX Egészségügyi Szakkör Instagram",
+        value: "https://www.instagram.com/medigenx/",
+        type: "instagram",
+      },
+      {
+        title: "MediGenX Egészségügyi Szakkör email",
+        value: "medigenx@gmail.com",
+        type: "email",
+      },
+      {
+        title: "MediGenX Egészségügyi Szakkör website",
+        value: "https://medigenx.hu/",
+        type: "website",
+      },
+    ],
     new: true,
   },
   {
-    // TODO: Timi
     title: "Lány Kosárlabdacsapat",
     details:
-      "Hetente kétszer, jó hangulatban együtt gyakoroljuk a labdakezelést, a dobásokat és a csapatjátékot. Valamint felkészülünk a budapesti amatőr és profi meccsekre is.",
+      "Szeretettel várunk minden érdeklődőt, a kosárlabdát valaha játszó, kedvelő lányokat. Jó, ha van már tapasztalatod a játékban, de ha kezdőként jössz, a rendszeres részvétellel gyorsan fejlődhetsz. Együtt felkészülünk és résztveszünk a budapesti amatőr és profi meccseken is. Heti 2x jó hangulatú edzéseken várunk, ahol gyakorolhatod a labdakezelést, dobásokat és a csapatjátékot!",
     description: "",
-    image: "",
-    links: [],
+    image: "/groups/lanykosar.jpg",
+    links: [
+      {
+        title: "Eötvös Kosárlabdacsapat Instagram",
+        value: "https://www.instagram.com/ejg.lanykosar/",
+        type: "instagram",
+      },
+    ],
     new: true,
   },
   {
@@ -558,7 +578,7 @@ export const clubsConfig: Group[] = [
     image: "/groups/epas.png",
     description: "",
     details:
-      "Itt olvashattok a programjaikrol az ev egesze alatt:\nEurópa Nap – március 28. péntek\n- Európa Fórum – Téma: EU Zöld Megállapodás -\n- EPAS (Európa) Bajnokság (12 órás foci) - minden csoport\n\nEurópai Filmklub – Európa Napon, Tavaszi Fesztiválon \n\nEurópa Kvíz - szeptembertől folyamatosan \n\nTavaszi Fesztivál – április \n- Európa Filmklub\n\nBIMUN - részvétel a 0. napon, krízis bizottság \n\nZöld Program – szeptembertől folyamatosan - Zöld Bizottság",
+      "Az Epas club feladata, hogy felkeltse a diákok érdeklődését az európai unióval kapcsolatban. Havonta frissülő Európa pont, és quiz a büfénél várja a diákokat, ahol sok érdekességet tudhatnak meg adott országokról. Ezen felül nagyon sok program megszervezésében központi szerepünk van. Kezdve az európa-napi fórum, és 12-órás foci-val, a tavaszi fesztivál, eötvös napok, akár még a bimunon is megtalálhatóak vagyunk. \n\nRészletes programfüzet a közeljövőben érkezik…",
     links: [
       {
         title: "EPAS Instagram",

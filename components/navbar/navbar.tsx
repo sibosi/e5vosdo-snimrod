@@ -118,7 +118,7 @@ const NavbarForDesktop = ({
       position="sticky"
       className={"top-0 " + className}
     >
-      <NavbarContent className="fixed basis-full" justify="start">
+      <NavbarContent className="fixed basis-full max-md:hidden" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
           {!selfUser?.permissions.includes("user") ? (
             <NextLink
@@ -146,7 +146,9 @@ const NavbarForDesktop = ({
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
-                  linkStyles({ color: currentPath === item.href ? "primary" : "foreground" }),
+                  linkStyles({
+                    color: currentPath === item.href ? "primary" : "foreground",
+                  }),
                   "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
                 )}
                 href={item.href}

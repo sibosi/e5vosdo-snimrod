@@ -106,7 +106,7 @@ export default async function MainLayout({
                 </div>
               </MaintenanceGate>
             </main>
-            <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3">
+            <footer className="flex w-full items-center justify-center bg-selfprimary-bg py-3 max-lg:pb-10">
               <Link
                 isExternal
                 className="flex items-center gap-1 pb-14 text-current"

@@ -23,39 +23,38 @@ interface Group {
 }
 
 export const clubsOrder: string[] = [
-  "Közéleti vitaszakkör", // TODO: Varga Sándor
+  "Közéleti vitakör",
   "Horgolás és relax",
-  "MediGenX Egészségügyi Szakkör", // TODO: Morvai Gergely
-  "E5vös StudenTalk",
-  "FLC EJG",
-  "Filmklub",
   "Eötvös Diák + Kreatív író műhely",
-  "EPAS", // TODO: Boti még változat rajta
-
-  "Zöld Bizottság",
-  "Eötvös Média",
-
-  "Elsősegélynyújtó Diákkör",
+  "MediGenX Egészségügyi Szakkör",
 
   "Röplabda csapat",
-  "Fiú Kosárlabdacsapat",
-  "Lány Kosárlabdacsapat",
+  "Lány Kosár",
+  "Fiú Kosár",
   "Eötvös Vakondok",
-  "Kéktúra szakkör",
-  "TársasTár",
-  "Debate Club",
 
+  "E5vös StudenTalk",
+  "Zöld Bizottság",
+  "Elsősegélynyújtó Diákkör",
+  "Eötvös Kéktúra",
+
+  "Debate Club",
+  "TársasTár",
   "Színjátszó",
   "Nekünk X",
 
+  "Filmklub",
+  "FLC EJG",
+  "MUN-Club",
+  "EPAS",
+
+  "Eötvös Média",
+  "Sulirádió",
   "Technikusi Szervezet",
   "Eötvös Alkotó Műhely",
 
-  "MUN-Club",
-  "BIMUN",
-
-  "Sulirádió",
   "E5vös Sakk",
+  "BIMUN",
 ];
 
 export const clubsConfig: Group[] = [
@@ -85,14 +84,14 @@ export const clubsConfig: Group[] = [
     new: true,
   },
   {
-    title: "Lány Kosárlabdacsapat",
+    title: "Lány Kosár",
     details:
       "Szeretettel várunk minden érdeklődőt, a kosárlabdát valaha játszó, kedvelő lányokat. Jó, ha van már tapasztalatod a játékban, de ha kezdőként jössz, a rendszeres részvétellel gyorsan fejlődhetsz. Együtt felkészülünk és résztveszünk a budapesti amatőr és profi meccseken is. Heti 2x jó hangulatú edzéseken várunk, ahol gyakorolhatod a labdakezelést, dobásokat és a csapatjátékot!",
     description: "",
     image: "/groups/lanykosar.jpg",
     links: [
       {
-        title: "Eötvös Kosárlabdacsapat Instagram",
+        title: "Eötvös Kosár Instagram",
         value: "https://www.instagram.com/ejg.lanykosar/",
         type: "instagram",
       },
@@ -100,7 +99,6 @@ export const clubsConfig: Group[] = [
     new: true,
   },
   {
-    // TODO: Morvai Gergely
     title: "Röplabda csapat",
     details: "Röplabda diákolimpiára felkészülés, a sport népszerűsítése.",
     description: "",
@@ -135,13 +133,23 @@ export const clubsConfig: Group[] = [
     new: true,
   },
   {
-    // TODO: Varga Sándor
-    title: "Közéleti vitaszakkör",
+    title: "Közéleti vitakör",
     details:
-      "Hétről-hétre egy-egy érdekes, közösen kiválasztott témát dolgozunk fel, amelyben megszerzett tudásod később sikereseb használhatod más vitafórumokon is.(a szakkör magyar nyelven zajlik, így a nylevi akadályoktól sem kell tartani) ",
+      "Ez a szakkör egy 7., 8.-os diákoknak szóló szakkör, ahol hetente egy alkalommal megismerkedünk egy közösen kiválasztott, aktuális közéleti témával, majd magyar nyelven, vita formájában feldolgozzuk. Ezzel szeretnénk kedvet csinálni és előismereteket nyújtani a kicsik számára, hogy a későbbiekben a debate, epas és mun club-ban is eredményesen tudják felhasználni tudásukat.",
     description: "",
-    image: "",
-    links: [],
+    image: "/groups/kozeleti_vitakor.png",
+    links: [
+      {
+        title: "Szamosközi Dóra email",
+        value: "szamoskozi.dora@e5vos.hu",
+        type: "email",
+      },
+      {
+        title: "Fazekas Orsolya email",
+        value: "fazakas.orsolya@e5vos.hu",
+        type: "email",
+      },
+    ],
     new: true,
   },
   {
@@ -236,7 +244,7 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "Kéktúraszakkör",
+    title: "Eötvös Kéktúra",
     details:
       "Szakkörünkben lehetőséged nyílik barátaiddal közösen végigjárni a kéktúra legszebb szakaszait, havonta egy, nem túl megterhelő, néha kétnapos túra keretében.",
     image: "/groups/kektura.jpg",
@@ -255,19 +263,19 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "Fiú Kosárlabdacsapat",
+    title: "Fiú Kosár",
     details:
       "Milyen embereknek ajánljátok klubotokat? \nAkik kosaraznak/szeretnek kosarazni v akik nagyon magasak",
     image: "/groups/kosar.jpeg",
     description: "",
     links: [
       {
-        title: "Eötvös Kosárlabdacsapat Instagram",
+        title: "Eötvös Kosár Instagram",
         value: "https://www.instagram.com/e5vosnegerek/",
         type: "instagram",
       },
       {
-        title: "Eötvös Kosárlabdacsapat Facebook",
+        title: "Eötvös Kosár Facebook",
         value: "https://www.facebook.com/eotvosbasketball/",
         type: "facebook",
       },
@@ -544,7 +552,6 @@ export const clubsConfig: Group[] = [
         type: "instagram",
       },
     ],
-    new: true,
   },
   {
     title: "FLC EJG",

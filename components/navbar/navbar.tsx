@@ -6,10 +6,7 @@ import {
   NavbarItem,
   Chip,
 } from "@heroui/react";
-import { link as linkStyles } from "@heroui/theme";
-import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
-import clsx from "clsx";
 import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
@@ -110,11 +107,9 @@ const NavbarForDesktop = ({
   className?: string;
   isActiveHeadSpace: boolean;
 }) => {
-  const currentPath = usePathname();
-
   return (
     <NextUINavbar
-      maxWidth="xl"
+      maxWidth="full"
       position="sticky"
       className={"top-0 " + className}
     >
@@ -137,23 +132,6 @@ const NavbarForDesktop = ({
 
           <GetApp size={isActiveHeadSpace ? "small" : "medium"} />
         </NavbarBrand>
-        <ul className="ml-2 flex justify-start">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <NextLink
-                className={clsx(
-                  linkStyles({
-                    color: currentPath === item.href ? "primary" : "foreground",
-                  }),
-                  "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
-                )}
-                href={item.href}
-              >
-                {item.label}
-              </NextLink>
-            </NavbarItem>
-          ))}
-        </ul>
       </NavbarContent>
 
       <NavbarContent className="fixed right-0 gap-2 pr-6" justify="end">
@@ -177,9 +155,7 @@ export const Navbar = ({
 
   const [isMobile, setIsMobile] = useState(true);
   useEffect(() => {
-    const handleResize = (): void => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
 
     window.addEventListener("resize", handleResize);
     handleResize();

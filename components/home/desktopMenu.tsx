@@ -7,7 +7,7 @@ const DesktopMenu = () => {
   const pathname = usePathname();
 
   return (
-    <div className="hidden min-w-64 md:block">
+    <div className="hidden min-w-64 lg:block">
       <aside className="fixed flex h-full w-64 flex-col gap-1 transition-all duration-300 ease-in-out">
         {siteConfig.navItems.map((item) => (
           <a

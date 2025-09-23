@@ -7,6 +7,7 @@ import { LogoutButton, LogoutIcon } from "@/components/LogOut";
 import { PossibleUserType } from "@/db/dbreq";
 import dynamic from "next/dynamic";
 import { Notification } from "./profilebox/notification";
+import { redirect } from "next/navigation";
 
 const ThemeSwitch = dynamic(() => import("@/components/theme-switch"), {
   ssr: false,
@@ -98,13 +99,13 @@ export const ProfileIcon = ({ selfUser }: { selfUser: PossibleUserType }) => {
             className="flex w-full items-center gap-2 rounded-lg p-2 hover:bg-foreground-200"
             text="Téma váltása"
           />
-          <a
-            href="/me"
-            className="flex items-center gap-2 rounded-lg p-2 hover:bg-foreground-200"
+          <button
+            onClick={() => redirect("/me")}
+            className="flex w-full items-center gap-2 rounded-lg p-2 hover:bg-foreground-200"
           >
             <Account size={24} />
             <span>Profilom</span>
-          </a>
+          </button>
           <LogoutIcon
             text="Kijelentkezés"
             size={24}

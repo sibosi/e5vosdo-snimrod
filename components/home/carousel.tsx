@@ -531,6 +531,7 @@ export default function Carousel({ data }: Readonly<{ data?: EventType[] }>) {
 
   useEffect(() => {
     const handleResize = () => setWindowInnerWidth(window.innerWidth);
+    handleResize();
 
     window.addEventListener("resize", handleResize);
     return () => {

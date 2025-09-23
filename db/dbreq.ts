@@ -112,7 +112,6 @@ export async function getAuth(
   email?: string,
   idToken?: string,
 ): Promise<User | null | undefined> {
-  // 1) If mobile passed an ID token, verify it and extract payload
   let verifiedEmail: string | undefined = email;
   let verifiedName: string | undefined;
   let verifiedImage: string | undefined;
@@ -146,11 +145,9 @@ export async function getAuth(
   }
 
   try {
-    // 2) If we still have no email, try NextAuth cookie/JWT session
     if (!verifiedEmail) {
       const session = await auth();
       if (!session?.user?.email) {
-        // not authenticated by either method
         return;
       }
       verifiedEmail = session.user.email;
@@ -160,12 +157,10 @@ export async function getAuth(
 
     console.log("Getting data...");
 
-    // 3) Query your users table
     const rows = (await dbreq(
       `SELECT * FROM \`users\` WHERE email = '${verifiedEmail}'`,
     )) as User[];
 
-    // 4) If not found, insert (using whichever info we have)
     if (rows.length === 0) {
       console.log("No user");
       // use updateUser (or your own upsert) to write name/email/image
@@ -182,8 +177,6 @@ export async function getAuth(
       return inserted[0] || null;
     }
 
-    // 5) Return the existing user
-    console.log(JSON.stringify(rows));
     return rows[0];
   } catch (e) {
     console.error("Error in getAuth:", e);

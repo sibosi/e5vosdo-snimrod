@@ -113,7 +113,7 @@ const NavbarForDesktop = ({
       position="sticky"
       className={"top-0 " + className}
     >
-      <NavbarContent className="fixed basis-full" justify="start">
+      <NavbarContent className="fixed basis-full max-md:hidden" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
           <NextLink className="flex items-center justify-start gap-1" href="/">
             <Logo />

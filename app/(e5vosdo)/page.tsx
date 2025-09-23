@@ -15,6 +15,7 @@ import Carousel from "@/components/home/carousel";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert } from "@/components/home/alert";
+import { Chip } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 
 const PageHeadContent = async ({
@@ -60,19 +61,14 @@ export default async function Home() {
           dropdownable={true}
           defaultStatus="closed"
           savable={true}
+          chip={
+            <Chip color="secondary" size="sm">
+              Nem hivatalos
+            </Chip>
+          }
         >
           <div className="max-w-md">
-            <Alert
-              icon={false}
-              className="border-selfsecondary-300 bg-selfsecondary-100"
-            >
-              Az alább látható órarend nem hivatalos és nem feltétlenül
-              aktuális. A hivatalos ideiglenes órarend később, PDF-ben kerül
-              kiküldésre.
-            </Alert>
-            {selfUser?.permissions.includes("user") && (
-              <HeadTimetable selfUser={selfUser} />
-            )}
+            <HeadTimetable selfUser={selfUser} />
           </div>
         </Section>
       )}

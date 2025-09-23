@@ -197,7 +197,7 @@ function PhoneCarousel({ data }: Readonly<{ data: EventType[] }>) {
                   data[index].description?.startsWith("http") ||
                   data[index].description?.startsWith("/")
                 )
-                  window.location.href = data[index].description;
+                  window.location.href = data[index].description.split("\n")[0];
                 else setClicked(clicked === index ? null : index);
               }}
               width={clicked === index ? "95%" : undefined}

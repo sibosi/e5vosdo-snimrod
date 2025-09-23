@@ -108,6 +108,8 @@ export default async function Home() {
         <Footer />
       </Section>
 
+      <p className="text-center italic">„Bömbi a király”</p>
+
       <div className="hidden">
         {
           "Az oldal a Budapest V. Kerületi Eötvös József Gimnázium (más néven EJG) Diákönkormányzatának (más néven DÖ) tájékoztató oldala."

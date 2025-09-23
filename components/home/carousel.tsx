@@ -388,7 +388,7 @@ function DesktopCarousel({ data }: Readonly<{ data: EventType[] }>) {
 
   if (data.length === 0) {
     return (
-      <div className="col-span-2 flex h-80 items-center justify-center rounded-2xl bg-selfprimary-800">
+      <div className="col-span-2 flex h-80 items-center justify-center rounded-2xl bg-selfprimary-bg">
         <div className="text-center text-white">
           {isImagesLoading ? (
             <>
@@ -404,7 +404,7 @@ function DesktopCarousel({ data }: Readonly<{ data: EventType[] }>) {
   }
 
   return (
-    <div className="carousel relative grid h-80 grid-cols-2 overflow-hidden rounded-2xl bg-selfprimary-800">
+    <div className="carousel relative grid h-80 grid-cols-2 overflow-hidden rounded-2xl bg-selfprimary-50">
       <div className="relative h-80 w-full">
         <img
           loading="eager"
@@ -490,7 +490,7 @@ function DesktopCarousel({ data }: Readonly<{ data: EventType[] }>) {
         </p>
       </div>
       {!imageLoaded && (
-        <div className="col-span-2 flex h-80 items-center justify-center bg-selfprimary-800">
+        <div className="col-span-2 flex h-80 items-center justify-center bg-selfprimary-50">
           <span className="text-white">Betöltés...</span>
         </div>
       )}
@@ -523,12 +523,20 @@ export default function Carousel({ data }: Readonly<{ data?: EventType[] }>) {
   const [windowInnerWidth, setWindowInnerWidth] = useState<number>(1024);
 
   useEffect(() => {
-    setWindowInnerWidth(window.innerWidth);
     if (!data)
       fetchCarouselData().then((fetchedData) => {
         setCarouselData(fetchedData);
       });
   }, [data]);
+
+  useEffect(() => {
+    const handleResize = () => setWindowInnerWidth(window.innerWidth);
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const uploadContentEvent: EventType = {
     id: 0,
@@ -542,7 +550,6 @@ export default function Carousel({ data }: Readonly<{ data?: EventType[] }>) {
     tags: [],
   };
 
-  if (typeof window === "undefined") return <></>;
   if (windowInnerWidth < 768)
     return <PhoneCarousel data={filterCarouselData(carouselData)} />;
   return (

@@ -1,6 +1,5 @@
 import { siteConfig } from "@/config/site";
 import React from "react";
-import { GithubIcon, InstagramIcon } from "./icons";
 import E5vosST from "@/public/groups/e5vosst.svg";
 import E5Media from "@/public/groups/media.jpg";
 import Image from "next/image";

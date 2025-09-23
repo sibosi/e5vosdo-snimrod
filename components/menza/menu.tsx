@@ -50,24 +50,24 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
   const color = menu === "A" ? "selfprimary" : "selfsecondary";
   return (
     <div
-      className={`flex flex-wrap items-center justify-around gap-2 rounded-xl bg-${color}-100 p-4 text-center`}
+      className={`flex flex-wrap items-center justify-around gap-2 rounded-xl md:w-full bg-${color}-100 p-4 text-center`}
       key={menu}
     >
-      <div className="mx-2 grid h-10 w-10 grid-cols-1">
+      <div className="mx-2 grid h-10 w-10 grid-cols-1 md:h-20">
         <div
-          className={`m-auto max-h-fit max-w-fit text-4xl font-bold text-${color}-700`}
+          className={`m-auto max-h-fit max-w-fit text-4xl font-bold md:text-5xl text-${color}-700`}
         >
           {menu}
         </div>
       </div>
-      <div>
+      <div className="">
         {items.length !== 0 ? (
           items.map((fogas: string, rowIndex: number) =>
             fogas ? (
               <div
                 key={`fogas-${rowIndex}`}
                 className={
-                  "info p-1 " +
+                  "info p-1 md:text-lg " +
                   (rowIndex !== 0 ? `border-t-1 border-${color}-400` : "")
                 }
               >
@@ -135,7 +135,7 @@ export const Menu = ({
 
   return (
     <div className="text-foreground">
-      <div className="flex w-fit gap-2 md:max-w-max">
+      <div className="flex gap-2 md:max-w-4xl">
         {realMenu !== "B" && (
           <MenuCard menu="A" items={tableData[formatDate(date)]?.A ?? []} />
         )}

@@ -16,14 +16,15 @@ import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert } from "@/components/home/alert";
 import { Chip } from "@heroui/react";
+import { getCarouselEvents } from "@/db/event";
 
-const PageHeadContent = ({
+const PageHeadContent = async ({
   selfUser,
 }: {
   selfUser: UserType | null | undefined;
 }) => {
   if (selfUser?.permissions.includes("user"))
-    return <Carousel data={[]} selfUser={selfUser} />;
+    return <Carousel data={await getCarouselEvents()} />;
 
   if (selfUser === null)
     return (
@@ -102,6 +103,8 @@ export default async function Home() {
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />
       </Section>
+
+      <p className="text-center italic">„Bömbi a király”</p>
 
       <div className="hidden">
         {

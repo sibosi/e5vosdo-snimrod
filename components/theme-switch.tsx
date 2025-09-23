@@ -10,11 +10,12 @@ import {
 import { reloadColors } from "@/app/runClientSide";
 
 interface ThemeSwitchProps {
+  text?: string;
   className?: string;
   classNames?: SwitchProps["classNames"];
 }
 
-const ThemeSwitch: FC<ThemeSwitchProps> = () => {
+const ThemeSwitch: FC<ThemeSwitchProps> = ({ text, className, classNames }) => {
   const [theme, setTheme] = useState<"light" | "dark" | "system">(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       const storedValue = localStorage.getItem("theme");
@@ -39,11 +40,12 @@ const ThemeSwitch: FC<ThemeSwitchProps> = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="fill-foreground-500 transition-all duration-300 ease-in-out hover:fill-foreground-600"
+      className={`fill-foreground-500 transition-all duration-300 ease-in-out hover:fill-foreground-600 ${className}`}
     >
       {theme === "dark" && <MoonFilledIcon size={22} />}
       {theme === "light" && <SunFilledIcon size={22} />}{" "}
       {theme !== "dark" && theme !== "light" && <SystemThemeIcon size={22} />}
+      <span>{text}</span>
     </button>
   );
 };

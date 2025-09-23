@@ -6,10 +6,7 @@ import {
   NavbarItem,
   Chip,
 } from "@heroui/react";
-import { link as linkStyles } from "@heroui/theme";
-import { siteConfig } from "@/config/site";
 import NextLink from "next/link";
-import clsx from "clsx";
 import { Logo } from "@/components/icons";
 import { ProfileIcon } from "@/components/navbar/profileicon";
 import GetApp from "../PWA/getApp";
@@ -110,25 +107,19 @@ const NavbarForDesktop = ({
   className?: string;
   isActiveHeadSpace: boolean;
 }) => {
-  const currentPath = usePathname();
-
   return (
     <NextUINavbar
-      maxWidth="xl"
+      maxWidth="full"
       position="sticky"
       className={"top-0 " + className}
     >
       <NavbarContent className="fixed basis-full max-md:hidden" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">
-          {!selfUser?.permissions.includes("user") ? (
-            <NextLink
-              className="flex items-center justify-start gap-1"
-              href="/"
-            >
-              <Logo />
-              <p className="block- hidden p-2 font-bold text-foreground">E5</p>
-            </NextLink>
-          ) : (
+          <NextLink className="flex items-center justify-start gap-1" href="/">
+            <Logo />
+            <p className="block- hidden p-2 font-bold text-foreground">E5</p>
+          </NextLink>
+          {selfUser?.permissions.includes("user") && (
             <>
               <HelloMessage selfUser={selfUser} size="sm" padding={false} />
               {selfUser?.permissions.includes("tester") && (
@@ -141,23 +132,6 @@ const NavbarForDesktop = ({
 
           <GetApp size={isActiveHeadSpace ? "small" : "medium"} />
         </NavbarBrand>
-        <ul className="ml-2 flex justify-start gap-4">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <NextLink
-                className={clsx(
-                  linkStyles({
-                    color: currentPath === item.href ? "primary" : "foreground",
-                  }),
-                  "data-[active=true]:font-medium data-[active=true]:text-selfprimary",
-                )}
-                href={item.href}
-              >
-                {item.label}
-              </NextLink>
-            </NavbarItem>
-          ))}
-        </ul>
       </NavbarContent>
 
       <NavbarContent className="fixed right-0 gap-2 pr-6" justify="end">
@@ -181,9 +155,7 @@ export const Navbar = ({
 
   const [isMobile, setIsMobile] = useState(true);
   useEffect(() => {
-    const handleResize = (): void => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
 
     window.addEventListener("resize", handleResize);
     handleResize();

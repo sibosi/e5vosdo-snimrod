@@ -10,6 +10,7 @@ import {
   ModalFooter,
   Button,
 } from "@heroui/react";
+import { LikeIcon } from "./icons";
 
 type CardProps = {
   title: string;
@@ -71,7 +72,7 @@ export const PopupButton: React.FC<CardProps> = ({
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onPress={onClose}>
-                Ok
+                <LikeIcon />
               </Button>
             </ModalFooter>
           </>

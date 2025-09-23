@@ -34,12 +34,16 @@ export const siteConfig = {
       href: "/clubs",
     },
     {
+      label: "Profilom",
+      href: "/me",
+    },
+    {
       label: "Média",
       href: "/media",
     },
     {
-      label: "Profilom",
-      href: "/me",
+      label: "E5 Podcast",
+      href: "/est",
     },
   ],
   //navMenuItems: [],

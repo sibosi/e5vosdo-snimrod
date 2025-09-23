@@ -143,7 +143,7 @@ export const PageNav = () => {
   }, [pathname]);
 
   return (
-    <div className="myglass fixed bottom-6 z-50 w-auto items-center rounded-full p-2 shadow-xl md:hidden">
+    <div className="myglass fixed bottom-6 z-50 w-auto items-center rounded-full p-2 shadow-xl lg:hidden">
       <div className="relative mx-auto flex h-full max-w-lg items-center justify-around gap-3.5 font-medium">
         <motion.div
           className="absolute bottom-0 top-0 rounded-full bg-selfprimary-100"

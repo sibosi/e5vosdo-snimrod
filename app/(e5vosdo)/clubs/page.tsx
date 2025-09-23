@@ -20,11 +20,6 @@ export default function ClubsPage() {
         Klubok és szakkörök
       </h1>
 
-      <h2 className="pb-8 text-center text-3xl font-semibold text-foreground lg:text-4xl">
-        Találkozz szeptember 5-én a KlubExpo-n a legújabb szakkör és
-        klubkínálattal!
-      </h2>
-
       <Alert className="border-selfprimary-300 bg-selfprimary-100">
         A kártyákra kattintva további információkat találsz a klubokról.
       </Alert>

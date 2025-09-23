@@ -226,7 +226,8 @@ export default function Carousel({
                   realData[index].description?.startsWith("http") ||
                   realData[index].description?.startsWith("/")
                 )
-                  window.location.href = realData[index].description;
+                  window.location.href =
+                    realData[index].description.split("\n")[0];
                 else setClicked(clicked === index ? null : index);
               }}
               width={clicked === index ? "95%" : undefined}

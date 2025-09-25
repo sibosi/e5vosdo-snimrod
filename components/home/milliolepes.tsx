@@ -5,7 +5,6 @@ import {
   SchoolData,
 } from "@/app/api/milliolepes/route";
 import { useEffect, useState } from "react";
-import { Alert } from "./alert";
 import { Link } from "@heroui/react";
 
 const SchoolCard = ({
@@ -15,12 +14,13 @@ const SchoolCard = ({
   school: SchoolData;
   color?: "foreground" | "selfprimary" | "selfsecondary";
 }) => {
+  const filterColor = color == "foreground" ? "" : color;
   return (
     <div
       className={`my-2 flex items-stretch overflow-hidden rounded-lg bg-${color}-100`}
     >
       <div
-        className={`flex w-16 min-w-16 items-center justify-center bg-${color}-800`}
+        className={`flex w-16 min-w-16 items-center justify-center bg-${filterColor}-800`}
       >
         <h3
           className={`${color == "foreground" ? "text-xl" : "text-2xl"} font-bold text-${color}-bg`}
@@ -43,6 +43,8 @@ const SchoolCard = ({
         </div>
 
         <h6 className="line-clamp-1 text-xs">{school.name}</h6>
+        <span className="hidden bg-selfprimary-800" />
+        <span className="hidden bg-selfsecondary-800" />
       </div>
     </div>
   );

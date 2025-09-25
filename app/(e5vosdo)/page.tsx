@@ -56,10 +56,6 @@ export default async function Home() {
     <div>
       <PageHeadContent selfUser={selfUser} />
 
-      <Section title="Millió lépés" dropdownable={true}>
-        <MillioLepes />
-      </Section>
-
       {gate(selfUser, "user", "boolean") && (
         <Section
           title="Órarend"
@@ -77,6 +73,10 @@ export default async function Home() {
           </div>
         </Section>
       )}
+
+      <Section title="Millió lépés" dropdownable={true}>
+        <MillioLepes />
+      </Section>
 
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section

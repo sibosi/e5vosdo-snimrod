@@ -135,6 +135,9 @@ export const Section = ({
 
   if (isCard) className += " rounded-3xl bg-selfprimary-50 p-6";
 
+  if (!titleClassName?.includes("text-") && !isOpen)
+    titleClassName += " text-xl";
+
   return (
     <div
       className={
@@ -145,7 +148,7 @@ export const Section = ({
     >
       <div className="flex items-center justify-between">
         <button
-          className="flex max-w-fit py-1 text-2xl font-medium"
+          className={`flex max-w-fit py-1 font-medium ${isOpen ? "" : "opacity-70"}`}
           onClick={toggleDropdown}
         >
           {dropdownable && (

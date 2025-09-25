@@ -17,6 +17,7 @@ import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert } from "@/components/home/alert";
 import { Chip } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
+import MillioLepes from "@/components/home/milliolepes";
 
 const PageHeadContent = async ({
   selfUser,
@@ -54,6 +55,10 @@ export default async function Home() {
   return (
     <div>
       <PageHeadContent selfUser={selfUser} />
+
+      <Section title="Millió lépés" dropdownable={true}>
+        <MillioLepes />
+      </Section>
 
       {gate(selfUser, "user", "boolean") && (
         <Section

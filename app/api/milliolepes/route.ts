@@ -2,7 +2,7 @@ import { getAuth } from "@/db/dbreq";
 import { NextResponse } from "next/server";
 
 const ISKOLA = "Budapest V. Kerületi Eötvös József Gimnázium";
-const URL = "https://backend.milliolepes.hu/api/v2/comp/7/board/fullorg"; // gives a JSON with all the data
+const URL = "https://backend.milliolepes.hu/api/v2/comp/20/board/fullorg"; // gives a JSON with all the data
 
 export async function POST() {
   const selfUser = await getAuth();

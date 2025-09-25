@@ -10,30 +10,39 @@ import { Link } from "@heroui/react";
 
 const SchoolCard = ({
   school,
-  className,
+  color = "foreground",
 }: {
   school: SchoolData;
-  className?: string;
+  color?: "foreground" | "selfprimary" | "selfsecondary";
 }) => {
   return (
     <div
-      className={
-        "my-2 flex gap-2 rounded-lg border-0 text-xl font-bold " + className
-      }
+      className={`my-2 flex items-stretch overflow-hidden rounded-lg bg-${color}-100`}
     >
-      <div className="my-auto p-2">
-        <h3>#{school.rank}</h3>
+      <div
+        className={`flex w-16 min-w-16 items-center justify-center bg-${color}-800`}
+      >
+        <h3
+          className={`${color == "foreground" ? "text-xl" : "text-2xl"} font-bold text-${color}-bg`}
+        >
+          #{school.rank}
+        </h3>
       </div>
-      <div>
-        <h4 className="my-1">
-          {school.points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} lépés
-        </h4>
-        <div className="my-1 text-base">
-          <h6 className="">
-            {school.name}{" "}
-            <span className="">&middot; {school.headcount} fő</span>
-          </h6>
+      <div className="w-full p-2">
+        <div className="flex items-center justify-between">
+          <p className="text-md font-medium">
+            {school.points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}{" "}
+            lépés
+          </p>
+
+          <span
+            className={`rounded-lg bg-${color}-200 border-2 border-${color}-400 px-1 text-xs font-bold text-${color}-800`}
+          >
+            {school.headcount} fő
+          </span>
         </div>
+
+        <h6 className="line-clamp-1 text-xs">{school.name}</h6>
       </div>
     </div>
   );
@@ -61,16 +70,8 @@ const MillioLepes = () => {
   }
 
   return (
-    <div>
+    <div className="max-w-xl">
       <div>
-        <Alert className="border-selfprimary-300 bg-selfprimary-100 text-xl font-bold">
-          <Link
-            href="https://milliolepes.hu"
-            className="mt-1 text-base font-semibold text-selfprimary-700"
-          >
-            Továbbiak a programról ➜
-          </Link>
-        </Alert>
         <div>
           <p>
             A következő iskola{" "}
@@ -95,24 +96,24 @@ const MillioLepes = () => {
           </p>
         </div>
 
-        <SchoolCard
-          school={data.betterShool}
-          className="border-foreground-300 bg-foreground-200"
-        />
-        <SchoolCard
-          school={data.school}
-          className="border-selfprimary-300 bg-selfprimary-200"
-        />
-        <SchoolCard
-          school={data.worseSchool}
-          className="border-foreground-300 bg-foreground-200"
-        />
+        <SchoolCard school={data.betterShool} />
+        <SchoolCard school={data.school} color="selfprimary" />
+        <SchoolCard school={data.worseSchool} />
       </div>
-      <p className="info text-right">
-        Frissítve: {new Date(data.timestamp).toLocaleDateString("hu-HU")}
-        {"  "}
-        {new Date(data.timestamp).toLocaleTimeString("hu-HU")}
-      </p>
+      <div className="flex justify-between">
+        <Link
+          href="https://milliolepes.hu"
+          className="text-sm text-selfprimary-700"
+        >
+          További infók ➜
+        </Link>
+
+        <p className="info">
+          Frissítve: {new Date(data.timestamp).toLocaleDateString("hu-HU")}
+          {"  "}
+          {new Date(data.timestamp).toLocaleTimeString("hu-HU")}
+        </p>
+      </div>
     </div>
   );
 };

@@ -9,7 +9,7 @@ import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { auth } from "@/auth";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
-import ServiceWorker from "@/components/PWA/serviceWorker";
+import ServiceWorker from "@/components/PWA/serviceWorkerWithPush";
 import { getAuth, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/cookie";
 import OnCSSBug from "@/components/home/oncssbug";

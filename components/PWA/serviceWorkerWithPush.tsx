@@ -10,6 +10,10 @@ async function subscribeUser() {
       console.warn("Push messaging is blocked.");
       return;
     }
+    if (Notification.permission !== "granted") {
+      console.warn("Push messaging permission not granted.");
+      return;
+    }
     try {
       // Registering service worker
       const registration = await navigator.serviceWorker.ready;

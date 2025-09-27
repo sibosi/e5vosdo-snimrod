@@ -6,6 +6,10 @@ const publicVapidKey =
 
 async function subscribeUser() {
   if ("serviceWorker" in navigator && "PushManager" in window) {
+    if (Notification.permission === "denied") {
+      console.warn("Push messaging is blocked.");
+      return;
+    }
     try {
       // Registering service worker
       const registration = await navigator.serviceWorker.ready;

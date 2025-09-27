@@ -14,6 +14,7 @@ import NotificationSettings from "./settings/NotificationSettings";
 import PersonalDataSettings from "./settings/PersonalDataSettings";
 import { UserType } from "@/db/dbreq";
 import { doLogout } from "@/actions/route";
+import AdvancedSettings from "./settings/AdvancedSettings";
 
 const Settings = ({ selfUser }: { selfUser: UserType }) => {
   const [activeSection, setActiveSection] = useState<number | null>(null);
@@ -52,6 +53,11 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
       title: "Megjelenés",
       saveAble: false,
       content: <AppearanceSettings />,
+    },
+    {
+      title: "Fejlesztői beállítások",
+      saveAble: false,
+      content: <AdvancedSettings />,
     },
   ];
 

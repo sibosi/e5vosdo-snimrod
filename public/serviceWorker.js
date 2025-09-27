@@ -27,7 +27,7 @@ self.addEventListener("push", (event) => {
     const notificationOptions = {
       body: data.body || "",
       icon: data.icon || "/favicon.ico",
-      badge: data.badge || undefined,
+      badge: data.badge || "/icons/96-transparent.png",
       data: data.data || {},
       tag: data.tag,
       renotify: !!data.renotify,

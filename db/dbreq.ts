@@ -545,10 +545,7 @@ export async function newNotificationByEmails(
         email,
         JSON.stringify({
           title: sender_email + " üzenetet küldött",
-          message: title,
           body: title,
-          icon: "favicon.ico",
-          badge: "favicon.ico",
         }),
       );
     }

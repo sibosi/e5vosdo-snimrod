@@ -10,7 +10,7 @@ const AdvancedSettings = () => {
   return (
     <div>
       <VersionTable />
-      <div className="my-2 flex gap-2">
+      <div className="my-2 flex flex-wrap gap-2">
         <VersionManager />
         <Button
           color="warning"
@@ -27,6 +27,8 @@ const AdvancedSettings = () => {
         </Button>
 
         <ManageSW />
+
+        <ReinstallServiceWorker />
       </div>
       <CacheManager />
     </div>

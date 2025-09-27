@@ -1,20 +1,52 @@
 "use strict";
 
+const VERSION = "0.0.2509.0.4";
+
+self.addEventListener("install", (event) => {
+  console.log(`Service Worker version ${VERSION} installing...`);
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
 self.addEventListener("push", (event) => {
+  console.log("Push event received:", event);
+  if (!(self.Notification && self.Notification.permission === "granted"))
+    return;
+  console.log(
+    "Push event with data:",
+    event.data ? event.data.text() : "No data",
+  );
+
   try {
-    const data = event.data ? JSON.parse(event.data.text()) : {};
+    const data = event.data ? event.data.json() : {};
+
+    const title = data.title || "Értesítés";
     const notificationOptions = {
-      ...data,
+      body: data.body || "",
       icon: data.icon || "/favicon.ico",
+      badge: data.badge || "/icons/96-transparent.png",
+      data: data.data || {},
+      tag: data.tag,
+      renotify: !!data.renotify,
+      actions: Array.isArray(data.actions) ? data.actions : undefined,
+      vibrate: Array.isArray(data.vibrate) ? data.vibrate : undefined,
+      requireInteraction: !!data.requireInteraction,
+      silent: !!data.silent,
+      timestamp: data.timestamp ? Date.now() : undefined,
+      image: data.image || undefined,
     };
-    event.waitUntil(
-      self.registration.showNotification(
-        data.title || "Notification",
-        notificationOptions,
-      ),
-    );
+
+    self.registration.showNotification(title, notificationOptions);
   } catch (error) {
-    console.error("Error handling push event:", error);
+    console.error("Push event error:", error);
+    try {
+      self.registration.showNotification("Új értesítés");
+    } catch (e) {
+      console.error("Nem sikerült fallback notit sem megjeleníteni:", e);
+    }
   }
 });
 

@@ -57,9 +57,30 @@ if not os.path.exists(JSON_PATH):
     with open(JSON_PATH, 'w', encoding='utf-8') as f:
         f.write('{}')
 
+def load_json_with_encoding(path: str):
+    """Betölti a JSON fájlt különböző kódolásokkal próbálkozva."""
+    encodings = ['utf-8', 'utf-8-sig', 'latin-1', 'cp1252']
+    
+    for encoding in encodings:
+        try:
+            with open(path, 'r', encoding=encoding) as outfile:
+                content = outfile.read()
+                data = json.loads(content)
+                print(f"Sikeresen beolvasva {encoding} kódolással: {path}")
+                return data
+        except UnicodeDecodeError:
+            continue
+        except json.JSONDecodeError as e:
+            print(f"JSON hiba {encoding} kódolással: {e}")
+            continue
+    
+    print(f"Nem sikerült beolvasni a fájlt: {path}")
+    return None
+
 def main (path : str):
-    with open(path, 'r', encoding='utf-8') as outfile:
-        nyers_menu = json.loads(outfile.read())
+    nyers_menu = load_json_with_encoding(path)
+    if nyers_menu is None:
+        return
 
     havi_menu = {}
 
@@ -107,14 +128,14 @@ def main (path : str):
         
     mindenkori_menu = havi_menu
 
-    with open(JSON_PATH, 'r') as outfile:
+    with open(JSON_PATH, 'r', encoding='utf-8') as outfile:
         data = outfile.read()
         if data == '': data = '{}'
         data = json.loads(data)
         mindenkori_menu.update(data)
 
     with open(JSON_PATH, 'w', encoding='utf-8') as outfile:
-        json.dump(mindenkori_menu, outfile)
+        json.dump(mindenkori_menu, outfile, ensure_ascii=False, indent=2)
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))

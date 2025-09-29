@@ -8,15 +8,16 @@ interface DriveFile {
   mimeType: string;
 }
 
-// Component to handle authenticated image loading
 const AuthenticatedImage = ({
   fileId,
   fileName,
   authInstance,
+  TARGET_PX_SIZE,
 }: {
   fileId: string;
   fileName: string;
   authInstance: any;
+  TARGET_PX_SIZE: number;
 }) => {
   const [imageSrc, setImageSrc] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -60,7 +61,6 @@ const AuthenticatedImage = ({
 
     loadImage();
 
-    // Cleanup function to revoke object URL
     return () => {
       if (imageSrc) {
         URL.revokeObjectURL(imageSrc);
@@ -93,7 +93,9 @@ const AuthenticatedImage = ({
       <img
         src={imageSrc}
         alt={fileName}
-        className="absolute inset-0 h-full w-full rounded-lg object-cover"
+        height={TARGET_PX_SIZE}
+        width={TARGET_PX_SIZE}
+        className="absolute inset-0 rounded-lg object-cover"
       />
     </div>
   );
@@ -103,10 +105,12 @@ const PhotoGrid = ({
   NEXT_PUBLIC_MEDIA_FOLDER_ID,
   GOOGLE_CLIENT_ID,
   NEXT_PUBLIC_GOOGLE_API_KEY,
+  TARGET_PX_SIZE,
 }: {
   NEXT_PUBLIC_MEDIA_FOLDER_ID: string;
   GOOGLE_CLIENT_ID: string;
   NEXT_PUBLIC_GOOGLE_API_KEY: string;
+  TARGET_PX_SIZE: number;
 }) => {
   const [files, setFiles] = useState<DriveFile[]>([]);
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -374,6 +378,7 @@ const PhotoGrid = ({
               fileId={f.id}
               fileName={f.name}
               authInstance={authInstance}
+              TARGET_PX_SIZE={TARGET_PX_SIZE}
             />
           ))}
         </div>

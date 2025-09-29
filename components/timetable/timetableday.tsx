@@ -21,12 +21,11 @@ const TimetableDay = (props: { selfUser: UserType; hideTitle?: boolean }) => {
     setSelectedDay,
     days,
     periodTimes,
-    isConfigured,
   } = useTimetable({
     studentCode,
   });
 
-  if (!isConfigured) {
+  if (!selfUser.EJG_code || !selfUser.OM5) {
     return (
       <Alert className="border-selfprimary-300 bg-selfprimary-50">
         <Link href="/me">

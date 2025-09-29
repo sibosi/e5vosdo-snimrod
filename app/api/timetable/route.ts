@@ -33,15 +33,16 @@ export interface TimetableWeek {
   Péntek: TimetableDay;
 }
 
-async function getTimetable(
-  studentCode: string,
-  password: string,
-): Promise<TimetableWeek | null> {
+async function getTimetable(): Promise<TimetableWeek | null> {
   const selfUser = await getAuth();
   if (!selfUser) throw new Error("User not authenticated");
   gate(selfUser, "user");
 
-  const passwordOM = password + studentCode.slice(-3);
+  const passwordOM = selfUser.OM5;
+  const studentCode = selfUser.EJG_code;
+
+  if (!studentCode || !passwordOM)
+    throw new Error("Missing required headers: EJG_code or password");
 
   const response = await fetch(
     "https://suli.ejg.hu/intranet/szulkuk/szulkuk.php",
@@ -153,26 +154,9 @@ async function getTimetable(
   return extendedTimetable;
 }
 
-export async function GET(request: Request) {
-  const studentCode = request.headers.get("ejg-code");
-  const password = request.headers.get("password");
-
-  if (!studentCode || !password) {
-    return new Response(
-      JSON.stringify({
-        error: "Missing required headers: EJG_code or password",
-      }),
-      {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-  }
-
+export async function GET() {
   try {
-    const timetable = await getTimetable(studentCode, password);
+    const timetable = await getTimetable();
 
     if (!timetable) {
       return new Response(

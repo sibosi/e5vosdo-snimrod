@@ -8,35 +8,18 @@ import { UserType } from "@/db/dbreq";
 import { TimetableLesson } from "@/app/api/timetable/route";
 
 const HeadContent = ({ selfUser }: { selfUser: UserType | undefined }) => {
-  const [studentCode, setStudentCode] = useState<string | undefined>(undefined);
-  const [password, setPassword] = useState<string | undefined>(undefined);
-
   const {
     nextEvent,
     isLoading: eventLoading,
     isError: eventError,
   } = useEvents();
 
-  useEffect(() => {
-    const code = selfUser?.EJG_code;
-    const pwd = localStorage.getItem("78OM");
-
-    setStudentCode(code ?? undefined);
-    setPassword(pwd ?? undefined);
-
-    if (!code) console.log("EJG_code is missing from localStorage");
-    if (!pwd) console.log("78OM password is missing from localStorage");
-  }, []);
-
   const {
     timetable,
-    isConfigured,
     isLoading: timetableLoading,
     isError: timetableError,
     periodTimes,
-  } = useTimetable({
-    studentCode: studentCode,
-  });
+  } = useTimetable();
 
   type ExtendedLessonType = TimetableLesson & {
     period: number;
@@ -147,18 +130,18 @@ const HeadContent = ({ selfUser }: { selfUser: UserType | undefined }) => {
                 Hiba az órarend betöltésekor.
               </p>
             );
-          if (!isConfigured)
+          if (!selfUser?.EJG_code || !selfUser?.OM5)
             return (
               <Link href="/me" className="block">
                 <p className="text-sm font-medium text-selfprimary-700">
                   Hiányos adatok
                 </p>
                 <p className="text-xs text-selfprimary-600">
-                  {!studentCode && !password
+                  {!selfUser?.EJG_code && !selfUser?.OM5
                     ? "EJG kód és jelszó hiányzik"
-                    : !studentCode
+                    : !selfUser?.EJG_code
                       ? "EJG kód hiányzik"
-                      : !password
+                      : !selfUser?.OM5
                         ? "Jelszó hiányzik"
                         : "Adatok ellenőrzése szükséges"}
                 </p>

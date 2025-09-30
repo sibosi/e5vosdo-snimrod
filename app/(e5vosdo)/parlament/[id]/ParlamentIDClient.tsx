@@ -143,6 +143,31 @@ const ParlamentIDClient = ({
     }
   }
 
+  async function exportToPDF() {
+    try {
+      const response = await fetch(`/api/parlament/export/${parlamentId}`, {
+        method: "GET",
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `parlament_${parlamentId}_resztvevok.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        alert("Hiba a PDF exportálása közben");
+      }
+    } catch (error) {
+      console.error("Error exporting to PDF:", error);
+      alert("Hiba a PDF exportálása közben");
+    }
+  }
+
   return (
     <Tray title={initialParlament.title} colorVariant="dark">
       <p>Időpont: {initialParlament.date}</p>
@@ -161,6 +186,10 @@ const ParlamentIDClient = ({
           onPress={() => setIsEditing(!isEditing)}
         >
           {isEditing ? "Szerkesztés befejezése" : "Szerkesztés indítása"}
+        </Button>
+
+        <Button className="mt-2" color="primary" onPress={exportToPDF}>
+          PDF Export
         </Button>
 
         <Button

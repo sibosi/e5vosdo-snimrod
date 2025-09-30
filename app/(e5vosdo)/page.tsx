@@ -78,7 +78,7 @@ export default async function Home() {
       <Section
         title="ZVN események"
         dropdownable={true}
-        defaultStatus="closed"
+        defaultStatus="opened"
         savable={false}
         chip={
           <Chip color="secondary" size="sm">

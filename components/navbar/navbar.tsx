@@ -33,8 +33,9 @@ const NavbarForPhone = ({
     "/clubs": "Szakkörök",
     "/me": "Profilom",
     "/est": "E5 Podcast",
-    "/admin/page": "Admin panel",
+    "/admin/page": "Admin",
     "/media": "Média",
+    "/dev": "Admin",
   };
 
   const pathname = usePathname();

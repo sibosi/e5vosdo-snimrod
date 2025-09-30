@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import specialDaysJOSN from "./specialDays.json";
-const specialDays: SecialDayType[] = specialDaysJOSN;
+const specialDays: SpecialDayType[] = specialDaysJOSN;
 
 const breakTimes = [
   "8:00",
@@ -14,7 +14,7 @@ const breakTimes = [
   "15:20",
 ];
 
-export interface SecialDayEventType {
+export interface SpecialDayEventType {
   type: string;
   date: string;
   title: string;
@@ -37,19 +37,19 @@ export interface SpecialDayTableType {
   date: undefined;
 }
 
-export interface SecialDayType {
+export interface SpecialDayType {
   date: string;
   title: string;
   description?: string | null;
   link?: string;
   image?: string;
-  events: Array<SecialDayEventType | SpecialDayTableType>;
+  events: Array<SpecialDayEventType | SpecialDayTableType>;
 }
 
-const SecialDay = () => {
-  const [today, setToday] = React.useState(new Date());
+const SpecialDay = () => {
+  const [today, setToday] = React.useState(new Date("2025-09-30T11:00:00"));
   const [todaysSpecialDay, setTodaysSpecialDay] =
-    React.useState<SecialDayType>();
+    React.useState<SpecialDayType>();
 
   useEffect(() => {
     setTodaysSpecialDay(
@@ -204,4 +204,4 @@ const SecialDay = () => {
   );
 };
 
-export default SecialDay;
+export default SpecialDay;

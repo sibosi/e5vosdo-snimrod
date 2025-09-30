@@ -1,75 +1,63 @@
 [
   {
-    "date": "2024/10/01",
+    "date": "2025/10/01",
     "title": "Zene világnapja",
     "image": "/events/ZVN.jpeg",
     "events": [
       {
         "type": "table",
         "title": "Diákok zenélnek",
-        "headers": [
-          "Időpont",
-          "Udvar",
-          "1. emelet",
-          "2. emelet",
-          "Büfé",
-          "3. emelet"
-        ],
+        "headers": ["Időpont", "Udvar", "1. emelet", "2. emelet", "Büfé"],
         "table": [
-          ["7:45-8:15", "Kisnullos tábori dalok", null, null, null, null],
+          ["7:45-8:15", "Nullos tábori dalok", null, null, null, null],
           [
             "1.",
-            "Zuhanó hónapok",
-            "Szőke Boldizsár",
-            "Iovescu-Udvardy Mánuel",
-            "Traccs Alexander",
-            "Plattner Kata"
+            null,
+            "Kórus",
+            "Balák Borbála és Kovács Anna",
+            "Peti bá' és Freud Róbert Tanár Úr; Lunczer Lilla és Lunczer Jázmin"
           ],
           [
             "2.",
-            "Kovács Gregor",
-            "Annus Medárd",
-            "Orbán Csenge",
-            "Székely Belián, Zilahi-Sebess Sarolta, Trautsch Alexander, Trautsch Hannah",
-            "Péntek András"
+            null,
+            "Mészáros Marcell",
+            "Vadász Kristóf",
+            "Trautsch Alexander, Zilahi-Sebess Sarolta"
           ],
           [
             "3.",
-            "Pinceklubb",
-            "Izsák Simon",
-            "Bujáki Flóra, Hong Yezi",
-            "Czirók Tomi és népzene",
-            "Mészáros Marcell"
+            "Kovács Gregor",
+            null,
+            "Harangozó Gergő",
+            "Gurbai Anissza; Döbörhegyi Máté"
           ],
           [
             "4.",
-            "Nullos zenélés",
-            "Balog Levente, Ferdinandy Réka",
-            "Terényi András",
-            "Kovács Laura, Jenei Zita, Németh Zoltán, Nagy Viola",
-            "Székely Péter, Szőke Boldizsár"
+            "Kisnull",
+            "Ferdinandy Réka Katalin és Balog Levente",
+            null,
+            "Trautsch Alexander; Liu Bo Wen"
           ],
           [
             "5.",
-            "Lucien; Eisler Olga, Eisler Jana",
-            "Kórus",
-            "Rósa Letícia, Mihályffy-Kádár Emma",
-            "Pulay Johanna, Veres Rebeka, Szőke Boldizsár",
-            "Suhai Soma"
+            "Részegh Adél, Czirók Adrienn és Feke Zsolt",
+            "Terényi Andris",
+            "Suhai Soma",
+            "Dudla Natália; Gárdi Bonifác; Liu Chenyu, Breuer Barnabás János és Nemescsói Ágoston"
           ]
         ]
       },
       {
         "type": "event",
         "title": "ZVN táncház",
-        "description": "Délután 16:00-17:30-ig élőzenés táncház lesz az udvaron.",
-        "date": "2024/10/01 16:00"
+        "description": "Délután 16:00-17:00-ig élőzenés táncház lesz az udvaron.",
+        "date": "2025/10/01 16:00"
       },
       {
         "type": "event",
         "title": "ZVN esti koncert",
-        "description": "18:00-tól pedig a díszteremben várunk mindenkit az esti koncertre. Lesz süti, tea, zene és beszélgetés. Jegyeket a koncertre a büfében tudtok venni 500 Ft-ért. A két délutáni programra bátran hívhattok külsősöket is! (Részletek az emailben)",
-        "date": "2024/10/01 18:00"
+        "description": "18:00-tól pedig a díszteremben várunk mindenkit az esti koncertre. Lesz süti, tea, zene és jó hangulat. Jegyeket a koncertre a büfében tudtok venni 500 Ft-ért. A két délutáni programra bátran hívhattok külsősöket is! (Részletek az emailben)",
+        "date": "2025/10/01 18:00"
       }
     ]
   }

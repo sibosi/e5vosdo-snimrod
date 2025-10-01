@@ -18,7 +18,6 @@ import { Alert } from "@/components/home/alert";
 import { Chip } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import MillioLepes from "@/components/home/milliolepes";
-import SpecialDay from "@/components/events/specialDay";
 
 const PageHeadContent = async ({
   selfUser,
@@ -74,20 +73,6 @@ export default async function Home() {
           </div>
         </Section>
       )}
-
-      <Section
-        title="ZVN események"
-        dropdownable={true}
-        defaultStatus="opened"
-        savable={false}
-        chip={
-          <Chip color="secondary" size="sm">
-            Programok egész nap!
-          </Chip>
-        }
-      >
-        <SpecialDay />
-      </Section>
 
       <Section title="Millió lépés" dropdownable={true}>
         <MillioLepes />

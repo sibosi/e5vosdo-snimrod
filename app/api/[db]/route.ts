@@ -26,10 +26,7 @@ export const GET = async (
   request: Request,
   context: { params: Promise<Params> },
 ) => {
-  const authHeader = request.headers.get("Authorization");
-  const selfUser = authHeader
-    ? await getAuth(undefined, authHeader.replace("Bearer ", ""))
-    : await getAuth();
+  const selfUser = await getAuth();
   const requestedModule = request.headers.get("module") ?? "";
   if (Object.keys(modules).includes(requestedModule)) {
     const body = request.method === "POST" ? await request.json() : {};

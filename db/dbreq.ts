@@ -108,58 +108,20 @@ export async function getEmail() {
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-export async function getAuth(
-  email?: string,
-  idToken?: string,
-): Promise<User | null | undefined> {
-  let verifiedEmail: string | undefined = email;
-  let verifiedName: string | undefined;
-  let verifiedImage: string | undefined;
+export async function getAuth(): Promise<User | null | undefined> {
+  const session = await auth();
+  if (!session?.user?.email) return;
 
-  if (idToken) {
-    try {
-      console.log("Verifying Google ID token...");
-      const ticket = await googleClient.verifyIdToken({
-        idToken,
-        audience: [
-          process.env.GOOGLE_CLIENT_ID ?? "",
-          process.env.GOOGLE_ANDROID_CLIENT_ID ?? "",
-          process.env.GOOGLE_IOS_CLIENT_ID ?? "",
-        ],
-      });
-      console.log("Ticket received!");
-      const payload = ticket.getPayload();
-      console.log("Payload OK");
-      if (!payload?.email) {
-        console.warn("Google ID token had no email");
-        return null;
-      }
-      verifiedEmail = payload.email;
-      console.log(verifiedEmail);
-      verifiedName = payload.name || undefined;
-      verifiedImage = payload.picture || undefined;
-    } catch (err) {
-      console.error("⚠️ Invalid Google ID token:", err);
-      return null;
-    }
-  }
+  const verifiedEmail = session.user.email;
+  const verifiedName = session.user.name || undefined;
+  const verifiedImage = session.user.image || undefined;
 
   try {
-    if (!verifiedEmail) {
-      const session = await auth();
-      if (!session?.user?.email) {
-        return;
-      }
-      verifiedEmail = session.user.email;
-      verifiedName = session.user.name || undefined;
-      verifiedImage = session.user.image || undefined;
-    }
+    console.log("getAuth by email:", verifiedEmail);
 
-    console.log("Getting data...");
-
-    const rows = (await dbreq(
-      `SELECT * FROM \`users\` WHERE email = '${verifiedEmail}'`,
-    )) as User[];
+    const rows = (await dbreq(`SELECT * FROM users WHERE email = ?`, [
+      verifiedEmail,
+    ])) as User[];
 
     if (rows.length === 0) {
       console.log("No user");
@@ -170,10 +132,9 @@ export async function getAuth(
         image: verifiedImage!,
       } as User);
       // re‑query to get the full row (including any defaults, id, etc.)
-      const inserted = (await dbreq(
-        `SELECT * FROM \`users\` WHERE email = '${verifiedEmail}'`,
-      )) as User[];
-      console.log("Data received!");
+      const inserted = (await dbreq(`SELECT * FROM users WHERE email = ?`, [
+        verifiedEmail,
+      ])) as User[];
       return inserted[0] || null;
     }
 

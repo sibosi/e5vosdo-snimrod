@@ -52,7 +52,7 @@ export default async function MainLayout({
   if (session?.user)
     updateUser(session?.user as User, true).catch((e) => console.log(e));
 
-  const selfUser = await getAuth(session?.user?.email ?? undefined);
+  const selfUser = await getAuth();
 
   logLogin(session?.user?.email);
 

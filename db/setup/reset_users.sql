@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     `push_permission` BOOLEAN NOT NULL DEFAULT 0,
     `push_about_games` BOOLEAN NOT NULL DEFAULT 0,
     `push_about_timetable` BOOLEAN NOT NULL DEFAULT 0,
-    `OM5` VARCHAR(5)
+    `OM5` VARCHAR(5),
+    `need_import` BOOLEAN DEFAULT FALSE
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 -- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE

@@ -31,6 +31,7 @@ export interface User {
   push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
+  need_import: boolean;
 }
 
 export type UserType = User;
@@ -42,6 +43,13 @@ export interface Log {
   user: string;
   action: string;
   message: string;
+}
+
+interface DraftUserCode {
+  email: string;
+  EJG_code: string;
+  OM5: string;
+  OM_part: string;
 }
 
 export interface AlertType {
@@ -101,12 +109,40 @@ export async function getAllUsersNameByEmail() {
 }
 
 export async function getEmail() {
-  const session = await auth();
-  const authEmail = session?.user?.email;
-  return authEmail;
+  return (await auth())?.user?.email;
 }
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+async function importMyCodes() {
+  const selfUser = await getAuth();
+  const email = selfUser?.email;
+  if (!email) return;
+  if (!selfUser.need_import) return;
+
+  await multipledbreq(async (conn) => {
+    const [rows] = await conn.query(
+      `SELECT * FROM draft_user_codes WHERE email = ?`,
+      [email],
+    );
+    const myDraftUserCodes = (rows as DraftUserCode[])[0];
+    await conn.query(`UPDATE users SET EJG_code = ?, OM5 = ? WHERE email = ?`, [
+      myDraftUserCodes.EJG_code,
+      myDraftUserCodes.OM5,
+      email,
+    ]);
+
+    await conn.query(
+      `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', ?))) WHERE email = ?;`,
+      ["EJG_code_edit", email],
+    );
+
+    await conn.query(`UPDATE users SET need_import = FALSE WHERE email = ?;`, [
+      email,
+    ]);
+  });
+  addLog("importMyCodes", email);
+}
 
 export async function getAuth(): Promise<User | null | undefined> {
   const session = await auth();
@@ -116,12 +152,16 @@ export async function getAuth(): Promise<User | null | undefined> {
   const verifiedName = session.user.name || undefined;
   const verifiedImage = session.user.image || undefined;
 
+  async function getRows() {
+    return (await dbreq(`SELECT * FROM users WHERE email = ?`, [
+      verifiedEmail,
+    ])) as User[];
+  }
+
   try {
     console.log("getAuth by email:", verifiedEmail);
 
-    const rows = (await dbreq(`SELECT * FROM users WHERE email = ?`, [
-      verifiedEmail,
-    ])) as User[];
+    let rows = await getRows();
 
     if (rows.length === 0) {
       console.log("No user");
@@ -132,10 +172,12 @@ export async function getAuth(): Promise<User | null | undefined> {
         image: verifiedImage!,
       } as User);
       // re‑query to get the full row (including any defaults, id, etc.)
-      const inserted = (await dbreq(`SELECT * FROM users WHERE email = ?`, [
-        verifiedEmail,
-      ])) as User[];
-      return inserted[0] || null;
+      rows = await getRows();
+    }
+
+    if (rows[0].need_import) {
+      await importMyCodes();
+      rows = await getRows();
     }
 
     return rows[0];

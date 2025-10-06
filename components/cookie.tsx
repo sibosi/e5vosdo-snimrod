@@ -13,6 +13,7 @@ const checkCookie = () => {
 const Cookie = () => {
   const [cookieAccepted, setCookieAccepted] = useState(false);
   const [showCookie, setShowCookie] = useState(false);
+  const [position, setPosition] = useState<"center" | "bottom">("bottom");
 
   useEffect(() => {
     const isCookieAccepted = checkCookie();
@@ -36,10 +37,11 @@ const Cookie = () => {
     <Modal
       isOpen={showCookie}
       title="Cookie Policy"
-      placement="bottom"
+      placement={position}
       className="fixed m-16"
       shouldBlockScroll={false}
       backdrop="transparent"
+      onClose={() => setPosition("center")}
     >
       <ModalContent className="p-6 text-foreground">
         <p>

@@ -155,7 +155,7 @@ export const clubsConfig: Group[] = [
   {
     title: "Zöld Bizottság",
     details:
-      "A Zöldbizottság felelős elsősorban az Eötvös fenttarthatóbbá tevéséért. 2025ben elengedhetetlennek tartjuk, hogy ne legyen szívügye egy iskolának a Földünk jövője. A Zöldbiz lehetőségeket keres arra,hogy hogyan vonja be a diákságot, minél nagyobb és hatékonyabb környezet barát projektekbe.",
+      "A Zöld Bizottság elsősorban az Eötvös fenntarthatóságáért felelős. Számunkra elengedhetetlen, hogy az iskolánknak szívügye legyen a Föld jövője. A ZöldBiz lehetőségeket keres arra, hogy minél nagyobb és hatékonyabb környezetbarát projektekbe vonja be a diákságot.",
     image: "/groups/zoldbiz.png",
     description: "",
     links: [

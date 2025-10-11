@@ -8,20 +8,20 @@ export const config = {
 };
 
 interface SSEMatchGlobalState {
-  sseSubscribers: Set<WritableStreamDefaultWriter<string>>;
-  sseInterval: ReturnType<typeof setInterval> | null;
-  lastMatchesData: Match[] | null;
+  gLivescoreSseSubscribers: Set<WritableStreamDefaultWriter<string>>;
+  gLivescoreSseInterval: ReturnType<typeof setInterval> | null;
+  gLivescoreLastMatchesData: Match[] | null;
 }
 
 const globalState = globalThis as unknown as Partial<SSEMatchGlobalState>;
-if (!globalState.sseSubscribers) {
-  globalState.sseSubscribers = new Set<WritableStreamDefaultWriter<string>>();
+globalState.gLivescoreSseSubscribers ??= new Set<
+  WritableStreamDefaultWriter<string>
+>();
+if (globalState.gLivescoreSseInterval === undefined) {
+  globalState.gLivescoreSseInterval = null;
 }
-if (globalState.sseInterval === undefined) {
-  globalState.sseInterval = null;
-}
-if (globalState.lastMatchesData === undefined) {
-  globalState.lastMatchesData = null;
+if (globalState.gLivescoreLastMatchesData === undefined) {
+  globalState.gLivescoreLastMatchesData = null;
 }
 
 // Helper function to find changes between old and new match data
@@ -75,40 +75,43 @@ function findChanges(
   return changes;
 }
 
-if (!globalState.sseInterval) {
-  globalState.sseInterval = setInterval(async () => {
-    try {
-      const matchData = await getMatches();
+globalState.gLivescoreSseInterval ??= setInterval(async () => {
+  try {
+    const matchData = await getMatches();
 
-      // Find changes compared to last update
-      const changes = findChanges(globalState.lastMatchesData, matchData);
+    // Find changes compared to last update
+    const changes = findChanges(
+      globalState.gLivescoreLastMatchesData,
+      matchData,
+    );
 
-      // Only send updates if there are changes
-      if (
-        changes.changed.length > 0 ||
-        changes.added.length > 0 ||
-        changes.removed.length > 0
-      ) {
-        // Update stored data
-        globalState.lastMatchesData = matchData;
+    // Only send updates if there are changes
+    if (
+      changes.changed.length > 0 ||
+      changes.added.length > 0 ||
+      changes.removed.length > 0
+    ) {
+      // Update stored data
+      globalState.gLivescoreLastMatchesData = matchData;
 
-        // Send only the changes
-        const data = `data: ${JSON.stringify(changes)}\n\n`;
-        const subscribers = globalState.sseSubscribers!;
+      // Send only the changes
+      const data = `data: ${JSON.stringify(changes)}\n\n`;
+      const subscribers = globalState.gLivescoreSseSubscribers!;
 
-        for (const writer of Array.from(subscribers)) {
-          try {
-            writer.write(data);
-          } catch (error) {
-            globalState.sseSubscribers!.delete(writer);
-          }
-        }
+      for (const writer of Array.from(subscribers)) {
+        writer.write(data).catch((error) => {
+          subscribers.delete(writer);
+          console.error("Error sending SSE data:", error);
+          writer.close().catch((closeError) => {
+            console.error("Error closing writer:", closeError);
+          });
+        });
       }
-    } catch (error) {
-      console.error("Error fetching match data:", error);
     }
-  }, 2000); // Check for updates every 2 seconds
-}
+  } catch (error) {
+    console.error("Error fetching match data:", error);
+  }
+}, 2000); // Check for updates every 2 seconds
 
 export async function POST(request: NextRequest) {
   return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
@@ -118,7 +121,7 @@ export async function GET(request: NextRequest) {
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 
-  globalState.sseSubscribers!.add(writer);
+  globalState.gLivescoreSseSubscribers!.add(writer);
 
   // Send connection established message
   writer.write(
@@ -126,7 +129,7 @@ export async function GET(request: NextRequest) {
   );
 
   request.signal.addEventListener("abort", () => {
-    globalState.sseSubscribers!.delete(writer);
+    globalState.gLivescoreSseSubscribers!.delete(writer);
     writer.close();
   });
 

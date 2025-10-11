@@ -8,20 +8,22 @@ export const config = {
 };
 
 interface SSEGlobalState {
-  sseSubscribers: Set<WritableStreamDefaultWriter<Uint8Array>>;
-  sseInterval: ReturnType<typeof setInterval> | null;
-  heartbeatInterval: ReturnType<typeof setInterval> | null;
-  lastCapacity: unknown;
+  gSignupSseSubscribers: Set<WritableStreamDefaultWriter<Uint8Array>>;
+  gSignupPresentationsInterval: ReturnType<typeof setInterval> | null;
+  gSignupHeartbeatInterval: ReturnType<typeof setInterval> | null;
+  gSignupLastCapacity: unknown;
 }
 
 const globalState = globalThis as unknown as Partial<SSEGlobalState>;
-globalState.sseSubscribers ??= new Set<
+globalState.gSignupSseSubscribers ??= new Set<
   WritableStreamDefaultWriter<Uint8Array>
 >();
-if (globalState.sseInterval === undefined) globalState.sseInterval = null;
-if (globalState.heartbeatInterval === undefined)
-  globalState.heartbeatInterval = null;
-if (globalState.lastCapacity === undefined) globalState.lastCapacity = null;
+if (globalState.gSignupPresentationsInterval === undefined)
+  globalState.gSignupPresentationsInterval = null;
+if (globalState.gSignupHeartbeatInterval === undefined)
+  globalState.gSignupHeartbeatInterval = null;
+if (globalState.gSignupLastCapacity === undefined)
+  globalState.gSignupLastCapacity = null;
 
 const textEncoder = new TextEncoder();
 
@@ -32,156 +34,85 @@ console.log(
   `Worker ${workerId || "standalone"} (PID: ${process.pid}) - Timer initialization: ${isTimerWorker ? "YES" : "NO"}`,
 );
 
+async function sendHeartbeat() {
+  const data = textEncoder.encode(`data: heartbeat\n\n`);
+  const subscribersArray = Array.from(globalState.gSignupSseSubscribers!);
+
+  for (const writer of subscribersArray) {
+    writer.write(data).catch((e) => {
+      globalState.gSignupSseSubscribers!.delete(writer);
+      console.error("Error sending SSE heartbeat:", e);
+      writer.close().catch((closeError) => {
+        console.error("Error closing writer:", closeError);
+      });
+    });
+  }
+}
+
+async function sendCapacity() {
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Database query timeout")), 10000),
+  );
+
+  const capacity = await Promise.race([
+    getPresentationsCapacity(),
+    timeoutPromise,
+  ]).catch((e) => {
+    console.error("Error in getPresentationsCapacity:", e);
+    console.error("Error stack:", e.stack);
+    console.error("Error name:", e.name);
+    console.error("Error message:", e.message);
+    return null;
+  });
+
+  if (capacity === null) return;
+
+  if (
+    globalState.gSignupLastCapacity &&
+    JSON.stringify(globalState.gSignupLastCapacity) === JSON.stringify(capacity)
+  )
+    return;
+
+  globalState.gSignupLastCapacity = capacity;
+  const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
+  const subscribersArray = Array.from(globalState.gSignupSseSubscribers!);
+
+  for (const writer of subscribersArray) {
+    writer.write(data).catch((e) => {
+      globalState.gSignupSseSubscribers!.delete(writer);
+      console.error("Error sending SSE data:", e);
+      writer.close().catch((closeError) => {
+        console.error("Error closing writer:", closeError);
+      });
+    });
+  }
+}
+
 if (isTimerWorker) {
-  globalState.heartbeatInterval ??= setInterval(async () => {
-    console.log("SSE interval starting - fetching capacity...");
-
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Database query timeout")), 10000),
-    );
-
-    const capacity = await Promise.race([
-      getPresentationsCapacity(),
-      timeoutPromise,
-    ]).catch((e) => {
-      console.error("Error in getPresentationsCapacity:", e);
-      console.error("Error stack:", e.stack);
-      console.error("Error name:", e.name);
-      console.error("Error message:", e.message);
-      return null;
-    });
-
-    console.log("SSE interval - capacity result:", capacity);
-
-    if (capacity === null) {
-      console.log("SSE interval - capacity fetch failed, skipping this cycle");
-      return;
-    }
-
-    if (
-      globalState.lastCapacity &&
-      JSON.stringify(globalState.lastCapacity) === JSON.stringify(capacity)
-    ) {
-      console.log("SSE interval - no change in capacity, skipping");
-      return;
-    }
-
-    console.log("SSE interval - capacity changed, sending to subscribers");
-    globalState.lastCapacity = capacity;
-    const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
-    const subscribersArray = Array.from(globalState.sseSubscribers!);
-
-    console.log(
-      "SSE interval - sending to",
-      subscribersArray.length,
-      "subscribers",
-    );
-
-    for (const writer of subscribersArray) {
-      writer.write(data).catch((e) => {
-        globalState.sseSubscribers!.delete(writer);
-        console.error("Error sending SSE data:", e);
-        console.log(
-          "Removed a disconnected SSE client. Current subscribers:",
-          globalState.sseSubscribers!.size,
-        );
-        writer.close().catch((closeError) => {
-          console.error("Error closing writer:", closeError);
-        });
-      });
-    }
-  }, 30000);
-
-  globalState.sseInterval ??= setInterval(async () => {
-    console.log("SSE interval starting - fetching capacity...");
-
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Database query timeout")), 10000),
-    );
-
-    const capacity = await Promise.race([
-      getPresentationsCapacity(),
-      timeoutPromise,
-    ]).catch((e) => {
-      console.error("Error in getPresentationsCapacity:", e);
-      console.error("Error stack:", e.stack);
-      console.error("Error name:", e.name);
-      console.error("Error message:", e.message);
-      return null;
-    });
-
-    console.log("SSE interval - capacity result:", capacity);
-
-    if (capacity === null) {
-      console.log("SSE interval - capacity fetch failed, skipping this cycle");
-      return;
-    }
-
-    if (
-      globalState.lastCapacity &&
-      JSON.stringify(globalState.lastCapacity) === JSON.stringify(capacity)
-    ) {
-      console.log("SSE interval - no change in capacity, skipping");
-      return;
-    }
-
-    console.log("SSE interval - capacity changed, sending to subscribers");
-    globalState.lastCapacity = capacity;
-    const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
-    const subscribersArray = Array.from(globalState.sseSubscribers!);
-
-    console.log(
-      "SSE interval - sending to",
-      subscribersArray.length,
-      "subscribers",
-    );
-
-    for (const writer of subscribersArray) {
-      writer.write(data).catch((e) => {
-        globalState.sseSubscribers!.delete(writer);
-        console.error("Error sending SSE data:", e);
-        console.log(
-          "Removed a disconnected SSE client. Current subscribers:",
-          globalState.sseSubscribers!.size,
-        );
-        writer.close().catch((closeError) => {
-          console.error("Error closing writer:", closeError);
-        });
-      });
-    }
-  }, 2000);
-} else {
-  console.log("Skipping timer initialization in worker process", process.pid);
+  globalState.gSignupHeartbeatInterval ??= setInterval(sendHeartbeat, 30000);
+  globalState.gSignupPresentationsInterval ??= setInterval(sendCapacity, 2000);
 }
 
 export async function GET(request: NextRequest) {
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 
-  globalState.sseSubscribers!.add(writer);
+  globalState.gSignupSseSubscribers!.add(writer);
 
-  const m2 = ", subscribers count: " + globalState.sseSubscribers!.size;
-  const m3 =
-    ", SSE interval: " + (globalState.sseInterval ? "active" : "inactive");
-
-  const initialMessage = `data: ${JSON.stringify({ message: "SSE connection established" + m2 + m3 })}\n\n`;
+  const initialMessage = `data: ${JSON.stringify({ message: "SSE connection established" })}\n\n`;
   const encodedInitialMessage = textEncoder.encode(initialMessage);
 
   writer.write(encodedInitialMessage).catch((error) => {
     console.error("Error sending initial SSE message:", error);
-    globalState.sseSubscribers!.delete(writer);
+    globalState.gSignupSseSubscribers!.delete(writer);
     writer.close();
   });
 
   const cleanup = async () => {
-    globalState.sseSubscribers!.delete(writer);
+    globalState.gSignupSseSubscribers!.delete(writer);
     writer.close().catch((error) => {
       console.error("Error closing writer:", error);
     });
-    console.log(
-      "A client disconnected. Current subscribers:",
-      globalState.sseSubscribers!.size,
-    );
   };
 
   request.signal.addEventListener("abort", cleanup);
@@ -195,17 +126,6 @@ export async function GET(request: NextRequest) {
       "Access-Control-Allow-Headers": "Cache-Control",
       "X-Accel-Buffering": "no",
       "Transfer-Encoding": "chunked",
-    },
-  });
-}
-
-export async function OPTIONS() {
-  return new Response(null, {
-    status: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Cache-Control",
     },
   });
 }

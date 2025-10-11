@@ -258,3 +258,26 @@ export async function startSignup() {
     `UPDATE presentations SET remaining_capacity = capacity - (SELECT COUNT(*) FROM signups WHERE presentation_id = presentations.id)`,
   );
 }
+
+export async function getAllSignups(): Promise<{
+  [presentationId: number]: string[];
+}> {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  gate(selfUser, "admin");
+
+  const result = await dbreq(
+    "SELECT presentation_id, email FROM signups ORDER BY presentation_id",
+  );
+
+  const signupsByPresentation: { [presentationId: number]: string[] } = {};
+
+  for (const signup of result) {
+    if (!signupsByPresentation[signup.presentation_id]) {
+      signupsByPresentation[signup.presentation_id] = [];
+    }
+    signupsByPresentation[signup.presentation_id].push(signup.email);
+  }
+
+  return signupsByPresentation;
+}

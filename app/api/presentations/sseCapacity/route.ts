@@ -44,52 +44,65 @@ globalState.heartbeatInterval ??= setInterval(() => {
 }, 30000);
 
 globalState.sseInterval ??= setInterval(async () => {
-  console.log("SSE interval starting - fetching capacity...");
+  try {
+    console.log("SSE interval starting - fetching capacity...");
 
-  const capacity = await getPresentationsCapacity().catch((e) => {
-    console.error("Error in getPresentationsCapacity:", e);
-    console.error("Error stack:", e.stack);
-    return null;
-  });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Database query timeout")), 10000),
+    );
 
-  console.log("SSE interval - capacity result:", capacity);
-
-  if (capacity === null) {
-    console.log("SSE interval - capacity fetch failed, skipping this cycle");
-    return;
-  }
-
-  if (
-    globalState.lastCapacity &&
-    JSON.stringify(globalState.lastCapacity) === JSON.stringify(capacity)
-  ) {
-    console.log("SSE interval - no change in capacity, skipping");
-    return;
-  }
-
-  console.log("SSE interval - capacity changed, sending to subscribers");
-  globalState.lastCapacity = capacity;
-  const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
-  const subscribersArray = Array.from(globalState.sseSubscribers!);
-
-  console.log(
-    "SSE interval - sending to",
-    subscribersArray.length,
-    "subscribers",
-  );
-
-  for (const writer of subscribersArray) {
-    writer.write(data).catch((e) => {
-      globalState.sseSubscribers!.delete(writer);
-      console.error("Error sending SSE data:", e);
-      console.log(
-        "Removed a disconnected SSE client. Current subscribers:",
-        globalState.sseSubscribers!.size,
-      );
-      writer.close().catch((closeError) => {
-        console.error("Error closing writer:", closeError);
-      });
+    const capacity = await Promise.race([
+      getPresentationsCapacity(),
+      timeoutPromise,
+    ]).catch((e) => {
+      console.error("Error in getPresentationsCapacity:", e);
+      console.error("Error stack:", e.stack);
+      console.error("Error name:", e.name);
+      console.error("Error message:", e.message);
+      return null;
     });
+
+    console.log("SSE interval - capacity result:", capacity);
+
+    if (capacity === null) {
+      console.log("SSE interval - capacity fetch failed, skipping this cycle");
+      return;
+    }
+
+    if (
+      globalState.lastCapacity &&
+      JSON.stringify(globalState.lastCapacity) === JSON.stringify(capacity)
+    ) {
+      console.log("SSE interval - no change in capacity, skipping");
+      return;
+    }
+
+    console.log("SSE interval - capacity changed, sending to subscribers");
+    globalState.lastCapacity = capacity;
+    const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
+    const subscribersArray = Array.from(globalState.sseSubscribers!);
+
+    console.log(
+      "SSE interval - sending to",
+      subscribersArray.length,
+      "subscribers",
+    );
+
+    for (const writer of subscribersArray) {
+      writer.write(data).catch((e) => {
+        globalState.sseSubscribers!.delete(writer);
+        console.error("Error sending SSE data:", e);
+        console.log(
+          "Removed a disconnected SSE client. Current subscribers:",
+          globalState.sseSubscribers!.size,
+        );
+        writer.close().catch((closeError) => {
+          console.error("Error closing writer:", closeError);
+        });
+      });
+    }
+  } catch (outerError) {
+    console.error("Outer error in SSE interval:", outerError);
   }
 }, 2000);
 

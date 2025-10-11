@@ -8,15 +8,35 @@ export const config = {
 };
 
 interface SSEGlobalState {
-  sseSubscribers: Set<WritableStreamDefaultWriter<string>>;
+  sseSubscribers: Set<WritableStreamDefaultWriter<Uint8Array>>;
   sseInterval: ReturnType<typeof setInterval> | null;
+  heartbeatInterval: ReturnType<typeof setInterval> | null;
   lastCapacity: unknown;
 }
 
 const globalState = globalThis as unknown as Partial<SSEGlobalState>;
-globalState.sseSubscribers ??= new Set<WritableStreamDefaultWriter<string>>();
+globalState.sseSubscribers ??= new Set<
+  WritableStreamDefaultWriter<Uint8Array>
+>();
 if (globalState.sseInterval === undefined) globalState.sseInterval = null;
+if (globalState.heartbeatInterval === undefined)
+  globalState.heartbeatInterval = null;
 if (globalState.lastCapacity === undefined) globalState.lastCapacity = null;
+
+const textEncoder = new TextEncoder();
+
+globalState.heartbeatInterval ??= setInterval(() => {
+  const heartbeat = textEncoder.encode(": heartbeat\n\n");
+  const subscribers = globalState.sseSubscribers!;
+  const subscribersArray = Array.from(subscribers);
+
+  for (const writer of subscribersArray) {
+    writer.write(heartbeat).catch((e) => {
+      globalState.sseSubscribers!.delete(writer);
+      console.log("Removed disconnected client during heartbeat");
+    });
+  }
+}, 30000);
 
 globalState.sseInterval ??= setInterval(async () => {
   try {
@@ -29,15 +49,21 @@ globalState.sseInterval ??= setInterval(async () => {
     ) {
       globalState.lastCapacity = capacity;
       const data = `data: ${JSON.stringify(capacity)}\n\n`;
+      const encodedData = textEncoder.encode(data);
       const subscribers = globalState.sseSubscribers!;
-      for (const writer of Array.from(subscribers)) {
-        writer.write(data).catch((e) => {
+      const subscribersArray = Array.from(subscribers);
+
+      for (const writer of subscribersArray) {
+        writer.write(encodedData).catch((e) => {
           globalState.sseSubscribers!.delete(writer);
           console.error("Error sending SSE data:", e);
           console.log(
             "Removed a disconnected SSE client. Current subscribers:",
             globalState.sseSubscribers!.size,
           );
+          writer.close().catch((closeError) => {
+            console.error("Error closing writer:", closeError);
+          });
         });
       }
     }
@@ -56,18 +82,27 @@ export async function GET(request: NextRequest) {
   const m3 =
     ", SSE interval: " + (globalState.sseInterval ? "active" : "inactive");
 
-  writer.write(
-    `data: ${JSON.stringify({ message: "SSE connection established" + m2 + m3 })}\n\n`,
-  );
+  const initialMessage = `data: ${JSON.stringify({ message: "SSE connection established" + m2 + m3 })}\n\n`;
+  const encodedInitialMessage = textEncoder.encode(initialMessage);
 
-  request.signal.addEventListener("abort", () => {
+  writer.write(encodedInitialMessage).catch((error) => {
+    console.error("Error sending initial SSE message:", error);
     globalState.sseSubscribers!.delete(writer);
     writer.close();
+  });
+
+  const cleanup = async () => {
+    globalState.sseSubscribers!.delete(writer);
+    writer.close().catch((error) => {
+      console.error("Error closing writer:", error);
+    });
     console.log(
-      "A client aborted the connection. Current subscribers:",
+      "A client disconnected. Current subscribers:",
       globalState.sseSubscribers!.size,
     );
-  });
+  };
+
+  request.signal.addEventListener("abort", cleanup);
 
   return new Response(stream.readable, {
     headers: {
@@ -75,6 +110,20 @@ export async function GET(request: NextRequest) {
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
       "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Cache-Control",
+      "X-Accel-Buffering": "no",
+      "Transfer-Encoding": "chunked",
+    },
+  });
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Cache-Control",
     },
   });
 }

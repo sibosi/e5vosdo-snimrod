@@ -26,6 +26,7 @@ if (globalState.lastCapacity === undefined) globalState.lastCapacity = null;
 const textEncoder = new TextEncoder();
 
 globalState.heartbeatInterval ??= setInterval(() => {
+  console.log("Sending heartbeat to SSE clients");
   const heartbeat = textEncoder.encode(": heartbeat\n\n");
   const subscribers = globalState.sseSubscribers!;
   const subscribersArray = Array.from(subscribers);

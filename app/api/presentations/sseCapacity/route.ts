@@ -30,8 +30,13 @@ globalState.sseInterval ??= setInterval(async () => {
       const data = `data: ${JSON.stringify(capacity)}\n\n`;
       const subscribers = globalState.sseSubscribers!;
       for (const writer of Array.from(subscribers)) {
-        writer.write(data).catch(() => {
+        writer.write(data).catch((e) => {
           globalState.sseSubscribers!.delete(writer);
+          console.error("Error sending SSE data:", e);
+          console.log(
+            "Removed a disconnected SSE client. Current subscribers:",
+            globalState.sseSubscribers!.size,
+          );
         });
       }
     }
@@ -53,6 +58,10 @@ export async function GET(request: NextRequest) {
   request.signal.addEventListener("abort", () => {
     globalState.sseSubscribers!.delete(writer);
     writer.close();
+    console.log(
+      "A client aborted the connection. Current subscribers:",
+      globalState.sseSubscribers!.size,
+    );
   });
 
   return new Response(stream.readable, {

@@ -25,6 +25,7 @@ const AdminPresentationsPage = () => {
   const [filteredPresentations, setFilteredPresentations] = useState<
     PresentationType[]
   >([]);
+  const [existingSlots, setExistingSlots] = useState<string[]>([]);
 
   useEffect(() => {
     if (editingPresentation !== null) {
@@ -84,6 +85,20 @@ const AdminPresentationsPage = () => {
     }
   };
 
+  const fetchSlots = async () => {
+    try {
+      const response = await fetch("/api/presentations/getSlots");
+      if (response.ok) {
+        const data = await response.json();
+        setExistingSlots(data);
+      } else {
+        console.error("Error fetching slots");
+      }
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+    }
+  };
+
   const toggleSignupsView = (presentationId: number) => {
     setShowSignups((prev) => ({
       ...prev,
@@ -135,6 +150,7 @@ const AdminPresentationsPage = () => {
     fetchPresentations();
     fetchSignups();
     fetchNamesByEmail();
+    fetchSlots();
   }, []);
 
   useEffect(() => {
@@ -143,6 +159,7 @@ const AdminPresentationsPage = () => {
     } else {
       const filtered = presentations.filter(
         (p) =>
+          p.slot.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.adress.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -152,8 +169,29 @@ const AdminPresentationsPage = () => {
     }
   }, [presentations, searchTerm]);
 
+  const validateSlot = (slot: string): boolean => {
+    if (!slot || slot.trim() === "") return true;
+
+    const slotExists = existingSlots.includes(slot);
+    if (slotExists) return true;
+
+    const confirmMessage =
+      existingSlots.length > 0
+        ? `A megadott slot (${slot}) még nem létezik.\n\nMeglévő slotok:\n${existingSlots.join(", ")}\n\nBiztosan létre szeretnéd hozni ezt az új slotot?`
+        : `A megadott slot (${slot}) még nem létezik.\n\nJelenleg nincsenek meglévő slotok.\n\nBiztosan létre szeretnéd hozni ezt az új slotot?`;
+
+    return confirm(confirmMessage);
+  };
+
   const handleSave = async () => {
     if (!editingPresentation) return;
+
+    // Slot validáció - mind új, mind szerkesztett prezentációnál
+    if (editingPresentation.slot) {
+      if (!validateSlot(editingPresentation.slot)) {
+        return;
+      }
+    }
 
     try {
       const method = editingPresentation.isNew ? "POST" : "PUT";
@@ -169,6 +207,7 @@ const AdminPresentationsPage = () => {
         await fetchPresentations();
         await fetchSignups();
         await fetchNamesByEmail();
+        await fetchSlots(); // Frissítjük a slotokat is
         alert(
           editingPresentation.isNew
             ? "Prezentáció sikeresen létrehozva"
@@ -215,6 +254,7 @@ const AdminPresentationsPage = () => {
   const startCreating = () => {
     setEditingPresentation({
       isNew: true,
+      slot: "",
       name: "",
       description: "",
       adress: "",
@@ -275,7 +315,7 @@ const AdminPresentationsPage = () => {
         <div className="min-w-64 flex-1">
           <input
             type="text"
-            placeholder="Keresés prezentációk között..."
+            placeholder="Keresés prezentációk között (név, slot, helyszín, követelmények)..."
             className="w-full rounded-md border border-gray-300 bg-white p-3 text-gray-900"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -329,6 +369,33 @@ const AdminPresentationsPage = () => {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
+              <label htmlFor="slot-input" className="mb-2 block font-medium">
+                Időpont/Slot
+              </label>
+              {editingPresentation.isNew ? (
+                <input
+                  id="slot-input"
+                  className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                  value={editingPresentation.slot || ""}
+                  onChange={(e) =>
+                    setEditingPresentation({
+                      ...editingPresentation,
+                      slot: e.target.value,
+                    })
+                  }
+                  placeholder="Pl.: H1, K2, P3"
+                />
+              ) : (
+                <p>{editingPresentation.slot}</p>
+              )}
+              {existingSlots.length > 0 && (
+                <div className="mt-1 text-xs text-gray-600">
+                  Meglévő slotok: {existingSlots.join(", ")}
+                </div>
+              )}
+            </div>
+
+            <div>
               <label htmlFor="name-input" className="mb-2 block font-medium">
                 Név
               </label>
@@ -364,6 +431,27 @@ const AdminPresentationsPage = () => {
               />
             </div>
 
+            <div>
+              <label
+                htmlFor="requirements-input"
+                className="mb-2 block font-medium"
+              >
+                Követelmények
+              </label>
+              <input
+                id="requirements-input"
+                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                value={editingPresentation.requirements || ""}
+                onChange={(e) =>
+                  setEditingPresentation({
+                    ...editingPresentation,
+                    requirements: e.target.value,
+                  })
+                }
+                placeholder="Pl.: Csak 12.-eseknek / Hozzanak személyit"
+              />
+            </div>
+
             <div className="md:col-span-2">
               <label
                 htmlFor="description-input"
@@ -383,27 +471,6 @@ const AdminPresentationsPage = () => {
                   })
                 }
                 placeholder="Részletes leírás"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="requirements-input"
-                className="mb-2 block font-medium"
-              >
-                Követelmények
-              </label>
-              <input
-                id="requirements-input"
-                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
-                value={editingPresentation.requirements || ""}
-                onChange={(e) =>
-                  setEditingPresentation({
-                    ...editingPresentation,
-                    requirements: e.target.value,
-                  })
-                }
-                placeholder="Pl.: Csak 12.-eseknek / Hozzanak személyit"
               />
             </div>
 
@@ -463,7 +530,8 @@ const AdminPresentationsPage = () => {
                 <div className="grid gap-4 md:grid-cols-4">
                   <div className="md:col-span-2">
                     <h3 className="text-lg font-bold">
-                      {presentation.id}. {presentation.name}
+                      {presentation.slot} | {presentation.id}.{" "}
+                      {presentation.name}
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
                       {presentation.adress}

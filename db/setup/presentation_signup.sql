@@ -1,5 +1,7 @@
 CREATE TABLE IF NOT EXISTS signups (
-    email VARCHAR(255) NOT NULL PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    slot VARCHAR(255) NOT NULL,
     presentation_id INTEGER NOT NULL,
     FOREIGN KEY (presentation_id) REFERENCES presentations(id)
 );
@@ -12,6 +14,7 @@ FROM presentations;
 DROP TABLE IF EXISTS presentations;
 CREATE TABLE IF NOT EXISTS presentations (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    slot VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     adress VARCHAR(255) NOT NULL,

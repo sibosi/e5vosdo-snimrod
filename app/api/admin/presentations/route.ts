@@ -32,10 +32,17 @@ export async function POST(request: NextRequest) {
     }
     gate(user, "admin");
 
-    const { name, description, adress, requirements, capacity } =
+    const { name, slot, description, adress, requirements, capacity } =
       await request.json();
 
-    if (!name || !description || !adress || !requirements || !capacity) {
+    if (
+      !name ||
+      !slot ||
+      !description ||
+      !adress ||
+      !requirements ||
+      !capacity
+    ) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 },
@@ -43,8 +50,8 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await dbreq(
-      "INSERT INTO presentations (name, description, adress, requirements, capacity, remaining_capacity) VALUES (?, ?, ?, ?, ?, ?)",
-      [name, description, adress, requirements, capacity, capacity],
+      "INSERT INTO presentations (name, slot, description, adress, requirements, capacity, remaining_capacity) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [name, slot, description, adress, requirements, capacity, capacity],
     );
 
     return NextResponse.json({ success: true, id: result.insertId });
@@ -65,14 +72,14 @@ export async function PUT(request: NextRequest) {
     }
     gate(user, "admin");
 
-    const { id, name, description, adress, requirements, capacity } =
+    const { id, slot, name, description, adress, requirements, capacity } =
       await request.json();
 
-    if (!id || !name || !description || !adress || !capacity) {
+    if (!id || !slot || !name || !description || !adress || !capacity) {
       return NextResponse.json(
         {
           error:
-            "Minden mező kitöltése kötelező (ID, név, leírás, kapacitás, helyszín)",
+            "Minden mező kitöltése kötelező (ID, slot, név, leírás, kapacitás, helyszín)",
         },
         { status: 400 },
       );
@@ -97,8 +104,9 @@ export async function PUT(request: NextRequest) {
     const newRemainingCapacity = capacity - currentSignups;
 
     await dbreq(
-      "UPDATE presentations SET name = ?, description = ?, adress = ?, requirements = ?, capacity = ?, remaining_capacity = ? WHERE id = ?",
+      "UPDATE presentations SET slot = ?, name = ?, description = ?, adress = ?, requirements = ?, capacity = ?, remaining_capacity = ? WHERE id = ?",
       [
+        slot,
         name,
         description,
         adress,

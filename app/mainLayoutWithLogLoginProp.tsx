@@ -29,8 +29,8 @@ export const metadata: Metadata = {
   authors: [{ name: "Simon Nimród", url: siteConfig.links.mypage }],
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/icon/512.png",
-    apple: "/icon/1024.png",
+    shortcut: "/icons/512.png",
+    apple: "/icons/1024.png",
   },
 };
 
@@ -61,11 +61,11 @@ export default async function MainLayout({
       <head>
         <link rel="canonical" href={siteConfig.links.home} />
         <link rel="alternative" href={siteConfig.links.alternative} />
-        <link rel="apple-touch-icon" href="icon/1024.png" sizes="1024x1024" />
+        <link rel="apple-touch-icon" href="icons/1024.png" sizes="1024x1024" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="icon/1024.png" sizes="1024x1024" />
-        <link rel="icon" href="icon/512.png" sizes="512x512" />
-        <link rel="icon" href="icon/192.png" sizes="192x192" />
+        <link rel="icon" href="icons/1024.png" sizes="1024x1024" />
+        <link rel="icon" href="icons/512.png" sizes="512x512" />
+        <link rel="icon" href="icons/192.png" sizes="192x192" />
         <meta name="darkreader-lock" />
         <meta
           name="theme-color"

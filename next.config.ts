@@ -12,6 +12,36 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactProductionProfiling: true,
+  async headers() {
+    return [
+      {
+        source: "/api/presentations/sseCapacity",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, no-store, must-revalidate",
+          },
+          {
+            key: "Connection",
+            value: "keep-alive",
+          },
+          {
+            key: "Content-Type",
+            value: "text/event-stream",
+          },
+          {
+            key: "X-Accel-Buffering",
+            value: "no",
+          },
+          // Force HTTP/1.1 for SSE to avoid HTTP/2 protocol errors
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

@@ -82,6 +82,18 @@ if (isTimerWorker) {
   );
 }
 
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Cache-Control, Content-Type",
+      "Access-Control-Max-Age": "86400",
+    },
+  });
+}
+
 export async function GET(request: NextRequest) {
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
@@ -99,22 +111,34 @@ export async function GET(request: NextRequest) {
 
   const cleanup = async () => {
     globalState.gSignupSseSubscribers!.delete(writer);
-    writer.close().catch((error) => {
-      console.error("Error closing writer:", error);
-    });
+    try {
+      await writer.close();
+    } catch (error) {
+      console.error("Error closing writer during cleanup:", error);
+    }
   };
 
   request.signal.addEventListener("abort", cleanup);
 
+  setTimeout(() => sendCapacity(false), 100);
+
   return new Response(stream.readable, {
     headers: {
       "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
       Connection: "keep-alive",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "Cache-Control",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
       "X-Accel-Buffering": "no",
-      "Transfer-Encoding": "chunked",
+      // Force HTTP/1.1 to avoid HTTP/2 protocol errors with SSE
+      "X-Content-Type-Options": "nosniff",
+      // Disable HTTP/2 server push
+      "X-Frame-Options": "DENY",
+      // Add headers to prevent HTTP/2 issues
+      "Keep-Alive": "timeout=30, max=100",
     },
   });
 }

@@ -25,7 +25,7 @@ if (globalState.lastCapacity === undefined) globalState.lastCapacity = null;
 
 const textEncoder = new TextEncoder();
 
-globalState.heartbeatInterval ??= setInterval(() => {
+globalState.heartbeatInterval ??= setInterval(async () => {
   console.log(
     "Sending heartbeat to",
     globalState.sseSubscribers!.size,
@@ -35,8 +35,19 @@ globalState.heartbeatInterval ??= setInterval(() => {
   const subscribers = globalState.sseSubscribers!;
   const subscribersArray = Array.from(subscribers);
 
+  const capacity = await getPresentationsCapacity();
+  console.log("Current capacity:", capacity);
+  const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
+
   for (const writer of subscribersArray) {
     writer.write(heartbeat).catch((e) => {
+      globalState.sseSubscribers!.delete(writer);
+      console.log("Removed disconnected client during heartbeat");
+    });
+  }
+
+  for (const writer of subscribersArray) {
+    writer.write(data).catch((e) => {
       globalState.sseSubscribers!.delete(writer);
       console.log("Removed disconnected client during heartbeat");
     });

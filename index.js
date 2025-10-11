@@ -9,13 +9,14 @@ if (cluster.isMaster) {
   console.log(`Fő process indul, ${numCPUs} CPU mag indítása...`);
   // Indítsuk el a worker process-eket a rendelkezésre álló CPU magok számával
   for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
+    cluster.fork({ WORKER_ID: i + 1 });
   }
 
   cluster.on("exit", (worker, code, signal) => {
     console.log(`Worker process ${worker.process.pid} leállt.`);
-    // Opció: Újraindíthatjuk az elhalt worker-t, ha szükséges:
-    cluster.fork();
+    const workerId = worker.process.env.WORKER_ID;
+    console.log(`Újraindítás - worker-ID: ${workerId}`);
+    cluster.fork({ WORKER_ID: workerId });
   });
 } else {
   const app = next({ dev: false });

@@ -25,37 +25,44 @@ if (globalState.lastCapacity === undefined) globalState.lastCapacity = null;
 
 const textEncoder = new TextEncoder();
 
-globalState.heartbeatInterval ??= setInterval(async () => {
-  console.log(
-    "Sending heartbeat to",
-    globalState.sseSubscribers!.size,
-    "SSE clients",
-  );
-  const heartbeat = textEncoder.encode(": heartbeat\n\n");
-  const subscribers = globalState.sseSubscribers!;
-  const subscribersArray = Array.from(subscribers);
+const workerId = process.env.WORKER_ID;
+const isTimerWorker = workerId === "1" || !workerId;
 
-  const capacity = await getPresentationsCapacity();
-  console.log("Current capacity:", capacity);
-  const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
+console.log(
+  `Worker ${workerId || "standalone"} (PID: ${process.pid}) - Timer initialization: ${isTimerWorker ? "YES" : "NO"}`,
+);
 
-  for (const writer of subscribersArray) {
-    writer.write(heartbeat).catch((e) => {
-      globalState.sseSubscribers!.delete(writer);
-      console.log("Removed disconnected client during heartbeat");
-    });
-  }
+if (isTimerWorker) {
+  globalState.heartbeatInterval ??= setInterval(async () => {
+    console.log(
+      "Sending heartbeat to",
+      globalState.sseSubscribers!.size,
+      "SSE clients",
+    );
+    const heartbeat = textEncoder.encode(": heartbeat\n\n");
+    const subscribers = globalState.sseSubscribers!;
+    const subscribersArray = Array.from(subscribers);
 
-  for (const writer of subscribersArray) {
-    writer.write(data).catch((e) => {
-      globalState.sseSubscribers!.delete(writer);
-      console.log("Removed disconnected client during heartbeat");
-    });
-  }
-}, 30000);
+    const capacity = await getPresentationsCapacity();
+    console.log("Current capacity:", capacity);
+    const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
 
-globalState.sseInterval ??= setInterval(async () => {
-  try {
+    for (const writer of subscribersArray) {
+      writer.write(heartbeat).catch((e) => {
+        globalState.sseSubscribers!.delete(writer);
+        console.log("Removed disconnected client during heartbeat");
+      });
+    }
+
+    for (const writer of subscribersArray) {
+      writer.write(data).catch((e) => {
+        globalState.sseSubscribers!.delete(writer);
+        console.log("Removed disconnected client during heartbeat");
+      });
+    }
+  }, 30000);
+
+  globalState.sseInterval ??= setInterval(async () => {
     console.log("SSE interval starting - fetching capacity...");
 
     const timeoutPromise = new Promise((_, reject) =>
@@ -112,10 +119,10 @@ globalState.sseInterval ??= setInterval(async () => {
         });
       });
     }
-  } catch (outerError) {
-    console.error("Outer error in SSE interval:", outerError);
-  }
-}, 2000);
+  }, 2000);
+} else {
+  console.log("Skipping timer initialization in worker process", process.pid);
+}
 
 export async function GET(request: NextRequest) {
   const stream = new TransformStream();

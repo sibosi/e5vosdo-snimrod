@@ -34,22 +34,7 @@ console.log(
   `Worker ${workerId || "standalone"} (PID: ${process.pid}) - Timer initialization: ${isTimerWorker ? "YES" : "NO"}`,
 );
 
-async function sendHeartbeat() {
-  const data = textEncoder.encode(`data: heartbeat\n\n`);
-  const subscribersArray = Array.from(globalState.gSignupSseSubscribers!);
-
-  for (const writer of subscribersArray) {
-    writer.write(data).catch((e) => {
-      globalState.gSignupSseSubscribers!.delete(writer);
-      console.error("Error sending SSE heartbeat:", e);
-      writer.close().catch((closeError) => {
-        console.error("Error closing writer:", closeError);
-      });
-    });
-  }
-}
-
-async function sendCapacity() {
+async function sendCapacity(conditional = true) {
   const timeoutPromise = new Promise((_, reject) =>
     setTimeout(() => reject(new Error("Database query timeout")), 10000),
   );
@@ -68,6 +53,7 @@ async function sendCapacity() {
   if (capacity === null) return;
 
   if (
+    conditional &&
     globalState.gSignupLastCapacity &&
     JSON.stringify(globalState.gSignupLastCapacity) === JSON.stringify(capacity)
   )
@@ -89,8 +75,11 @@ async function sendCapacity() {
 }
 
 if (isTimerWorker) {
-  globalState.gSignupHeartbeatInterval ??= setInterval(sendHeartbeat, 30000);
   globalState.gSignupPresentationsInterval ??= setInterval(sendCapacity, 2000);
+  globalState.gSignupHeartbeatInterval ??= setInterval(
+    () => sendCapacity(false),
+    30000,
+  );
 }
 
 export async function GET(request: NextRequest) {

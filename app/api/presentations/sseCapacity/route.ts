@@ -21,6 +21,7 @@ if (globalState.lastCapacity === undefined) globalState.lastCapacity = null;
 globalState.sseInterval ??= setInterval(async () => {
   try {
     const capacity = await getPresentationsCapacity();
+    console.log("SSE interval fetched capacity:");
 
     if (
       !globalState.lastCapacity ||
@@ -51,8 +52,12 @@ export async function GET(request: NextRequest) {
 
   globalState.sseSubscribers!.add(writer);
 
+  const m2 = ", subscribers count: " + globalState.sseSubscribers!.size;
+  const m3 =
+    ", SSE interval: " + (globalState.sseInterval ? "active" : "inactive");
+
   writer.write(
-    `data: ${JSON.stringify({ message: "SSE connection established, subscribers count: " + globalState.sseSubscribers!.size })}\n\n`,
+    `data: ${JSON.stringify({ message: "SSE connection established" + m2 + m3 })}\n\n`,
   );
 
   request.signal.addEventListener("abort", () => {

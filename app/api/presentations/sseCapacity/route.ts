@@ -34,30 +34,60 @@ console.log(
 
 if (isTimerWorker) {
   globalState.heartbeatInterval ??= setInterval(async () => {
-    console.log(
-      "Sending heartbeat to",
-      globalState.sseSubscribers!.size,
-      "SSE clients",
+    console.log("SSE interval starting - fetching capacity...");
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Database query timeout")), 10000),
     );
-    const heartbeat = textEncoder.encode(": heartbeat\n\n");
-    const subscribers = globalState.sseSubscribers!;
-    const subscribersArray = Array.from(subscribers);
 
-    const capacity = await getPresentationsCapacity();
-    console.log("Current capacity:", capacity);
-    const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
+    const capacity = await Promise.race([
+      getPresentationsCapacity(),
+      timeoutPromise,
+    ]).catch((e) => {
+      console.error("Error in getPresentationsCapacity:", e);
+      console.error("Error stack:", e.stack);
+      console.error("Error name:", e.name);
+      console.error("Error message:", e.message);
+      return null;
+    });
 
-    for (const writer of subscribersArray) {
-      writer.write(heartbeat).catch((e) => {
-        globalState.sseSubscribers!.delete(writer);
-        console.log("Removed disconnected client during heartbeat");
-      });
+    console.log("SSE interval - capacity result:", capacity);
+
+    if (capacity === null) {
+      console.log("SSE interval - capacity fetch failed, skipping this cycle");
+      return;
     }
+
+    if (
+      globalState.lastCapacity &&
+      JSON.stringify(globalState.lastCapacity) === JSON.stringify(capacity)
+    ) {
+      console.log("SSE interval - no change in capacity, skipping");
+      return;
+    }
+
+    console.log("SSE interval - capacity changed, sending to subscribers");
+    globalState.lastCapacity = capacity;
+    const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
+    const subscribersArray = Array.from(globalState.sseSubscribers!);
+
+    console.log(
+      "SSE interval - sending to",
+      subscribersArray.length,
+      "subscribers",
+    );
 
     for (const writer of subscribersArray) {
       writer.write(data).catch((e) => {
         globalState.sseSubscribers!.delete(writer);
-        console.log("Removed disconnected client during heartbeat");
+        console.error("Error sending SSE data:", e);
+        console.log(
+          "Removed a disconnected SSE client. Current subscribers:",
+          globalState.sseSubscribers!.size,
+        );
+        writer.close().catch((closeError) => {
+          console.error("Error closing writer:", closeError);
+        });
       });
     }
   }, 30000);

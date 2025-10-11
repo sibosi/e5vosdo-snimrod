@@ -26,7 +26,11 @@ if (globalState.lastCapacity === undefined) globalState.lastCapacity = null;
 const textEncoder = new TextEncoder();
 
 globalState.heartbeatInterval ??= setInterval(() => {
-  console.log("Sending heartbeat to SSE clients");
+  console.log(
+    "Sending heartbeat to",
+    globalState.sseSubscribers!.size,
+    "SSE clients",
+  );
   const heartbeat = textEncoder.encode(": heartbeat\n\n");
   const subscribers = globalState.sseSubscribers!;
   const subscribersArray = Array.from(subscribers);
@@ -40,22 +44,39 @@ globalState.heartbeatInterval ??= setInterval(() => {
 }, 30000);
 
 globalState.sseInterval ??= setInterval(async () => {
-  console.log("SSE interval fetched capacity:");
+  console.log("SSE interval starting - fetching capacity...");
 
   const capacity = await getPresentationsCapacity().catch((e) => {
     console.error("Error in getPresentationsCapacity:", e);
+    console.error("Error stack:", e.stack);
+    return null;
   });
+
+  console.log("SSE interval - capacity result:", capacity);
+
+  if (capacity === null) {
+    console.log("SSE interval - capacity fetch failed, skipping this cycle");
+    return;
+  }
 
   if (
     globalState.lastCapacity &&
     JSON.stringify(globalState.lastCapacity) === JSON.stringify(capacity)
   ) {
+    console.log("SSE interval - no change in capacity, skipping");
     return;
   }
 
+  console.log("SSE interval - capacity changed, sending to subscribers");
   globalState.lastCapacity = capacity;
   const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
   const subscribersArray = Array.from(globalState.sseSubscribers!);
+
+  console.log(
+    "SSE interval - sending to",
+    subscribersArray.length,
+    "subscribers",
+  );
 
   for (const writer of subscribersArray) {
     writer.write(data).catch((e) => {

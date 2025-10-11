@@ -40,36 +40,35 @@ globalState.heartbeatInterval ??= setInterval(() => {
 }, 30000);
 
 globalState.sseInterval ??= setInterval(async () => {
-  try {
-    const capacity = await getPresentationsCapacity();
-    console.log("SSE interval fetched capacity:");
+  console.log("SSE interval fetched capacity:");
 
-    if (
-      !globalState.lastCapacity ||
-      JSON.stringify(globalState.lastCapacity) !== JSON.stringify(capacity)
-    ) {
-      globalState.lastCapacity = capacity;
-      const data = `data: ${JSON.stringify(capacity)}\n\n`;
-      const encodedData = textEncoder.encode(data);
-      const subscribers = globalState.sseSubscribers!;
-      const subscribersArray = Array.from(subscribers);
+  const capacity = await getPresentationsCapacity().catch((e) => {
+    console.error("Error in getPresentationsCapacity:", e);
+  });
 
-      for (const writer of subscribersArray) {
-        writer.write(encodedData).catch((e) => {
-          globalState.sseSubscribers!.delete(writer);
-          console.error("Error sending SSE data:", e);
-          console.log(
-            "Removed a disconnected SSE client. Current subscribers:",
-            globalState.sseSubscribers!.size,
-          );
-          writer.close().catch((closeError) => {
-            console.error("Error closing writer:", closeError);
-          });
-        });
-      }
-    }
-  } catch (error) {
-    console.error("Error fetching capacity:", error);
+  if (
+    globalState.lastCapacity &&
+    JSON.stringify(globalState.lastCapacity) === JSON.stringify(capacity)
+  ) {
+    return;
+  }
+
+  globalState.lastCapacity = capacity;
+  const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
+  const subscribersArray = Array.from(globalState.sseSubscribers!);
+
+  for (const writer of subscribersArray) {
+    writer.write(data).catch((e) => {
+      globalState.sseSubscribers!.delete(writer);
+      console.error("Error sending SSE data:", e);
+      console.log(
+        "Removed a disconnected SSE client. Current subscribers:",
+        globalState.sseSubscribers!.size,
+      );
+      writer.close().catch((closeError) => {
+        console.error("Error closing writer:", closeError);
+      });
+    });
   }
 }, 2000);
 

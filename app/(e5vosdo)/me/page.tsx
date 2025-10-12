@@ -22,7 +22,7 @@ const MePage = async () => {
     },
     {
       title: "Prezentációk",
-      href: "/admin/presentations",
+      href: "/jelentkezes/admin",
       access: selfUser.permissions.includes("admin"),
     },
     {

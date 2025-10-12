@@ -21,6 +21,11 @@ const MePage = async () => {
       access: await hasPermission(selfUser.email, "getUsers"),
     },
     {
+      title: "Prezentációk",
+      href: "/admin/presentations",
+      access: selfUser.permissions.includes("admin"),
+    },
+    {
       title: "Események",
       href: "/dev",
       access: selfUser.permissions.includes("admin"),
@@ -67,7 +72,7 @@ const MePage = async () => {
                   <Link
                     key={option.title}
                     href={option.href}
-                    className="rounded-xl bg-selfsecondary-300 px-4 py-2.5 text-sm text-foreground"
+                    className="rounded-xl bg-selfsecondary-300 px-3 py-2 text-sm text-foreground"
                   >
                     {option.title}
                   </Link>

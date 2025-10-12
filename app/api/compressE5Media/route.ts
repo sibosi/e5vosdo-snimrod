@@ -298,6 +298,12 @@ async function processOneImage(
 }
 
 export async function GET(req: Request) {
+  if (process.env.LITE_MODE === "true") {
+    return NextResponse.json(
+      { error: "Not available in LITE_MODE" },
+      { status: 403 },
+    );
+  }
   console.log("[compressE5Media] START: Checking auth and env...");
   const selfUser = await getAuth();
   if (!selfUser)

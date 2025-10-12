@@ -61,6 +61,7 @@ export interface AlertType {
 }
 
 export async function addLog(action: string, message?: string) {
+  if (process.env.LITE_MODE === "true") return;
   const email = await getEmail();
   return await dbreq(
     `INSERT INTO logs (time, user, action, message) VALUES (?, ?, ?, ?);`,

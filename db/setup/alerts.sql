@@ -13,4 +13,10 @@ VALUES
         "bg-selfprimary-100 border-selfprimary-300 hidden mx-5 text-md",
         1,
         NULL
+    ),
+    (
+        "Az oldal átmenetileg karbantartás alatt áll, előfordulhat, hogy egyes funkciók nem működnek megfelelően.",
+        "bg-selfprimary-100 border-selfprimary-300 hidden mx-5 text-md",
+        1,
+        NULL
     );

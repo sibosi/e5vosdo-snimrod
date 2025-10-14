@@ -52,9 +52,11 @@ public/sw.js
 public/sw.js
 public/workbox-07a7b4f2.js
 
+localtrash/
 /public/uploads/
 /podcasts/
 /local/
+/python/local/
 /db/setup/local/
 /tests/
 .*service-account*.json

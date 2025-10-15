@@ -164,7 +164,12 @@ const PersonalDataSettings = ({
           <tr>
             <th className="font-semibold">OM azonosító utolsó 5 számjegye:</th>
             <td>
-              <InputOtp length={5} value={OM5} onValueChange={setOM5} />
+              <InputOtp
+                length={5}
+                value={OM5}
+                onValueChange={setOM5}
+                isDisabled={!selfUser.tickets.includes("OM5_code_edit")}
+              />
             </td>
           </tr>
           <tr>

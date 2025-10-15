@@ -24,3 +24,5 @@ WHERE duc.email IS NULL;
 
 --@block
 SELECT * FROM users;
+SELECT * FROM draft_user_codes;
+UPDATE users SET is_verified = 0;

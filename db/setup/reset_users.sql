@@ -1,6 +1,7 @@
 -- DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
     `name` varchar(255) NOT NULL,
+    `full_name` varchar(255),
     `username` varchar(255) NOT NULL,
     `email` varchar(255) PRIMARY KEY NOT NULL UNIQUE,
     `image` varchar(255) NOT NULL,
@@ -21,8 +22,9 @@ CREATE TABLE IF NOT EXISTS `users` (
     `push_permission` BOOLEAN NOT NULL DEFAULT 0,
     `push_about_games` BOOLEAN NOT NULL DEFAULT 0,
     `push_about_timetable` BOOLEAN NOT NULL DEFAULT 0,
+    `OM` VARCHAR(11), -- F.e. "XXXXXX12345"
     `OM5` VARCHAR(5),
-    `need_import` BOOLEAN DEFAULT FALSE
+    `is_verified` BOOLEAN NOT NULL DEFAULT 0
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 -- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE

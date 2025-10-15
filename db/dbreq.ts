@@ -15,6 +15,7 @@ webPush.setVapidDetails(
 
 export interface User {
   name: string;
+  full_name?: string;
   username: string;
   nickname: string;
   email: string;
@@ -22,6 +23,7 @@ export interface User {
   last_login: string;
   permissions: string[];
   EJG_code: string | null;
+  OM: string | null;
   OM5: string | null;
   food_menu: string;
   coming_year: number;
@@ -31,7 +33,7 @@ export interface User {
   push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
-  need_import: boolean;
+  is_verified: boolean;
 }
 
 export type UserType = User;
@@ -46,10 +48,13 @@ export interface Log {
 }
 
 interface DraftUserCode {
+  id: number;
   email: string;
+  full_name: string;
   EJG_code: string;
+  OM: string;
   OM5: string;
-  OM_part: string;
+  is_used: boolean;
 }
 
 export interface AlertType {
@@ -119,7 +124,7 @@ async function importMyCodes() {
   const selfUser = await getAuth();
   const email = selfUser?.email;
   if (!email) return;
-  if (!selfUser.need_import) return;
+  if (selfUser.is_verified) return;
 
   await multipledbreq(async (conn) => {
     const [rows] = await conn.query(
@@ -127,18 +132,32 @@ async function importMyCodes() {
       [email],
     );
     const myDraftUserCodes = (rows as DraftUserCode[])[0];
-    await conn.query(`UPDATE users SET EJG_code = ?, OM5 = ? WHERE email = ?`, [
-      myDraftUserCodes.EJG_code,
-      myDraftUserCodes.OM5,
-      email,
-    ]);
-
     await conn.query(
-      `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', ?))) WHERE email = ?;`,
-      ["EJG_code_edit", email],
+      `UPDATE users SET full_name = ?, EJG_code = ?, OM = ?, OM5 = ? WHERE email = ?`,
+      [
+        myDraftUserCodes.full_name,
+        myDraftUserCodes.EJG_code,
+        myDraftUserCodes.OM,
+        myDraftUserCodes.OM5,
+        email,
+      ],
     );
 
-    await conn.query(`UPDATE users SET need_import = FALSE WHERE email = ?;`, [
+    try {
+      await conn.query(
+        `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', ?))) WHERE email = ?;`,
+        ["EJG_code_edit", email],
+      );
+    } catch (e) {
+      addLog("importMyCodes error", String(e));
+    }
+
+    await conn.query(
+      `UPDATE draft_user_codes SET is_used = TRUE WHERE email = ?;`,
+      [email],
+    );
+
+    await conn.query(`UPDATE users SET is_verified = TRUE WHERE email = ?;`, [
       email,
     ]);
   });
@@ -176,7 +195,7 @@ export async function getAuth(): Promise<User | null | undefined> {
       rows = await getRows();
     }
 
-    if (rows[0].need_import) {
+    if (!rows[0].is_verified) {
       await importMyCodes();
       rows = await getRows();
     }

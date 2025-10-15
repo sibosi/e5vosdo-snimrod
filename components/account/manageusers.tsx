@@ -226,8 +226,8 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                         <td>{selectedUser.name}</td>
                       </tr>
                       <tr>
-                        <th scope="row">Felhasználónév</th>
-                        <td>{selectedUser.username}</td>
+                        <th scope="row">Teljes név</th>
+                        <td>{selectedUser.full_name}</td>
                       </tr>
                       <tr>
                         <th scope="row">Email</th>
@@ -283,6 +283,12 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                       <tr>
                         <th scope="row">Jegyek</th>
                         <td>{selectedUser.tickets.join(", ")}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Ellenőrzött-e</th>
+                        <td>
+                          {selectedUser.is_verified ? "Igen ✅" : "Nem ❌"}
+                        </td>
                       </tr>
                     </tbody>
                   </table>

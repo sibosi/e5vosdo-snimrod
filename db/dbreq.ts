@@ -15,6 +15,7 @@ webPush.setVapidDetails(
 
 export interface User {
   name: string;
+  full_name?: string;
   username: string;
   nickname: string;
   email: string;
@@ -22,6 +23,7 @@ export interface User {
   last_login: string;
   permissions: string[];
   EJG_code: string | null;
+  OM: string | null;
   OM5: string | null;
   food_menu: string;
   coming_year: number;
@@ -31,7 +33,7 @@ export interface User {
   push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
-  need_import: boolean;
+  is_verified: boolean;
 }
 
 export type UserType = User;
@@ -46,10 +48,13 @@ export interface Log {
 }
 
 interface DraftUserCode {
+  id: number;
   email: string;
+  full_name: string;
   EJG_code: string;
+  OM: string;
   OM5: string;
-  OM_part: string;
+  is_used: boolean;
 }
 
 export interface AlertType {
@@ -116,10 +121,21 @@ export async function getEmail() {
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 async function importMyCodes() {
-  const selfUser = await getAuth();
-  const email = selfUser?.email;
+  const email = await getEmail();
   if (!email) return;
-  if (!selfUser.need_import) return;
+
+  const is_verified: any[] = await dbreq(
+    `SELECT is_verified FROM users WHERE email = ?`,
+    [email],
+  );
+  if (is_verified[0]?.is_verified) return;
+
+  const does_contain = await dbreq(
+    `SELECT * FROM draft_user_codes WHERE email = ?`,
+    [email],
+  );
+
+  if ((does_contain as any[]).length === 0) return;
 
   await multipledbreq(async (conn) => {
     const [rows] = await conn.query(
@@ -127,18 +143,34 @@ async function importMyCodes() {
       [email],
     );
     const myDraftUserCodes = (rows as DraftUserCode[])[0];
-    await conn.query(`UPDATE users SET EJG_code = ?, OM5 = ? WHERE email = ?`, [
-      myDraftUserCodes.EJG_code,
-      myDraftUserCodes.OM5,
-      email,
-    ]);
-
     await conn.query(
-      `UPDATE users SET permissions = JSON_REMOVE(permissions, JSON_UNQUOTE(JSON_SEARCH(permissions, 'one', ?))) WHERE email = ?;`,
-      ["EJG_code_edit", email],
+      `UPDATE users SET full_name = ?, EJG_code = ?, OM = ?, OM5 = ? WHERE email = ?`,
+      [
+        myDraftUserCodes.full_name,
+        myDraftUserCodes.EJG_code,
+        myDraftUserCodes.OM,
+        myDraftUserCodes.OM5,
+        email,
+      ],
     );
 
-    await conn.query(`UPDATE users SET need_import = FALSE WHERE email = ?;`, [
+    try {
+      ["EJG_code_edit", "OM5_code_edit"].forEach(async (ticket) => {
+        await conn.query(
+          `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', ?))) WHERE email = ?;`,
+          [ticket, email],
+        );
+      });
+    } catch (e) {
+      addLog("importMyCodes error", String(e));
+    }
+
+    await conn.query(
+      `UPDATE draft_user_codes SET is_used = TRUE WHERE email = ?;`,
+      [email],
+    );
+
+    await conn.query(`UPDATE users SET is_verified = TRUE WHERE email = ?;`, [
       email,
     ]);
   });
@@ -176,7 +208,7 @@ export async function getAuth(): Promise<User | null | undefined> {
       rows = await getRows();
     }
 
-    if (rows[0].need_import) {
+    if (!rows[0].is_verified) {
       await importMyCodes();
       rows = await getRows();
     }
@@ -270,7 +302,7 @@ export async function updateUser(user: User | undefined, isLogin = false) {
     date,
     JSON.stringify(["user"]),
     JSON.stringify({ new: [1], read: [], sent: [] }),
-    JSON.stringify(["EJG_code_edit"]),
+    JSON.stringify([]),
   ]);
   return null;
 }
@@ -608,7 +640,7 @@ export async function addTicket(email: string, ticket: string) {
 
 export async function removeTicket(ticket: string) {
   addLog("removeTicket", ticket);
-  const email = (await getAuth())?.email;
+  const email = await getEmail();
   return await dbreq(
     `UPDATE users SET tickets = JSON_REMOVE(tickets, JSON_UNQUOTE(JSON_SEARCH(tickets, 'one', ?))) WHERE email = ?;`,
     [ticket, email],
@@ -683,7 +715,11 @@ export async function editMySettings({
     );
   }
 
-  if (settings.OM5) {
+  if (
+    selfUser.tickets.includes("OM5_code_edit") &&
+    selfUser.OM5 != settings.OM5
+  ) {
+    await removeTicket("OM5_code_edit");
     setClauses.push("OM5 = ?");
     params.push(settings.OM5);
   }

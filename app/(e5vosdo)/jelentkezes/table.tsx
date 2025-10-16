@@ -26,6 +26,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
   const [selectedBySlot, setSelectedBySlot] = useState<{
     [slot: string]: number | null;
   }>({});
+  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
 
   const isVerified = selfUser?.is_verified;
 
@@ -80,6 +81,8 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
       } catch (err) {
         console.error("Error parsing SSE data:", err);
       }
+
+      setLastUpdated(Date.now());
     };
 
     evtSource.onerror = (err) => {
@@ -93,6 +96,19 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
       setIsFetchingAutomatically(false);
     };
   };
+
+  useEffect(() => {
+    if (lastUpdated === null) return;
+
+    const timeoutId = setTimeout(() => {
+      if (Date.now() - lastUpdated > 40000) {
+        setIsFetchingAutomatically(false);
+        alert("Az automatikus frissítés leállt. Frissítsd az oldalt!");
+      }
+    }, 50000);
+
+    return () => clearTimeout(timeoutId);
+  }, [lastUpdated]);
 
   useEffect(() => {
     if (isFetchingAutomatically === false) setupSSE();

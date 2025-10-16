@@ -9,7 +9,8 @@ const IsVerified = ({ selfUser }: { selfUser: PossibleUserType }) => {
   if (!selfUser)
     return (
       <Alert color="warning" className="my-2" endContent={<Login />}>
-        Az E5N előadások jelentkezéséhez be kell jelentkezned!
+        Az E5N előadások jelentkezéséhez be kell jelentkezned az eötvösös google
+        fiókoddal!
       </Alert>
     );
 

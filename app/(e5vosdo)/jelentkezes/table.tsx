@@ -1,4 +1,6 @@
 "use client";
+import { siteConfig } from "@/config/site";
+import { PossibleUserType } from "@/db/dbreq";
 import { PresentationType } from "@/db/presentationSignup";
 import { Button, ButtonGroup } from "@heroui/react";
 import React, { useEffect, useState } from "react";
@@ -13,7 +15,7 @@ const Field = ({
   return <div className={"space-y-2 p-2 " + className}>{children}</div>;
 };
 
-const Table = () => {
+const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
   const [presentations, setPresentations] = useState<PresentationType[]>();
   const [isFetchingAutomatically, setIsFetchingAutomatically] = useState<
     boolean | null
@@ -24,6 +26,8 @@ const Table = () => {
   const [selectedBySlot, setSelectedBySlot] = useState<{
     [slot: string]: number | null;
   }>({});
+
+  const isVerified = selfUser?.is_verified;
 
   async function initData() {
     const presRes = await fetch("/api/presentations/getPresentations");
@@ -99,6 +103,10 @@ const Table = () => {
   }, []);
 
   const signup = async (presentation_id: number) => {
+    if (!isVerified)
+      alert(
+        `Csak igazolt diákok jelentkezhetnek előadásra. Probléma esetén értesítendő: ${siteConfig.developer} (${siteConfig.developerEmail})`,
+      );
     if (!selectedSlot) return;
 
     const response = await fetch("/api/presentations/signUpForPresentation", {
@@ -121,6 +129,13 @@ const Table = () => {
     }
   };
 
+  function scrollToPresentationDetails() {
+    const element = document.getElementById(
+      "presentation-card-" + selectedBySlot[selectedSlot || ""],
+    );
+    if (element) element.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
     <div>
       <div className="mb-3 grid text-center max-md:gap-3 md:grid-cols-2">
@@ -137,42 +152,58 @@ const Table = () => {
               selectedBySlot[selectedSlot || ""] === undefined) &&
               "Nincs kiválasztva"}
           </p>
-          <Button
-            color="primary"
-            isDisabled={
-              selectedBySlot[selectedSlot || ""] === null ||
-              selectedBySlot[selectedSlot || ""] === undefined
-            }
-            onPress={async () => {
-              if (!selectedSlot) return;
-
-              const response = await fetch(
-                "/api/presentations/signUpForPresentation",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    presentation_id: "NULL",
-                    slot: selectedSlot,
-                  }),
-                },
-              );
-              if (response.ok) {
-                setSelectedBySlot((prev) => ({
-                  ...prev,
-                  [selectedSlot]: null,
-                }));
-                alert("Sikeres törlés");
-              } else {
-                const errorData = await response.json();
-                alert(
-                  `Sikertelen törlés: ${errorData.error?.message || "Ismeretlen hiba"}`,
-                );
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <Button
+              color="primary"
+              isDisabled={
+                selectedBySlot[selectedSlot || ""] === null ||
+                selectedBySlot[selectedSlot || ""] === undefined
               }
-            }}
-          >
-            Kiválasztás törlése
-          </Button>
+              onPress={scrollToPresentationDetails}
+            >
+              Előadás részletei
+            </Button>
+            <Button
+              variant="bordered"
+              color="danger"
+              isDisabled={
+                selectedBySlot[selectedSlot || ""] === null ||
+                selectedBySlot[selectedSlot || ""] === undefined
+              }
+              onPress={async () => {
+                if (!selectedSlot) return;
+
+                if (!confirm("Biztosan törölni szeretnéd a jelentkezésedet?"))
+                  return;
+
+                const response = await fetch(
+                  "/api/presentations/signUpForPresentation",
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      presentation_id: "NULL",
+                      slot: selectedSlot,
+                    }),
+                  },
+                );
+                if (response.ok) {
+                  setSelectedBySlot((prev) => ({
+                    ...prev,
+                    [selectedSlot]: null,
+                  }));
+                  alert("Sikeres törlés");
+                } else {
+                  const errorData = await response.json();
+                  alert(
+                    `Sikertelen törlés: ${errorData.error?.message || "Ismeretlen hiba"}`,
+                  );
+                }
+              }}
+            >
+              Kiválasztás törlése
+            </Button>
+          </div>
         </div>
 
         <div className="mb-3 grid grid-cols-2">
@@ -221,34 +252,35 @@ const Table = () => {
         ?.filter((presentation) => presentation.slot === selectedSlot)
         ?.map((presentation) => (
           <div
+            id={`presentation-card-${presentation.id}`}
             key={presentation.id}
             className="my-2 grid overflow-hidden rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100 md:grid-cols-5 md:gap-4"
           >
             <Field className="bg-selfprimary-200 md:col-span-2">
               <div>
-                <div className="font-bold underline">
+                <div className="text-lg font-bold">
                   {presentation.id}. {presentation.title}
                 </div>
-                <p>{presentation.requirements}</p>
+
+                {presentation.performer && (
+                  <p className="italic">{presentation.performer}</p>
+                )}
+
+                <p className="font-bold text-selfsecondary">
+                  {presentation.requirements}
+                </p>
                 <br />
                 <p className="info">
-                  Maximális létszám: {presentation.capacity}
+                  Maximális létszám: {presentation.capacity} fő
                 </p>
                 <p className="info">{presentation.address}</p>
               </div>
             </Field>
             <Field className="md:col-span-2">
-              <div>
-                {presentation.performer && (
-                  <p className="font-semibold">
-                    Előadó: {presentation.performer}
-                  </p>
-                )}
-                <div>{presentation.description}</div>
-              </div>
+              <div>{presentation.description}</div>
             </Field>
-            <Field className="bg-selfprimary-200 text-center">
-              <p className="md:hidden">Szabad helyek:</p>
+            <Field className="bg-selfprimary-200 text-center max-md:flex max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
+              <p className="h-7 md:hidden">Szabad helyek:</p>
               <p className="text-xl font-bold">
                 {presentation.remaining_capacity ?? "-"}
               </p>
@@ -264,12 +296,12 @@ const Table = () => {
                         backgroundSize: "100% 100%",
                         backgroundPosition: "0 0",
                         backgroundRepeat: "no-repeat",
-                        backgroundImage: `linear-gradient(90deg, var(--color-secondary-300) ${
+                        backgroundImage: `linear-gradient(270deg, var(--color-secondary-50) ${
                           100 -
                           (presentation.remaining_capacity /
                             presentation.capacity) *
                             100
-                        }%, var(--color-secondary-50) ${
+                        }%, var(--color-secondary-300) ${
                           100 -
                           (presentation.remaining_capacity /
                             presentation.capacity) *
@@ -279,13 +311,18 @@ const Table = () => {
                     : {}
                 }
                 isDisabled={
-                  selectedBySlot[selectedSlot || ""] === presentation.id
+                  selectedBySlot[selectedSlot || ""] === presentation.id ||
+                  presentation.remaining_capacity === 0 ||
+                  !isVerified
                 }
                 onPress={() => signup(presentation.id)}
               >
-                {selectedBySlot[selectedSlot || ""] === presentation.id
-                  ? "Jelentkezve"
-                  : "Jelentkezés"}
+                {(() => {
+                  if (selectedBySlot[selectedSlot || ""] === presentation.id)
+                    return "Jelentkezve";
+                  if (presentation.remaining_capacity === 0) return "Betelt";
+                  return "Jelentkezés";
+                })()}
               </Button>
             </Field>
           </div>

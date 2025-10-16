@@ -1,13 +1,13 @@
-import { auth } from "@/auth";
 import PleaseLogin from "../me/redirectToLogin";
 import Table from "./table";
+import { getAuth } from "@/db/dbreq";
 
 const SignupPage = async () => {
-  const selfEmail = (await auth())?.user?.email;
-  if (!selfEmail) return <PleaseLogin />;
+  const selfUser = await getAuth();
+  if (!selfUser) return <PleaseLogin />;
   return (
     <div>
-      <Table />
+      <Table selfUser={selfUser} />
     </div>
   );
 };

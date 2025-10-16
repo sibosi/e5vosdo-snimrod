@@ -15,6 +15,8 @@ export const siteConfig = {
   name: "Eötvös DÖ",
   description: "Az Eötvös József Gimnázium Diákönkormányzat oldala",
   pageSections: pageSections,
+  developer: "Simon Nimród",
+  developerEmail: "simon.nimrod.zalan@e5vos.hu",
 
   navItems: [
     {

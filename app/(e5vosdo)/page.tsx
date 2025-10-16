@@ -18,6 +18,7 @@ import { Alert } from "@/components/home/alert";
 import { Chip } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import MillioLepes from "@/components/home/milliolepes";
+import IsVerified from "./jelentkezes/isVerified";
 
 const PageHeadContent = async ({
   selfUser,
@@ -55,6 +56,8 @@ export default async function Home() {
   return (
     <div>
       <PageHeadContent selfUser={selfUser} />
+
+      <IsVerified selfUser={selfUser} />
 
       {gate(selfUser, "user", "boolean") && (
         <Section

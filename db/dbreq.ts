@@ -524,7 +524,8 @@ export async function newNotificationByEmails(
   receiving_emails: string[],
   payload: string = "",
 ) {
-  const sender_email = (await getAuth())?.email;
+  const senderUser = await getAuth();
+  const sender_email = senderUser?.email;
 
   let valid_receiving_emails: string[] = [];
 
@@ -580,8 +581,9 @@ export async function newNotificationByEmails(
       await newPush(
         email,
         JSON.stringify({
-          title: sender_email + " üzenetet küldött",
-          body: title,
+          title: title,
+          body:
+            (senderUser?.full_name || senderUser?.email) + " üzenetet küldött",
         }),
       );
     }

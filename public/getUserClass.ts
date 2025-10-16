@@ -49,10 +49,12 @@ const getUserClass = (selfUser: User | undefined) => {
 
   const evfolyam =
     Math.floor(
-      (new Date().getTime() -
-        new Date(selfUser.coming_year + "/08/01").getTime()) /
+      (Date.now() - new Date(selfUser.coming_year + "/08/01").getTime()) /
         msInAYear,
     ) + (yearByClassCharacter[selfUser.class_character] ?? 0);
+
+  if (evfolyam + "." + selfUser.class_character === "8.N") return "9.N";
+  if (selfUser.class_character === "N") return evfolyam + ".E";
 
   return evfolyam + "." + selfUser.class_character;
 };

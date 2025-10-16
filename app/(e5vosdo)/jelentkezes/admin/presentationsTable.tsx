@@ -160,9 +160,9 @@ const AdminPresentationsPage = () => {
       const filtered = presentations.filter(
         (p) =>
           p.slot.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.adress.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.requirements.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       setFilteredPresentations(filtered);
@@ -255,12 +255,13 @@ const AdminPresentationsPage = () => {
     setEditingPresentation({
       isNew: true,
       slot: "",
-      name: "",
+      title: "",
       description: "",
-      adress: "",
+      address: "",
       requirements: "",
       capacity: 20,
       remaining_capacity: 20,
+      performer: null,
     });
     setIsCreating(true);
   };
@@ -396,17 +397,17 @@ const AdminPresentationsPage = () => {
             </div>
 
             <div>
-              <label htmlFor="name-input" className="mb-2 block font-medium">
-                Név
+              <label htmlFor="title-input" className="mb-2 block font-medium">
+                Cím
               </label>
               <input
-                id="name-input"
+                id="title-input"
                 className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
-                value={editingPresentation.name || ""}
+                value={editingPresentation.title || ""}
                 onChange={(e) =>
                   setEditingPresentation({
                     ...editingPresentation,
-                    name: e.target.value,
+                    title: e.target.value,
                   })
                 }
                 placeholder="Prezentáció neve"
@@ -420,11 +421,11 @@ const AdminPresentationsPage = () => {
               <input
                 id="address-input"
                 className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
-                value={editingPresentation.adress || ""}
+                value={editingPresentation.address || ""}
                 onChange={(e) =>
                   setEditingPresentation({
                     ...editingPresentation,
-                    adress: e.target.value,
+                    address: e.target.value,
                   })
                 }
                 placeholder="Pl.: online, Reáltanoda utca, 200. terem"
@@ -449,6 +450,27 @@ const AdminPresentationsPage = () => {
                   })
                 }
                 placeholder="Pl.: Csak 12.-eseknek / Hozzanak személyit"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="performer-input"
+                className="mb-2 block font-medium"
+              >
+                Előadó
+              </label>
+              <input
+                id="performer-input"
+                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                value={editingPresentation.performer || ""}
+                onChange={(e) =>
+                  setEditingPresentation({
+                    ...editingPresentation,
+                    performer: e.target.value,
+                  })
+                }
+                placeholder="Az előadó neve"
               />
             </div>
 
@@ -531,10 +553,15 @@ const AdminPresentationsPage = () => {
                   <div className="md:col-span-2">
                     <h3 className="text-lg font-bold">
                       {presentation.slot} | {presentation.id}.{" "}
-                      {presentation.name}
+                      {presentation.title}
                     </h3>
+                    {presentation.performer && (
+                      <p className="mt-1 text-sm font-semibold text-gray-700">
+                        Előadó: {presentation.performer}
+                      </p>
+                    )}
                     <p className="mt-1 text-sm text-gray-600">
-                      {presentation.adress}
+                      {presentation.address}
                     </p>
                     <p className="text-sm text-gray-600">
                       {presentation.requirements}

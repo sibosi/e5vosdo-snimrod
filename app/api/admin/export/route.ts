@@ -14,9 +14,9 @@ export async function GET() {
     const result = await dbreq(`
       SELECT 
         p.id,
-        p.name,
+        p.title,
         p.description,
-        p.adress,
+        p.address,
         p.requirements,
         p.capacity,
         p.remaining_capacity,
@@ -24,19 +24,19 @@ export async function GET() {
         GROUP_CONCAT(s.email SEPARATOR ', ') as signups
       FROM presentations p
       LEFT JOIN signups s ON p.id = s.presentation_id
-      GROUP BY p.id, p.name, p.description, p.adress, p.requirements, p.capacity, p.remaining_capacity
+      GROUP BY p.id, p.title, p.description, p.address, p.requirements, p.capacity, p.remaining_capacity
       ORDER BY p.id
     `);
 
     const csvHeaders =
-      "ID,Név,Leírás,Cím,Követelmények,Kapacitás,Szabad_helyek,Jelentkezők_száma,Jelentkezők_email\n";
+      "ID,Cím,Leírás,Cím,Követelmények,Kapacitás,Szabad_helyek,Jelentkezők_száma,Jelentkezők_email\n";
     const csvRows = result
       .map((row: any) => {
         const values = [
           row.id,
-          `"${row.name.replace(/"/g, '""')}"`,
+          `"${row.title.replace(/"/g, '""')}"`,
           `"${row.description.replace(/"/g, '""')}"`,
-          `"${row.adress.replace(/"/g, '""')}"`,
+          `"${row.address.replace(/"/g, '""')}"`,
           `"${row.requirements.replace(/"/g, '""')}"`,
           row.capacity,
           row.remaining_capacity ?? "NULL",

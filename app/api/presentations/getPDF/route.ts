@@ -62,9 +62,9 @@ export async function GET() {
 
     for (const presentation of presentations) {
       // Sanitize presentation fields.
-      const presName = sanitizeText(presentation.name);
+      const presTitle = sanitizeText(presentation.title);
       const presDescription = sanitizeText(presentation.description);
-      const presAddress = sanitizeText(presentation.adress);
+      const presAddress = sanitizeText(presentation.address);
       const presCapacity = presentation.capacity ?? "N/A";
 
       // Write presentation details.
@@ -72,7 +72,7 @@ export async function GET() {
       doc
         .fontSize(14)
         .font("Outfit")
-        .text(`${presentation.id}: ${presName}`, { underline: true });
+        .text(`${presentation.id}: ${presTitle}`, { underline: true });
       doc.fontSize(12).text(`Description: ${presDescription}`);
       doc.text(`Address: ${presAddress}`);
       doc.text(`Capacity: ${presCapacity}`);

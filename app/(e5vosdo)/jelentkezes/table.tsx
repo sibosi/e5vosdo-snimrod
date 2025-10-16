@@ -131,7 +131,7 @@ const Table = () => {
               presentations?.find(
                 (presentation) =>
                   presentation.id === selectedBySlot[selectedSlot || ""],
-              )?.name
+              )?.title
             }
             {(selectedBySlot[selectedSlot || ""] === null ||
               selectedBySlot[selectedSlot || ""] === undefined) &&
@@ -212,7 +212,7 @@ const Table = () => {
       <div className="grid grid-cols-5 gap-4 text-2xl font-extrabold max-md:hidden">
         <Field className="md:col-span-2">Név és Leírás</Field>
         <Field className="md:col-span-2">Részletek</Field>
-        <Field>Létszám</Field>
+        <Field>Szabad helyek</Field>
       </div>
       {presentations === undefined && (
         <div className="text-center">Betöltés...</div>
@@ -227,20 +227,28 @@ const Table = () => {
             <Field className="bg-selfprimary-200 md:col-span-2">
               <div>
                 <div className="font-bold underline">
-                  {presentation.id}. {presentation.name}
+                  {presentation.id}. {presentation.title}
                 </div>
                 <p>{presentation.requirements}</p>
                 <br />
                 <p className="info">
                   Maximális létszám: {presentation.capacity}
                 </p>
-                <p className="info">{presentation.adress}</p>
+                <p className="info">{presentation.address}</p>
               </div>
             </Field>
             <Field className="md:col-span-2">
-              <div>{presentation.description}</div>
+              <div>
+                {presentation.performer && (
+                  <p className="font-semibold">
+                    Előadó: {presentation.performer}
+                  </p>
+                )}
+                <div>{presentation.description}</div>
+              </div>
             </Field>
             <Field className="bg-selfprimary-200 text-center">
+              <p className="md:hidden">Szabad helyek:</p>
               <p className="text-xl font-bold">
                 {presentation.remaining_capacity ?? "-"}
               </p>

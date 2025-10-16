@@ -29,7 +29,7 @@ export async function GET() {
     let longestList = 0;
     for (const p of presentations) {
       const emails = await getMembersAtPresentation(user.email, p.id);
-      tableData[p.name] = emails;
+      tableData[p.title] = emails;
       longestList = Math.max(longestList, emails.length);
     }
 
@@ -40,24 +40,24 @@ export async function GET() {
         `Jelentkezések (${type === "email" ? "Email" : "Név"})`,
       );
 
-      const headerRow = presentations.map((p) => p.name);
+      const headerRow = presentations.map((p) => p.title);
       sheet.addRow(headerRow).font = { bold: true };
 
       sheet.addRow(presentations.map((p) => `Létszámkorlát: ${p.capacity}`));
       sheet.addRow(
         presentations.map(
-          (p) => `Jelentkezettek száma: ${tableData[p.name].length}`,
+          (p) => `Jelentkezettek száma: ${tableData[p.title].length}`,
         ),
       );
       sheet.addRow(
         presentations.map(
-          (p) => `Hátralévő helyek: ${p.capacity - tableData[p.name].length}`,
+          (p) => `Hátralévő helyek: ${p.capacity - tableData[p.title].length}`,
         ),
       );
 
       for (let i = 0; i < longestList; i++) {
         const row = presentations.map((p) => {
-          const email = tableData[p.name][i];
+          const email = tableData[p.title][i];
           if (!email) return "";
           return type === "email" ? email : namesByEmail[email] || email;
         });

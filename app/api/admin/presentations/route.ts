@@ -32,14 +32,21 @@ export async function POST(request: NextRequest) {
     }
     gate(user, "admin");
 
-    const { name, slot, description, adress, requirements, capacity } =
-      await request.json();
+    const {
+      title,
+      performer,
+      slot,
+      description,
+      address,
+      requirements,
+      capacity,
+    } = await request.json();
 
     if (
-      !name ||
+      !title ||
       !slot ||
       !description ||
-      !adress ||
+      !address ||
       !requirements ||
       !capacity
     ) {
@@ -50,8 +57,17 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await dbreq(
-      "INSERT INTO presentations (name, slot, description, adress, requirements, capacity, remaining_capacity) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [name, slot, description, adress, requirements, capacity, capacity],
+      "INSERT INTO presentations (title, performer, slot, description, address, requirements, capacity, remaining_capacity) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [
+        title,
+        performer,
+        slot,
+        description,
+        address,
+        requirements,
+        capacity,
+        capacity,
+      ],
     );
 
     return NextResponse.json({ success: true, id: result.insertId });
@@ -72,10 +88,18 @@ export async function PUT(request: NextRequest) {
     }
     gate(user, "admin");
 
-    const { id, slot, name, description, adress, requirements, capacity } =
-      await request.json();
+    const {
+      id,
+      slot,
+      title,
+      performer,
+      description,
+      address,
+      requirements,
+      capacity,
+    } = await request.json();
 
-    if (!id || !slot || !name || !description || !adress || !capacity) {
+    if (!id || !slot || !title || !description || !address || !capacity) {
       return NextResponse.json(
         {
           error:
@@ -104,12 +128,13 @@ export async function PUT(request: NextRequest) {
     const newRemainingCapacity = capacity - currentSignups;
 
     await dbreq(
-      "UPDATE presentations SET slot = ?, name = ?, description = ?, adress = ?, requirements = ?, capacity = ?, remaining_capacity = ? WHERE id = ?",
+      "UPDATE presentations SET slot = ?, title = ?, performer = ?, description = ?, address = ?, requirements = ?, capacity = ?, remaining_capacity = ? WHERE id = ?",
       [
         slot,
-        name,
+        title,
+        performer,
         description,
-        adress,
+        address,
         requirements,
         capacity,
         newRemainingCapacity,

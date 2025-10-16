@@ -86,9 +86,10 @@ export async function multipledbreq<T>(
 export interface PresentationType {
   id: number;
   slot: string;
-  name: string;
+  title: string;
+  performer: string | null;
   description: string;
-  adress: string;
+  address: string;
   requirements: string;
   capacity: number;
   remaining_capacity: number;

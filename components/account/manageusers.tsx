@@ -113,7 +113,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
     }
 
     const filteredUsers = initialUsers.filter((user: any) =>
-      user.username.toLowerCase().includes(searchName.toLowerCase()),
+      getUserName(user).toLowerCase().includes(searchName.toLowerCase()),
     );
     setUsers(sortUsers(filteredUsers));
   }, [searchName]);
@@ -130,6 +130,10 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
   useEffect(() => {
     reload();
   }, [reloadUsers]);
+
+  function getUserName(user: UserType) {
+    return user.full_name || user.name;
+  }
 
   return (
     <div className="my-2 text-foreground">
@@ -152,7 +156,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
             <div className="flex justify-between">
               <Image
                 src={user.image}
-                alt={user.username}
+                alt={getUserName(user)}
                 width={72}
                 height={72}
                 className="rounded-full"
@@ -175,7 +179,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
             </div>
 
             <h3 className="text-xl font-bold text-foreground">
-              {user.username}
+              {getUserName(user)}
             </h3>
             <p className="mb-2 text-xs">{user.email}</p>
             <p suppressHydrationWarning>

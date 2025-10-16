@@ -178,7 +178,10 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
               {user.username}
             </h3>
             <p className="mb-2 text-xs">{user.email}</p>
-            <p suppressHydrationWarning>{displayDate(user.last_login)}</p>
+            <p suppressHydrationWarning>
+              <span>{user.is_verified ? "✅" : "❌"}</span>{" "}
+              {displayDate(user.last_login)}
+            </p>
           </button>
         ))}
       </div>

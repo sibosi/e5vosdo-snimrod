@@ -2,7 +2,13 @@
 import { siteConfig } from "@/config/site";
 import { PossibleUserType } from "@/db/dbreq";
 import { PresentationType } from "@/db/presentationSignup";
-import { Button, ButtonGroup } from "@heroui/react";
+import {
+  addToast,
+  Button,
+  ButtonGroup,
+  closeAll,
+  ToastProvider,
+} from "@heroui/react";
 import React, { useEffect, useState } from "react";
 
 const Field = ({
@@ -27,6 +33,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
     [slot: string]: number | null;
   }>({});
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+  const [isToastVisible, setIsToastVisible] = useState(false);
 
   const isVerified = selfUser?.is_verified;
 
@@ -103,15 +110,29 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
     const timeoutId = setTimeout(() => {
       if (Date.now() - lastUpdated > 40000) {
         setIsFetchingAutomatically(false);
-        alert("Az automatikus frissítés leállt. Frissítsd az oldalt!");
+        console.warn("Automatic fetching seems to have stopped.");
       }
-    }, 45000);
+    }, 40000);
 
     return () => clearTimeout(timeoutId);
   }, [lastUpdated]);
 
   useEffect(() => {
-    if (isFetchingAutomatically === false) setupSSE();
+    if (isFetchingAutomatically === false) {
+      setupSSE();
+      if (!isToastVisible) {
+        setIsToastVisible(true);
+        addToast({
+          title: "Az automatikus frissítés leállt. Frissítsd az oldalt!",
+          timeout: Infinity,
+          color: "danger",
+        });
+      }
+    }
+    if (isFetchingAutomatically === true) {
+      setIsToastVisible(false);
+      closeAll();
+    }
   }, [isFetchingAutomatically]);
 
   useEffect(() => {
@@ -254,6 +275,10 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
             </ButtonGroup>
           </div>
         </div>
+      </div>
+
+      <div className="fixed z-[100]">
+        <ToastProvider placement="top-center" toastOffset={60} />
       </div>
 
       <div className="grid grid-cols-5 gap-4 text-2xl font-extrabold max-md:hidden">

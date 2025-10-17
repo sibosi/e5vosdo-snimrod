@@ -18,7 +18,7 @@ export const Alert = ({
   if (className?.includes("hidden")) return <></>;
 
   return (
-    <HeroUiAlert color="primary" className="my-2">
+    <HeroUiAlert color="primary" className="m-2">
       {children}
     </HeroUiAlert>
   );

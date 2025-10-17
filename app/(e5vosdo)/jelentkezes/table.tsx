@@ -354,7 +354,8 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                 isDisabled={
                   selectedBySlot[selectedSlot || ""] === presentation.id ||
                   presentation.remaining_capacity === 0 ||
-                  !isVerified
+                  !isVerified ||
+                  presentation.remaining_capacity === null
                 }
                 onPress={() => signup(presentation.id)}
               >

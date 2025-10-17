@@ -18,8 +18,10 @@ export const Alert = ({
   if (className?.includes("hidden")) return <></>;
 
   return (
-    <HeroUiAlert color="primary" className="m-2">
-      {children}
-    </HeroUiAlert>
+    <div className="max-w-full w-full p-2">
+      <HeroUiAlert color="primary">
+        {children}
+      </HeroUiAlert>
+    </div>
   );
 };

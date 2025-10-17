@@ -15,7 +15,7 @@ export const Alert = ({
   icon = true,
 }: Alert) => {
 
-  if (className.includes("hidden")) return <></>;
+  if (className?.includes("hidden")) return <></>;
 
   return (
     <HeroUiAlert color="primary" className="my-2">

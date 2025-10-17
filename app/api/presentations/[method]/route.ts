@@ -6,12 +6,20 @@ type Params = {
   method: string;
 };
 
+const allowedFunctionsForUnauthorized = new Set<string>([
+  "getSlots",
+  "getPresentations",
+]);
+
 export async function POST(
   request: NextRequest,
   context: { params: Promise<Params> },
 ) {
   const selfEmail = (await auth())?.user?.email;
-  if (!selfEmail)
+  if (
+    !selfEmail &&
+    !allowedFunctionsForUnauthorized.has((await context.params).method)
+  )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const method = (await context.params).method;

@@ -105,7 +105,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
         setIsFetchingAutomatically(false);
         alert("Az automatikus frissítés leállt. Frissítsd az oldalt!");
       }
-    }, 50000);
+    }, 45000);
 
     return () => clearTimeout(timeoutId);
   }, [lastUpdated]);

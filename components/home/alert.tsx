@@ -1,4 +1,5 @@
 import React from "react";
+import { Alert as HeroUiAlert } from "@heroui/react";
 
 type Alert = {
   children: React.ReactNode;
@@ -13,35 +14,12 @@ export const Alert = ({
   padding = true,
   icon = true,
 }: Alert) => {
+
+  if (className.includes("hidden")) return <></>;
+
   return (
-    <div
-      className={
-        "flex w-fit items-center gap-2 rounded-lg border-3 text-sm text-foreground shadow-md " +
-        (padding && "mb-3 px-3 py-2") +
-        " " +
-        className
-      }
-    >
-      {icon && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="inline h-5 w-5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-        >
-          <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
-          <path d="M12 17V11" strokeWidth="1.5" strokeLinecap="round" />
-          <circle
-            cx="1"
-            cy="1"
-            r="0.75"
-            transform="matrix(1 0 0 -1 11 9)"
-            fill="currentColor"
-          />
-        </svg>
-      )}
-      <div>{children}</div>
-    </div>
+    <HeroUiAlert color="primary" className="my-2">
+      {children}
+    </HeroUiAlert>
   );
 };

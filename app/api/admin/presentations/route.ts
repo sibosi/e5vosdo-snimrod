@@ -134,7 +134,15 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const newRemainingCapacity = capacity - currentSignups;
+    const currentRemainingCapacityResult = await dbreq(
+      "SELECT remaining_capacity FROM presentations WHERE id = ?",
+      [id],
+    );
+    const currentRemainingCapacity =
+      currentRemainingCapacityResult[0].remaining_capacity;
+
+    const newRemainingCapacity =
+      currentRemainingCapacity === null ? null : capacity - currentSignups;
 
     await dbreq(
       "UPDATE presentations SET slot = ?, title = ?, performer = ?, description = ?, address = ?, requirements = ?, capacity = ?, remaining_capacity = ? WHERE id = ?",

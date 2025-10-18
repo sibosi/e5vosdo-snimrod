@@ -16,7 +16,7 @@ VALUES
         '?',
         '',
         0,
-        'Előadás | Dr. Balázs Áron, vagy ahogy többen ismerhettek, Sticky vagyok a social mediából. Nem is olyan régen még én is ott ültem a 101-es teremben, kajáltam a büfében, kosaraztam fent a teremben. Azóta sok minden változott: egyrészt 5 év kemény munka árán bankszektorban dolgozó jogász lett belőlem, valamint ismert tartalomgyártó lettem, összesen több, mint 300 ezer követővel. Vállalkozó vagyok, a legismertebb ''celebekkel'' és márkákkal dolgozok együtt, fellépések során bejártam az országot, ezek mellett pedig a bankszektorban főállású jogászként dolgozok. Gimiben arról álmodtam, hogy nem hétköznapi életem lesz. Úgy érzem: ez sikerült. És minden az Eötvösben kezdődött...'
+        'Előadás | Dr. Balázs Áron, vagy ahogy többen ismerhettek, Sticky vagyok a social mediából. Nem is olyan régen még én is ott ültem a 101-es teremben, kajáltam a büfében, kosaraztam fent a teremben. Azóta sok minden változott: egyrészt 5 év kemény munka árán jogász lett belőlem, valamint ismert tartalomgyártó lettem, összesen több, mint 300 ezer követővel. Vállalkozó vagyok, a legismertebb ''celebekkel'' és márkákkal dolgozok együtt, fellépések során bejártam az országot, ezek mellett pedig a bankszektorban főállású jogászként dolgozok. Gimiben arról álmodtam, hogy nem hétköznapi életem lesz. Úgy érzem: ez sikerült. És minden az Eötvösben kezdődött...'
     ),
     (
         'K2',
@@ -83,7 +83,7 @@ VALUES
     ),
     (
         'K2',
-        'Agy-hack'' - Hogyan lesz valakiből valaki?',
+        'Agy-hack - Hogyan lesz valakiből valaki?',
         'Czifra Vera (viselkedéstudományi szakértő és stratégiai tanácsadó)',
         '?',
         '',
@@ -124,7 +124,7 @@ VALUES
         '?',
         '',
         0,
-        'Előadás | Egy kis barangolásra várjuk az érdeklődőket a fizika és a medicina határára! Betekintést nyerhetünk egy olyan kevéssé ismert szakterületbe, ahol a napi gyógyító munkában jelentős részt vállalnak a fizikusok is. Az orvosi fizika a különböző képalkotó technikáktól az ionizáló sugárzást használó terápiás megoldásokig sok mindent magába foglal. Megismerhetjük a legizgalmasabb sugárterápiás technikákat, szó esik a lineáris gyorsítóval végzett külső sugárkezelésről és a radioaktív izotóp emberi testbe juttatásával történő brachyterápiáról is. Megtudhatjuk, hogy mely képalkotó eszközök használnak ionizáló sugárzást, és melyeknek nincs hatása az emberi szervezetre? Hogyan lehet egy radioaktív izotópot egyszerre használni képalkotásra és terápiára? Mit vág a CyberKnife és a gamma-kés? Mi történik, ha eltalál bennünket egy foton? És ha egy proton? A radioaktív izotópokat végleg bent lehet hagyni az emberi testben?'
+        'Előadás | Egy kis barangolásra várjuk az érdeklődőket a fizika és a medicina határára! Betekintést nyerhetünk egy olyan kevéssé ismert szakterületbe, ahol a napi gyógyító munkában jelentős részt vállalnak a fizikusok is. Az orvosi fizika a különböző képalkotó technikáktól az ionizáló sugárzást használó terápiás megoldásokig sok mindent magába foglal. Megismerhetjük a legizgalmasabb sugárterápiás technikákat, szó esik a lineáris gyorsítóval végzett külső sugárkezelésről, és a radioaktív izotóp emberi testbe juttatásával történő brachyterápiáról is. Megtudhatjuk, hogy mely képalkotó eszközök használnak ionizáló sugárzást, és melyeknek nincs hatása az emberi szervezetre? Hogyan lehet egy radioaktív izotópot egyszerre használni képalkotásra és terápiára? Mit vág a CyberKnife és a gamma-kés? Mi történik, ha eltalál bennünket egy foton? És ha egy proton? A radioaktív izotópokat végleg bent lehet hagyni az emberi testben?'
     ),
     (
         'K2',
@@ -151,7 +151,7 @@ VALUES
         '?',
         '',
         0,
-        'Közös munka | Szeretnél egy órára tanácsadóvá válni? Szeretnél új, izgalmas és megoldásra váró problémákkal szembenézni? Érdekel a pálya, de nem tudod hogyan lehetne egy Big Four vállalathoz kerülni? Gyere el, vegyél részt egy esetmegoldásban és utána kérdezz tőlem bátran! (20 fő)'
+        'Közös munka | Szeretnél egy órára tanácsadóvá válni? Szeretnél új, izgalmas és megoldásra váró problémákkal szembenézni? Érdekel a pálya, de nem tudod hogyan lehetne egy Big Four vállalathoz kerülni? Gyere el, vegyél részt egy esetmegoldásban, és utána kérdezz tőlem bátran! (20 fő)'
     ),
     (
         'K2',
@@ -194,7 +194,7 @@ VALUES
         'Kutatás az ökológia és az egészségügy határán',
         'Őrsi Ákos (egyetemi hallgató, Debreceni Egyetem, Biológia BSc, 14. D)',
         '?',
-        'Az előadás elsősorban 9. osztály felett ajánlott mert a téma igényel némi biológia ismeretet. Kiemelten várom a faktos, vagy biológia faktra készülőket.',
+        '',
         0,
         'Előadás | Mi az az ''Egy Egészség''? Miként hat mindennapjainkra a madarak vonulása és az élete? Az előadásban megismerhetitek az ökológiai és egészségügyi vonzatait a madárvonulásnak, és beszélünk a járványokról és az előrelátható veszélyforrásokról (Az előadás elsősorban 9. osztály felett ajánlott, mert a téma igényel némi biológiai háttérismeretet. Kiemelten a biológia fakultációra járó, vagy oda készülő diákoknak!)'
     ),

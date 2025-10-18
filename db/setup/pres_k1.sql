@@ -11,7 +11,7 @@ INSERT INTO
 VALUES
     (
         'K1',
-        'Harry Potter, és a pszichológia varázsa',
+        'Harry Potter és a pszichológia varázsa',
         'Bakos Márk (10. F)',
         '?',
         '',
@@ -25,7 +25,7 @@ VALUES
         '?',
         '',
         0,
-        'Előadás | Volt Eötvösös diákként, majd Corvinusos hallgatóként tanultam Bostonban, Bécsben és Milánóban, majd dolgoztam Koppenhágában, São Paulóban és Madridban – mindegyik hely egy kicsit átírta, mit jelent számomra az „itthon”. Az előadás arról szól, hogyan alakul át az ember gondolkodása, mikor más országokban él és dolgozik, és hogyan lehet mindezt később itthon, egyetemi oktatóként és kutatóként hasznosítani. A „menni vagy maradni”-dilemmát nem eldönteni kell, hanem érteni: mit ad egy nemzetközi tapasztalat a karrierhez, és mit ad az itthon maradás a tudáshoz és a perspektívához'
+        'Előadás | Volt Eötvösös diákként, majd Corvinusos hallgatóként tanultam Bostonban, Bécsben és Milánóban, majd dolgoztam Koppenhágában, São Paulóban és Madridban – mindegyik hely egy kicsit átírta, mit jelent számomra az „itthon”. Az előadás arról szól, hogyan alakul át az ember gondolkodása, amikor más országokban él és dolgozik, és hogyan lehet mindezt később itthon, egyetemi oktatóként és kutatóként hasznosítani. A „menni vagy maradni”-dilemmát nem eldönteni kell, hanem érteni: mit ad egy nemzetközi tapasztalat a karrierhez, és mit ad az itthon maradás a tudáshoz és a perspektívához'
     ),
     (
         'K1',
@@ -34,7 +34,7 @@ VALUES
         '?',
         '',
         0,
-        'Előadás | A mesterséges intelligenciakutatás egyik iránya az, hogy a mesterséges intelligenciát (AI) morális ágensé (cselekvővé) tegyék annak érdekében, hogy felismerje és kövesse a releváns morális szabályokat, és ha megszegi azokat, számonkérhető legyen érte. Előadásomban amellett érvelek, hogy a jelenlegi technológiával elkészíthető mesterséges intelligencia nem tehető valódi morális ágensé, mivel valójában nem lehet képes megragadni a “jó” és a “rossz” fogalmait'
+        'Előadás | A mesterséges intelligenciakutatás egyik iránya az, hogy a mesterséges intelligenciát (AI) morális ágenssé (cselekvővé) tegyék annak érdekében, hogy felismerje és kövesse a releváns morális szabályokat, és ha megszegi azokat, számonkérhető legyen érte. Előadásomban amellett érvelek, hogy a jelenlegi technológiával elkészíthető mesterséges intelligencia nem tehető valódi morális ágenssé, mivel valójában nem lehet képes megragadni a “jó” és a “rossz” fogalmait'
     ),
     (
         'K1',
@@ -43,7 +43,7 @@ VALUES
         '?',
         '',
         0,
-        'Előadás és beszélgetés | A szovjet rendszer összetartó erői a XX. Században. Tervgazdaság és hiány. 1953, 1956, 1970, 1976, 1981 munkásfelkelései. A demokratikus ellenzék intézményesülése (SZETA, Szamizdat, Hétfői Szabadegyetem). A Kerekasztal-tárgyalások'
+        'Előadás és beszélgetés | A szovjet rendszer összetartó erői a XX. században. Tervgazdaság és hiány. 1953, 1956, 1970, 1976, 1981 munkásfelkelései. A demokratikus ellenzék intézményesülése (SZETA, Szamizdat, Hétfői Szabadegyetem). A Kerekasztal-tárgyalások'
     ),
     (
         'K1',
@@ -106,7 +106,7 @@ VALUES
         '?',
         '',
         0,
-        'Előadás | Sokan kuncognak, ha meghallják a ""kutyaiskola"" szót, mások pedig csak legyintenek - mondván: felesleges! Hiszen anélkül is tudunk sétálni az utcán vagy az erdőben a kutyánkkal, hogy bármiféle kiképzésben venne részt. Pedig egy kutyaiskola sokkal több annál, mint elsőre gondolnánk! Előadásommal szeretném felhívni a figyelmet arra, hogy milyen helyet foglalnak el a kutyaiskolák a felelős állattartásban, miért érdemes akár tizenéves kutyatulajdonosként megismerkedni ezzel a világgal, és milyen sokszínű az, amit ""kutyakiképzésnek"" hívunk (20 fő)'
+        'Előadás | Sokan kuncognak, ha meghallják a "kutyaiskola" szót, mások pedig csak legyintenek - mondván: felesleges! Hiszen anélkül is tudunk sétálni az utcán vagy az erdőben a kutyánkkal, hogy bármiféle kiképzésben venne részt. Pedig egy kutyaiskola sokkal több annál, mint elsőre gondolnánk! Előadásommal szeretném felhívni a figyelmet arra, hogy milyen helyet foglalnak el a kutyaiskolák a felelős állattartásban, miért érdemes akár tizenéves kutyatulajdonosként megismerkedni ezzel a világgal, és milyen sokszínű az, amit "kutyakiképzésnek" hívunk (20 fő)'
     ),
     (
         'K1',
@@ -138,15 +138,15 @@ VALUES
     (
         'K1',
         'Beszédtechnikai gyakorlatok',
-        'Király Katalin (beszédtechnika tanár, Színház és Filmművészeti Egyetem, volt E5vös-diák)',
+        'Király Katalin (beszédtechnika tanár, Színház- és Filmművészeti Egyetem, volt E5vös-diák)',
         '?',
         '',
         0,
-        'Közös munka | Érdekel miben tér el egy színész beszéde a köznapi beszédtől? Kiváncsi vagy, hogyan zajlik a színészhallgatók beszédtechnikai oktatása? Szeretnél te is elsajátítani pár trükköt, hogy érthetőbb és szebb legyen a beszéded? Gyere és próbálj ki gyakorlatokat a Színház- és Filmművészeti Egyetem egyik beszédtanárával, egy volt Eötvös-diákkal! (15 fő)'
+        'Közös munka | Érdekel miben tér el egy színész beszéde a köznapi beszédtől? Kíváncsi vagy, hogyan zajlik a színészhallgatók beszédtechnikai oktatása? Szeretnél te is elsajátítani pár trükköt, hogy érthetőbb és szebb legyen a beszéded? Gyere és próbálj ki gyakorlatokat a Színház- és Filmművészeti Egyetem egyik beszédtanárával, egy volt Eötvös-diákkal! (15 fő)'
     ),
     (
         'K1',
-        'Az ÁJK-n innen és túl: az ELTE ÁJK jogász és politológus képzései, és a karrierlehetőségek',
+        'Az ÁJK-n innen és túl: az ELTE ÁJK jogász és politológus képzései és a karrierlehetőségek',
         'Kovács Anna - Hauser Márton - Egri Bence (Az ELTE Állam- és Jogtudományi Karán működő Felvételi Előkészítő Bizottság tagjai. Kovács Anna politológus hallgató, Hauser Márton és Egri Bence joghallgató)',
         '?',
         '',
@@ -158,7 +158,7 @@ VALUES
         '“Az amerikai álom?” - FLEX Beszámoló',
         'Mátyás Márton - Szalma Sámuel (Future Leaders Exchange (FLEX) ösztöndíjasok, American Councils Hungary, 11. F)',
         '?',
-        'Az előadást elsősorban 7., 8., 9. Évfolyam tanulóinak javasoljuk, beleértve a nyelvi előkészítő tagozatot is.',
+        'Az előadást elsősorban a 7., a 8. és a 9. évfolyam tanulóinak javasoljuk, beleértve a nyelvi előkészítő tagozatot is.',
         0,
         'Előadás | El tudod képzelni, hogy Amerikában tanulsz egy évig? Ráadásul teljesen ingyen? Akkor ez a lehetőség pont neked szól! Gyere el és hallgasd meg két tavalyi ösztöndíjas diák előadását az amerikai életükről, kérdezz tőlük bátran és legyél TE az, aki valóra válthatja az álmát! Az előadást elsősorban 7., 8., 9. Évfolyam tanulóinak javasoljuk, beleértve a nyelvi előkészítő tagozatot is'
     ),
@@ -174,11 +174,11 @@ VALUES
     (
         'K1',
         'Ismeretlen helyek nyomában – hátizsákkal Észak-Európától Kis-Ázsiáig',
-        'Németh Zoltán (tanár úr, karvezető, ""hátizsákos utazó"")',
+        'Németh Zoltán (tanár úr, karvezető, "hátizsákos utazó")',
         '?',
         '',
         0,
-        'Előadás | Hogyan lehet világot járni anélkül, hogy turisták tömegébe botlanánk? Elsőéves egyetemista korom óta, most pedig már tanárként, hátizsákkal és nagy kíváncsisággal járom Európa és Kis-Ázsia eldugott vidékeit – városokat, falvakat és tájakat, amelyeket olykor még a turistatérképek sem jelölnek. Megosztom azt is, többek között, hogy milyen érzés a civilizációtól sok-sok kilométerre fekvő nyílt tengeri szigetet -16 fokban bejárni; hogyan lehet átvágni egy igazi mocsáron az észtországi pusztában. Beszélek arról is, milyen, és hogyan kell elutazni egy olyan országból, ahol épp fegyveres konfliktus tör ki – mielőtt a helyzet rosszabbra fordulna. Persze nemcsak történeteket hozok, hanem gyakorlati tippeket is: hogyan találhatunk eldugott helyeket, miként készülhetünk fel váratlan helyzetekre, és hogyan lehet mindezeket pozitívan kezelni, és nem mellesleg: hogyan lehet ezeket az utakat olykor fillérekből megoldani'
+        'Előadás | Hogyan lehet világot járni anélkül, hogy turisták tömegébe botlanánk? Elsőéves egyetemista korom óta, most pedig már tanárként, hátizsákkal és nagy kíváncsisággal járom Európa és Kis-Ázsia eldugott vidékeit – városokat, falvakat és tájakat, amelyeket olykor még a turistatérképek sem jelölnek. Megosztom azt is, többek között, hogy milyen érzés a civilizációtól sok-sok kilométerre fekvő nyílt tengeri szigetet -16 fokban bejárni; hogyan lehet átvágni egy igazi mocsáron az észtországi pusztában. Beszélek arról is, hogyan kell elutazni egy olyan országból, ahol épp fegyveres konfliktus tör ki – mielőtt a helyzet rosszabbra fordulna. Persze nemcsak történeteket hozok, hanem gyakorlati tippeket is: hogyan találhatunk eldugott helyeket, miként készülhetünk fel váratlan helyzetekre, és hogyan lehet mindezeket pozitívan kezelni, és nem mellesleg: hogyan lehet ezeket az utakat olykor fillérekből megoldani'
     ),
     (
         'K1',
@@ -191,12 +191,12 @@ VALUES
     ),
     (
         'K1',
-        '""Miért pont Shakespeare?"" Könyvbemutató és interaktív előadás',
+        '"Miért pont Shakespeare?" Könyvbemutató és interaktív előadás',
         'Dr. Pikli Natália (Shakespeare-kutató, volt középiskolai tanár, egyetemi docens, ELTE BTK)',
         '?',
         '',
         0,
-        'Könyvbemutató és interaktív előadás | Miért pont Shakespeare? Miért kell, hogy érdekeljen minket egy 400 éve halott drámaíró? Erről beszélgetünk - tudományos és szórakoztató válaszokat ígérve. Pikli Natália májusban megjelent könyve, a ""Shakespeare minden időkre"" a sok évszázados, egyre csak táguló Shakespeare-univerzum bemutatását és elemzését a nemzetközi és magyar tudomány legfrissebb eredményei alapján végzi: áttekinti a drámaírói pályát, feltárva a színdarabok belső, sajátos működési mechanizmusát, nem megfeledkezve a 16-17. századforduló Angliájának kulturális környezetéről. Ami viszont még különlegessebbé teszi ezt a „Shakespeare-bibliát”, az a 20-21. századi filmekre és színházi előadásokra vetett pillantása, személyes érdeklődése és problémaérzékenysége, kivételesen lendületes és szellemes nyelvezete. Mert a tudomány mögött ott az ember, és vele sokkal izgalmasabb (elkerülhetetlenül) újraolvasni Shakespeare műveit - minden korban és minden időkre'
+        'Könyvbemutató és interaktív előadás | Miért pont Shakespeare? Miért kell, hogy érdekeljen minket egy 400 éve halott drámaíró? Erről beszélgetünk - tudományos és szórakoztató válaszokat ígérve. Pikli Natália májusban megjelent könyve, a "Shakespeare minden időkre" a sok évszázados, egyre csak táguló Shakespeare-univerzum bemutatását és elemzését a nemzetközi és magyar tudomány legfrissebb eredményei alapján végzi: áttekinti a drámaírói pályát, feltárva a színdarabok belső, sajátos működési mechanizmusát, nem megfeledkezve a 16-17. századforduló Angliájának kulturális környezetéről. Ami viszont még különlegessebbé teszi ezt a „Shakespeare-bibliát”, az a 20-21. századi filmekre és színházi előadásokra vetett pillantása, személyes érdeklődése és problémaérzékenysége, kivételesen lendületes és szellemes nyelvezete. Mert a tudomány mögött ott az ember, és vele sokkal izgalmasabb (elkerülhetetlenül) újraolvasni Shakespeare műveit - minden korban és minden időkre'
     ),
     (
         'K1',
@@ -236,7 +236,7 @@ VALUES
     ),
     (
         'K1',
-        'Hogy mondják udmurtul, hogy ""a kiskakasom a labdáddal játszik""? - Játékos logikai fejtörők a nyelvészet világából',
+        'Hogy mondják udmurtul, hogy "a kiskakasom a labdáddal játszik"? - Játékos logikai fejtörők a nyelvészet világából',
         'Virág Máté Gergely (egyetemi hallgató, ELTE BTK, 13. C)',
         '?',
         '',

@@ -99,7 +99,15 @@ export async function PUT(request: NextRequest) {
       capacity,
     } = await request.json();
 
-    if (!id || !slot || !title || !description || !address || !capacity) {
+    if (
+      !id ||
+      !slot ||
+      !title ||
+      !description ||
+      !address ||
+      capacity === undefined ||
+      capacity === null
+    ) {
       return NextResponse.json(
         {
           error:

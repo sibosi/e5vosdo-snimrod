@@ -48,7 +48,8 @@ export async function POST(request: NextRequest) {
       !description ||
       !address ||
       !requirements ||
-      !capacity
+      capacity === undefined ||
+      capacity === null
     ) {
       return NextResponse.json(
         { error: "All fields are required" },

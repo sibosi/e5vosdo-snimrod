@@ -357,10 +357,10 @@ const AdminPresentationsPage = () => {
         <Button
           color="secondary"
           onPress={() => {
-            window.open("/api/admin/export", "_blank");
+            window.open("/api/presentations/getPDF", "_blank");
           }}
         >
-          CSV Export
+          PDF létrehozása
         </Button>
       </div>
 

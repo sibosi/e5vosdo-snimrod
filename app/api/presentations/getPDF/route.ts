@@ -13,7 +13,7 @@ import getUserClass from "@/public/getUserClass";
 // This regex keeps basic Latin characters, extended Latin (common in Hungarian),
 // and newline/carriage return.
 function sanitizeText(text: string): string {
-  return text.replace(/[^\x20-\x7E\u00A0-\u017F\n\r]/g, "");
+  return text.replaceAll(/[^\x20-\x7E\u00A0-\u017F\n\r]/g, "");
 }
 
 // Ensure PDFKit can locate its default font files in bundled environments.
@@ -31,7 +31,9 @@ export async function GET() {
   if (!selfUser?.permissions?.includes("admin"))
     return new NextResponse("Unauthorized", { status: 403 });
   // Use PDFDocumentWithTables from pdfkit-table.
-  const doc = new PDFDocumentWithTables({ margin: 50 });
+  const doc = new PDFDocumentWithTables({
+    margins: { top: 20, bottom: 10, left: 40, right: 40 },
+  });
   let customFontUsed = false;
   const fontPath = path.join(process.cwd(), "public", "fonts", "Outfit.ttf");
 
@@ -54,19 +56,38 @@ export async function GET() {
     // Capture PDF output.
     doc.on("data", (chunk) => chunks.push(chunk));
 
-    // Add a heading.
-    doc.fontSize(16).text("Presentations & Signups", { underline: true });
-    doc.moveDown();
-
     // Retrieve presentations.
     const presentations = await getPresentations();
 
+    let i = 0;
+
+    const membersAtPresentations = new Map<number, string[]>();
+    await Promise.all(
+      presentations.map(async (presentation) => {
+        const emails = await getMembersAtPresentation(null, presentation.id);
+        membersAtPresentations.set(presentation.id, emails);
+      }),
+    );
+
     for (const presentation of presentations) {
+      i += 1;
+      console.log(`Processing presentation ${i}/${presentations.length}`);
       // Sanitize presentation fields.
       const presTitle = sanitizeText(presentation.title);
-      const presDescription = sanitizeText(presentation.description);
+      const presPerformerPre = sanitizeText(presentation.performer || "N/A");
+      const presPerformer =
+        presPerformerPre.length > 146
+          ? `${presPerformerPre.slice(0, 143)}...`
+          : presPerformerPre;
       const presAddress = sanitizeText(presentation.address);
-      const presCapacity = presentation.capacity ?? "N/A";
+      const presMaxCapacity = presentation.capacity;
+
+      // Retrieve signup emails (expected as string[]).
+      const emails: string[] =
+        membersAtPresentations.get(presentation.id) || [];
+      emails.sort((a, b) => a.localeCompare(b));
+
+      const presSignuped = emails.length;
 
       // Write presentation details.
       doc.registerFont("Outfit", fontPath, "bold");
@@ -74,45 +95,61 @@ export async function GET() {
         .fontSize(14)
         .font("Outfit")
         .text(`${presentation.id}: ${presTitle}`, { underline: true });
-      doc.fontSize(12).text(`Description: ${presDescription}`);
-      doc.text(`Address: ${presAddress}`);
-      doc.text(`Capacity: ${presCapacity}`);
-      doc.moveDown(0.5);
-
-      // Retrieve signup emails (expected as string[]).
-      const emails: string[] = await getMembersAtPresentation(
-        null,
-        presentation.id,
+      doc.text(`Előadó: ${presPerformer}`);
+      doc.text(`Helyszín: ${presAddress}`);
+      doc.text(
+        `Jelentkezők száma: ${presSignuped} (maximum ${presMaxCapacity} fő)`,
       );
-      emails.sort((a, b) => a.localeCompare(b));
+      doc.moveDown(0.5);
 
       if (emails.length > 0) {
         // Build the table rows as objects.
         const rows = [];
+        let j = 0;
         for (const email of emails) {
+          j += 1;
           const emailStr = sanitizeText(String(email));
           const user = await getUser(emailStr);
           const name =
             user && typeof user.name === "string"
               ? sanitizeText(user.full_name!)
               : "Unknown";
-          rows.push({ name: getUserClass(user!) + " " + name, email: emailStr });
+          rows.push({
+            index: `${j}.`,
+            name: name,
+            class: getUserClass(user) || "N/A",
+            email: emailStr,
+          });
         }
 
         // Calculate available width.
         const availableWidth =
           doc.page.width - doc.page.margins.left - doc.page.margins.right;
-        // Define column widths: 30% for Name and 70% for Email.
-        const nameWidth = availableWidth * 0.3;
-        const emailWidth = availableWidth * 0.7;
+
+        const indexWidth = availableWidth * 0.03;
+        const nameWidth = availableWidth * 0.45;
+        const classWidth = availableWidth * 0.07;
+        const emailWidth = availableWidth * 0.45;
 
         // Define the table with headers and data.
         const table = {
           headers: [
             {
-              label: "Name",
+              label: "#",
+              property: "index",
+              width: indexWidth,
+              renderer: undefined,
+            },
+            {
+              label: "Név",
               property: "name",
               width: nameWidth,
+              renderer: undefined,
+            },
+            {
+              label: "Oszály",
+              property: "class",
+              width: classWidth,
               renderer: undefined,
             },
             {
@@ -127,8 +164,8 @@ export async function GET() {
 
         // Draw the table.
         await doc.table(table, {
-          prepareHeader: () => doc.font("Courier").fontSize(12),
-          prepareRow: (row, i) => doc.font("Courier").fontSize(10),
+          prepareHeader: () => doc.font("Outfit").fontSize(12),
+          prepareRow: (row, i) => doc.font("Outfit").fontSize(10),
         });
 
         // Reset the font after drawing the table.
@@ -138,20 +175,34 @@ export async function GET() {
         doc.text("Signups: None");
       }
       doc.moveDown();
-      doc.addPage();
+      if (i < presentations.length) doc.addPage();
     }
 
     // Finalize the PDF.
     doc.end();
     const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
       doc.on("end", () => resolve(Buffer.concat(chunks)));
-      doc.on("error", (err) => reject(err));
+      doc.on("error", (err: any) => reject(err as Error));
     });
 
-    return new NextResponse(pdfBuffer, {
+    // Convert the buffer to a Uint8Array
+    const pdfArrayBuffer = new Uint8Array(pdfBuffer);
+
+    const fileName = `jelentkezesek ${new Date().toLocaleDateString("hu-HU", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })} ${new Date().toLocaleTimeString("hu-HU", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}.pdf`
+      .replaceAll(". ", "-")
+      .replaceAll(":", "-");
+
+    return new NextResponse(pdfArrayBuffer, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": 'attachment; filename="presentations.pdf"',
+        "Content-Disposition": `attachment; filename="${fileName}"`,
       },
     });
   } catch (error) {

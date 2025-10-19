@@ -5,6 +5,7 @@ import { Button, ButtonGroup, Link } from "@heroui/react";
 
 type SectionProps = {
   title: string;
+  localStorageKey?: string;
   defaultStatus?: "opened" | "closed";
   dropdownable?: boolean;
   children: React.ReactNode;
@@ -101,6 +102,7 @@ const SideComponenet = ({
 
 export const Section = ({
   title,
+  localStorageKey,
   defaultStatus,
   dropdownable,
   children,
@@ -117,20 +119,24 @@ export const Section = ({
   const [isOpen, setIsOpen] = useState(defaultStatus != "closed");
   const [isNewVersion, setIsNewVersion] = useState(false);
 
+  localStorageKey = localStorageKey ?? title;
+
   useEffect(() => {
     setIsOpen(
-      (savable ? loadSectionStatus(title) : undefined) ??
+      (savable ? loadSectionStatus(localStorageKey) : undefined) ??
         defaultStatus != "closed",
     );
     if (newVersion !== undefined)
-      setIsNewVersion(loadSectionStatus(title + "_new_version") ?? false);
+      setIsNewVersion(
+        loadSectionStatus(localStorageKey + "_new_version") ?? false,
+      );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleDropdown = () => {
     if (!dropdownable) return;
     setIsOpen(!isOpen);
-    if (savable) setSectionStatus(title, !isOpen);
+    if (savable) setSectionStatus(localStorageKey, !isOpen);
   };
 
   if (isCard) className += " rounded-3xl bg-selfprimary-50 p-6";

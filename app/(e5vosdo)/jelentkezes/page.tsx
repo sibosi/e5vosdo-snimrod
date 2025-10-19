@@ -1,4 +1,3 @@
-import PleaseLogin from "../me/redirectToLogin";
 import IsVerified from "./isVerified";
 import Table from "./table";
 import { getAuth } from "@/db/dbreq";

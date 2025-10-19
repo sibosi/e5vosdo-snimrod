@@ -17,7 +17,6 @@ import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert, Chip } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import MillioLepes from "@/components/home/milliolepes";
-import IsVerified from "./jelentkezes/isVerified";
 
 const PageHeadContent = async ({
   selfUser,
@@ -65,8 +64,9 @@ export default async function Home() {
       {gate(selfUser, "user", "boolean") && (
         <Section
           title="Órarend"
+          localStorageKey="Órarend2"
           dropdownable={true}
-          defaultStatus="closed"
+          defaultStatus="opened"
           savable={true}
           chip={
             <Chip color="secondary" size="sm">

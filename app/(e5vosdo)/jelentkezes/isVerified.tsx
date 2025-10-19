@@ -24,8 +24,7 @@ const IsVerified = ({ selfUser }: { selfUser: PossibleUserType }) => {
 
   return (
     <Alert color="success" className="my-2">
-      Diákstátusz igazolva! Az előadásjelentkezési felület szombat délután fog
-      megnyílni.
+      Diákstátusz igazolva! Az előadásokra jelentkezhetsz.
     </Alert>
   );
 };

@@ -173,6 +173,21 @@ async function importMyCodes() {
     await conn.query(`UPDATE users SET is_verified = TRUE WHERE email = ?;`, [
       email,
     ]);
+
+    const userTicketsResult = await conn.query(
+      `SELECT tickets FROM users WHERE email = ?;`,
+      [email],
+    );
+
+    const userTickets =
+      ((userTicketsResult as any)[0].tickets as string[]) || null;
+
+    if (userTickets == null) {
+      await conn.query(`UPDATE users SET tickets = ? WHERE email = ?;`, [
+        JSON.stringify([]),
+        email,
+      ]);
+    }
   });
   addLog("importMyCodes", email);
 }

@@ -2,6 +2,7 @@
 
 import { PresentationType } from "@/db/presentationSignup";
 import { Button } from "@heroui/react";
+import { scrollInfo } from "framer-motion";
 import React, { useEffect, useState } from "react";
 
 interface EditingPresentation extends Partial<PresentationType> {
@@ -202,12 +203,18 @@ const AdminPresentationsPage = () => {
       });
 
       if (response.ok) {
+        const element = document.getElementById(
+          "presentation-card-" + (editingPresentation.id ?? ""),
+        );
         setEditingPresentation(null);
         setIsCreating(false);
         await fetchPresentations();
         await fetchSignups();
         await fetchNamesByEmail();
         await fetchSlots(); // Frissítjük a slotokat is
+
+        if (element) element.scrollIntoView({ behavior: "smooth" });
+
         alert(
           editingPresentation.isNew
             ? "Prezentáció sikeresen létrehozva"
@@ -546,6 +553,7 @@ const AdminPresentationsPage = () => {
           <div className="grid gap-4">
             {filteredPresentations.map((presentation) => (
               <div
+                id={"presentation-card-" + presentation.id}
                 key={presentation.id}
                 className="rounded-lg border-2 border-selfprimary-400 bg-selfprimary-100 p-4"
               >

@@ -7,6 +7,7 @@ import {
 } from "@/db/presentationSignup";
 import { getAuth, getUser } from "@/db/dbreq";
 import PDFDocumentWithTables from "pdfkit-table";
+import getUserClass from "@/public/getUserClass";
 
 // A helper function to clean up unwanted control characters.
 // This regex keeps basic Latin characters, extended Latin (common in Hungarian),
@@ -93,9 +94,9 @@ export async function GET() {
           const user = await getUser(emailStr);
           const name =
             user && typeof user.name === "string"
-              ? sanitizeText(user.name)
+              ? sanitizeText(user.full_name)
               : "Unknown";
-          rows.push({ name, email: emailStr });
+          rows.push({ getUserClass(user.EJG_code) + " " + name, email: emailStr });
         }
 
         // Calculate available width.

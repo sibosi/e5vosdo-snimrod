@@ -94,9 +94,9 @@ export async function GET() {
           const user = await getUser(emailStr);
           const name =
             user && typeof user.name === "string"
-              ? sanitizeText(user.full_name)
+              ? sanitizeText(user.full_name!)
               : "Unknown";
-          rows.push({ name: getUserClass(user.EJG_code) + " " + name, email: emailStr });
+          rows.push({ name: getUserClass(user.EJG_code!) + " " + name, email: emailStr });
         }
 
         // Calculate available width.

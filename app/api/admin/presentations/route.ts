@@ -125,7 +125,7 @@ export async function PUT(request: NextRequest) {
     );
     const currentSignups = signupsResult.count;
 
-    if (capacity < currentSignups) {
+    if (capacity < currentSignups && !gate(user,"admin", "boolean")) {
       return NextResponse.json(
         {
           error: `Cannot set capacity below current signups (${currentSignups})`,

@@ -96,7 +96,7 @@ export async function GET() {
             user && typeof user.name === "string"
               ? sanitizeText(user.full_name!)
               : "Unknown";
-          rows.push({ name: getUserClass(user.EJG_code!) + " " + name, email: emailStr });
+          rows.push({ name: getUserClass(user?.EJG_code!) + " " + name, email: emailStr });
         }
 
         // Calculate available width.

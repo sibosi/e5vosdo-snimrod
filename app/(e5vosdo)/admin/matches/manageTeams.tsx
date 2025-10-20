@@ -1,41 +1,42 @@
 "use client";
-import { Team, Match } from "@/db/matches";
+import { Team, Match, TeamCategory } from "@/db/matches";
 import React from "react";
-
-export function getColorClass(group: string) {
-  switch (group) {
-    case "A":
-      return "bg-red-400 dark:bg-red-800";
-    case "B":
-      return "bg-blue-300 dark:bg-blue-700";
-    case "C":
-      return "bg-green-400 dark:bg-green-700";
-    case "D":
-      return "bg-yellow-400 dark:bg-yellow-600";
-    case "Q":
-      return "bg-yellow-400 dark:bg-yellow-600";
-    case "T":
-      return "bg-purple-400 dark:bg-purple-700";
-    case "H":
-      return "bg-orange-400 dark:bg-orange-600";
-    case "W":
-      return "bg-red-400 dark:bg-red-800";
-    case "X":
-      return "bg-gray-300 dark:bg-gray-500";
-    default:
-      return "bg-gray-300 dark:bg-gray-500";
-  }
-}
 
 // Function to calculate team points
 interface TeamPoints {
   [teamId: number]: number;
 }
 
+// Legacy function for backward compatibility with old group_letter system
+// Note: This is deprecated and should not be used for new code
+export function getColorClass(color: string | undefined) {
+  return `bg-${color}-300 dark:bg-${color}-700 `;
+}
+
+// Helper function to get color class based on category color code
+function getCategoryColorClass(colorCode: string) {
+  return `bg-${colorCode}-300 dark:bg-${colorCode}-700`;
+}
+
+// Helper function to get border color class
+function getBorderColorClass(colorCode: string) {
+  return `border-${colorCode}-300 dark:border-${colorCode}-700`;
+}
+
+// Helper to get category by id
+function getCategoryById(
+  categories: TeamCategory[],
+  categoryId: number,
+): TeamCategory | undefined {
+  return categories.find((cat) => cat.id === categoryId);
+}
+
 const ManageTeams = () => {
   const [teams, setTeams] = React.useState<Team[]>();
-  const [matches, setMatches] = React.useState<any[]>([]);
   const [teamPoints, setTeamPoints] = React.useState<TeamPoints>({});
+  const [teamCategories, setTeamCategories] = React.useState<TeamCategory[]>(
+    [],
+  );
 
   React.useEffect(() => {
     // Fetch all matches
@@ -47,40 +48,58 @@ const ManageTeams = () => {
     })
       .then((res) => res.json())
       .then((data: Match[]) => {
-        setMatches(data);
-
         // Calculate points for each team
         const points: TeamPoints = {};
 
         // Initialize all teams with 0 points
-        teams?.forEach((team) => {
-          points[team.id] = 0;
-        });
+        if (teams) {
+          for (const team of teams) {
+            points[team.id] = 0;
+          }
+        }
 
         // Calculate points from finished matches
-        data
-          .filter((match) => match.status === "finished")
-          .forEach((match) => {
-            // Home team (team1) points
-            if (match.team1_score > match.team2_score) {
-              points[match.team1_id] = (points[match.team1_id] || 0) + 3;
-            } else if (match.team1_score === match.team2_score) {
-              points[match.team1_id] = (points[match.team1_id] || 0) + 1;
-            }
+        const finishedMatches = data.filter(
+          (match) => match.status === "finished",
+        );
+        for (const match of finishedMatches) {
+          // Home team (team1) points
+          if (match.team1_score > match.team2_score) {
+            points[match.team1_id] = (points[match.team1_id] || 0) + 3;
+          } else if (match.team1_score === match.team2_score) {
+            points[match.team1_id] = (points[match.team1_id] || 0) + 1;
+          }
 
-            // Away team (team2) points
-            if (match.team2_score > match.team1_score) {
-              points[match.team2_id] = (points[match.team2_id] || 0) + 3;
-            } else if (match.team1_score === match.team2_score) {
-              points[match.team2_id] = (points[match.team2_id] || 0) + 1;
-            }
-          });
+          // Away team (team2) points
+          if (match.team2_score > match.team1_score) {
+            points[match.team2_id] = (points[match.team2_id] || 0) + 3;
+          } else if (match.team1_score === match.team2_score) {
+            points[match.team2_id] = (points[match.team2_id] || 0) + 1;
+          }
+        }
 
         setTeamPoints(points);
+      })
+      .catch((err) => {
+        console.error("Error fetching matches:", err);
       });
   }, [teams]);
 
   React.useEffect(() => {
+    fetch("/api/getTeamCategories", {
+      method: "GET",
+      headers: {
+        module: "matches",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setTeamCategories(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching team categories:", err);
+      });
+
     fetch("/api/getTeams", {
       method: "GET",
       headers: {
@@ -90,6 +109,9 @@ const ManageTeams = () => {
       .then((res) => res.json())
       .then((data) => {
         setTeams(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching teams:", err);
       });
   }, []);
 
@@ -104,46 +126,97 @@ const ManageTeams = () => {
       </div>
     );
 
+  // Group teams by category
+  const teamsByCategory = teams.reduce(
+    (acc, team) => {
+      if (!acc[team.category_id]) {
+        acc[team.category_id] = [];
+      }
+      acc[team.category_id].push(team);
+      return acc;
+    },
+    {} as Record<number, Team[]>,
+  );
+
+  // Sort teams by points within each category
+  const sortedTeamsByCategory = Object.entries(teamsByCategory).reduce(
+    (acc, [categoryId, teamsInCategory]) => {
+      acc[Number(categoryId)] = [...teamsInCategory].sort(
+        (a, b) => (teamPoints[b.id] || 0) - (teamPoints[a.id] || 0),
+      );
+      return acc;
+    },
+    {} as Record<number, Team[]>,
+  );
+
   return (
-    <div className="space-y-4 text-center">
-      <div className="flex gap-2">
-        {["A", "B", "C", "D", "X"].map((group) => (
+    <div className="space-y-6 text-center">
+      {/* Category tabs */}
+      <div className="flex gap-2 overflow-x-auto">
+        {teamCategories.map((category) => (
           <div
-            key={group}
-            className={
-              "w-full rounded-lg p-2 text-xl font-bold " + getColorClass(group)
-            }
+            key={category.id}
+            className={`min-w-[100px] flex-1 rounded-lg p-2 text-sm font-bold text-white md:text-xl bg-${category.color_code}-300`}
           >
-            {group}
+            {category.short_name}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:text-left lg:grid-cols-4">
-        {teams.map((team) => (
-          <div
-            key={team.id}
-            className={
-              "flex items-center gap-2 rounded-lg p-2 max-sm:flex-col " +
-              getColorClass(team.group_letter)
-            }
-          >
-            <img
-              className="mx-1 h-9 w-9 rounded-lg border-gray-500"
-              src={team.image_url}
-              alt={team.name}
-            />
-            <div>
-              <p className="font-semibold">{team.name}</p>
-              <p className="info">{team.team_leader}</p>
-            </div>
-            <div className="flex flex-col sm:ml-auto sm:items-end">
-              <p className="w-9 rounded-lg text-xl font-bold max-sm:hidden">
-                {team.group_letter}
-              </p>
+
+      {/* Teams grouped by category */}
+      {teamCategories.map((category) => {
+        const categoryTeams = sortedTeamsByCategory[category.id] || [];
+        if (categoryTeams.length === 0) return null;
+
+        return (
+          <div key={category.id} className="space-y-3">
+            <h3
+              className={`inline-block rounded-lg px-4 py-2 text-xl font-bold text-white bg-${category.color_code}-300`}
+            >
+              {category.name}
+            </h3>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {categoryTeams.map((team) => (
+                <div
+                  key={team.id}
+                  className={`flex items-center gap-3 rounded-lg border-l-4 bg-white p-3 shadow-md dark:bg-gray-800 max-sm:flex-col border-${category.color_code}-300`}
+                >
+                  {team.image_url && (
+                    <img
+                      className="h-12 w-12 rounded-lg object-cover"
+                      src={team.image_url}
+                      alt={team.name}
+                    />
+                  )}
+                  <div className="flex-1 text-left max-sm:text-center">
+                    <p className="text-lg font-semibold">{team.name}</p>
+                    {team.team_leader && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {team.team_leader}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end max-sm:items-center">
+                    <div className="text-2xl font-bold">
+                      {teamPoints[team.id] || 0}
+                    </div>
+                    <div className="text-xs text-gray-500">pont</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
+        );
+      })}
+
+      {/* Show message if no teams */}
+      {teamCategories.every(
+        (cat) => (sortedTeamsByCategory[cat.id] || []).length === 0,
+      ) && (
+        <div className="py-8 text-gray-500">
+          Még nincsenek csapatok ebben a kategóriában
+        </div>
+      )}
     </div>
   );
 };

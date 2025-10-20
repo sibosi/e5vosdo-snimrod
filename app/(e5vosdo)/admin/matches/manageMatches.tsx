@@ -1,5 +1,5 @@
 "use client";
-import { Match, Team } from "@/db/matches";
+import { Match, Team, TeamCategory } from "@/db/matches";
 import React, { useState, useEffect } from "react";
 import { getColorClass } from "./manageTeams";
 import { Button } from "@heroui/react";
@@ -49,20 +49,19 @@ function getBetweenContent(match: Match) {
   }
 }
 
-const ManageMatches = (
-  {
-    isOrganiser,
-  }: {
-    isOrganiser: boolean;
-  } = { isOrganiser: false },
-) => {
+const ManageMatches = ({
+  isOrganiser = false,
+}: {
+  isOrganiser?: boolean;
+} = {}) => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>();
+  const [categories, setCategories] = useState<TeamCategory[]>([]);
   const [matchFilter, setMatchFilter] = useState<Team[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<TeamCategory[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentMatch, setCurrentMatch] = useState<Match | undefined>();
-  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     let eventSource: EventSource;
@@ -74,7 +73,6 @@ const ManageMatches = (
       eventSource = new EventSource("/api/livescore");
 
       eventSource.onopen = () => {
-        setIsConnected(true);
         retryCount = 0; // Reset retry count on successful connection
       };
 
@@ -145,7 +143,6 @@ const ManageMatches = (
 
       eventSource.onerror = (error) => {
         console.error("SSE Error:", error);
-        setIsConnected(false);
         eventSource.close();
 
         if (retryCount < maxRetryCount) {
@@ -177,6 +174,20 @@ const ManageMatches = (
   }, []);
 
   useEffect(() => {
+    fetch("/api/getTeamCategories", {
+      method: "GET",
+      headers: {
+        module: "matches",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCategories(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching categories:", err);
+      });
+
     fetch("/api/getTeams", {
       method: "GET",
       headers: {
@@ -186,6 +197,9 @@ const ManageMatches = (
       .then((res) => res.json())
       .then((data) => {
         setTeams(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching teams:", err);
       });
 
     fetch("/api/getMatches", {
@@ -199,6 +213,9 @@ const ManageMatches = (
         setMatches(
           data.toSorted((a, b) => a.datetime.localeCompare(b.datetime)),
         );
+      })
+      .catch((err) => {
+        console.error("Error fetching matches:", err);
       });
   }, []);
 
@@ -279,6 +296,40 @@ const ManageMatches = (
         </div>
       )}
 
+      {/* Category Filter */}
+      <div className="flex gap-2 overflow-auto overflow-x-auto">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          className="m-auto min-w-fit"
+          viewBox="0 0 16 16"
+        >
+          <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z" />
+        </svg>
+        {categories?.map((category) => (
+          <button
+            key={category.id}
+            className={
+              "min-w-fit rounded-lg px-3 py-1 text-sm font-bold " +
+              getColorClass(category.color_code) +
+              (categoryFilter.includes(category) ? "" : " opacity-15")
+            }
+            onClick={() => {
+              if (categoryFilter.includes(category)) {
+                setCategoryFilter(categoryFilter.filter((c) => c !== category));
+              } else {
+                setCategoryFilter([...categoryFilter, category]);
+              }
+            }}
+          >
+            {category.short_name}
+          </button>
+        ))}
+      </div>
+
+      {/* Team Filter */}
       <div className="flex gap-2 overflow-auto overflow-x-auto">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -295,7 +346,10 @@ const ManageMatches = (
             key={team.id}
             className={
               "min-w-fit rounded-lg p-1 text-xl font-bold " +
-              getColorClass(team.group_letter) +
+              getColorClass(
+                categories.find((cat) => cat.id === team.category_id)
+                  ?.color_code || "",
+              ) +
               (matchFilter.includes(team) ? "" : " opacity-15")
             }
             onClick={() => {
@@ -306,11 +360,13 @@ const ManageMatches = (
               }
             }}
           >
-            <img
-              className="h-6 w-6 rounded-lg border-gray-500"
-              src={team.image_url}
-              alt={team.name}
-            />
+            {team.image_url && (
+              <img
+                className="h-6 w-6 rounded-lg border-gray-500"
+                src={team.image_url}
+                alt={team.name}
+              />
+            )}
           </button>
         ))}
       </div>
@@ -325,6 +381,15 @@ const ManageMatches = (
           <div className="space-y-4">
             {matches
               .filter((match) => {
+                // Category filter
+                if (categoryFilter.length > 0) {
+                  if (
+                    !categoryFilter.some((cat) => cat.id === match.category_id)
+                  ) {
+                    return false;
+                  }
+                }
+                // Team filter
                 if (matchFilter.length === 0) return true;
                 return (
                   matchFilter.some((team) => team.id === match.team1_id) ||
@@ -337,21 +402,27 @@ const ManageMatches = (
                   <div
                     className={
                       "grid grid-cols-3 items-center justify-between gap-2 rounded-lg p-2 text-center " +
-                      getColorClass(match.group_letter)
+                      getColorClass(
+                        categories.find((cat) => cat.id === match.category_id)
+                          ?.color_code || "",
+                      )
                     }
                   >
                     <div className="flex flex-col items-center justify-center">
-                      <img
-                        className="mx-1 h-9 w-9 rounded-lg border-gray-500"
-                        src={
-                          teams?.find((team) => team.id === match.team1_id)
-                            ?.image_url
-                        }
-                        alt={
-                          teams?.find((team) => team.id === match.team1_id)
-                            ?.name
-                        }
-                      />
+                      {teams?.find((team) => team.id === match.team1_id)
+                        ?.image_url && (
+                        <img
+                          className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                          src={
+                            teams?.find((team) => team.id === match.team1_id)
+                              ?.image_url
+                          }
+                          alt={
+                            teams?.find((team) => team.id === match.team1_id)
+                              ?.name
+                          }
+                        />
+                      )}
                       <span>
                         {
                           teams?.find((team) => team.id === match.team1_id)
@@ -361,17 +432,20 @@ const ManageMatches = (
                     </div>
                     <div>{getBetweenContent(match)}</div>
                     <div className="flex flex-col items-center justify-center">
-                      <img
-                        className="mx-1 h-9 w-9 rounded-lg border-gray-500"
-                        src={
-                          teams?.find((team) => team.id === match.team2_id)
-                            ?.image_url
-                        }
-                        alt={
-                          teams?.find((team) => team.id === match.team2_id)
-                            ?.name
-                        }
-                      />
+                      {teams?.find((team) => team.id === match.team2_id)
+                        ?.image_url && (
+                        <img
+                          className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                          src={
+                            teams?.find((team) => team.id === match.team2_id)
+                              ?.image_url
+                          }
+                          alt={
+                            teams?.find((team) => team.id === match.team2_id)
+                              ?.name
+                          }
+                        />
+                      )}
                       <span>
                         {
                           teams?.find((team) => team.id === match.team2_id)
@@ -479,6 +553,13 @@ const ManageMatches = (
         </Section>
         {matches
           .filter((match) => {
+            // Category filter
+            if (categoryFilter.length > 0) {
+              if (!categoryFilter.some((cat) => cat.id === match.category_id)) {
+                return false;
+              }
+            }
+            // Team filter
             if (matchFilter.length === 0) return true;
             return (
               matchFilter.some((team) => team.id === match.team1_id) ||
@@ -491,36 +572,45 @@ const ManageMatches = (
               <div
                 className={
                   "grid grid-cols-3 items-center justify-between gap-2 rounded-lg p-2 text-center " +
-                  getColorClass(match.group_letter)
+                  getColorClass(
+                    categories.find((cat) => cat.id === match.category_id)
+                      ?.color_code || "",
+                  )
                 }
               >
                 <div className="flex flex-col items-center justify-center">
-                  <img
-                    className="mx-1 h-9 w-9 rounded-lg border-gray-500"
-                    src={
-                      teams?.find((team) => team.id === match.team1_id)
-                        ?.image_url
-                    }
-                    alt={
-                      teams?.find((team) => team.id === match.team1_id)?.name
-                    }
-                  />
+                  {teams?.find((team) => team.id === match.team1_id)
+                    ?.image_url && (
+                    <img
+                      className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                      src={
+                        teams?.find((team) => team.id === match.team1_id)
+                          ?.image_url
+                      }
+                      alt={
+                        teams?.find((team) => team.id === match.team1_id)?.name
+                      }
+                    />
+                  )}
                   <span>
                     {teams?.find((team) => team.id === match.team1_id)?.name}
                   </span>
                 </div>
                 <div>{getBetweenContent(match)}</div>
                 <div className="flex flex-col items-center justify-center">
-                  <img
-                    className="mx-1 h-9 w-9 rounded-lg border-gray-500"
-                    src={
-                      teams?.find((team) => team.id === match.team2_id)
-                        ?.image_url
-                    }
-                    alt={
-                      teams?.find((team) => team.id === match.team2_id)?.name
-                    }
-                  />
+                  {teams?.find((team) => team.id === match.team2_id)
+                    ?.image_url && (
+                    <img
+                      className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                      src={
+                        teams?.find((team) => team.id === match.team2_id)
+                          ?.image_url
+                      }
+                      alt={
+                        teams?.find((team) => team.id === match.team2_id)?.name
+                      }
+                    />
+                  )}
                   <span>
                     {teams?.find((team) => team.id === match.team2_id)?.name}
                   </span>
@@ -629,6 +719,7 @@ const ManageMatches = (
         onClose={() => setIsCreateModalOpen(false)}
         onSave={handleSaveMatch}
         teams={teams}
+        categories={categories}
       />
 
       {/* Meccs szerkesztése modal */}
@@ -638,7 +729,27 @@ const ManageMatches = (
         onSave={handleSaveMatch}
         matchToEdit={currentMatch}
         teams={teams}
+        categories={categories}
       />
+
+      <div className="hidden">
+        <div className="bg-red-300" />
+        <div className="bg-green-300" />
+        <div className="bg-blue-300" />
+        <div className="bg-yellow-300" />
+        <div className="bg-cyan-300" />
+        <div className="bg-purple-300" />
+        <div className="bg-pink-300" />
+        <div className="bg-orange-300" />
+        <div className="border-red-300" />
+        <div className="border-green-300" />
+        <div className="border-blue-300" />
+        <div className="border-yellow-300" />
+        <div className="border-cyan-300" />
+        <div className="border-purple-300" />
+        <div className="border-pink-300" />
+        <div className="border-orange-300" />
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 "use client";
-import { Match, Team } from "@/db/matches";
+import { Match, Team, TeamCategory } from "@/db/matches";
 import React, { useState, useEffect } from "react";
 import {
   Button,
@@ -19,6 +19,7 @@ interface CreateEditMatchProps {
   onSave: (match: Match) => void;
   matchToEdit?: Match;
   teams?: Team[];
+  categories?: TeamCategory[];
 }
 
 const CreateEditMatch = ({
@@ -27,9 +28,11 @@ const CreateEditMatch = ({
   onSave,
   matchToEdit,
   teams,
+  categories,
 }: CreateEditMatchProps) => {
   const isEditing = !!matchToEdit;
 
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [formData, setFormData] = useState<Partial<Match>>({
     team1_id: 0,
     team2_id: 0,
@@ -37,10 +40,17 @@ const CreateEditMatch = ({
     team2_score: 0,
     datetime: new Date().toISOString().slice(0, 16),
     status: "pending",
-    group_letter: "A",
+    category_id: undefined,
     start_time: "",
     end_time: "",
   });
+
+  // Filter teams by selected category
+  const filteredTeams =
+    teams?.filter(
+      (team) =>
+        selectedCategory === null || team.category_id === selectedCategory,
+    ) || [];
 
   useEffect(() => {
     if (matchToEdit) {
@@ -51,21 +61,43 @@ const CreateEditMatch = ({
         ...matchToEdit,
         datetime: formattedDatetime,
       });
+
+      // Set category based on match's category or team's category
+      if (matchToEdit.category_id) {
+        setSelectedCategory(matchToEdit.category_id);
+      } else if (teams) {
+        const team1 = teams.find((t) => t.id === matchToEdit.team1_id);
+        if (team1) {
+          setSelectedCategory(team1.category_id);
+        }
+      }
     } else {
       // Reset form for new match
       setFormData({
-        team1_id: teams?.[0]?.id || 0,
-        team2_id: teams?.[1]?.id || 0,
+        team1_id: 0,
+        team2_id: 0,
         team1_score: 0,
         team2_score: 0,
         datetime: new Date().toISOString().slice(0, 16),
         status: "pending",
-        group_letter: "A",
+        category_id: undefined,
         start_time: "",
         end_time: "",
       });
+      setSelectedCategory(null);
     }
   }, [matchToEdit, teams, isOpen]);
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const categoryId = Number.parseInt(e.target.value, 10);
+    setSelectedCategory(categoryId);
+    setFormData({
+      ...formData,
+      category_id: categoryId,
+      team1_id: 0,
+      team2_id: 0,
+    });
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -81,7 +113,7 @@ const CreateEditMatch = ({
     ) {
       setFormData({
         ...formData,
-        [name]: parseInt(value),
+        [name]: Number.parseInt(value, 10),
       });
     } else {
       setFormData({
@@ -92,7 +124,22 @@ const CreateEditMatch = ({
   };
 
   const handleSubmit = () => {
-    // Basic validation
+    // Validation
+    if (!selectedCategory && !isEditing) {
+      alert("Kérlek válassz egy kategóriát!");
+      return;
+    }
+
+    if (!formData.team1_id || formData.team1_id === 0) {
+      alert("Kérlek válaszd ki az első csapatot!");
+      return;
+    }
+
+    if (!formData.team2_id || formData.team2_id === 0) {
+      alert("Kérlek válaszd ki a második csapatot!");
+      return;
+    }
+
     if (formData.team1_id === formData.team2_id) {
       alert("Két különböző csapatot kell választani!");
       return;
@@ -106,6 +153,7 @@ const CreateEditMatch = ({
     // Create a complete match object
     const matchData: Match = {
       id: matchToEdit?.id || 0,
+      category_id: formData.category_id || selectedCategory || undefined,
       team1_id: formData.team1_id || 0,
       team2_id: formData.team2_id || 0,
       team1_score: formData.team1_score || 0,
@@ -114,13 +162,10 @@ const CreateEditMatch = ({
       start_time: formData.start_time || "",
       end_time: formData.end_time || "",
       status: (formData.status as "pending" | "live" | "finished") || "pending",
-      group_letter: formData.group_letter || "A",
     };
 
     onSave(matchData);
   };
-
-  const availableGroups = ["A", "B", "C", "D", "X", "Q", "T", "H", "W"];
 
   if (!teams) {
     return (
@@ -146,75 +191,103 @@ const CreateEditMatch = ({
         </ModalHeader>
         <ModalBody>
           <div className="space-y-4">
+            {/* Category Selection - First Step */}
+            <div>
+              <label className="mb-2 block text-sm font-medium">
+                Kategória *
+              </label>
+              <Select
+                name="category_id"
+                selectedKeys={
+                  selectedCategory ? [selectedCategory.toString()] : []
+                }
+                onChange={handleCategoryChange}
+                placeholder="Válassz kategóriát"
+                isDisabled={isEditing}
+                classNames={{
+                  trigger: selectedCategory
+                    ? "border-2 border-green-500"
+                    : "border-2 border-orange-500",
+                }}
+              >
+                {(categories || []).map((category) => (
+                  <SelectItem key={category.id.toString()}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </Select>
+              {!selectedCategory && !isEditing && (
+                <p className="mt-1 text-xs text-orange-600">
+                  Először válaszd ki a kategóriát
+                </p>
+              )}
+            </div>
+
+            {/* Team Selection - Second Step */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  1. Csapat
+                <label className="mb-2 block text-sm font-medium">
+                  1. Csapat *
                 </label>
                 <Select
                   name="team1_id"
-                  value={formData.team1_id?.toString()}
+                  selectedKeys={
+                    formData.team1_id ? [formData.team1_id.toString()] : []
+                  }
                   onChange={handleChange}
-                  className="w-full"
+                  placeholder="Válassz csapatot"
+                  isDisabled={!selectedCategory && !isEditing}
                 >
-                  {teams?.map((team) => (
-                    <SelectItem key={team.id.toString()}>
-                      {team.name}
-                    </SelectItem>
-                  ))}
+                  {filteredTeams
+                    .filter((team) => team.id !== formData.team2_id)
+                    .map((team) => (
+                      <SelectItem key={team.id.toString()}>
+                        {team.name}
+                      </SelectItem>
+                    ))}
                 </Select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  2. Csapat
+                <label className="mb-2 block text-sm font-medium">
+                  2. Csapat *
                 </label>
                 <Select
                   name="team2_id"
-                  value={formData.team2_id?.toString()}
+                  selectedKeys={
+                    formData.team2_id ? [formData.team2_id.toString()] : []
+                  }
                   onChange={handleChange}
-                  className="w-full"
+                  placeholder="Válassz csapatot"
+                  isDisabled={!selectedCategory && !isEditing}
                 >
-                  {teams?.map((team) => (
-                    <SelectItem key={team.id.toString()}>
-                      {team.name}
-                    </SelectItem>
-                  ))}
+                  {filteredTeams
+                    .filter((team) => team.id !== formData.team1_id)
+                    .map((team) => (
+                      <SelectItem key={team.id.toString()}>
+                        {team.name}
+                      </SelectItem>
+                    ))}
                 </Select>
               </div>
             </div>
 
+            {/* Match Details */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Csoport
-              </label>
-              <Select
-                name="group_letter"
-                value={formData.group_letter}
-                onChange={handleChange}
-                className="w-full"
-              >
-                {availableGroups.map((group) => (
-                  <SelectItem key={group}>{group}</SelectItem>
-                ))}
-              </Select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Dátum és idő
+              <label className="mb-2 block text-sm font-medium">
+                Dátum és idő *
               </label>
               <Input
                 type="datetime-local"
                 name="datetime"
                 value={formData.datetime}
                 onChange={handleChange}
-                className="w-full"
               />
             </div>
 
+            {/* Scores - Only for editing or advanced users */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium">
                   1. Csapat pontszáma
                 </label>
                 <Input
@@ -223,11 +296,10 @@ const CreateEditMatch = ({
                   value={String(formData.team1_score)}
                   onChange={handleChange}
                   min={0}
-                  className="w-full"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium">
                   2. Csapat pontszáma
                 </label>
                 <Input
@@ -236,20 +308,17 @@ const CreateEditMatch = ({
                   value={String(formData.team2_score)}
                   onChange={handleChange}
                   min={0}
-                  className="w-full"
                 />
               </div>
             </div>
 
+            {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Állapot
-              </label>
+              <label className="mb-2 block text-sm font-medium">Állapot</label>
               <Select
                 name="status"
-                value={formData.status}
+                selectedKeys={formData.status ? [formData.status] : []}
                 onChange={handleChange}
-                className="w-full"
               >
                 <SelectItem key="pending">Várakozó</SelectItem>
                 <SelectItem key="live">Élő</SelectItem>

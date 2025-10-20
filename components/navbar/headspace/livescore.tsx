@@ -16,14 +16,13 @@ const LiveScore = () => {
       },
     })
       .then((res) => res.json())
-      .then((res) =>
-        res
-          .json()
-          .then((data: PageSettingsType) =>
-            setIsActiveHeadSpace(data.headspace == 1),
-          ),
-      );
-  });
+      .then((data: PageSettingsType) => {
+        setIsActiveHeadSpace(data.headspace === 1);
+      })
+      .catch((err) => {
+        console.error("Error fetching page settings:", err);
+      });
+  }, []);
 
   if (!isActiveHeadSpace) return <></>;
   return <LiveScoreContent />;
@@ -54,7 +53,7 @@ const LiveScoreContent = () => {
     if (!match) return;
     const interval = setInterval(() => {
       setCurrentTime(
-        new Date(new Date().getTime() - new Date(match.start_time).getTime()),
+        new Date(Date.now() - new Date(match.start_time).getTime()),
       );
     }, 1000);
 
@@ -198,28 +197,31 @@ const LiveScoreContent = () => {
     );
   }
 
+  const getTeamById = (id: number) => teams.find((t) => t.id === id);
+
+  const team1 = match ? getTeamById(match.team1_id) : undefined;
+  const team2 = match ? getTeamById(match.team2_id) : undefined;
+
   return (
     <button
       className="mx-auto mt-1 max-w-fit rounded-full bg-selfprimary-50 px-6 text-center text-xs font-semibold text-foreground"
       onClick={() => setClicked(!clicked)}
     >
       <div className="flex items-center justify-center gap-2">
-        {match ? (
+        {match && team1 && team2 ? (
           <>
             <div className="flex w-14 flex-col items-center justify-center overflow-hidden text-xs">
-              {match.id != -1 && (
+              {match.id !== -1 && team1.image_url && (
                 <Image
-                  src={teams[match.team1_id - 1].image_url}
+                  src={team1.image_url}
                   width={40}
                   height={40}
-                  alt={teams[match.team1_id - 1].name}
+                  alt={team1.name}
                   className="mx-auto"
                 />
               )}
 
-              <p className="max-w-[56px] text-xs">
-                {teams[match.team1_id - 1].name}
-              </p>
+              <p className="max-w-[56px] text-xs">{team1.name}</p>
             </div>
             <div className="flex flex-col items-center justify-center">
               <p className="text-2xl font-bold text-success-600">
@@ -251,19 +253,17 @@ const LiveScoreContent = () => {
               )}
             </div>
             <div className="flex w-14 flex-col items-center justify-center overflow-hidden text-xs">
-              {
+              {team2.image_url && (
                 <Image
-                  src={teams[match.team2_id - 1].image_url}
+                  src={team2.image_url}
                   width={40}
                   height={40}
-                  alt={teams[match.team2_id - 1].name}
+                  alt={team2.name}
                   className="mx-auto"
                 />
-              }
+              )}
 
-              <p className="max-w-[56px] text-xs">
-                {teams[match.team2_id - 1].name}
-              </p>
+              <p className="max-w-[56px] text-xs">{team2.name}</p>
             </div>
           </>
         ) : (
@@ -277,10 +277,11 @@ const LiveScoreContent = () => {
           (clicked ? " -mb-4 h-auto" : "m-0 h-0")
         }
       >
-        <p>
-          {match && teams[match.team1_id - 1]?.name} vs{" "}
-          {match && teams[match.team2_id - 1]?.name}
-        </p>
+        {team1 && team2 && (
+          <p>
+            {team1.name} vs {team2.name}
+          </p>
+        )}
       </div>
     </button>
   );

@@ -314,7 +314,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                 <p className="info">
                   Maximális létszám: {presentation.capacity} fő
                 </p>
-                <p className="info">{presentation.address}</p>
+                <p className="info">Helyszín: {presentation.address}</p>
               </div>
             </Field>
             <Field className="md:col-span-2">

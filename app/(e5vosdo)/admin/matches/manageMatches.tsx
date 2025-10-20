@@ -720,6 +720,17 @@ const ManageMatches = ({
         <div className="bg-success-300" />
         <div className="bg-warning-300" />
         <div className="bg-foreground-300" />
+        <div className="bg-primary-700" />
+        <div className="bg-secondary-700" />
+        <div className="bg-success-700" />
+        <div className="bg-warning-700" />
+        <div className="bg-foreground-700" />
+
+        <div className="border-primary-300" />
+        <div className="border-secondary-300" />
+        <div className="border-success-300" />
+        <div className="border-warning-300" />
+        <div className="border-foreground-300" />
         <div className="border-primary-700" />
         <div className="border-secondary-700" />
         <div className="border-success-700" />

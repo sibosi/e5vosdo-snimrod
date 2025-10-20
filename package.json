@@ -19,7 +19,6 @@
     "@react-aria/ssr": "^3.9.7",
     "@react-aria/visually-hidden": "^3.8.18",
     "@react-oauth/google": "^0.12.2",
-    "@react-stately/data": "^3.12.0",
     "@supabase/supabase-js": "^2.48.1",
     "@svgr/webpack": "^8.1.0",
     "@types/react": "19.0.5",

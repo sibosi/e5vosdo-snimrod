@@ -13,7 +13,7 @@ import {
   Button,
   Input,
 } from "@heroui/react";
-import { useAsyncList } from "@react-stately/data";
+// import { useAsyncList } from "@react-stately/data";
 import { Log } from "@/db/dbreq";
 
 export default function LogTable({ logs }: { logs: Log[] }) {
@@ -22,7 +22,22 @@ export default function LogTable({ logs }: { logs: Log[] }) {
 
   const [search, setSearch] = React.useState("");
 
-  let list = useAsyncList({
+  let list = 0 
+  
+
+  const filteredItems = React.useMemo(() => {
+    let filteredLogs = logs.filter((log) => {
+      return log.user.toLowerCase().includes(search.toLowerCase());
+    });
+    return filteredLogs;
+  }, [logs, search]);
+
+  const hasMore = page < 9;
+
+  return null;
+
+  {/**
+    useAsyncList({
     async load({ signal, cursor }) {
       if (cursor) {
         setPage((prev) => prev + 1);
@@ -39,15 +54,7 @@ export default function LogTable({ logs }: { logs: Log[] }) {
       };
     },
   });
-
-  const filteredItems = React.useMemo(() => {
-    let filteredLogs = logs.filter((log) => {
-      return log.user.toLowerCase().includes(search.toLowerCase());
-    });
-    return filteredLogs;
-  }, [logs, search]);
-
-  const hasMore = page < 9;
+    */}
 
   return (
     <>

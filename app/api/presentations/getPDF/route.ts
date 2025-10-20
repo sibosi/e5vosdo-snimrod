@@ -112,7 +112,7 @@ export async function GET() {
           const user = await getUser(emailStr);
           const name =
             user && typeof user.name === "string"
-              ? sanitizeText(user.full_name!)
+              ? sanitizeText(user.full_name ?? "*" + user.name)
               : "Unknown";
           rows.push({
             index: `${j}.`,

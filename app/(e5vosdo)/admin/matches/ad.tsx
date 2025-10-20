@@ -4,7 +4,7 @@ import { Team } from "@/db/matches";
 import Link from "next/link";
 import React from "react";
 
-export function getColorClass(group: string) {
+export function getColorClass(group: string | undefined) {
   switch (group) {
     case "A":
       return "bg-red-400 dark:bg-red-800";

@@ -106,7 +106,9 @@ export async function getUser(email: string | undefined) {
 }
 
 export async function getAllUsersNameByEmail() {
-  const response = await dbreq(`SELECT name, email FROM users;`);
+  const response = await dbreq(
+    `SELECT COALESCE(full_name, name) AS name, email FROM users;`,
+  );
   let users: { [key: string]: string } = {};
   (response as []).map((user: User) => {
     users[user.email] = user.name;

@@ -2,8 +2,8 @@
 
 import { PresentationType } from "@/db/presentationSignup";
 import { Button } from "@heroui/react";
-import { scrollInfo } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import SearchUser from "@/components/searchUser";
 
 interface EditingPresentation extends Partial<PresentationType> {
   isNew?: boolean;
@@ -27,6 +27,9 @@ const AdminPresentationsPage = () => {
     PresentationType[]
   >([]);
   const [existingSlots, setExistingSlots] = useState<string[]>([]);
+  const [addingUserToPresentationId, setAddingUserToPresentationId] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     if (editingPresentation !== null) {
@@ -276,6 +279,83 @@ const AdminPresentationsPage = () => {
   const cancelEditing = () => {
     setEditingPresentation(null);
     setIsCreating(false);
+  };
+
+  const handleAddUserToPresentation = async (
+    email: string,
+    presentationId: number,
+  ) => {
+    if (!email || !presentationId) return;
+
+    let finalEmail = email;
+
+    // Ha nem regisztrált felhasználóról van szó, egyedi email címet generálunk
+    if (email.includes("(Nem regisztrált)")) {
+      throw new Error("Nem regisztrált felhasználó");
+    }
+
+    try {
+      const presentation = presentations.find((p) => p.id === presentationId);
+      if (!presentation) {
+        alert("Prezentáció nem található");
+        return;
+      }
+
+      // Figyelmeztetés betelt prezentáció esetén
+      if (
+        presentation.remaining_capacity !== null &&
+        presentation.remaining_capacity <= 0
+      ) {
+        if (
+          !confirm(
+            "Ez a prezentáció már betelt. Biztos, hogy hozzá szeretnéd adni a felhasználót? Ez túllépi a kapacitást.",
+          )
+        ) {
+          return;
+        }
+      }
+
+      const response = await fetch(`/api/admin/addUserToPresentation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: finalEmail,
+          presentation_id: presentationId,
+          slot: presentation.slot,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchPresentations();
+        await fetchSignups();
+        await fetchNamesByEmail();
+        setAddingUserToPresentationId(null);
+
+        const wasFull =
+          presentation.remaining_capacity !== null &&
+          presentation.remaining_capacity <= 0;
+        const message = wasFull
+          ? "Felhasználó sikeresen hozzáadva a prezentációhoz (kapacitás túllépve)"
+          : "Felhasználó sikeresen hozzáadva a prezentációhoz";
+        alert(message);
+      } else {
+        const error = await response.json();
+        alert(
+          `Hiba: ${error.error?.message || error.error || "Ismeretlen hiba történt"}`,
+        );
+      }
+    } catch (error) {
+      console.error("Error adding user to presentation:", error);
+      alert("Hiba a felhasználó hozzáadása során");
+    }
+  };
+
+  const startAddingUser = (presentationId: number) => {
+    setAddingUserToPresentationId(presentationId);
+  };
+
+  const cancelAddingUser = () => {
+    setAddingUserToPresentationId(null);
   };
 
   if (loading) {
@@ -579,8 +659,11 @@ const AdminPresentationsPage = () => {
 
                   <div className="text-center">
                     <div className="text-lg font-semibold">
-                      {presentation.remaining_capacity ?? "-"} /{" "}
-                      {presentation.capacity}
+                      {presentation.remaining_capacity == null &&
+                        "(Szüneteltetve) "}{" "}
+                      {presentation.capacity -
+                        signups[presentation.id]?.length || 0}
+                      / {presentation.capacity}
                     </div>
                     <div className="text-sm text-gray-600">
                       Szabad / Összes hely
@@ -606,6 +689,17 @@ const AdminPresentationsPage = () => {
                       isDisabled={editingPresentation !== null}
                     >
                       Szerkesztés
+                    </Button>
+                    <Button
+                      color="success"
+                      size="sm"
+                      onPress={() => startAddingUser(presentation.id)}
+                      isDisabled={
+                        editingPresentation !== null ||
+                        addingUserToPresentationId !== null
+                      }
+                    >
+                      Felhasználó hozzáadása
                     </Button>
                     <Button
                       color="danger"
@@ -638,6 +732,36 @@ const AdminPresentationsPage = () => {
                         Nincsenek jelentkezők
                       </div>
                     )}
+                  </div>
+                )}
+
+                {addingUserToPresentationId === presentation.id && (
+                  <div className="mt-4 rounded-lg bg-blue-50 p-4">
+                    <h4 className="mb-3 font-semibold">
+                      Felhasználó hozzáadása: {presentation.title}
+                    </h4>
+                    <div className="relative">
+                      <SearchUser
+                        usersNameByEmail={namesByEmail}
+                        onSelectEmail={(email) =>
+                          handleAddUserToPresentation(email, presentation.id)
+                        }
+                        label="Válassz felhasználót"
+                        placeholder="Keresés név szerint..."
+                        size="md"
+                        addCustomParticipant={true}
+                      />
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <Button
+                        color="danger"
+                        size="sm"
+                        variant="light"
+                        onPress={cancelAddingUser}
+                      >
+                        Mégse
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>

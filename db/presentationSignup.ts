@@ -235,6 +235,84 @@ export async function signUpForPresentation(
   }
 }
 
+export async function makeUserSignedUp(
+  email: string,
+  presentation_id: number,
+  slot: string,
+) {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  if (!gate(selfUser, "admin", "boolean"))
+    throw new Error("Nincs jogosultságod ehhez");
+  return await multipledbreq(async (conn) => {
+    const [currentSignups]: any = await conn.execute(
+      `SELECT presentation_id FROM signups WHERE email = ? AND slot = ? FOR UPDATE`,
+      [email, slot],
+    );
+
+    if (currentSignups.length > 0)
+      throw new Error("A felhasználó már jelentkezett ebben a sávban");
+
+    const [updateResult]: any = await conn.execute(
+      `UPDATE presentations SET remaining_capacity = remaining_capacity - 1
+         WHERE id = ? AND remaining_capacity > 0`,
+      [presentation_id],
+    );
+    if (updateResult.affectedRows === 0)
+      throw new Error("Nincs elegendő kapacitás");
+
+    await conn.execute(
+      `INSERT INTO signups (email, presentation_id, slot) VALUES (?, ?, ?)`,
+      [email, presentation_id, slot],
+    );
+  });
+}
+
+export async function adminForceUserSignUp(
+  email: string,
+  presentation_id: number,
+  slot: string,
+) {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  if (!gate(selfUser, "admin", "boolean"))
+    throw new Error("Nincs jogosultságod ehhez");
+
+  return await multipledbreq(async (conn) => {
+    // Ellenőrizzük, hogy a felhasználó már jelentkezett-e ebben a sávban
+    const [currentSignups]: any = await conn.execute(
+      `SELECT presentation_id FROM signups WHERE email = ? AND slot = ? FOR UPDATE`,
+      [email, slot],
+    );
+
+    if (currentSignups.length > 0)
+      throw new Error("A felhasználó már jelentkezett ebben a sávban");
+
+    // Ellenőrizzük, hogy létezik-e a prezentáció
+    const [presentationCheck]: any = await conn.execute(
+      `SELECT id, remaining_capacity FROM presentations WHERE id = ?`,
+      [presentation_id],
+    );
+
+    if (presentationCheck.length === 0)
+      throw new Error("A prezentáció nem található");
+
+    // Admin jogosultsággal hozzáadjuk a felhasználót, még ha betelt is a prezentáció
+    // A remaining_capacity-t csak akkor csökkentjük, ha nem NULL (jelentkezési időszak aktív)
+    if (presentationCheck[0].remaining_capacity !== null) {
+      await conn.execute(
+        `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ?`,
+        [presentation_id],
+      );
+    }
+
+    await conn.execute(
+      `INSERT INTO signups (email, presentation_id, slot) VALUES (?, ?, ?)`,
+      [email, presentation_id, slot],
+    );
+  });
+}
+
 export async function pauseSignup() {
   const selfUser = await getAuth();
   if (!selfUser) throw new Error("Nem vagy bejelentkezve");

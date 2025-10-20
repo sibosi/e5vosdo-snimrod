@@ -61,6 +61,12 @@ export default async function Home() {
         </Alert>
       </a>
 
+      <a href="https://docs.google.com/spreadsheets/d/1wZtmbTTELxQK0nQJweKbURFqNOboOwyyR9WGdB9Fc6E/edit?usp=sharing">
+        <Alert className="mt-4 text-left" color="secondary">
+          Az sporteredmények vagy a programok megtekintéséhez kattints ide!
+        </Alert>
+      </a>
+
       {gate(selfUser, "user", "boolean") && (
         <Section
           title="Órarend"

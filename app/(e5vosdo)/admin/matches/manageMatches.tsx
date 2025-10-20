@@ -733,22 +733,16 @@ const ManageMatches = ({
       />
 
       <div className="hidden">
-        <div className="bg-red-300" />
-        <div className="bg-green-300" />
-        <div className="bg-blue-300" />
-        <div className="bg-yellow-300" />
-        <div className="bg-cyan-300" />
-        <div className="bg-purple-300" />
-        <div className="bg-pink-300" />
-        <div className="bg-orange-300" />
-        <div className="border-red-300" />
-        <div className="border-green-300" />
-        <div className="border-blue-300" />
-        <div className="border-yellow-300" />
-        <div className="border-cyan-300" />
-        <div className="border-purple-300" />
-        <div className="border-pink-300" />
-        <div className="border-orange-300" />
+        <div className="bg-primary-300" />
+        <div className="bg-secondary-300" />
+        <div className="bg-success-300" />
+        <div className="bg-warning-300" />
+        <div className="bg-foreground-300" />
+        <div className="border-primary-700" />
+        <div className="border-secondary-700" />
+        <div className="border-success-700" />
+        <div className="border-warning-700" />
+        <div className="border-foreground-700" />
       </div>
     </div>
   );

@@ -156,7 +156,9 @@ const ManageTeams = () => {
         {teamCategories.map((category) => (
           <div
             key={category.id}
-            className={`min-w-[100px] flex-1 rounded-lg p-2 text-sm font-bold text-white md:text-xl bg-${category.color_code}-300`}
+            className={`min-w-[100px] flex-1 rounded-lg p-2 text-sm font-bold text-white md:text-xl ${getCategoryColorClass(
+              category.color_code,
+            )} `}
           >
             {category.short_name}
           </div>

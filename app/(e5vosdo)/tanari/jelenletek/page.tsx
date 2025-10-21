@@ -97,11 +97,12 @@ export default function PresentationSelectionPage() {
                       <Link
                         key={presentation.id}
                         href={`/tanari/jelenletek/${presentation.id}`}
+                        className="w-full"
                       >
                         <Card
                           isPressable
                           isHoverable
-                          className="h-full transition-all hover:scale-105"
+                          className="h-full w-full transition-all hover:scale-105"
                         >
                           <CardBody>
                             <div className="space-y-2">

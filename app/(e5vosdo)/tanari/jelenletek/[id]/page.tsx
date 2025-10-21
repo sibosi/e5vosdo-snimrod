@@ -343,6 +343,16 @@ export default function PresentationAttendancePage() {
                         : "border-foreground-300 bg-foreground-50 hover:bg-foreground-100"
                     }`}
                   >
+                    {signup.participated ? (
+                      <Chip size="sm" color="success" variant="solid">
+                        ✓
+                      </Chip>
+                    ) : (
+                      <Chip size="sm" color="default" variant="flat">
+                        ✗
+                      </Chip>
+                    )}
+
                     <div className="flex-1">
                       <p className="font-semibold">
                         <span className="text-foreground-500">

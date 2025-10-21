@@ -1,7 +1,7 @@
 "use client";
 
 import React, { FC, useState } from "react";
-import { SwitchProps } from "@heroui/react";
+import { SwitchProps } from "@heroui/switch";
 import {
   SunFilledIcon,
   MoonFilledIcon,

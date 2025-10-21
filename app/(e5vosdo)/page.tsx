@@ -7,7 +7,6 @@ import LoginButton from "@/components/LoginButton";
 import Carousel from "@/components/home/carousel";
 import { Alert, Button } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
-import tanarokJSON from "@/public/teachers.json";
 
 const PageHeadContent = async ({
   selfUser,
@@ -44,15 +43,6 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      {tanarokJSON.includes(selfUser?.email || "") && (
-        <a href="/tanari/jelenletek">
-          <Alert className="my-4 text-left text-xl" color="success">
-            Tanári státusz felismerve! A jelenléti ívek megtekintéséhez
-            kattintson ide!
-          </Alert>
-        </a>
-      )}
-
       <a href="https://docs.google.com/spreadsheets/d/1wZtmbTTELxQK0nQJweKbURFqNOboOwyyR9WGdB9Fc6E/edit?usp=sharing">
         <Alert className="mt-4 text-left" color="secondary">
           Az sporteredmények vagy a programok megtekintéséhez kattints ide!

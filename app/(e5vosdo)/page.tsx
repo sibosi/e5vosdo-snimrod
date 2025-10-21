@@ -65,50 +65,16 @@ export default async function Home() {
         </a>
       ) : null}
 
-      {selfUser ? (
-        <MyPresentations />
-      ) : (
-        <div>
-          <h1 className="mb-1 text-center text-3xl font-bold text-selfprimary-900 md:text-4xl">
-            Hiányolod az előadásaidat?
-          </h1>
-          <LoginButton />
-        </div>
-      )}
-      <a href="/jelentkezes">
-        <Alert className="mt-4 text-left" color="primary">
-          Az előadásjelentkezési felület megtekintéséhez kattints ide!
-        </Alert>
-      </a>
+
       <a href="https://docs.google.com/spreadsheets/d/1wZtmbTTELxQK0nQJweKbURFqNOboOwyyR9WGdB9Fc6E/edit?usp=sharing">
         <Alert className="mt-4 text-left" color="secondary">
           Az sporteredmények vagy a programok megtekintéséhez kattints ide!
         </Alert>
       </a>
 
-      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
-        <h2 className="text-xl font-bold md:text-2xl">
-          Kötélhúzás (12:30-13:30)
-        </h2>
-        <p className="mt-1 text-xs opacity-90 md:text-sm">
-          Minden osztályt szeretettel várunk a nagytesiben megrendezésre kerülő
-          kötélhúzó versenyre! Gyere el, és mutasd meg, hogy a te osztályod a
-          legerősebb!
-        </p>
-      </div>
-
       {siteConfig.pageSections["menza"] != "hidden" && (
         <MenuInSection selfUser={selfUser} />
       )}
-
-      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
-        <h2 className="text-xl font-bold md:text-2xl">Táblaavatás (14:00)</h2>
-        <p className="mt-1 text-xs opacity-90 md:text-sm">
-          Ünnepélyes keretek között a földszinti hátsó kijáratnál leleplezzük
-          iskolánk új emléktábláját Dömösdi Jánosné, iskolánk egyetlen volt női
-          igazgatója tiszteletére.
-        </p>
-      </div>
 
       <ProgramBlock />
       <p className="hidden text-center italic">„Bömbi a király”</p>

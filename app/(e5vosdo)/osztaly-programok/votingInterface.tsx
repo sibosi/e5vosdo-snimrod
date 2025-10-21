@@ -219,9 +219,6 @@ const VotingInterface = () => {
               return (
                 <div key={position} className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-selfprimary-500 text-xl font-bold text-foreground">
-                      {position + 1}
-                    </div>
                     <Select
                       label={`${position + 1}. választásod`}
                       placeholder="Válassz egy programot..."

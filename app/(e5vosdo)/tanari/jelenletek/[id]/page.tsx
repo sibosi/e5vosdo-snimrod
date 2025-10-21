@@ -241,17 +241,17 @@ export default function PresentationAttendancePage() {
         </Link>
       </div>
 
-      <h1 className="mb-6 text-3xl font-bold">Részvétel Nyilvántartása</h1>
+      <h1 className="mb-3 text-3xl font-bold">Jelenléti ív</h1>
 
       {presentation && (
-        <Card className="mb-6">
+        <Card className="mb-3">
           <CardHeader>
-            <h2 className="text-xl font-semibold">Prezentáció részletei</h2>
+            <h2 className="text-xl font-semibold">Előadás részletei</h2>
           </CardHeader>
           <CardBody>
             <div className="space-y-2">
               <p>
-                <strong>ID:</strong> {presentation.id}
+                <strong>Sorszám:</strong> {presentation.id}
               </p>
               <p>
                 <strong>Cím:</strong> {presentation.title}
@@ -262,13 +262,10 @@ export default function PresentationAttendancePage() {
                 </p>
               )}
               <p>
-                <strong>Helyszín:</strong> {presentation.address}
+                <strong>Terem:</strong> {presentation.address}
               </p>
               <p>
-                <strong>Időpont:</strong> {presentation.slot}
-              </p>
-              <p>
-                <strong>Kapacitás:</strong> {presentation.capacity} fő
+                <strong>Előadássáv:</strong> {presentation.slot}
               </p>
               {presentation.requirements && (
                 <p>
@@ -280,7 +277,7 @@ export default function PresentationAttendancePage() {
         </Card>
       )}
 
-      <Card className="mb-6">
+      <Card className="mb-3">
         <CardBody>
           <div className="flex flex-wrap items-center gap-4">
             <Input

@@ -61,11 +61,9 @@ export default function PresentationSelectionPage() {
   return (
     <div className="container mx-auto max-w-6xl p-1">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">
-          Prezentációk - Részvétel Nyilvántartása
-        </h1>
+        <h1 className="text-3xl font-bold">Prezentációk - Jelenléti ív</h1>
         <p className="mt-2 text-foreground-600">
-          Válassz egy prezentációt a résztvevők nyilvántartásához
+          Válassza ki az egyik előadást a jelenléti ív megtekintéséhez.
         </p>
       </div>
 
@@ -85,7 +83,7 @@ export default function PresentationSelectionPage() {
               <Card key={slot}>
                 <CardHeader>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-xl font-semibold">{slot}</h2>
+                    <h2 className="text-xl font-semibold">{slot}. sáv</h2>
                     <Chip size="sm" variant="flat">
                       {slotPresentations.length} előadás
                     </Chip>

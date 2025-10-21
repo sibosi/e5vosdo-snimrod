@@ -1,25 +1,12 @@
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
-import {
-  QuickTeachers,
-  QuickTeachersDev,
-} from "@/components/helyettesites/quickteacher";
 import { MenuInSection } from "@/components/menza/menu";
-import { Section } from "@/components/home/section";
-import { Events } from "@/components/events";
 import { getAuth, UserType } from "@/db/dbreq";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
-import Footer from "@/components/footer";
 import Carousel from "@/components/home/carousel";
-import { gate } from "@/db/permissions";
-import HeadTimetable from "@/components/home/smartHead/headTimetable";
-import { Alert, Chip } from "@heroui/react";
+import { Alert, Button } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
-import MillioLepes from "@/components/home/milliolepes";
-import MyPresentations from "@/components/home/myPresentations";
-import ProgramBlock from "@/components/home/programBlock";
-import tanarokJSON from "@/public/teachers.json";
 
 const PageHeadContent = async ({
   selfUser,
@@ -56,27 +43,86 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      {tanarokJSON.includes(selfUser?.email || "") ? (
-        <a href="/tanari/jelenletek">
-          <Alert className="my-20 py-20 text-left text-xl" color="success">
-            Tanári státusz felismerve! A jelenléti ívek megtekintéséhez
-            kattintson ide!
-          </Alert>
-        </a>
-      ) : null}
-
-
       <a href="https://docs.google.com/spreadsheets/d/1wZtmbTTELxQK0nQJweKbURFqNOboOwyyR9WGdB9Fc6E/edit?usp=sharing">
         <Alert className="mt-4 text-left" color="secondary">
           Az sporteredmények vagy a programok megtekintéséhez kattints ide!
         </Alert>
       </a>
 
+      <a href="/osztaly-programok" className="my-4">
+        <div className="rounded-xl bg-selfsecondary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+          <h2 className="text-xl font-bold md:text-2xl">
+            Szavazz a keddi programsáv termeire!
+          </h2>
+          <p className="mt-1 text-xs opacity-90 md:text-sm">
+            Kattints ide, válaszd ki az 5 kedvenc programodat, és szavazz rájuk!
+          </p>
+          <div className="mt-3">
+            <Button
+              as="a"
+              href="/osztaly-programok"
+              size="sm"
+              color="secondary"
+              variant="solid"
+            >
+              Szavazz kedvenceidre! 🗳️
+            </Button>
+          </div>
+        </div>
+      </a>
+
+      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Litkai Gergely előadása (9:00-10:30)
+        </h2>
+        <p className="mt-1 text-xs opacity-90 md:text-sm">
+          Litkai Gergely előadására a tornateremben kerül sor. Mindenkit
+          szeretettel várunk!
+        </p>
+      </div>
+
+      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Belsős kihívások (11:00-12:30)
+        </h2>
+        <p className="mt-1 text-xs opacity-90 md:text-sm">
+          Az osztályok kihívásokat teljesíthetnek az iskolán belül.
+        </p>
+      </div>
+
       {siteConfig.pageSections["menza"] != "hidden" && (
         <MenuInSection selfUser={selfUser} />
       )}
 
-      <ProgramBlock />
+      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Külsős kihívások (13:30-17:30)
+        </h2>
+        <p className="mt-1 text-xs opacity-90 md:text-sm">
+          Az osztályok iskolán belüli és iskolán kívüli kihívásokat
+          teljesítenek, kisebb csapatokban.
+        </p>
+      </div>
+
+      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Kihívások begyűjtése (16:00-17:30)
+        </h2>
+        <p className="mt-1 text-xs opacity-90 md:text-sm">
+          Az osztályok iskolán belüli és iskolán kívüli kihívásokat
+          teljesítenek, kisebb csapatokban.
+        </p>
+      </div>
+
+      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Ki Mit Tud? (18:00-21:30)
+        </h2>
+        <p className="mt-1 text-xs opacity-90 md:text-sm">
+          Iskolánk diákjai különféle produkciókkal lépnek fel a díszteremben.
+        </p>
+      </div>
+
       <p className="hidden text-center italic">„Bömbi a király”</p>
       <div className="hidden">
         {

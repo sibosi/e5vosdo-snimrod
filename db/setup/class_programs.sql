@@ -106,7 +106,6 @@ ORDER BY
 --@block
 -- View programs with vote counts
 SELECT
-    p.id,
     p.name,
     p.room,
     p.class,
@@ -121,4 +120,62 @@ ORDER BY
     p.name;
 
 --@block
-DELETE FROM class_programs;
+-- View programs vote count, but the 1st choice counts 5, 2nd 4, ..., 5th 1
+SELECT
+    p.name,
+    p.room,
+    p.class,
+    SUM(
+        CASE
+            WHEN v.vote_order = 1 THEN 5
+            WHEN v.vote_order = 2 THEN 4
+            WHEN v.vote_order = 3 THEN 3
+            WHEN v.vote_order = 4 THEN 2
+            WHEN v.vote_order = 5 THEN 1
+            ELSE 0
+        END
+    ) as weighted_vote_count
+FROM
+    class_programs p
+    LEFT JOIN class_program_votes v ON p.id = v.program_id
+GROUP BY
+    p.id
+ORDER BY
+    weighted_vote_count DESC;
+
+--@block
+-- Voted users
+SELECT DISTINCT
+    email
+FROM
+    class_program_votes;
+
+--@block
+-- Voted users whose EJG code like '2023C%'. EJG code is in the users table.
+SELECT DISTINCT
+    cpv.email,
+    duc.EJG_code
+FROM
+    class_program_votes cpv
+    JOIN users duc ON cpv.email = duc.email
+WHERE
+    duc.EJG_code LIKE '2023C%';
+
+--@block
+UPDATE class_programs
+SET
+    name = "Workout (E5 Tusa)"
+WHERE
+    name = "Workout";
+
+--@block
+-- select from presentations (index + . + name)
+SELECT
+    CONCAT (id, '. ', title) AS presentation_identifier
+FROM
+    presentations
+WHERE
+    slot = 'K2'
+    AND capacity > 0
+ORDER BY
+    id;

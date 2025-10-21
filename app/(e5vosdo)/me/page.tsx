@@ -40,6 +40,11 @@ const MePage = async () => {
       href: "/admin/matches",
       access: selfUser.permissions.includes("matchOrganiser"),
     },
+    {
+      title: "Előadások jelenléti íve",
+      href: "/tanari/jelenletek",
+      access: selfUser.permissions.includes("admin"),
+    },
   ];
 
   return (

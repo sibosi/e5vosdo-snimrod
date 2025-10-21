@@ -19,6 +19,7 @@ import { getCarouselEvents } from "@/db/event";
 import MillioLepes from "@/components/home/milliolepes";
 import MyPresentations from "@/components/home/myPresentations";
 import ProgramBlock from "@/components/home/programBlock";
+import tanarokJSON from "@/public/teachers.json";
 
 const PageHeadContent = async ({
   selfUser,
@@ -55,6 +56,15 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
+      {tanarokJSON.includes(selfUser?.email || "") ? (
+        <a href="/tanari/jelenletek">
+          <Alert className="my-20 py-20 text-left text-xl" color="success">
+            Tanári státusz felismerve! A jelenléti ívek megtekintéséhez
+            kattintson ide!
+          </Alert>
+        </a>
+      ) : null}
+
       {selfUser ? (
         <MyPresentations />
       ) : (

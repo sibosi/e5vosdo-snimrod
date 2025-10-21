@@ -59,7 +59,7 @@ export default function PresentationSelectionPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl p-4">
+    <div className="container mx-auto max-w-6xl p-1">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">
           Prezentációk - Részvétel Nyilvántartása

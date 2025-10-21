@@ -5,26 +5,48 @@ import { PossibleUserType } from "@/db/dbreq";
 import { Alert } from "@heroui/react";
 import React from "react";
 
-const IsVerified = ({ selfUser }: { selfUser: PossibleUserType }) => {
+const textByTopic = {
+  signup: {
+    notLoggedIn:
+      "Az E5N előadások jelentkezéséhez be kell jelentkezned az eötvösös google fiókoddal!",
+    notVerified:
+      "Csak igazolt diákok jelentkezhetnek előadásra. Probléma esetén értesítendő: ",
+    verified: "Diákstátusz igazolva! Az előadásokra jelentkezhetsz.",
+  },
+  vote: {
+    notLoggedIn:
+      "Az osztályprogramok szavazásához be kell jelentkezned az eötvösös google fiókoddal!",
+    notVerified:
+      "Csak igazolt diákok szavazhatnak. Probléma esetén értesítendő: ",
+    verified: "Diákstátusz igazolva! Szavazhatsz.",
+  },
+};
+
+const IsVerified = ({
+  selfUser,
+  topic = "signup",
+}: {
+  selfUser: PossibleUserType;
+  topic?: "signup" | "vote";
+}) => {
   if (!selfUser)
     return (
       <Alert color="warning" className="my-2" endContent={<Login />}>
-        Az E5N előadások jelentkezéséhez be kell jelentkezned az eötvösös google
-        fiókoddal!
+        {textByTopic[topic].notLoggedIn}
       </Alert>
     );
 
   if (!selfUser.is_verified)
     return (
       <Alert color="danger" className="my-2">
-        Csak igazolt diákok jelentkezhetnek előadásra. Probléma esetén
-        értesítendő: {siteConfig.developer} ({siteConfig.developerEmail})
+        {textByTopic[topic].notVerified} {siteConfig.developer} (
+        {siteConfig.developerEmail})
       </Alert>
     );
 
   return (
     <Alert color="success" className="my-2">
-      Diákstátusz igazolva! Az előadásokra jelentkezhetsz.
+      {textByTopic[topic].verified}
     </Alert>
   );
 };

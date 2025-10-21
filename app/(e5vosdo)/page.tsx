@@ -17,6 +17,8 @@ import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import { Alert, Chip } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import MillioLepes from "@/components/home/milliolepes";
+import MyPresentations from "@/components/home/myPresentations";
+import ProgramBlock from "@/components/home/programBlock";
 
 const PageHeadContent = async ({
   selfUser,
@@ -53,7 +55,16 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <PageHeadContent selfUser={selfUser} />
+      {selfUser ? (
+        <MyPresentations />
+      ) : (
+        <div>
+          <h1 className="mb-1 text-center text-3xl font-bold text-selfprimary-900 md:text-4xl">
+            Hiányolod az előadásaidat?
+          </h1>
+          <LoginButton />
+        </div>
+      )}
 
       <a href="/jelentkezes">
         <Alert className="mt-4 text-left" color="primary">
@@ -67,61 +78,13 @@ export default async function Home() {
         </Alert>
       </a>
 
-      {gate(selfUser, "user", "boolean") && (
-        <Section
-          title="Órarend"
-          localStorageKey="Órarend2"
-          dropdownable={true}
-          defaultStatus="opened"
-          savable={true}
-          chip={
-            <Chip color="secondary" size="sm">
-              Nem hivatalos
-            </Chip>
-          }
-        >
-          <div className="max-w-md">
-            <HeadTimetable selfUser={selfUser} />
-          </div>
-        </Section>
-      )}
-
-      <Section title="Millió lépés" dropdownable={true}>
-        <MillioLepes />
-      </Section>
-
-      {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
-        <Section
-          title={"Helyettesítések"}
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["helyettesitesek"]}
-          newVersion={<QuickTeachersDev />}
-          oldVersionName="Lista"
-          newVersionName="Rács"
-        >
-          <QuickTeachers />
-        </Section>
-      )}
-
       {siteConfig.pageSections["menza"] != "hidden" && (
         <MenuInSection selfUser={selfUser} />
       )}
 
-      {siteConfig.pageSections["esemenyek"] != "hidden" && (
-        <Section
-          title="Események"
-          dropdownable={true}
-          defaultStatus={siteConfig.pageSections["esemenyek"]}
-        >
-          <Events />
-        </Section>
-      )}
+      <ProgramBlock />
 
-      <Section title="Keresel valamit?" dropdownable={false}>
-        <Footer />
-      </Section>
-
-      <p className="text-center italic">„Bömbi a király”</p>
+      <p className="hidden text-center italic">„Bömbi a király”</p>
 
       <div className="hidden">
         {

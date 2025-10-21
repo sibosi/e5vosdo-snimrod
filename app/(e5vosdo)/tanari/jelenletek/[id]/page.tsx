@@ -323,6 +323,10 @@ export default function PresentationAttendancePage() {
               Jelentkezettek ({filteredSignups.length})
             </h2>
           </CardHeader>
+          <p className="px-3">
+            Kattintson a diák nevére a részvétel jelöléséhez vagy
+            eltávolításához.
+          </p>
           <CardBody>
             <div className="space-y-2">
               {filteredSignups.length === 0 ? (
@@ -331,39 +335,36 @@ export default function PresentationAttendancePage() {
                 </p>
               ) : (
                 filteredSignups.map((signup, index) => (
-                  <div
+                  <button
                     key={signup.id}
-                    className={`flex items-center justify-between rounded-lg border p-3 ${
+                    onClick={() =>
+                      handleToggleParticipation(signup.id, signup.participated)
+                    }
+                    className={`flex w-full cursor-pointer items-center gap-4 rounded-lg border p-3 text-left transition-all hover:shadow-md ${
                       signup.participated
-                        ? "border-success-300 bg-success-50"
-                        : "border-foreground-300 bg-foreground-50"
+                        ? "border-success-300 bg-success-50 hover:bg-success-100"
+                        : "border-foreground-300 bg-foreground-50 hover:bg-foreground-100"
                     }`}
                   >
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm font-semibold text-foreground-500">
-                        {index + 1}.
-                      </span>
-                      <div>
-                        <p className="font-semibold">{signup.userName}</p>
-                        <p className="text-sm text-foreground-600">
-                          {signup.userClass} - {signup.email}
-                        </p>
-                      </div>
-                    </div>
                     <Checkbox
                       size="lg"
                       isSelected={signup.participated}
-                      onValueChange={() =>
-                        handleToggleParticipation(
-                          signup.id,
-                          signup.participated,
-                        )
-                      }
                       color="success"
-                    >
-                      Részt vett
-                    </Checkbox>
-                  </div>
+                      isReadOnly
+                    />
+
+                    <div className="flex-1">
+                      <p className="font-semibold">
+                        <span className="text-foreground-500">
+                          {index + 1}.
+                        </span>{" "}
+                        {signup.userName}
+                      </p>
+                      <p className="text-sm text-foreground-600">
+                        {signup.userClass}
+                      </p>
+                    </div>
+                  </button>
                 ))
               )}
             </div>
@@ -407,7 +408,8 @@ export default function PresentationAttendancePage() {
 
                 {studentSearch.presentations.length === 0 ? (
                   <p className="text-center text-foreground-500">
-                    Ez a diák nem jelentkezett egy prezentációra sem
+                    Ez a diák nem jelentkezett és nem lett beosztva egy
+                    prezentációra sem. (Szervező / médiás / érettségiző diák)
                   </p>
                 ) : (
                   <div className="space-y-2">

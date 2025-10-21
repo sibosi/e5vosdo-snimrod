@@ -50,7 +50,7 @@ export default async function Home() {
       </a>
 
       <a href="/osztaly-programok" className="my-4">
-        <div className="rounded-xl bg-selfsecondary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <div className="my-4 rounded-xl bg-selfsecondary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
           <h2 className="text-xl font-bold md:text-2xl">
             Szavazz a keddi programsáv termeire!
           </h2>
@@ -72,7 +72,7 @@ export default async function Home() {
       </a>
 
       <a href="https://forms.gle/85zZFTTP1aqPaaJf6" className="my-4">
-        <div className="rounded-xl bg-selfsecondary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <div className="my-4 rounded-xl bg-selfsecondary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
           <h2 className="text-xl font-bold md:text-2xl">
             Tetszettek a keddi előadások?
           </h2>

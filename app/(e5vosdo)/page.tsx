@@ -100,6 +100,16 @@ export default async function Home() {
       {siteConfig.pageSections["menza"] != "hidden" && (
         <MenuInSection selfUser={selfUser} />
       )}
+
+      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">Táblaavatás (14:00)</h2>
+        <p className="mt-1 text-xs opacity-90 md:text-sm">
+          Ünnepélyes keretek között a földszinti hátsó kijáratnál leleplezzük
+          iskolánk új emléktábláját Dömösdi Jánosné, iskolánk egyetlen volt női
+          igazgatója tiszteletére.
+        </p>
+      </div>
+
       <ProgramBlock />
       <p className="hidden text-center italic">„Bömbi a király”</p>
       <div className="hidden">

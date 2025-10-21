@@ -4,6 +4,7 @@ CREATE TABLE
         email VARCHAR(255) NOT NULL,
         slot VARCHAR(255) NOT NULL,
         presentation_id INTEGER NOT NULL,
+        participated BOOLEAN DEFAULT FALSE NOT NULL,
         FOREIGN KEY (presentation_id) REFERENCES presentations (id)
     );
 
@@ -33,3 +34,7 @@ CREATE TABLE
     );
 
 --@block
+ALTER TABLE signups
+ADD COLUMN participated BOOLEAN DEFAULT FALSE NOT NULL;
+
+CREATE INDEX idx_signups_participated ON signups (participated);

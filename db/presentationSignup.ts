@@ -99,6 +99,8 @@ export interface SignupType {
   id: number;
   email: string;
   presentation_id: number;
+  slot: string;
+  participated: boolean;
 }
 
 export async function getPresentations(): Promise<PresentationType[]> {
@@ -378,4 +380,54 @@ export async function getSlots(): Promise<string[]> {
 
   slotsCache = { value: slots, expires: now + 60 * 1000 };
   return slots;
+}
+
+export async function getSignupsWithParticipation(
+  presentation_id: number,
+): Promise<SignupType[]> {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  if (!gate(selfUser, "teacher", "boolean"))
+    throw new Error("Nincs jogosultságod ehhez");
+
+  const result = await dbreq(
+    `SELECT id, email, presentation_id, slot, participated FROM signups WHERE presentation_id = ? ORDER BY email`,
+    [presentation_id],
+  );
+
+  // Convert participated field to proper boolean
+  return result.map((signup: any) => ({
+    ...signup,
+    participated: Boolean(signup.participated),
+  }));
+}
+
+export async function markParticipation(
+  signup_id: number,
+  participated: boolean,
+): Promise<void> {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  if (!gate(selfUser, "teacher", "boolean"))
+    throw new Error("Nincs jogosultságod ehhez");
+
+  await dbreq(`UPDATE signups SET participated = ? WHERE id = ?`, [
+    participated,
+    signup_id,
+  ]);
+}
+
+export async function markAllParticipation(
+  presentation_id: number,
+  participated: boolean,
+): Promise<void> {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  if (!gate(selfUser, "teacher", "boolean"))
+    throw new Error("Nincs jogosultságod ehhez");
+
+  await dbreq(`UPDATE signups SET participated = ? WHERE presentation_id = ?`, [
+    participated,
+    presentation_id,
+  ]);
 }

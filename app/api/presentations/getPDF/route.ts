@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
 import {
-  getMembersAtPresentation,
   getPresentations,
+  getSignupsWithParticipation,
 } from "@/db/presentationSignup";
 import { getAuth, getUser } from "@/db/dbreq";
 import PDFDocumentWithTables from "pdfkit-table";
@@ -61,11 +61,20 @@ export async function GET() {
 
     let i = 0;
 
-    const membersAtPresentations = new Map<number, string[]>();
+    const signupsByPresentation = new Map<
+      number,
+      Array<{ email: string; participated: boolean }>
+    >();
     await Promise.all(
       presentations.map(async (presentation) => {
-        const emails = await getMembersAtPresentation(null, presentation.id);
-        membersAtPresentations.set(presentation.id, emails);
+        const signups = await getSignupsWithParticipation(presentation.id);
+        signupsByPresentation.set(
+          presentation.id,
+          signups.map((s) => ({
+            email: s.email,
+            participated: s.participated,
+          })),
+        );
       }),
     );
 
@@ -82,12 +91,12 @@ export async function GET() {
       const presAddress = sanitizeText(presentation.address);
       const presMaxCapacity = presentation.capacity;
 
-      // Retrieve signup emails (expected as string[]).
-      const emails: string[] =
-        membersAtPresentations.get(presentation.id) || [];
-      emails.sort((a, b) => a.localeCompare(b));
+      // Retrieve signup data with participation status
+      const signups = signupsByPresentation.get(presentation.id) || [];
+      signups.sort((a, b) => a.email.localeCompare(b.email));
 
-      const presSignuped = emails.length;
+      const presSignuped = signups.length;
+      const presParticipated = signups.filter((s) => s.participated).length;
 
       // Write presentation details.
       doc.registerFont("Outfit", fontPath, "bold");
@@ -100,15 +109,16 @@ export async function GET() {
       doc.text(
         `Jelentkezők száma: ${presSignuped} (maximum ${presMaxCapacity} fő)`,
       );
+      doc.text(`Résztvevők száma: ${presParticipated}`);
       doc.moveDown(0.5);
 
-      if (emails.length > 0) {
+      if (signups.length > 0) {
         // Build the table rows as objects.
         const rows = [];
         let j = 0;
-        for (const email of emails) {
+        for (const signup of signups) {
           j += 1;
-          const emailStr = sanitizeText(String(email));
+          const emailStr = sanitizeText(String(signup.email));
           const user = await getUser(emailStr);
           const name =
             user && typeof user.name === "string"
@@ -119,6 +129,7 @@ export async function GET() {
             name: name,
             class: getUserClass(user) || "N/A",
             email: emailStr,
+            participated: signup.participated ? "✓" : "",
           });
         }
 
@@ -127,9 +138,10 @@ export async function GET() {
           doc.page.width - doc.page.margins.left - doc.page.margins.right;
 
         const indexWidth = availableWidth * 0.03;
-        const nameWidth = availableWidth * 0.45;
+        const nameWidth = availableWidth * 0.35;
         const classWidth = availableWidth * 0.07;
         const emailWidth = availableWidth * 0.45;
+        const participatedWidth = availableWidth * 0.1;
 
         // Define the table with headers and data.
         const table = {
@@ -156,6 +168,12 @@ export async function GET() {
               label: "Email",
               property: "email",
               width: emailWidth,
+              renderer: undefined,
+            },
+            {
+              label: "Részt vett",
+              property: "participated",
+              width: participatedWidth,
               renderer: undefined,
             },
           ],

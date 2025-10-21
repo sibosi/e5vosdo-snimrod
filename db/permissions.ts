@@ -38,6 +38,8 @@ export function gate(
     if (user.permissions.includes(permission)) hasPermission = true;
   } else if (permission.some((p) => user.permissions.includes(p)))
     hasPermission = true;
+
+  if ("teacher" === permission && !user.is_verified) hasPermission = true;
   if (type === "boolean") return hasPermission;
   if (hasPermission) return;
   throw new Error("Permission denied");

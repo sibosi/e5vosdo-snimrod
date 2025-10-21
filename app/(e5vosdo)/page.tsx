@@ -65,27 +65,33 @@ export default async function Home() {
           <LoginButton />
         </div>
       )}
-
       <a href="/jelentkezes">
         <Alert className="mt-4 text-left" color="primary">
           Az előadásjelentkezési felület megtekintéséhez kattints ide!
         </Alert>
       </a>
-
       <a href="https://docs.google.com/spreadsheets/d/1wZtmbTTELxQK0nQJweKbURFqNOboOwyyR9WGdB9Fc6E/edit?usp=sharing">
         <Alert className="mt-4 text-left" color="secondary">
           Az sporteredmények vagy a programok megtekintéséhez kattints ide!
         </Alert>
       </a>
 
+      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Kötélhúzás (12:30-13:30)
+        </h2>
+        <p className="mt-1 text-xs opacity-90 md:text-sm">
+          Minden osztályt szeretettel várunk a nagytesiben megrendezésre kerülő
+          kötélhúzó versenyre! Gyere el, és mutasd meg, hogy a te osztályod a
+          legerősebb!
+        </p>
+      </div>
+
       {siteConfig.pageSections["menza"] != "hidden" && (
         <MenuInSection selfUser={selfUser} />
       )}
-
       <ProgramBlock />
-
       <p className="hidden text-center italic">„Bömbi a király”</p>
-
       <div className="hidden">
         {
           "Az oldal a Budapest V. Kerületi Eötvös József Gimnázium (más néven EJG) Diákönkormányzatának (más néven DÖ) tájékoztató oldala."

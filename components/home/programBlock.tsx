@@ -77,7 +77,9 @@ const ProgramBlock = () => {
     <div className="my-4 space-y-4">
       {/* Header */}
       <div className="rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
-        <h2 className="text-xl font-bold md:text-2xl">Kedd 15:00-18:00</h2>
+        <h2 className="text-xl font-bold md:text-2xl">
+          Programsáv (15:00-18:00)
+        </h2>
         <p className="mt-1 text-xs opacity-90 md:text-sm">
           {programs.length} program várakozik rád!
         </p>

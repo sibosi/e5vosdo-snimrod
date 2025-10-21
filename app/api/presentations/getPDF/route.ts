@@ -105,11 +105,7 @@ export async function GET() {
         .font("Outfit")
         .text(`${presentation.id}: ${presTitle}`, { underline: true });
       doc.text(`Előadó: ${presPerformer}`);
-      doc.text(`Helyszín: ${presAddress}`);
-      doc.text(
-        `Jelentkezők száma: ${presSignuped} (maximum ${presMaxCapacity} fő)`,
-      );
-      doc.text(`Résztvevők száma: ${presParticipated}`);
+      doc.text(`Helyszín: ${presAddress} | Jelentkezők száma: ${presSignuped} (max. ${presMaxCapacity} fő) | Résztvevők száma: ${presParticipated}`);
       doc.moveDown(0.5);
 
       if (signups.length > 0) {

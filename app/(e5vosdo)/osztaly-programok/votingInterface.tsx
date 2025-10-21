@@ -27,6 +27,7 @@ const VotingInterface = () => {
     null,
     null,
   ]);
+  const [userClass, setUserClass] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{
@@ -41,9 +42,10 @@ const VotingInterface = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [programsRes, votesRes] = await Promise.all([
+      const [programsRes, votesRes, userClassRes] = await Promise.all([
         fetch("/api/classPrograms/getPrograms"),
         fetch("/api/classPrograms/getUserVotes"),
+        fetch("/api/classPrograms/getUserClass"),
       ]);
 
       if (programsRes.ok) {
@@ -63,6 +65,11 @@ const VotingInterface = () => {
           }
         });
         setSelectedPrograms(votes);
+      }
+
+      if (userClassRes.ok) {
+        const userClassData = await userClassRes.json();
+        setUserClass(userClassData.userClass);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -130,7 +137,15 @@ const VotingInterface = () => {
       .map((id, idx) => (idx !== currentPosition ? id : null))
       .filter((id): id is number => id !== null);
 
-    return programs.filter((p) => !selectedIds.includes(p.id));
+    return programs.filter((p) => {
+      // Filter out already selected programs
+      if (selectedIds.includes(p.id)) return false;
+
+      // Filter out programs from user's own class
+      if (userClass && p.class === userClass) return false;
+
+      return true;
+    });
   };
 
   const getSelectedProgram = (programId: number | null) => {
@@ -298,6 +313,11 @@ const VotingInterface = () => {
               <li>Az 1. választásod a legkedveltebb programod</li>
               <li>Minimum 1, maximum 5 programot választhatsz</li>
               <li>Ugyanazt a programot nem választhatod többször</li>
+              {userClass && (
+                <li className="font-semibold text-selfprimary-700">
+                  A saját osztályodra ({userClass}) nem szavazhatsz
+                </li>
+              )}
               <li>A szavazatodat bármikor módosíthatod</li>
             </ul>
           </div>

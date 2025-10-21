@@ -71,6 +71,29 @@ export default async function Home() {
         </div>
       </a>
 
+      <a href="https://forms.gle/85zZFTTP1aqPaaJf6" className="my-4">
+        <div className="rounded-xl bg-selfsecondary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+          <h2 className="text-xl font-bold md:text-2xl">
+            Tetszettek a keddi előadások?
+          </h2>
+          <p className="mt-1 text-xs opacity-90 md:text-sm">
+            A DÖ kiemelt figyelmet fordít a diákok visszajelzéseire. Kérjük,
+            fejtsd ki a véleményedet a kedden látott előadásokról!
+          </p>
+          <div className="mt-3">
+            <Button
+              as="a"
+              href="https://forms.gle/85zZFTTP1aqPaaJf6"
+              size="sm"
+              color="secondary"
+              variant="solid"
+            >
+              Visszajelzést küldök! 🗳️
+            </Button>
+          </div>
+        </div>
+      </a>
+
       <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
         <h2 className="text-xl font-bold md:text-2xl">
           Litkai Gergely előadása (9:00-10:30)

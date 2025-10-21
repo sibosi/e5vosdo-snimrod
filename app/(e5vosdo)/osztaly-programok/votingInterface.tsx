@@ -267,7 +267,7 @@ const VotingInterface = () => {
                     )}
                   </div>
                   {selectedProgram && (
-                    <div className="ml-16 rounded-lg bg-selfprimary-50 p-3">
+                    <div className="rounded-lg bg-selfprimary-50 p-3">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold">
                           {selectedProgram.name}

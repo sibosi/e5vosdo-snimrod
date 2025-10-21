@@ -343,13 +343,6 @@ export default function PresentationAttendancePage() {
                         : "border-foreground-300 bg-foreground-50 hover:bg-foreground-100"
                     }`}
                   >
-                    <Checkbox
-                      size="lg"
-                      isSelected={signup.participated}
-                      color="success"
-                      isReadOnly
-                    />
-
                     <div className="flex-1">
                       <p className="font-semibold">
                         <span className="text-foreground-500">

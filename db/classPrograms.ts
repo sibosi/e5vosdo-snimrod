@@ -113,6 +113,61 @@ export async function saveUserVotes(
 }
 
 /**
+ * Get weighted voting results (admin only)
+ */
+export async function getWeightedVotingResults(): Promise<Array<{
+  name: string;
+  room: string;
+  class: string;
+  weighted_vote_count: number;
+}>> {
+  const selfUser = await getAuth();
+  if (!selfUser || !selfUser.permissions.includes("admin")) {
+    throw new Error("Nincs jogosultságod az eredmények megtekintéséhez");
+  }
+
+  return await dbreq(`
+    SELECT
+        p.name,
+        p.room,
+        p.class,
+        SUM(
+            CASE
+                WHEN v.vote_order = 1 THEN 5
+                WHEN v.vote_order = 2 THEN 4
+                WHEN v.vote_order = 3 THEN 3
+                WHEN v.vote_order = 4 THEN 2
+                WHEN v.vote_order = 5 THEN 1
+                ELSE 0
+            END
+        ) as weighted_vote_count
+    FROM
+        class_programs p
+        LEFT JOIN class_program_votes v ON p.id = v.program_id
+    GROUP BY
+        p.id
+    ORDER BY
+        weighted_vote_count DESC
+  `);
+}
+
+/**
+ * Get list of users who voted (admin only)
+ */
+export async function getVotedUsers(): Promise<Array<{ email: string }>> {
+  const selfUser = await getAuth();
+  if (!selfUser || !selfUser.permissions.includes("admin")) {
+    throw new Error("Nincs jogosultságod az eredmények megtekintéséhez");
+  }
+
+  return await dbreq(`
+    SELECT DISTINCT email
+    FROM class_program_votes
+    ORDER BY email
+  `);
+}
+
+/**
  * Get vote statistics
  */
 export async function getVoteStatistics(): Promise<{

@@ -53,6 +53,13 @@ export default async function Home() {
         </a>
       )}
 
+
+
+<div className="responsive-video">
+  <iframe title="KMT" src="https://www.youtube.com/embed/BLGtv4RRVSY" frameborder="0" allowfullscreen></iframe>
+</div>
+
+
       <a href="https://docs.google.com/spreadsheets/d/1wZtmbTTELxQK0nQJweKbURFqNOboOwyyR9WGdB9Fc6E/edit?usp=sharing">
         <Alert className="mt-4 text-left" color="secondary">
           Az sporteredmények vagy a programok megtekintéséhez kattints ide!

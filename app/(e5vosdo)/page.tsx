@@ -56,7 +56,7 @@ export default async function Home() {
 
 
 <div className="responsive-video">
-  <iframe title="KMT" src="https://www.youtube.com/embed/BLGtv4RRVSY" frameborder="0" allowfullscreen></iframe>
+  <iframe title="KMT" src="https://www.youtube.com/embed/BLGtv4RRVSY" frameBorder="0" allowFullScreen></iframe>
 </div>
 
 

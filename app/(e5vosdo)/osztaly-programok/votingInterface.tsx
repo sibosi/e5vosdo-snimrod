@@ -179,7 +179,7 @@ const VotingInterface = () => {
           Szavazz kedvenc programjaidra!
         </h1>
 
-        <ul className="ml-4 list-disc space-y-1">
+        <ul className="ml-4 mt-2 list-disc space-y-1 text-sm md:text-base">
           <li>Az 1. választásod a legkedveltebb programod</li>
           <li>Minimum 1, maximum 5 programot választhatsz</li>
           <li>Ugyanazt a programot nem választhatod többször</li>

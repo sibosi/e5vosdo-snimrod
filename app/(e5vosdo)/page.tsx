@@ -53,7 +53,7 @@ export default async function Home() {
             Köszönjük, hogy velünk tartottatok az Eötvös Napokon! Mindenkinek
             kellemes őszi szünetet kívánunk!
           </h2>
-          <p className="mt-1 opacity-90 md:text-lg">
+          <p className="mt-1 text-sm opacity-90 md:text-base">
             Kattints ide, hogy kitöltsd az E5N értékelő űrlapját!
           </p>
         </div>

@@ -54,9 +54,7 @@ export default async function Home() {
             kellemes őszi szünetet kívánunk!
           </h2>
           <p className="mt-1 opacity-90 md:text-lg">
-            Ahhoz, hogy a jövőben még szuperebb programokon tudjatok részt
-            venni, kell a Ti visszajelzésetek is. Ezért kérjük töltsétek ki az
-            E5N értékelő űrlapját!
+            Kattints ide, hogy kitöltsd az E5N értékelő űrlapját!
           </p>
         </div>
       </a>

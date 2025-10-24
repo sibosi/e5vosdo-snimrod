@@ -52,16 +52,24 @@ export default async function Home() {
           Köszönjük, hogy velünk tartottatok az Eötvös Napokon! Mindenkinek
           kellemes őszi szünetet kívánunk!
         </h2>
-        <Button
-          as="a"
-          href="https://forms.gle/vzJR12HQriv5B32r5"
-          size="sm"
-          color="secondary"
-          variant="solid"
-          className="w-full"
-        >
-          Kitöltöm az E5N visszajelzési űrlapot! 🗳️
-        </Button>
+      </div>
+
+      <div className="my-4 space-y-2 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Szavazz és küldj visszajelzést!
+        </h2>
+
+        <ul className="space-y-3 font-semibold text-selfsecondary-700">
+          <a href="https://forms.gle/vzJR12HQriv5B32r5" className="block">
+            <li>⭐ Visszajelzek az egész E5N-ről! ➜</li>
+          </a>
+          <a href="https://forms.gle/85zZFTTP1aqPaaJf6" className="block">
+            <li>🎤 Visszajelzést küldök az előadásokról! ➜</li>
+          </a>
+          <a href="/osztaly-programok" className="block">
+            <li>🏫 Visszajelzést küldök az osztályprogramokról! ➜</li>
+          </a>
+        </ul>
       </div>
 
       <div className="responsive-video">
@@ -71,41 +79,6 @@ export default async function Home() {
           frameBorder="0"
           allowFullScreen
         ></iframe>
-      </div>
-
-      <div className="my-4 space-y-2 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
-        <h2 className="text-xl font-bold md:text-2xl">
-          Szavazz a keddi programsáv termeire!
-        </h2>
-
-        <Button
-          as="a"
-          href="/osztaly-programok"
-          size="sm"
-          color="secondary"
-          variant="solid"
-          className="w-full"
-        >
-          Szavazok a kedvenceimre! 🗳️
-        </Button>
-      </div>
-
-      <div className="my-4 space-y-2 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
-        <h2 className="text-xl font-bold md:text-2xl">
-          Tetszettek a keddi előadások?
-        </h2>
-        <div className="mt-3">
-          <Button
-            as="a"
-            href="https://forms.gle/85zZFTTP1aqPaaJf6"
-            size="sm"
-            color="secondary"
-            variant="solid"
-            className="w-full"
-          >
-            Visszajelzést küldök az előadásokról! 🗳️
-          </Button>
-        </div>
       </div>
 
       <Section title="Millió lépés" dropdownable={true}>

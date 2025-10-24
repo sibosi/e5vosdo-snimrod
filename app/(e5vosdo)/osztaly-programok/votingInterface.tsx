@@ -178,9 +178,18 @@ const VotingInterface = () => {
         <h1 className="text-2xl font-bold md:text-3xl">
           Szavazz kedvenc programjaidra!
         </h1>
-        <p className="mt-2 text-sm opacity-90 md:text-base">
-          Válaszd ki az 5 kedvenc programodat sorrendben (1. = legkedveltebb).
-        </p>
+
+        <ul className="ml-4 list-disc space-y-1">
+          <li>Az 1. választásod a legkedveltebb programod</li>
+          <li>Minimum 1, maximum 5 programot választhatsz</li>
+          <li>Ugyanazt a programot nem választhatod többször</li>
+          {userClass && (
+            <li className="font-semibold text-selfprimary-700">
+              A saját osztályodra ({userClass}) nem szavazhatsz
+            </li>
+          )}
+          <li>A szavazatodat bármikor módosíthatod</li>
+        </ul>
       </div>
 
       {/* Message */}
@@ -297,26 +306,6 @@ const VotingInterface = () => {
             >
               Mentés
             </Button>
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Info Card */}
-      <Card className="mt-6 bg-selfsecondary-50">
-        <CardBody>
-          <div className="space-y-2 text-sm text-selfsecondary-900">
-            <p className="font-semibold">ℹ️ Hasznos információk:</p>
-            <ul className="ml-4 list-disc space-y-1">
-              <li>Az 1. választásod a legkedveltebb programod</li>
-              <li>Minimum 1, maximum 5 programot választhatsz</li>
-              <li>Ugyanazt a programot nem választhatod többször</li>
-              {userClass && (
-                <li className="font-semibold text-selfprimary-700">
-                  A saját osztályodra ({userClass}) nem szavazhatsz
-                </li>
-              )}
-              <li>A szavazatodat bármikor módosíthatod</li>
-            </ul>
           </div>
         </CardBody>
       </Card>

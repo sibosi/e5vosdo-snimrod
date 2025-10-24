@@ -47,12 +47,19 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-center text-foreground shadow-lg md:p-6">
-        <h2 className="text-xl font-bold md:text-2xl">
-          Köszönjük, hogy velünk tartottatok az Eötvös Napokon! Mindenkinek
-          kellemes őszi szünetet kívánunk!
-        </h2>
-      </div>
+      <a href="https://forms.gle/vzJR12HQriv5B32r5" className="my-4">
+        <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-center text-foreground shadow-lg md:p-6">
+          <h2 className="text-xl font-bold md:text-2xl">
+            Köszönjük, hogy velünk tartottatok az Eötvös Napokon! Mindenkinek
+            kellemes őszi szünetet kívánunk!
+          </h2>
+          <p className="mt-1 opacity-90 md:text-lg">
+            Ahhoz, hogy a jövőben még szuperebb programokon tudjatok részt
+            venni, kell a Ti visszajelzésetek is. Ezért kérjük töltsétek ki az
+            E5N értékelő űrlapját!
+          </p>
+        </div>
+      </a>
 
       <div className="responsive-video">
         <iframe

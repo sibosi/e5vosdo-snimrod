@@ -67,7 +67,7 @@ export default async function Home() {
             <li>🎤 Visszajelzést küldök az előadásokról! ➜</li>
           </a>
           <a href="/osztaly-programok" className="block">
-            <li>🏫 Visszajelzést küldök az osztályprogramokról! ➜</li>
+            <li>🏫 Szavazok a legjobb osztályprogramokra a programsávból! ➜</li>
           </a>
         </ul>
       </div>

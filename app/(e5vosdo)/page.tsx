@@ -47,17 +47,22 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <a href="https://forms.gle/vzJR12HQriv5B32r5" className="my-4">
-        <div className="my-4 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-center text-foreground shadow-lg md:p-6">
-          <h2 className="text-xl font-bold md:text-2xl">
-            Köszönjük, hogy velünk tartottatok az Eötvös Napokon! Mindenkinek
-            kellemes őszi szünetet kívánunk!
-          </h2>
-          <p className="mt-1 text-sm opacity-90 md:text-base">
-            Kattints ide, hogy kitöltsd az E5N értékelő űrlapját!
-          </p>
-        </div>
-      </a>
+      <div className="my-4 space-y-2 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-center text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Köszönjük, hogy velünk tartottatok az Eötvös Napokon! Mindenkinek
+          kellemes őszi szünetet kívánunk!
+        </h2>
+        <Button
+          as="a"
+          href="https://forms.gle/vzJR12HQriv5B32r5"
+          size="sm"
+          color="secondary"
+          variant="solid"
+          className="w-full"
+        >
+          Kitöltöm az E5N visszajelzési űrlapot! 🗳️
+        </Button>
+      </div>
 
       <div className="responsive-video">
         <iframe
@@ -68,50 +73,40 @@ export default async function Home() {
         ></iframe>
       </div>
 
-      <a href="/osztaly-programok" className="my-4">
-        <div className="my-4 rounded-xl bg-selfsecondary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
-          <h2 className="text-xl font-bold md:text-2xl">
-            Szavazz a keddi programsáv termeire!
-          </h2>
-          <p className="mt-1 text-xs opacity-90 md:text-sm">
-            Kattints ide, válaszd ki az 5 kedvenc programodat, és szavazz rájuk!
-          </p>
-          <div className="mt-3">
-            <Button
-              as="a"
-              href="/osztaly-programok"
-              size="sm"
-              color="secondary"
-              variant="solid"
-            >
-              Szavazz kedvenceidre! 🗳️
-            </Button>
-          </div>
-        </div>
-      </a>
+      <div className="my-4 space-y-2 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Szavazz a keddi programsáv termeire!
+        </h2>
 
-      <a href="https://forms.gle/85zZFTTP1aqPaaJf6" className="my-4">
-        <div className="my-4 rounded-xl bg-selfsecondary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
-          <h2 className="text-xl font-bold md:text-2xl">
-            Tetszettek a keddi előadások?
-          </h2>
-          <p className="mt-1 text-xs opacity-90 md:text-sm">
-            A DÖ kiemelt figyelmet fordít a diákok visszajelzéseire. Kérjük,
-            fejtsd ki a véleményedet a kedden látott előadásokról!
-          </p>
-          <div className="mt-3">
-            <Button
-              as="a"
-              href="https://forms.gle/85zZFTTP1aqPaaJf6"
-              size="sm"
-              color="secondary"
-              variant="solid"
-            >
-              Visszajelzést küldök! 🗳️
-            </Button>
-          </div>
+        <Button
+          as="a"
+          href="/osztaly-programok"
+          size="sm"
+          color="secondary"
+          variant="solid"
+          className="w-full"
+        >
+          Szavazok a kedvenceimre! 🗳️
+        </Button>
+      </div>
+
+      <div className="my-4 space-y-2 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-foreground shadow-lg md:p-6">
+        <h2 className="text-xl font-bold md:text-2xl">
+          Tetszettek a keddi előadások?
+        </h2>
+        <div className="mt-3">
+          <Button
+            as="a"
+            href="https://forms.gle/85zZFTTP1aqPaaJf6"
+            size="sm"
+            color="secondary"
+            variant="solid"
+            className="w-full"
+          >
+            Visszajelzést küldök az előadásokról! 🗳️
+          </Button>
         </div>
-      </a>
+      </div>
 
       <Section title="Millió lépés" dropdownable={true}>
         <MillioLepes />

@@ -18,7 +18,7 @@ _Tervezte és fejlesztette: [Simon Nimród](https://www.github.com/sibosi)_
   <img src="https://play.google.com/intl/hu_hu/badges/static/images/badges/hu_badge_web_generic.png" alt="Szerezd be: Google Play" height="80"/>
 </a>
 
-_Addig letölthető is letölthető PWA, a weben, a bal fenti letöltés ikonra kattintva: [e5vosdo.hu](https://e5vosdo.hu)_
+_PWA változat már elérhető a weben, a bal fenti letöltés ikonra kattintva: [e5vosdo.hu](https://e5vosdo.hu)_
 
 </div>
  

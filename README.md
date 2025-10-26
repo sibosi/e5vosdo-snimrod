@@ -46,11 +46,10 @@ A projekt nemcsak egy eszköz, hanem egy közösségi nyílt forrású kezdemén
 
 - 🚀 **Modern architektúra**: Next.js 15 alapú, server-side rendering és optimalizált teljesítmény
 - 💅 **Elegáns design**: HeroUI komponensek és Tailwind CSS styling
-- 🔒 **Biztonságos**: Supabase authentikáció és adatbázis kezelés
+- 🔒 **Biztonságos**: Google authentikáció (szervezeti szintű) és jogosultságkezelés
 - 📱 **Reszponzív**: Mobil-első megközelítés, minden eszközön tökéletes megjelenés
-- ⚡ **Gyors**: Optimalizált bundle méret és loading time
-
----
+- 💡 **Szabad fejlesztés**: Nyílt forráskódú, közösségi hozzájárulásokra ösztönző projekt
+- 🤝 **Közösségközpontú**: Eseményfeltöltési lehetőségek és közösségi interakciók
 
 ## 🎨 Funkciók
 

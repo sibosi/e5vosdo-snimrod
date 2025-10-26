@@ -110,4 +110,4 @@ Személyes információkat kizárólag a szervezethez tartozó, hitelesített fe
 
 ## 7. Módosítások
 
-A tájékoztató frissülhet. Minden változást a honlapon közzéteszünk, és frissítjük a „Hatályos” dátumot. Az aktuális tájékoztatót megtalálod [az oldal forráskódjában](https://github.com/e5vos/e5vosdo-snimrod/blob/master/SECURITY.md) is.
+A tájékoztató frissülhet. Minden változást a honlapon közzéteszünk, és frissítjük a „Hatályos” dátumot. Az aktuális tájékoztatót megtalálod [az oldal forráskódjában](https://github.com/sibosi/e5vosdo-snimrod/blob/master/SECURITY.md) is.

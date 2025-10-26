@@ -1,6 +1,12 @@
 <div align="center">
 
-# 🎓 e5vosdo-snimrod
+<picture>
+<source media="(prefers-color-scheme: light)" srcset="public/icons/E5vösDÖ-black.svg">
+<source media="(prefers-color-scheme: dark)" srcset="public/icons/E5vösDÖ-white.svg">
+<img src="public/icons/E5vösDÖ-black.svg" alt="react-bits logo" width="1000">
+</picture>
+
+# e5vosdo-snimrod
 
 ### Modern webapplikáció az Eötvös József Gimnázium Diákönkormányzatának
 

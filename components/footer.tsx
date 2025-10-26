@@ -26,7 +26,7 @@ const Footer = () => {
     "flex gap-0.5 p-2 flex-col items-center justify-center rounded-lg bg-selfprimary-bg text-center text-sm text-foreground hover:text-selfprimary-900";
 
   return (
-    <div className="mb-2 rounded-2xl bg-selfprimary-100 p-2">
+    <div className="mb-2 max-h-fit rounded-2xl bg-selfprimary-100 p-2">
       <div className="grid grid-flow-col grid-cols-4 grid-rows-4 justify-center gap-2">
         <a
           href={siteConfig.links.mediaGallery}
@@ -99,7 +99,7 @@ const Footer = () => {
             STYLES + " text-red col-span-2 row-span-2 text-selfprimary-500"
           }
         >
-          <E5vosST width="full" />
+          <E5vosST width="fit" className="max-h-40" />
         </a>
       </div>
     </div>

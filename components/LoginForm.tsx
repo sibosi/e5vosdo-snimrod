@@ -6,7 +6,18 @@ import { checkMessengerBrowser, RedirectUrlButton } from "@/app/skipMessenger";
 import { siteConfig } from "@/config/site";
 
 const Login = () => {
-  return !checkMessengerBrowser() ? (
+  if (checkMessengerBrowser())
+    return (
+      <Link href={siteConfig.links.home + "/support/messenger"}>
+        <RedirectUrlButton
+          url={siteConfig.links.home + "/support/messenger"}
+          text="Bejelentkezés"
+          props={{ className: "bg-selfprimary-300" }}
+        />
+      </Link>
+    );
+
+  return (
     <form action={doSocialLogin} className="flex justify-center">
       <Button
         type="submit"
@@ -19,14 +30,6 @@ const Login = () => {
         Bejelentkezés
       </Button>
     </form>
-  ) : (
-    <Link href={siteConfig.links.home + "/support/messenger"}>
-      <RedirectUrlButton
-        url={siteConfig.links.home + "/support/messenger"}
-        text="Bejelentkezés"
-        props={{ className: "bg-selfprimary-300" }}
-      />
-    </Link>
   );
 };
 

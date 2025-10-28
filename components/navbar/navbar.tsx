@@ -174,11 +174,5 @@ export const Navbar = ({
         isActiveHeadSpace={isActiveHeadSpace}
       />
     );
-  return (
-    <NavbarForDesktop
-      selfUser={selfUser}
-      className={className}
-      isActiveHeadSpace={isActiveHeadSpace}
-    />
-  );
+  return <></>;
 };

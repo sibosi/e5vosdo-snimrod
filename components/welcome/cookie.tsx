@@ -42,6 +42,7 @@ const Cookie = () => {
       shouldBlockScroll={false}
       backdrop="transparent"
       onClose={() => setPosition("center")}
+      hideCloseButton={true}
     >
       <ModalContent className="p-6 text-foreground">
         <p>

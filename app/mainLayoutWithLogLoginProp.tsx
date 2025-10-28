@@ -11,7 +11,7 @@ import { auth } from "@/auth";
 import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorkerWithPush";
 import { getAuth, updateUser, User } from "@/db/dbreq";
-import Cookie from "@/components/cookie";
+import Cookie from "@/components/welcome/cookie";
 import OnCSSBug from "@/components/home/oncssbug";
 import Alerts from "@/components/home/alerts";
 import MaintenanceGate from "@/components/home/maintenanceGate";
@@ -101,7 +101,7 @@ export default async function MainLayout({
               <OnCSSBug />
               <MaintenanceGate selfUser={selfUser} isActive={false}>
                 <div className="flex justify-start gap-3">
-                  <DesktopMenu />
+                  <DesktopMenu selfUser={selfUser} />
                   <div className="w-full max-w-7xl md:mx-auto">{children}</div>
                 </div>
               </MaintenanceGate>

@@ -17,6 +17,7 @@ import {
   QuickTeachers,
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
+import RedirectToWelcome from "@/components/welcome/redirectToWelcome";
 
 const PageHeadContent = async ({
   selfUser,
@@ -53,6 +54,7 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
+      <RedirectToWelcome />
       <PageHeadContent selfUser={selfUser} />
 
       <div className="my-4 space-y-2 rounded-xl bg-selfprimary-100 bg-gradient-to-r p-4 text-center text-foreground shadow-lg md:p-6">

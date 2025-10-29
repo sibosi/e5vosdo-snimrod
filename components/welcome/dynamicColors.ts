@@ -2,6 +2,18 @@
 
 import { useEffect, useState } from "react";
 
+// Theme detection utilities
+function getThemePreference(): "dark" | "light" {
+  if (typeof window === "undefined") return "dark";
+
+  const stored = localStorage.getItem("theme");
+  if (stored === "dark" || stored === "light") return stored;
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
 function hexToRgb(hex: string) {
   const clean = hex.replace("#", "");
   const num = parseInt(clean, 16);
@@ -53,6 +65,36 @@ export function useDominantColors(
   tone = 56,
 ) {
   const [colorHex, setColorHex] = useState<string | null>(null);
+  const [currentTheme, setCurrentTheme] = useState<"dark" | "light">(
+    getThemePreference(),
+  );
+
+  // Watch for theme changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCurrentTheme(getThemePreference());
+    };
+
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem("theme")) {
+        setCurrentTheme(e.matches ? "dark" : "light");
+      }
+    };
+
+    // Listen for localStorage changes
+    globalThis.window?.addEventListener("storage", handleStorageChange);
+
+    // Listen for system theme changes
+    const mediaQuery = globalThis.window?.matchMedia(
+      "(prefers-color-scheme: dark)",
+    );
+    mediaQuery?.addEventListener("change", handleSystemThemeChange);
+
+    return () => {
+      globalThis.window?.removeEventListener("storage", handleStorageChange);
+      mediaQuery?.removeEventListener("change", handleSystemThemeChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!imageSrc) {
@@ -106,8 +148,11 @@ export function useDominantColors(
         const mainHex =
           "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
 
-        // Convert to HCT with specified tone
-        const finalHex = await convertColorToHctTone(mainHex, tone);
+        // Adjust tone based on theme
+        const adjustedTone = currentTheme === "light" ? 100 - tone : tone;
+
+        // Convert to HCT with adjusted tone
+        const finalHex = await convertColorToHctTone(mainHex, adjustedTone);
 
         if (mounted) setColorHex(finalHex);
       } catch (err) {
@@ -121,7 +166,7 @@ export function useDominantColors(
     return () => {
       mounted = false;
     };
-  }, [imageSrc, tone]);
+  }, [imageSrc, tone, currentTheme]);
 
   return { colorHex };
 }

@@ -66,7 +66,7 @@ export default function PodcastPlayer({
   };
 
   return (
-    <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
+    <div className="rounded-lg bg-foreground/10 p-4 backdrop-blur-sm">
       <div className="mb-3 flex items-center gap-3">
         <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-pink-500 to-rose-600">
           <img
@@ -76,8 +76,8 @@ export default function PodcastPlayer({
           />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-white">{title}</p>
-          <p className="text-xs text-white/70">{episode}</p>
+          <p className="truncate text-sm font-semibold text-foreground">{title}</p>
+          <p className="text-xs text-foreground/70">{episode}</p>
         </div>
       </div>
 
@@ -86,7 +86,7 @@ export default function PodcastPlayer({
           <Button
             isIconOnly
             size="sm"
-            className="bg-white/20 text-white hover:bg-white/30"
+            className="bg-foreground/20 text-foreground hover:bg-foreground/30"
             onPress={togglePlayPause}
           >
             {isPlaying ? (
@@ -105,16 +105,19 @@ export default function PodcastPlayer({
               onChange={handleSeek}
               className="w-full"
               classNames={{
-                track: "bg-white/20",
-                filler: "bg-white",
-                thumb: "bg-white",
+                track: "bg-foreground/20",
+                filler: "bg-foreground",
+                thumb: "bg-foreground",
               }}
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-xs text-white/70">
+        <div className="flex items-center justify-between text-xs text-foreground/70">
           <span>{formatTime(currentTime)}</span>
+          <span>
+            Teljes részek az <a href="/est" className="underline hover:text-foreground">epizódik</a> oldalon
+          </span>
           <span>{formatTime(duration)}</span>
         </div>
       </div>

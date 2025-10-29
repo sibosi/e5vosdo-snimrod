@@ -3,8 +3,9 @@
 'use client';
 
 import { Chip } from '@heroui/react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
+import { useRef } from 'react';
 import Image from 'next/image';
 import VideoPlayer from './VideoPlayer';
 import PodcastPlayer from './PodcastPlayer';
@@ -20,6 +21,20 @@ import { useEvents } from '@/hooks/useEvents';
 import { useDominantColors } from './dynamicColors';
 
 export default function WelcomeFeatures() {
+  // Refs for scroll animations
+  const titleRef = useRef(null);
+  const eventsRef = useRef(null);
+  const newsRef = useRef(null);
+  const podcastRef = useRef(null);
+  const clubsRef = useRef(null);
+
+  // Check if elements are in view
+  const titleInView = useInView(titleRef, { once: true, margin: "-100px" });
+  const eventsInView = useInView(eventsRef, { once: true, margin: "-100px" });
+  const newsInView = useInView(newsRef, { once: true, margin: "-100px" });
+  const podcastInView = useInView(podcastRef, { once: true, margin: "-100px" });
+  const clubsInView = useInView(clubsRef, { once: true, margin: "-100px" });
+
   const { events, futureEvents, isLoading } = useEvents(false);
 
   const nextEventWithImage = (() => {
@@ -75,9 +90,10 @@ export default function WelcomeFeatures() {
   return (
     <div className="md:px-6 px-2 py-12" id="welcome-features">
       <motion.h3
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        ref={titleRef}
+        initial={{ opacity: 0, y: 20 }}
+        animate={titleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
         className="mb-12 text-center text-3xl font-bold text-selfprimary-900 md:text-4xl"
       >
         Ismerj meg minket közelebbről!
@@ -86,9 +102,10 @@ export default function WelcomeFeatures() {
       <div className="mx-auto max-w-6xl space-y-8">
         {/* --- ESEMÉNYEK --- */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          ref={eventsRef}
+          initial={{ opacity: 0, y: 40 }}
+          animate={eventsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="overflow-hidden rounded-xl shadow-lg"
           style={{ backgroundColor: colorEvent || FALLBACK_EVENT }}
         >
@@ -108,7 +125,7 @@ export default function WelcomeFeatures() {
             <div className="p-6 md:p-8 backdrop-blur-sm">
               <div className="mb-4 flex items-center gap-3">
                 <div
-                  className="rounded-full p-3 text-white"
+                  className="rounded-full p-3 text-foreground"
                   style={{ backgroundColor: colorEventIcon || FALLBACK_EVENT }}
                 >
                   <CalendarIcon className="h-6 w-6" />
@@ -122,20 +139,20 @@ export default function WelcomeFeatures() {
               {(() => {
                 if (isLoading)
                   return (
-                    <div className="mb-6 rounded-lg bg-selfprimary-50 p-4">
+                    <div className="mb-6 rounded-lg bg-foreground/10 p-4">
                       <p className="text-sm text-selfprimary-700">Betöltés...</p>
                     </div>
                   );
 
                 if (!nextEventWithImage)
                   return (
-                    <div className="mb-6 rounded-lg bg-selfprimary-50 p-4">
+                    <div className="mb-6 rounded-lg bg-foreground/10 p-4">
                       <p className="text-sm text-selfprimary-700">Jelenleg nincs közelgő esemény</p>
                     </div>
                   );
 
                 return (
-                  <div className="mb-6 rounded-lg bg-selfprimary-50 p-4">
+                  <div className="mb-6 rounded-lg bg-foreground/10 p-4">
                     <div className="mb-2 flex items-center gap-2">
                       <ClockIcon className="h-4 w-4 text-selfprimary-600" />
                       <span className="font-medium">Következő esemény</span>
@@ -160,7 +177,7 @@ export default function WelcomeFeatures() {
               })()}
 
               <Link href="/events">
-                <Chip color="primary" variant="flat" className="cursor-pointer bg-selfprimary-100 text-selfprimary-800">
+                <Chip color="primary" variant="flat" className="cursor-pointer bg-foreground/10 text-selfprimary-800">
                   Események megtekintése →
                 </Chip>
               </Link>
@@ -170,15 +187,16 @@ export default function WelcomeFeatures() {
 
         {/* --- HÍREK --- */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          ref={newsRef}
+          initial={{ opacity: 0, y: 40 }}
+          animate={newsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="overflow-hidden rounded-xl bg-selfprimary-bg shadow-lg"
         >
           <div className="grid md:grid-cols-2">
             <div className="p-6 md:p-8">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-full bg-gradient-to-br from-green-500 to-teal-600 p-3 text-white">
+                <div className="rounded-full bg-gradient-to-br from-green-500 to-teal-600 p-3 text-foreground">
                   <NewspaperIcon className="h-6 w-6" />
                 </div>
                 <h4 className="text-2xl font-bold text-selfprimary-900">Hírek</h4>
@@ -186,7 +204,7 @@ export default function WelcomeFeatures() {
               <p className="mb-4 text-selfprimary-600">
                 Friss információk, bejelentések és fontos közlemények egy helyen.
               </p>
-              <div className="mb-6 rounded-lg bg-selfprimary-50 p-4">
+              <div className="mb-6 rounded-lg bg-foreground/10 p-4">
                 <p className="font-medium text-selfprimary-900">Köszönjük, hogy velünk tartottatok az Eötvös Napokon!</p>
                 <p className="mt-2 text-sm text-selfprimary-600">
                   Mindenkinek kellemes őszi szünetet kívánunk! 🍁<br />A KiMitTud? videó már elérhető a főoldalon!
@@ -194,7 +212,7 @@ export default function WelcomeFeatures() {
                 <p className="mt-2 text-xs text-selfprimary-500">- Diákönkormányzat</p>
               </div>
               <Link href="/">
-                <Chip color="primary" variant="flat" className="cursor-pointer bg-selfprimary-100 text-selfprimary-800">
+                <Chip color="primary" variant="flat" className="cursor-pointer bg-foreground/10 text-selfprimary-800">
                   További hírek →
                 </Chip>
               </Link>
@@ -207,21 +225,22 @@ export default function WelcomeFeatures() {
 
         {/* --- PODCAST --- */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          ref={podcastRef}
+          initial={{ opacity: 0, y: 40 }}
+          animate={podcastInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="overflow-hidden rounded-xl shadow-lg"
           style={{ backgroundColor: colorPodcast || FALLBACK_PODCAST }}
         >
           <div className="grid md:grid-cols-2">
             <div className="p-6 md:p-8 backdrop-blur-sm">
               <div className="mb-4 flex items-center gap-3">
-                <div className=" rounded-full p-3 text-white" style={{ backgroundColor: colorPodcastIcon || FALLBACK_PODCAST }}>
+                <div className=" rounded-full p-3 text-foreground" style={{ backgroundColor: colorPodcastIcon || FALLBACK_PODCAST }}>
                   <MicrophoneIcon className="h-6 w-6" />
                 </div>
-                <h4 className="text-2xl font-bold text-white">E5T Podcast</h4>
+                <h4 className="text-2xl font-bold text-foreground">E5T Podcast</h4>
               </div>
-              <p className="mb-6 text-white/90">Hallgasd meg az iskola saját podcastját érdekes témákkal és beszélgetésekkel.</p>
+              <p className="mb-6 text-foreground/90">Hallgasd meg az iskola saját podcastját érdekes témákkal és beszélgetésekkel.</p>
               <div className="mb-6">
                 <PodcastPlayer
                   title="Tippjeink a szezonra"
@@ -231,8 +250,8 @@ export default function WelcomeFeatures() {
                 />
               </div>
               <Link href="/est">
-                <Chip color="primary" variant="flat" className="cursor-pointer ">
-                  Összes epizód →
+                <Chip color="primary" variant="flat" className="bg-foreground/10 backdrop-blur-sm cursor-pointer text-foreground">
+                 Összes epizód →
                 </Chip>
               </Link>
             </div>
@@ -244,9 +263,10 @@ export default function WelcomeFeatures() {
 
         {/* --- KLUBOK --- */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
+          ref={clubsRef}
+          initial={{ opacity: 0, y: 40 }}
+          animate={clubsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="overflow-hidden rounded-xl shadow-lg"
           style={{ backgroundColor: colorClubs || FALLBACK_CLUBS }}
         >
@@ -256,13 +276,13 @@ export default function WelcomeFeatures() {
             </div>
             <div className="p-6 md:p-8 backdrop-blur-sm">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-full p-3 text-white shadow-lg opacity-70" style={{ backgroundColor: colorClubs || FALLBACK_CLUBS }}>
+                <div className="rounded-full p-3 text-foreground shadow-lg opacity-70" style={{ backgroundColor: colorClubsIcon || FALLBACK_CLUBS }}>
                   <UsersIcon className="h-6 w-6" />
                 </div>
                 <h4 className="text-2xl font-bold text-selfprimary-900">Klubok & Szakkörök</h4>
               </div>
               <p className="mb-4 text-selfprimary-600">Fedezd fel a különböző klubokat és csatlakozz a közösségekhez.</p>
-              <div className="mb-6 space-y-3 rounded-lg bg-selfprimary-50 p-4">
+              <div className="mb-6 space-y-3 rounded-lg bg-foreground/10 p-4">
                 <div className="flex items-center gap-2">
                   <UserGroupIcon className="h-4 w-4 text-selfprimary-600" />
                   <span className="font-medium text-selfprimary-900">Aktív klubok</span>
@@ -276,7 +296,7 @@ export default function WelcomeFeatures() {
                 </ul>
               </div>
               <Link href="/clubs">
-                <Chip color="primary" variant="flat" className="cursor-pointer bg-selfprimary-100 text-selfprimary-800">
+                <Chip color="primary" variant="flat" className="cursor-pointer bg-foreground/10 text-selfprimary-800">
                   Klubok felfedezése →
                 </Chip>
               </Link>

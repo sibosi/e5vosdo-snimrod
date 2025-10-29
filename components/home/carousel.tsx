@@ -47,7 +47,7 @@ const CarouselItem = ({
   width?: number | string;
 }) => {
   const [largeImageWidth, setLargeImageWidth] = useState(100);
-  const titleLines = Array.isArray(title) ? title : title.split("\n");
+  const titleLines = Array.isArray(title) ? title : title.split(String.raw`\n`);
 
   useEffect(() => {
     setLargeImageWidth(window.innerWidth * 0.5);

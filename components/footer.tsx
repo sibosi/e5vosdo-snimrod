@@ -79,6 +79,12 @@ const Footer = () => {
           </div>
         </a>
 
+        <a href="/welcome" className={STYLES + " col-span-4 row-span-1 flex"}>
+          <div className="flex items-center justify-center gap-2">
+            <p>➜ Megnézem újra a bemutatkozó oldalt! ➜</p>
+          </div>
+        </a>
+
         <a href="/clubs" className={STYLES}>
           <svg {...SVGAttributes}>
             <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
@@ -100,12 +106,6 @@ const Footer = () => {
           }
         >
           <E5vosST width="fit" className="max-h-40" />
-        </a>
-
-        <a href="/welcome" className={STYLES + " col-span-4 row-span-1 flex"}>
-          <div className="flex items-center justify-center gap-2">
-            <p>➜ Megnézem újra a bemutatkozó oldalt! ➜</p>
-          </div>
         </a>
       </div>
     </div>

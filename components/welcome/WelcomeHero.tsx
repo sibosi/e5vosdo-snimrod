@@ -112,7 +112,7 @@ export default function WelcomeHero() {
           ></motion.div>
         </div>
 
-        <div className="relative min-h-[50vh]">
+        <div className="relative min-h-[30vh]">
           <motion.div
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -123,7 +123,7 @@ export default function WelcomeHero() {
               src="/governments/2526/szombat.jpg"
               alt="Diákönkormányzat 2025/26"
               fill
-              className="object-cover"
+              className="object-contain lg:object-cover"
               priority
             />
             <div className="absolute inset-0 bg-gradient-to-r from-white via-white/50 to-transparent md:from-transparent max-lg:hidden"></div>

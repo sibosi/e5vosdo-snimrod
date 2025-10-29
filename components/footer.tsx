@@ -27,7 +27,7 @@ const Footer = () => {
 
   return (
     <div className="mb-2 max-h-fit rounded-2xl bg-selfprimary-100 p-2">
-      <div className="grid grid-flow-col grid-cols-4 grid-rows-4 justify-center gap-2">
+      <div className="grid grid-flow-col grid-cols-4 grid-rows-5 justify-center gap-2">
         <a
           href={siteConfig.links.mediaGallery}
           className={STYLES + " col-span-4 row-span-1 flex"}
@@ -100,6 +100,15 @@ const Footer = () => {
           }
         >
           <E5vosST width="fit" className="max-h-40" />
+        </a>
+
+        <a
+          href={siteConfig.links.mediaGallery}
+          className={STYLES + " col-span-4 row-span-1 flex"}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <p>➜ Megnézem újra a bemutatkozó oldalt! ➜</p>
+          </div>
         </a>
       </div>
     </div>

@@ -120,7 +120,7 @@ export default function WelcomeHero() {
             className="absolute inset-0"
           >
             <Image
-              src="/governments/2526/szombat.jpg"
+              src="/governments/2526/szombat-edited.jpg"
               alt="Diákönkormányzat 2025/26"
               fill
               className="object-contain lg:object-cover"

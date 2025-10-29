@@ -7,7 +7,7 @@ export default function WelcomeHero() {
   return (
     <div className="relative min-h-[80vh] overflow-hidden">
       <div className="grid h-full md:grid-cols-2">
-        <div className="relative z-10 flex flex-col justify-center px-6 py-12 md:px-12">
+        <div className="relative z-10 flex flex-col justify-center px-6 pb-6 pt-12 md:px-12">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -25,7 +25,7 @@ export default function WelcomeHero() {
                 </span>
               </h1>
               <h2 className="text-2xl font-semibold text-selfprimary-700 md:text-3xl">
-                2025/26-os Kormány
+                2025/26-os diákönkormányzat
               </h2>
             </motion.div>
 
@@ -39,7 +39,7 @@ export default function WelcomeHero() {
                 képviseli. Célunk egy olyan közösség építése, ahol minden diák
                 megtalálja a helyét és lehetőségeit.
               </p>
-              <ul className="space-y-3 text-selfprimary-700">
+              <ul className="flex flex-col gap-3 text-selfprimary-700">
                 <motion.li
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -67,29 +67,44 @@ export default function WelcomeHero() {
                   <div className="mr-2 h-1.5 w-1.5 rounded-full bg-selfprimary-500"></div>
                   Közösségépítés
                 </motion.li>
-                <Button
-                  size="lg"
-                  className="min-w-48 bg-selfsecondary-500 font-semibold text-white hover:bg-selfsecondary-600"
-                  onPress={() => {
-                    localStorage.setItem("skipWelcome", "true");
-                    window.location.href = "/";
-                  }}
-                >
-                  ➜ Bevezető kihagyása ➜
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    size="lg"
+                    color="secondary"
+                    className="mt-12 w-full min-w-48 font-semibold"
+                    onPress={() => {
+                      const element =
+                        document.getElementById("welcome-features");
+                      if (element)
+                        element.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    Lássuk a DÖ-t! &nbsp;➜
+                  </Button>
+                  <Button
+                    size="lg"
+                    className="mt-12 w-full min-w-48 bg-selfsecondary-500 font-semibold text-white hover:bg-selfsecondary-600"
+                    onPress={() => {
+                      localStorage.setItem("skipWelcome", "true");
+                      window.location.href = "/";
+                    }}
+                  >
+                    ➜&nbsp;Bevezető kihagyása &nbsp;➜
+                  </Button>
+                </div>
               </ul>
             </motion.div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.2, duration: 0.8 }}
             className="absolute -left-32 -top-32 h-64 w-64 rounded-full bg-selfprimary-100 opacity-50 blur-3xl"
           ></motion.div>
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.4, duration: 0.8 }}
             className="absolute -bottom-32 -left-32 h-64 w-64 rounded-full bg-selfprimary-50 opacity-50 blur-3xl"
           ></motion.div>

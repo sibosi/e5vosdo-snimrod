@@ -81,7 +81,7 @@ const Footer = () => {
 
         <a href="/welcome" className={STYLES + " col-span-4 row-span-1 flex"}>
           <div className="flex items-center justify-center gap-2">
-            <p>➜ Megnézem újra a bemutatkozó oldalt! ➜</p>
+            <p>➜&nbsp; Megnézem újra a bemutatkozó oldalt! &nbsp;➜</p>
           </div>
         </a>
 

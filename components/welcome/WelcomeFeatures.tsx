@@ -68,7 +68,7 @@ export default function WelcomeFeatures() {
   })();
 
   return (
-    <div className="px-6 py-12">
+    <div className="px-6 py-12" id="welcome-features">
       <motion.h3
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -83,7 +83,7 @@ export default function WelcomeFeatures() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="overflow-hidden rounded-xl bg-white shadow-lg"
+          className="overflow-hidden rounded-xl bg-selfprimary-bg shadow-lg"
         >
           <div className="grid md:grid-cols-2">
             <div className="relative h-64 md:h-auto">
@@ -177,7 +177,7 @@ export default function WelcomeFeatures() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="overflow-hidden rounded-xl bg-white shadow-lg"
+          className="overflow-hidden rounded-xl bg-selfprimary-bg shadow-lg"
         >
           <div className="grid md:grid-cols-2">
             <div className="p-8">
@@ -233,7 +233,7 @@ export default function WelcomeFeatures() {
           <div className="grid md:grid-cols-2">
             <div className="p-8">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-full bg-white/20 p-3 text-white">
+                <div className="bg-selfprimary-bg/20 rounded-full p-3 text-white">
                   <MicrophoneIcon className="h-6 w-6" />
                 </div>
                 <h4 className="text-2xl font-bold text-white">E5T Podcast</h4>
@@ -254,7 +254,7 @@ export default function WelcomeFeatures() {
                 <Chip
                   color="primary"
                   variant="flat"
-                  className="cursor-pointer bg-white text-rose-600"
+                  className="cursor-pointer bg-selfprimary-bg text-rose-600"
                 >
                   Összes epizód →
                 </Chip>
@@ -277,7 +277,7 @@ export default function WelcomeFeatures() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="overflow-hidden rounded-xl bg-white shadow-lg"
+          className="overflow-hidden rounded-xl bg-selfprimary-bg shadow-lg"
         >
           <div className="grid md:grid-cols-2">
             <div className="relative h-64 md:h-auto">

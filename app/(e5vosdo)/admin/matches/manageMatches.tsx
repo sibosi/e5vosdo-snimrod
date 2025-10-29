@@ -597,24 +597,6 @@ const ManageMatches = ({
                   </span>
                 </div>
                 <div>{getBetweenContent(match)}</div>
-                <div className="flex flex-col items-center justify-center">
-                  {teams?.find((team) => team.id === match.team2_id)
-                    ?.image_url && (
-                    <img
-                      className="mx-1 h-9 w-9 rounded-lg border-gray-500"
-                      src={
-                        teams?.find((team) => team.id === match.team2_id)
-                          ?.image_url
-                      }
-                      alt={
-                        teams?.find((team) => team.id === match.team2_id)?.name
-                      }
-                    />
-                  )}
-                  <span>
-                    {teams?.find((team) => team.id === match.team2_id)?.name}
-                  </span>
-                </div>
               </div>
               {isOrganiser && (
                 <div className="mt-1 flex flex-wrap justify-between gap-y-1">

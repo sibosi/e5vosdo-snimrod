@@ -68,7 +68,7 @@ export default function WelcomeFeatures() {
   })();
 
   return (
-    <div className="px-6 py-12" id="welcome-features">
+    <div className="md:px-6 px-2 py-12" id="welcome-features">
       <motion.h3
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -100,9 +100,9 @@ export default function WelcomeFeatures() {
                 className="object-cover"
               />
             </div>
-            <div className="p-8">
+            <div className="p-6 md:p-8">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-3 text-white">
+                <div className="rounded-full bg-gradient-to-br from-selfprimary-400 to-selfprimary-600 p-3 text-white">
                   <CalendarIcon className="h-6 w-6" />
                 </div>
                 <h4 className="text-2xl font-bold text-selfprimary-900">
@@ -180,7 +180,7 @@ export default function WelcomeFeatures() {
           className="overflow-hidden rounded-xl bg-selfprimary-bg shadow-lg"
         >
           <div className="grid md:grid-cols-2">
-            <div className="p-8">
+            <div className="p-6 md:p-8">
               <div className="mb-4 flex items-center gap-3">
                 <div className="rounded-full bg-gradient-to-br from-green-500 to-teal-600 p-3 text-white">
                   <NewspaperIcon className="h-6 w-6" />
@@ -231,7 +231,7 @@ export default function WelcomeFeatures() {
           className="overflow-hidden rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 shadow-lg"
         >
           <div className="grid md:grid-cols-2">
-            <div className="p-8">
+            <div className="p-6 md:p-8">
               <div className="mb-4 flex items-center gap-3">
                 <div className="bg-selfprimary-bg/20 rounded-full p-3 text-white">
                   <MicrophoneIcon className="h-6 w-6" />
@@ -288,7 +288,7 @@ export default function WelcomeFeatures() {
                 className="object-cover"
               />
             </div>
-            <div className="p-8">
+            <div className="p-6 md:p-8">
               <div className="mb-4 flex items-center gap-3">
                 <div className="rounded-full bg-gradient-to-br from-orange-500 to-red-600 p-3 text-white">
                   <UsersIcon className="h-6 w-6" />

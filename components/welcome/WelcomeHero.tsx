@@ -5,8 +5,8 @@ import Image from "next/image";
 
 export default function WelcomeHero() {
   return (
-    <div className="relative min-h-[80vh] overflow-hidden">
-      <div className="grid h-full md:grid-cols-2">
+    <div className="relative overflow-hidden">
+      <div className="grid h-full lg:grid-cols-2">
         <div className="relative z-10 flex flex-col justify-center px-6 pb-6 pt-12 md:px-12">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -67,11 +67,11 @@ export default function WelcomeHero() {
                   <div className="mr-2 h-1.5 w-1.5 rounded-full bg-selfprimary-500"></div>
                   Közösségépítés
                 </motion.li>
-                <div className="flex gap-2">
+                <div className="flex max-md:flex-wrap gap-4 mt-6">
                   <Button
                     size="lg"
                     color="secondary"
-                    className="mt-12 w-full min-w-48 font-semibold"
+                    className="w-full min-w-48 font-semibold"
                     onPress={() => {
                       const element =
                         document.getElementById("welcome-features");
@@ -83,7 +83,9 @@ export default function WelcomeHero() {
                   </Button>
                   <Button
                     size="lg"
-                    className="mt-12 w-full min-w-48 bg-selfsecondary-500 font-semibold text-white hover:bg-selfsecondary-600"
+                    color="secondary"
+                    variant="bordered"
+                    className="w-full min-w-48 font-semibold"
                     onPress={() => {
                       localStorage.setItem("skipWelcome", "true");
                       window.location.href = "/";
@@ -110,7 +112,7 @@ export default function WelcomeHero() {
           ></motion.div>
         </div>
 
-        <div className="relative">
+        <div className="relative min-h-[50vh]">
           <motion.div
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -124,7 +126,7 @@ export default function WelcomeHero() {
               className="object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/50 to-transparent md:from-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/50 to-transparent md:from-transparent max-lg:hidden"></div>
           </motion.div>
         </div>
       </div>

@@ -67,7 +67,7 @@ export default function WelcomeHero() {
                   <div className="mr-2 h-1.5 w-1.5 rounded-full bg-selfprimary-500"></div>
                   Közösségépítés
                 </motion.li>
-                <div className="flex max-md:flex-wrap gap-4 mt-6">
+                <div className="mt-6 flex gap-4 max-md:flex-wrap">
                   <Button
                     size="lg"
                     color="secondary"
@@ -120,13 +120,13 @@ export default function WelcomeHero() {
             className="absolute inset-0"
           >
             <Image
-              src="/governments/2526/szombat-edited.jpg"
+              src="/governments/2526/szombat-edited.jpeg"
               alt="Diákönkormányzat 2025/26"
               fill
               className="object-contain lg:object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/50 to-transparent md:from-transparent max-lg:hidden"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/50 to-transparent max-lg:hidden md:from-transparent"></div>
           </motion.div>
         </div>
       </div>

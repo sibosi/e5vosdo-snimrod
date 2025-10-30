@@ -23,7 +23,7 @@ export default function WelcomeCTA() {
           Válassz egy menő palettát és vágjunk bele!
         </p>
 
-        <ThemeOptions className="grid grid-cols-3 justify-items-center gap-4 md:grid-cols-5 lg:grid-cols-9" />
+        <ThemeOptions className="mx-auto grid max-w-3xl grid-cols-3 justify-items-center gap-4 md:grid-cols-5" />
 
         <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button

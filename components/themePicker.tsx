@@ -363,7 +363,7 @@ export const ThemeOptions = ({ className = "" }: { className?: string }) => {
   ];
 
   return (
-    <div className={className ?? "flex flex-wrap gap-4 text-foreground"}>
+    <div className={className || "flex flex-wrap gap-4 text-foreground"}>
       {templates.map((template) => (
         <button
           type="button"

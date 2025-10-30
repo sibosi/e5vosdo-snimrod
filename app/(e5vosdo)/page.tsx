@@ -54,9 +54,7 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <RedirectToWelcome
-        isActive={selfUser?.permissions.includes("gov") ?? false}
-      />
+      <RedirectToWelcome isActive={true} />
 
       <PageHeadContent selfUser={selfUser} />
 

@@ -54,7 +54,7 @@ export default async function Home() {
   const selfUser = await getAuth();
   return (
     <div>
-      <RedirectToWelcome isActive={true} />
+      <RedirectToWelcome isActive={!selfUser} />
 
       <PageHeadContent selfUser={selfUser} />
 

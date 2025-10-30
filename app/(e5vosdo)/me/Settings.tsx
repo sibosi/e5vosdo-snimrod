@@ -54,11 +54,12 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
       saveAble: false,
       content: <AppearanceSettings />,
     },
-    {
+
+    /*{
       title: "Fejlesztői beállítások",
       saveAble: false,
       content: <AdvancedSettings />,
-    },
+  }*/
   ];
 
   useEffect(() => {

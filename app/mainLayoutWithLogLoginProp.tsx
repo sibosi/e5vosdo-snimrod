@@ -95,11 +95,15 @@ export default async function MainLayout({
         <ServiceWorker />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">
-            <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
+            {needSidebar ? (
+              <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
+            ) : null}
 
             <Cookie />
             <Alerts />
-            <main className="container mx-auto max-w-full flex-grow bg-selfprimary-bg px-3 pt-4">
+            <main
+              className={`container mx-auto max-w-full flex-grow bg-selfprimary-bg ${needSidebar ? "px-3 pt-4" : ""}`}
+            >
               <OnCSSBug />
               <MaintenanceGate selfUser={selfUser} isActive={false}>
                 <div className="flex justify-start gap-3">

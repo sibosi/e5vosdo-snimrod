@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@heroui/react";
 import { motion } from "framer-motion";
+import { ThemeOptions } from "../themePicker";
 
 export default function WelcomeCTA() {
   const handleSkipWelcome = () => {
@@ -18,15 +19,17 @@ export default function WelcomeCTA() {
         <h3 className="mb-6 text-3xl font-bold text-selfprimary-900 md:text-4xl">
           Készen állsz a kezdésre?
         </h3>
-        <p className="mx-auto mb-8 max-w-2xl text-lg text-selfprimary-700">
-          Csatlakozz a közösséghez és ne maradj le semmiről! Minden fontos
-          információ egy helyen vár rád.
+        <p className="mx-auto mb-4 max-w-2xl text-lg text-selfprimary-700">
+          Válassz egy menő palettát és vágjunk bele!
         </p>
 
-        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <ThemeOptions className="grid grid-cols-3 justify-items-center gap-4 md:grid-cols-5 lg:grid-cols-9" />
+
+        <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button
             size="lg"
-            className="min-w-48 bg-selfprimary-500 font-semibold text-white hover:bg-selfprimary-600"
+            color="secondary"
+            className="min-w-48 font-semibold"
             onPress={handleSkipWelcome}
           >
             🚀 Kösz a bevezetőt! Kezdjük el! 🚀

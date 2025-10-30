@@ -2,6 +2,7 @@
 import { Button } from "@heroui/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Logo from "@/public/logo.svg";
 
 export default function WelcomeHero() {
   return (
@@ -19,8 +20,9 @@ export default function WelcomeHero() {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="mb-8"
             >
-              <h1 className="mb-4 text-5xl font-bold md:text-7xl">
-                <span className="bg-gradient-to-r from-selfprimary-600 to-selfprimary-400 bg-clip-text text-transparent">
+              <h1 className="-mt-2 mb-4 flex flex-wrap gap-3 text-5xl font-bold md:text-7xl">
+                <Logo className="mt-2 h-12 w-12 fill-selfprimary-800 md:h-16 md:w-16" />
+                <span className="bg-gradient-to-r from-selfprimary-600 to-selfprimary-400 bg-clip-text pt-2 text-transparent">
                   Eötvös DÖ
                 </span>
               </h1>

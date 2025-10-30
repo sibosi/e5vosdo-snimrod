@@ -84,7 +84,7 @@ export default function WelcomeFeatures() {
   const FALLBACK_CLUBS = "#FB923C"; // orange
 
   return (
-    <div className="px-2 py-12 md:px-6" id="welcome-features">
+    <div className="px-4 py-12 md:px-8" id="welcome-features">
       <motion.h3
         ref={titleRef}
         initial={{ opacity: 0, y: 20 }}

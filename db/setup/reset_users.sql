@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `username` varchar(255) NOT NULL,
     `email` varchar(255) PRIMARY KEY NOT NULL UNIQUE,
     `image` varchar(255) NOT NULL,
-    `EJG_code` varchar(255) UNIQUE,
+    `EJG_code` varchar(255),
     `class` varchar(255),
     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `last_login` varchar(255) NOT NULL,
@@ -39,3 +39,12 @@ SET NEW.coming_year = SUBSTRING(NEW.EJG_code, 1, 4);
 SET NEW.class_character = SUBSTRING(NEW.EJG_code, 5, 1);
 SET NEW.order_number = SUBSTRING(NEW.EJG_code, 6, 2);
 END;
+
+--@block
+-- ALTER TABLE users MODIFY COLUMN EJG_code VARCHAR(255);
+SELECT * FROM users;
+--@block
+-- Remove UNIQUE constraint from EJG_code to allow duplicates
+ALTER TABLE users DROP INDEX EJG_code;
+ALTER TABLE users MODIFY COLUMN EJG_code VARCHAR(255);
+

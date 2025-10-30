@@ -191,6 +191,8 @@ const PopupCards = ({
         size={size}
         isOpen={showingCard !== null}
         onClose={() => setShowingCard(null)}
+        scrollBehavior="inside"
+        hideCloseButton={true}
         onClick={(e) => {
           e.stopPropagation();
           console.log("clicked");
@@ -225,7 +227,7 @@ const PopupCards = ({
               className="bg-selfprimary-300"
               onPress={() => setShowingCard(null)}
             >
-              <LikeIcon />
+              <LikeIcon width={28} height={28} />
             </Button>
           </ModalFooter>
         </ModalContent>

@@ -35,6 +35,8 @@ export const PopupButton: React.FC<CardProps> = ({
     <Modal
       size="5xl"
       isOpen={isModalOpen}
+      scrollBehavior="inside"
+      hideCloseButton={true}
       onClose={() => setIsModalOpen(false)}
     >
       <ModalContent className="max-h-[95vh] overflow-auto">

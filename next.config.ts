@@ -59,6 +59,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
       },
       {
+        protocol: 'https',
+        hostname: 'd3t3ozftmdmh3i.cloudfront.net',
+      },
+      {
+        protocol: 'http',
+        hostname: 'd3t3ozftmdmh3i.cloudfront.net',
+      },
+      {
         hostname:
           process.env.NEXT_PUBLIC_SUPABASE_URL?.replace("https://", "") ??
           "localhost",

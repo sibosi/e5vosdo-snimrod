@@ -258,7 +258,7 @@ function PhoneCarousel({ data }: Readonly<{ data: EventType[] }>) {
         )}
       </div>
       {clicked !== null && (
-        <div className="blocked mt-2 whitespace-pre-wrap rounded-3xl bg-selfprimary-50 p-4 text-foreground">
+        <div className="blocked overflow-hidden mt-2 whitespace-pre-wrap rounded-3xl bg-selfprimary-50 p-4 text-foreground">
           {<span>{parse(String(data[clicked].description))}</span>}
         </div>
       )}

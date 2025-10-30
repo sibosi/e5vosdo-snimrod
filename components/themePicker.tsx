@@ -305,70 +305,70 @@ export const ThemeTemplate = ({
   );
 };
 
-export const ThemeOptions = () => {
+export const ThemeOptions = ({ className = "" }: { className?: string }) => {
   const templates = [
     {
-      name: "Default",
+      name: "Alap",
       primary: [defaultHues.primary, defaultChromas.primary],
       secondary: [defaultHues.secondary, defaultChromas.secondary],
     },
     {
-      // Coral, Olive
-      name: "Coral, Olive",
+      // Korall, Oliva
+      name: "Korall, Oliva",
       primary: [30, 50],
       secondary: [135, 40],
     },
     {
-      // Stone, Lavender (Nimród)
-      name: "Stone, Lavender",
+      // Kő, Levendula (Nimród)
+      name: "Kő, Levendula",
       primary: [120, 20],
       secondary: [285, 50],
     },
     {
-      // Sky, Mango
-      name: "Sky, Mango",
+      // Ég, Mangó
+      name: "Ég, Mangó",
       primary: [240, 60],
       secondary: [45, 50],
     },
     {
-      // Camel, Lavender
-      name: "Camel, Lavender",
+      // Teve, Levendula
+      name: "Teve, Levendula",
       primary: [75, 40],
       secondary: [300, 60],
     },
     {
       // Helina
-      name: "Windows, Tulip",
+      name: "Windows, Tulipán",
       primary: [255, 50],
       secondary: [345, 50],
     },
     {
       // Luca
-      name: "Orhid, Rose",
+      name: "Orhidea, Rózsa",
       primary: [330, 60],
       secondary: [15, 60],
     },
     {
       // Timi
-      name: "Slate, Wood",
+      name: "Pala, Fa",
       primary: [255, 20],
       secondary: [60, 40],
     },
     {
       // Timi 2
-      name: "Leaf, Gold",
+      name: "Levél, Arany",
       primary: [165, 20],
       secondary: [90, 60],
     },
   ];
 
   return (
-    <div className="flex flex-wrap gap-4 text-foreground">
+    <div className={className || "flex flex-wrap gap-4 text-foreground"}>
       {templates.map((template) => (
         <button
           type="button"
           key={template.name}
-          className="max-w-min rounded-lg bg-selfprimary-100 p-2 text-center hover:bg-selfprimary-200"
+          className="w-[86px] rounded-lg bg-selfprimary-200 p-2 text-center hover:bg-selfprimary-300"
           onClick={() => {
             localStorage.setItem("primaryHue", String(template.primary[0]));
             localStorage.setItem("primaryChroma", String(template.primary[1]));
@@ -408,7 +408,7 @@ export const ThemeOptions = () => {
             />
           </div>
 
-          <div className="max-w-min">{template.name}</div>
+          <div className="mt-1 text-center">{template.name}</div>
         </button>
       ))}
     </div>

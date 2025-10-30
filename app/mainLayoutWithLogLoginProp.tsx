@@ -44,9 +44,11 @@ export const viewport = {
 export default async function MainLayout({
   children,
   logLogin,
+  needSidebar = true,
 }: Readonly<{
   children: React.ReactNode;
   logLogin: (email: string | undefined | null) => void;
+  needSidebar?: boolean;
 }>) {
   const session = await auth();
   if (session?.user)
@@ -93,15 +95,19 @@ export default async function MainLayout({
         <ServiceWorker />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">
-            <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
+            {needSidebar ? (
+              <Navbar selfUser={selfUser} className="bg-selfprimary-bg" />
+            ) : null}
 
             <Cookie />
             <Alerts />
-            <main className="container mx-auto max-w-full flex-grow bg-selfprimary-bg px-3 pt-4">
+            <main
+              className={`container mx-auto max-w-full flex-grow bg-selfprimary-bg ${needSidebar ? "px-3 pt-4" : ""}`}
+            >
               <OnCSSBug />
               <MaintenanceGate selfUser={selfUser} isActive={false}>
                 <div className="flex justify-start gap-3">
-                  <DesktopMenu selfUser={selfUser} />
+                  {needSidebar ? <DesktopMenu selfUser={selfUser} /> : null}
                   <div className="w-full max-w-7xl md:mx-auto">{children}</div>
                 </div>
               </MaintenanceGate>

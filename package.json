@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@bradgarropy/next-google-analytics": "^1.0.2",
+    "@heroicons/react": "^2.2.0",
     "@heroui/react": "^2.7.2",
     "@material/material-color-utilities": "^0.3.0",
     "@react-aria/ssr": "^3.9.7",

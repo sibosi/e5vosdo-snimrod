@@ -11,6 +11,8 @@ import {
   Button,
   ButtonGroup,
   closeAll,
+  Select,
+  SelectItem,
   ToastProvider,
 } from "@heroui/react";
 import React, { useEffect, useState } from "react";
@@ -412,27 +414,26 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
           </div>
           <div className="ml-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
             <p>Előadássáv:</p>
-            <ButtonGroup>
-              {slots?.map((slot) => {
-                let buttonColor: "success" | "primary" | undefined = undefined;
-                if (selectedSlot === slot.id) {
-                  buttonColor = "success";
-                } else if (selectedBySlot[slot.id]) {
-                  buttonColor = "primary";
+            <Select
+              selectedKeys={selectedSlot ? [selectedSlot.toString()] : []}
+              onSelectionChange={(keys) => {
+                const key = Array.from(keys)[0];
+                if (key) {
+                  setSelectedSlot(Number.parseInt(key.toString()));
                 }
-
-                return (
-                  <Button
-                    key={slot.id}
-                    isDisabled={selectedSlot === slot.id}
-                    color={buttonColor}
-                    onPress={() => setSelectedSlot(slot.id)}
-                  >
-                    {slot.title} {selectedBySlot[slot.id] ? "✓" : ""}
-                  </Button>
-                );
-              })}
-            </ButtonGroup>
+              }}
+              placeholder="Válassz előadássávot"
+              className="max-w-xs"
+            >
+              {slots?.map((slot) => (
+                <SelectItem
+                  key={slot.id}
+                  endContent={selectedBySlot[slot.id] ? "✓" : ""}
+                >
+                  {slot.title}
+                </SelectItem>
+              )) || []}
+            </Select>
           </div>
         </div>
       </div>

@@ -252,9 +252,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                 value={omId}
                 onChange={(e) => setOmId(e.target.value.replaceAll(/\D/g, ""))}
               />
-              <p className="mt-1 text-xs text-gray-600">
-                Például: 12345678901
-              </p>
+              <p className="mt-1 text-xs text-gray-600">Például: 12345678901</p>
             </div>
             <div>
               <label htmlFor="full-name" className="mb-1 block font-medium">

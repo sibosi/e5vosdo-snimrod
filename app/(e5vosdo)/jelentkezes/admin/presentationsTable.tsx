@@ -446,14 +446,14 @@ const AdminPresentationsPage = () => {
       <h1 className="mb-6 text-3xl font-bold">Prezentációk Adminisztrációja</h1>
 
       <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <div className="rounded-lg bg-blue-100 p-4 text-center">
-          <div className="text-2xl font-bold text-blue-600">
+        <div className="rounded-lg bg-selfprimary-100 p-4 text-center">
+          <div className="text-2xl font-bold text-selfprimary-600">
             {presentations.length}
           </div>
-          <div className="text-sm text-blue-800">Összes prezentáció</div>
+          <div className="text-sm text-selfprimary-800">Összes prezentáció</div>
         </div>
-        <div className="rounded-lg bg-green-100 p-4 text-center">
-          <div className="text-2xl font-bold text-green-600">
+        <div className="rounded-lg bg-success-100 p-4 text-center">
+          <div className="text-2xl font-bold text-success-600">
             {presentations.reduce((sum, p) => {
               const signupsForPresentation = signupsWithAmounts[p.id] || [];
               const totalAmount = signupsForPresentation.reduce(
@@ -463,22 +463,22 @@ const AdminPresentationsPage = () => {
               return sum + totalAmount;
             }, 0)}
           </div>
-          <div className="text-sm text-green-800">Összes jelentkező (fő)</div>
+          <div className="text-sm text-success-800">Összes jelentkező (fő)</div>
         </div>
-        <div className="rounded-lg bg-orange-100 p-4 text-center">
-          <div className="text-2xl font-bold text-orange-600">
+        <div className="rounded-lg bg-selfsecondary-100 p-4 text-center">
+          <div className="text-2xl font-bold text-selfsecondary-600">
             {presentations.reduce((sum, p) => sum + p.capacity, 0)}
           </div>
-          <div className="text-sm text-orange-800">Összes kapacitás</div>
+          <div className="text-sm text-selfsecondary-800">Összes kapacitás</div>
         </div>
-        <div className="rounded-lg bg-purple-100 p-4 text-center">
-          <div className="text-2xl font-bold text-purple-600">
+        <div className="rounded-lg bg-secondary-100 p-4 text-center">
+          <div className="text-2xl font-bold text-secondary-600">
             {presentations.reduce(
               (sum, p) => sum + (p.remaining_capacity || 0),
               0,
             )}
           </div>
-          <div className="text-sm text-purple-800">Szabad helyek</div>
+          <div className="text-sm text-secondary-800">Szabad helyek</div>
         </div>
       </div>
 
@@ -487,7 +487,7 @@ const AdminPresentationsPage = () => {
           <input
             type="text"
             placeholder="Keresés prezentációk között (név, slot, helyszín, követelmények)..."
-            className="w-full rounded-md border border-gray-300 bg-white p-3 text-gray-900"
+            className="w-full rounded-md border border-foreground-300 bg-selfprimary-bg p-3 text-foreground-900"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -538,11 +538,11 @@ const AdminPresentationsPage = () => {
       </div>
 
       {isManagingSlots && (
-        <div className="mb-8 rounded-lg bg-blue-100 p-6">
+        <div className="mb-8 rounded-lg bg-selfprimary-100 p-6">
           <h2 className="mb-4 text-2xl font-semibold">Slotok Kezelése</h2>
 
           {/* Create new slot form */}
-          <div className="mb-6 rounded-lg bg-white p-4">
+          <div className="mb-6 rounded-lg bg-selfprimary-bg p-4">
             <h3 className="mb-3 text-lg font-semibold">Új Slot Létrehozása</h3>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
@@ -554,7 +554,7 @@ const AdminPresentationsPage = () => {
                 </label>
                 <input
                   id="new-slot-title"
-                  className="w-full rounded-md border border-gray-300 p-2"
+                  className="w-full rounded-md border border-foreground-300 p-2"
                   value={newSlotTitle}
                   onChange={(e) => setNewSlotTitle(e.target.value)}
                   placeholder="Pl.: 1. sáv, 2. sáv, Délelőtt"
@@ -569,7 +569,7 @@ const AdminPresentationsPage = () => {
                 </label>
                 <input
                   id="new-slot-details"
-                  className="w-full rounded-md border border-gray-300 p-2"
+                  className="w-full rounded-md border border-foreground-300 p-2"
                   value={newSlotDetails}
                   onChange={(e) => setNewSlotDetails(e.target.value)}
                   placeholder="Pl.: 8:00-9:00, A épület"
@@ -584,12 +584,12 @@ const AdminPresentationsPage = () => {
           </div>
 
           {/* Existing slots list */}
-          <div className="rounded-lg bg-white p-4">
+          <div className="rounded-lg bg-selfprimary-bg p-4">
             <h3 className="mb-3 text-lg font-semibold">
               Meglévő Slotok ({existingSlots.length})
             </h3>
             {existingSlots.length === 0 ? (
-              <p className="text-gray-500">Még nincsenek slotok</p>
+              <p className="text-foreground-500">Még nincsenek slotok</p>
             ) : (
               <div className="space-y-2">
                 {existingSlots.map((slot) => {
@@ -599,18 +599,18 @@ const AdminPresentationsPage = () => {
                   return (
                     <div
                       key={slot.id}
-                      className="flex items-center justify-between rounded-lg border border-gray-200 p-3"
+                      className="flex items-center justify-between rounded-lg border border-foreground-200 p-3"
                     >
                       <div className="flex-1">
                         <div className="font-semibold">
                           {slot.title}
                           {slot.details && (
-                            <span className="ml-2 text-sm font-normal text-gray-600">
+                            <span className="ml-2 text-sm font-normal text-foreground-600">
                               ({slot.details})
                             </span>
                           )}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-foreground-500">
                           ID: {slot.id} | {presentationCount} prezentáció
                           használja
                         </div>
@@ -671,7 +671,7 @@ const AdminPresentationsPage = () => {
                 ))}
               </select>
               {existingSlots.length > 0 && (
-                <div className="mt-1 text-xs text-gray-600">
+                <div className="mt-1 text-xs text-foreground-600">
                   Meglévő slotok: {existingSlots.map((s) => s.title).join(", ")}
                 </div>
               )}
@@ -818,7 +818,7 @@ const AdminPresentationsPage = () => {
         <h2 className="text-2xl font-semibold">Meglévő Prezentációk</h2>
 
         {filteredPresentations.length === 0 ? (
-          <div className="text-center text-gray-500">
+          <div className="text-center text-foreground-500">
             {searchTerm
               ? "Nincs találat a keresési feltételekre"
               : "Nincsenek prezentációk"}
@@ -839,14 +839,14 @@ const AdminPresentationsPage = () => {
                       | {presentation.id}. {presentation.title}
                     </h3>
                     {presentation.performer && (
-                      <p className="mt-1 text-sm font-semibold text-gray-700">
+                      <p className="mt-1 text-sm font-semibold text-foreground-700">
                         Előadó: {presentation.performer}
                       </p>
                     )}
-                    <p className="mt-1 text-sm text-gray-600">
+                    <p className="mt-1 text-sm text-foreground-600">
                       {presentation.address}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-foreground-600">
                       {presentation.requirements}
                     </p>
                     <p className="mt-2">{presentation.description}</p>
@@ -867,10 +867,10 @@ const AdminPresentationsPage = () => {
                       })()}
                       / {presentation.capacity}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-foreground-600">
                       Szabad / Összes hely
                     </div>
-                    <div className="mt-1 text-xs text-gray-500">
+                    <div className="mt-1 text-xs text-foreground-500">
                       ({signups[presentation.id]?.length || 0} jelentkezés)
                     </div>
                     <div className="mt-2">
@@ -933,7 +933,7 @@ const AdminPresentationsPage = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-foreground-500">
                         Nincsenek jelentkezők
                       </div>
                     )}
@@ -941,7 +941,7 @@ const AdminPresentationsPage = () => {
                 )}
 
                 {addingUserToPresentationId === presentation.id && (
-                  <div className="mt-4 rounded-lg bg-blue-50 p-4">
+                  <div className="mt-4 rounded-lg bg-selfprimary-50 p-4">
                     <h4 className="mb-3 font-semibold">
                       Felhasználó hozzáadása: {presentation.title}
                     </h4>

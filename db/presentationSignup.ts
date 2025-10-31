@@ -83,9 +83,15 @@ export async function multipledbreq<T>(
   });
 }
 
+export interface PresentationSlotType {
+  id: number;
+  title: string;
+  details: string | null;
+}
+
 export interface PresentationType {
   id: number;
-  slot: string;
+  slot_id: number;
   title: string;
   performer: string | null;
   description: string;
@@ -99,7 +105,7 @@ export interface SignupType {
   id: number;
   email: string;
   presentation_id: number;
-  slot: string;
+  slot_id: number;
   participated: boolean;
 }
 

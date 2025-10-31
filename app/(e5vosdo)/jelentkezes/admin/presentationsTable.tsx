@@ -15,6 +15,9 @@ interface EditingPresentation extends Partial<PresentationType> {
 const AdminPresentationsPage = () => {
   const [presentations, setPresentations] = useState<PresentationType[]>([]);
   const [signups, setSignups] = useState<{ [key: number]: string[] }>({});
+  const [signupsWithAmounts, setSignupsWithAmounts] = useState<{
+    [key: number]: Array<{ email: string; amount: number }>;
+  }>({});
   const [namesByEmail, setNamesByEmail] = useState<{ [key: string]: string }>(
     {},
   );
@@ -80,6 +83,19 @@ const AdminPresentationsPage = () => {
       }
     } catch (error) {
       console.error("Error fetching signups:", error);
+    }
+
+    // Also fetch signups with amounts for correct calculations
+    try {
+      const response = await fetch("/api/admin/signupsWithAmounts");
+      if (response.ok) {
+        const data = await response.json();
+        setSignupsWithAmounts(data);
+      } else {
+        console.error("Error fetching signups with amounts");
+      }
+    } catch (error) {
+      console.error("Error fetching signups with amounts:", error);
     }
   };
 
@@ -438,12 +454,16 @@ const AdminPresentationsPage = () => {
         </div>
         <div className="rounded-lg bg-green-100 p-4 text-center">
           <div className="text-2xl font-bold text-green-600">
-            {presentations.reduce(
-              (sum, p) => sum + (signups[p.id]?.length || 0),
-              0,
-            )}
+            {presentations.reduce((sum, p) => {
+              const signupsForPresentation = signupsWithAmounts[p.id] || [];
+              const totalAmount = signupsForPresentation.reduce(
+                (acc, signup) => acc + signup.amount,
+                0,
+              );
+              return sum + totalAmount;
+            }, 0)}
           </div>
-          <div className="text-sm text-green-800">Összes jelentkező</div>
+          <div className="text-sm text-green-800">Összes jelentkező (fő)</div>
         </div>
         <div className="rounded-lg bg-orange-100 p-4 text-center">
           <div className="text-2xl font-bold text-orange-600">
@@ -836,12 +856,22 @@ const AdminPresentationsPage = () => {
                     <div className="text-lg font-semibold">
                       {presentation.remaining_capacity == null &&
                         "(Szüneteltetve) "}{" "}
-                      {presentation.capacity -
-                        signups[presentation.id]?.length || 0}
+                      {(() => {
+                        const signupsForPresentation =
+                          signupsWithAmounts[presentation.id] || [];
+                        const totalAmount = signupsForPresentation.reduce(
+                          (acc, signup) => acc + signup.amount,
+                          0,
+                        );
+                        return presentation.capacity - totalAmount;
+                      })()}
                       / {presentation.capacity}
                     </div>
                     <div className="text-sm text-gray-600">
                       Szabad / Összes hely
+                    </div>
+                    <div className="mt-1 text-xs text-gray-500">
+                      ({signups[presentation.id]?.length || 0} jelentkezés)
                     </div>
                     <div className="mt-2">
                       <Button

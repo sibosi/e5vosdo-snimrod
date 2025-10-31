@@ -422,6 +422,34 @@ export async function getAllSignups(): Promise<{
   return signupsByPresentation;
 }
 
+export async function getAllSignupsWithAmounts(): Promise<{
+  [presentationId: number]: Array<{ email: string; amount: number }>;
+}> {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  gate(selfUser, "admin");
+
+  const result = await dbreq(
+    "SELECT email, presentation_id, amount FROM signups ORDER BY id",
+  );
+
+  const signupsByPresentation: {
+    [presentationId: number]: Array<{ email: string; amount: number }>;
+  } = {};
+
+  for (const signup of result) {
+    if (!signupsByPresentation[signup.presentation_id]) {
+      signupsByPresentation[signup.presentation_id] = [];
+    }
+    signupsByPresentation[signup.presentation_id].push({
+      email: signup.email,
+      amount: signup.amount,
+    });
+  }
+
+  return signupsByPresentation;
+}
+
 let slotsCache: { value: PresentationSlotType[]; expires: number } | null =
   null;
 export async function getSlots(): Promise<PresentationSlotType[]> {

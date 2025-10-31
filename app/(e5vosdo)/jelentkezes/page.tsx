@@ -7,7 +7,10 @@ const SignupPage = async () => {
   return (
     <div>
       <IsVerified selfUser={selfUser} />
-      <Table selfUser={selfUser} />
+      <Table
+        selfUser={selfUser}
+        EXTERNAL_SIGNUPS={process.env.EXTERNAL_SIGNUPS === "true"}
+      />
     </div>
   );
 };

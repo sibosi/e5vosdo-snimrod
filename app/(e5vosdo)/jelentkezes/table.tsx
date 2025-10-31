@@ -27,7 +27,13 @@ const Field = ({
   return <div className={"space-y-2 p-2 " + className}>{children}</div>;
 };
 
-const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
+const Table = ({
+  selfUser,
+  EXTERNAL_SIGNUPS,
+}: {
+  selfUser: PossibleUserType;
+  EXTERNAL_SIGNUPS: boolean;
+}) => {
   const [presentations, setPresentations] = useState<PresentationType[]>();
   const [isFetchingAutomatically, setIsFetchingAutomatically] = useState<
     boolean | null
@@ -51,7 +57,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
   const [email, setEmail] = useState("");
 
   const isVerified = selfUser?.is_verified;
-  const externalSignups = process.env.NEXT_PUBLIC_EXTERNAL_SIGNUPS === "true";
+  const externalSignups = EXTERNAL_SIGNUPS;
 
   async function initData() {
     const presRes = await fetch("/api/presentations/getPresentations");

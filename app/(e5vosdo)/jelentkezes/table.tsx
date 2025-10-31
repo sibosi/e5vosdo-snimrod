@@ -58,8 +58,43 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
     const presData = await presRes.json();
     setPresentations(presData);
 
-    const mySignupsRes = await fetch("/api/presentations/getMySignups");
-    const mySignupsData = await mySignupsRes.json();
+    if (!externalSignups) {
+      await loadMySignups();
+    }
+
+    const slotsRes = await fetch("/api/presentations/getPresentationSlots");
+    const slotsData = await slotsRes.json();
+    setSlots(slotsData);
+
+    slotsData.forEach((slot: PresentationSlotType) => {
+      if (!(slot.id in selectedBySlot)) {
+        setSelectedBySlot((prev) => ({ ...prev, [slot.id]: null }));
+        setSignupAmounts((prev) => ({ ...prev, [slot.id]: 1 }));
+      }
+    });
+
+    setSelectedSlot(slotsData[0]?.id || null);
+  }
+
+  async function loadMySignups() {
+    let mySignupsData = [];
+    if (externalSignups && omId) {
+      const details = JSON.stringify({
+        omId: omId.trim(),
+        fullName: fullName.trim(),
+        email: email.trim(),
+      });
+      const mySignupsRes = await fetch("/api/presentations/getMySignups", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ details }),
+      });
+      mySignupsData = await mySignupsRes.json();
+    } else if (!externalSignups) {
+      const mySignupsRes = await fetch("/api/presentations/getMySignups");
+      mySignupsData = await mySignupsRes.json();
+    }
+
     setMySignups(mySignupsData);
 
     // Slot-alapú kiválasztások és mennyiségek feltöltése
@@ -72,21 +107,8 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
       });
     }
 
-    const slotsRes = await fetch("/api/presentations/getPresentationSlots");
-    const slotsData = await slotsRes.json();
-    setSlots(slotsData);
-
-    // Inicializáljuk az összes slot-ot null-lal és amount-ot 1-gyel, ha nincs kiválasztás
-    slotsData.forEach((slot: PresentationSlotType) => {
-      if (!(slot.id in slotSelections)) {
-        slotSelections[slot.id] = null;
-        amounts[slot.id] = 1;
-      }
-    });
-
-    setSelectedBySlot(slotSelections);
-    setSignupAmounts(amounts);
-    setSelectedSlot(slotsData[0]?.id || null);
+    setSelectedBySlot((prev) => ({ ...prev, ...slotSelections }));
+    setSignupAmounts((prev) => ({ ...prev, ...amounts }));
   }
 
   const setupSSE = () => {
@@ -160,6 +182,28 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
     initData().then(() => setupSSE());
   }, []);
 
+  const [isValidExternalData, setIsValidExternalData] = useState(false);
+  useEffect(() => {
+    setIsValidExternalData(() => {
+      if (!externalSignups) return true;
+
+      return (
+        /^\d{11}$/.test(omId.trim()) &&
+        fullName.trim().length > 0 &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+      );
+    });
+  }, [externalSignups, omId, fullName, email]);
+
+  useEffect(() => {
+    if (!externalSignups) return;
+    if (!isValidExternalData) {
+      setMySignups([]);
+      setSelectedBySlot({});
+    }
+    loadMySignups();
+  }, [externalSignups, omId]);
+
   const signup = async (presentation_id: number) => {
     if (!externalSignups && !isVerified) {
       alert(
@@ -215,6 +259,11 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
         ...prev,
         [selectedSlot]: presentation_id,
       }));
+
+      if (externalSignups) {
+        await loadMySignups();
+      }
+
       alert("Sikeres jelentkezés");
     } else {
       const errorData = await response.json();
@@ -283,9 +332,37 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
               />
             </div>
           </div>
-          <p className="mt-2 text-sm text-gray-600">
-            * Ezek az adatok minden jelentkezéshez szükségesek
-          </p>
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              * Ezek az adatok minden jelentkezéshez szükségesek
+            </p>
+            <Button
+              color="primary"
+              onPress={async () => {
+                if (!omId.trim() || !fullName.trim() || !email.trim()) {
+                  alert(
+                    "Kérjük, töltsd ki az összes mezőt (OM azonosító, Név, Email)!",
+                  );
+                  return;
+                }
+
+                if (!/^\d{11}$/.test(omId.trim())) {
+                  alert("Az OM azonosító 11 számjegyből kell álljon!");
+                  return;
+                }
+
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+                  alert("Kérjük, adj meg egy érvényes email címet!");
+                  return;
+                }
+
+                await loadMySignups();
+                alert("Korábbi jelentkezések betöltve!");
+              }}
+            >
+              Korábbi jelentkezéseim betöltése
+            </Button>
+          </div>
         </div>
       )}
 
@@ -375,15 +452,25 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                 if (!confirm("Biztosan törölni szeretnéd a jelentkezésedet?"))
                   return;
 
+                const body: any = {
+                  presentation_id: "NULL",
+                  slot_id: selectedSlot,
+                };
+
+                if (externalSignups) {
+                  body.details = JSON.stringify({
+                    omId: omId.trim(),
+                    fullName: fullName.trim(),
+                    email: email.trim(),
+                  });
+                }
+
                 const response = await fetch(
                   "/api/presentations/signUpForPresentation",
                   {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      presentation_id: "NULL",
-                      slot_id: selectedSlot,
-                    }),
+                    body: JSON.stringify(body),
                   },
                 );
                 if (response.ok) {
@@ -391,6 +478,11 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                     ...prev,
                     [selectedSlot]: null,
                   }));
+
+                  if (externalSignups) {
+                    await loadMySignups();
+                  }
+
                   alert("Sikeres törlés");
                 } else {
                   const errorData = await response.json();
@@ -468,9 +560,11 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                   <p className="italic">{presentation.performer}</p>
                 )}
 
-                <p className="font-bold text-selfsecondary">
-                  {presentation.requirements}
-                </p>
+                {presentation.performer && (
+                  <p className="font-bold text-selfsecondary">
+                    {presentation.requirements}
+                  </p>
+                )}
                 <br />
                 <p className="info">
                   Maximális létszám: {presentation.capacity} fő
@@ -518,7 +612,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                   (selectedSlot !== null &&
                     selectedBySlot[selectedSlot] === presentation.id) ||
                   presentation.remaining_capacity === 0 ||
-                  !isVerified ||
+                  (externalSignups && !isValidExternalData) ||
                   presentation.remaining_capacity === null ||
                   (externalSignups &&
                     selectedSlot !== null &&

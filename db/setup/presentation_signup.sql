@@ -11,9 +11,9 @@ CREATE TABLE
         slot_id INTEGER NOT NULL,
         title VARCHAR(255) NOT NULL,
         performer VARCHAR(255) DEFAULT NULL,
-        description TEXT NOT NULL,
+        description TEXT DEFAULT NULL,
         address VARCHAR(255) NOT NULL,
-        requirements VARCHAR(255) NOT NULL,
+        requirements VARCHAR(255) DEFAULT NULL,
         capacity INTEGER NOT NULL,
         remaining_capacity INTEGER DEFAULT NULL,
         FOREIGN KEY (slot_id) REFERENCES presentation_slots (id)

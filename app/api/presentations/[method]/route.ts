@@ -14,8 +14,25 @@ const allowedFunctionsForUnauthorized = new Set<string>([
   "getPresentationsCapacity",
 ]);
 
-// Allow signUpForPresentation without auth when EXTERNAL_SIGNUPS is enabled
-const allowedForExternalSignups = new Set<string>(["signUpForPresentation"]);
+const allowedForExternalSignups = new Set<string>([
+  "signUpForPresentation",
+  "getMySignups",
+]);
+
+function extractExternalEmail(body: any): string | null {
+  if (!body.details) return null;
+
+  try {
+    const detailsObj = JSON.parse(body.details);
+    if (detailsObj.omId) {
+      return `om_${detailsObj.omId}@external.signup`;
+    }
+  } catch (e) {
+    console.error("Failed to parse external signup details:", e);
+  }
+
+  return null;
+}
 
 export async function POST(
   request: NextRequest,
@@ -25,12 +42,16 @@ export async function POST(
   const method = (await context.params).method;
   const externalSignupsEnabled = process.env.EXTERNAL_SIGNUPS === "true";
 
+  const isExternalSignupAllowed =
+    externalSignupsEnabled && allowedForExternalSignups.has(method);
+
   if (
     !selfEmail &&
     !allowedFunctionsForUnauthorized.has(method) &&
-    !(externalSignupsEnabled && allowedForExternalSignups.has(method))
+    !isExternalSignupAllowed
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const body = request.method === "POST" ? await request.json() : {};
   const funct: Function | undefined = Module[method as keyof typeof Module];
   if (funct === undefined)
@@ -39,7 +60,19 @@ export async function POST(
       { status: 400 },
     );
 
-  const result = await funct(selfEmail, ...Object.values(body));
+  let emailToUse = selfEmail;
+  if (isExternalSignupAllowed && !selfEmail) {
+    emailToUse = extractExternalEmail(body);
+
+    if (!emailToUse) {
+      return NextResponse.json(
+        { error: { message: "OM ID required for external signup" } },
+        { status: 400 },
+      );
+    }
+  }
+
+  const result = await funct(emailToUse, ...Object.values(body));
   if (result?.success === false)
     return NextResponse.json({ error: result }, { status: 400 });
   return NextResponse.json(result);

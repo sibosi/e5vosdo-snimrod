@@ -43,6 +43,11 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [isToastVisible, setIsToastVisible] = useState(false);
 
+  // External signup data
+  const [omId, setOmId] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+
   const isVerified = selfUser?.is_verified;
   const externalSignups = process.env.NEXT_PUBLIC_EXTERNAL_SIGNUPS === "true";
 
@@ -154,18 +159,53 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
   }, []);
 
   const signup = async (presentation_id: number) => {
-    if (!isVerified)
+    if (!externalSignups && !isVerified) {
       alert(
         `Csak igazolt diákok jelentkezhetnek előadásra. Probléma esetén értesítendő: ${siteConfig.developer} (${siteConfig.developerEmail})`,
       );
+      return;
+    }
+
     if (!selectedSlot) return;
 
     const amount = signupAmounts[selectedSlot] || 1;
+    let details = null;
+
+    // External signups: validate and prepare details
+    if (externalSignups) {
+      if (!omId.trim() || !fullName.trim() || !email.trim()) {
+        alert("Kérjük, töltsd ki az összes mezőt (OM azonosító, Név, Email)!");
+        return;
+      }
+
+      // Validate OM ID format (11 digits)
+      if (!/^\d{11}$/.test(omId.trim())) {
+        alert("Az OM azonosító 11 számjegyből kell álljon!");
+        return;
+      }
+
+      // Validate email format
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        alert("Kérjük, adj meg egy érvényes email címet!");
+        return;
+      }
+
+      details = JSON.stringify({
+        omId: omId.trim(),
+        fullName: fullName.trim(),
+        email: email.trim(),
+      });
+    }
 
     const response = await fetch("/api/presentations/signUpForPresentation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ presentation_id, slot_id: selectedSlot, amount }),
+      body: JSON.stringify({
+        presentation_id,
+        slot_id: selectedSlot,
+        amount,
+        details,
+      }),
     });
 
     if (response.ok) {
@@ -195,6 +235,60 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
 
   return (
     <div>
+      {externalSignups && (
+        <div className="mb-6 rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100 p-4">
+          <h2 className="mb-3 text-xl font-bold">Jelentkező adatai</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div>
+              <label htmlFor="om-id" className="mb-1 block font-medium">
+                OM azonosító <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="om-id"
+                type="text"
+                className="w-full rounded-md border border-gray-300 p-2"
+                placeholder="11 számjegy"
+                maxLength={11}
+                value={omId}
+                onChange={(e) => setOmId(e.target.value.replaceAll(/\D/g, ""))}
+              />
+              <p className="mt-1 text-xs text-gray-600">
+                Például: 12345678901
+              </p>
+            </div>
+            <div>
+              <label htmlFor="full-name" className="mb-1 block font-medium">
+                Teljes név <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="full-name"
+                type="text"
+                className="w-full rounded-md border border-gray-300 p-2"
+                placeholder="Vezetéknév Keresztnév"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="mb-1 block font-medium">
+                Email cím <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="w-full rounded-md border border-gray-300 p-2"
+                placeholder="pelda@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          </div>
+          <p className="mt-2 text-sm text-gray-600">
+            * Ezek az adatok minden jelentkezéshez szükségesek
+          </p>
+        </div>
+      )}
+
       <div className="mb-3 grid text-center max-md:gap-3 md:grid-cols-2">
         <div className="ml-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
           <p>Kiválasztva ({currentSlotTitle}):</p>

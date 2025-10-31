@@ -14,18 +14,23 @@ const allowedFunctionsForUnauthorized = new Set<string>([
   "getPresentationsCapacity",
 ]);
 
+// Allow signUpForPresentation without auth when EXTERNAL_SIGNUPS is enabled
+const allowedForExternalSignups = new Set<string>(["signUpForPresentation"]);
+
 export async function POST(
   request: NextRequest,
   context: { params: Promise<Params> },
 ) {
   const selfEmail = (await auth())?.user?.email;
+  const method = (await context.params).method;
+  const externalSignupsEnabled = process.env.EXTERNAL_SIGNUPS === "true";
+
   if (
     !selfEmail &&
-    !allowedFunctionsForUnauthorized.has((await context.params).method)
+    !allowedFunctionsForUnauthorized.has(method) &&
+    !(externalSignupsEnabled && allowedForExternalSignups.has(method))
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const method = (await context.params).method;
   const body = request.method === "POST" ? await request.json() : {};
   const funct: Function | undefined = Module[method as keyof typeof Module];
   if (funct === undefined)

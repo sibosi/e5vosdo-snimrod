@@ -200,6 +200,25 @@ export async function signUpForPresentation(
   retries = 3,
 ): Promise<any> {
   try {
+    // For external signups, generate email from OM ID in details
+    let actualEmail = email;
+    if (!email && details) {
+      try {
+        const detailsObj = JSON.parse(details);
+        if (detailsObj.omId) {
+          // Use OM ID as unique identifier: om_[omId]@external.signup
+          actualEmail = `om_${detailsObj.omId}@external.signup`;
+        }
+      } catch (e) {
+        console.error("Failed to parse external signup details:", e);
+        throw new Error("Invalid details format for external signup");
+      }
+    }
+
+    if (!actualEmail) {
+      throw new Error("Email or OM ID required for signup");
+    }
+
     const result = await multipledbreq(async (conn) => {
       // Ha NULL, akkor töröljük a jelentkezést
       if (presentation_id === "NULL") {
@@ -207,7 +226,7 @@ export async function signUpForPresentation(
 
         const [selResult] = await conn.execute(
           `SELECT presentation_id, amount FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
-          [email, slot_id],
+          [actualEmail, slot_id],
         );
         const signupRows = Array.isArray(selResult)
           ? (selResult as { presentation_id: number; amount: number }[])
@@ -231,7 +250,7 @@ export async function signUpForPresentation(
         const prevAmount = signupRows[0].amount;
         await conn.execute(
           `DELETE FROM signups WHERE email = ? AND slot_id = ?`,
-          [email, slot_id],
+          [actualEmail, slot_id],
         );
         await conn.execute(
           `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,
@@ -242,7 +261,7 @@ export async function signUpForPresentation(
         // Ha nem NULL, akkor jelentkezünk
         const [existingResult] = await conn.execute(
           `SELECT presentation_id, amount FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
-          [email, slot_id],
+          [actualEmail, slot_id],
         );
         const existing = Array.isArray(existingResult)
           ? (existingResult as { presentation_id: number; amount: number }[])
@@ -266,7 +285,7 @@ export async function signUpForPresentation(
         if (isUpdate) {
           await conn.execute(
             `UPDATE signups SET presentation_id = ?, amount = ?, details = ? WHERE email = ? AND slot_id = ?`,
-            [presentation_id, amount, details, email, slot_id],
+            [presentation_id, amount, details, actualEmail, slot_id],
           );
           await conn.execute(
             `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,
@@ -276,7 +295,7 @@ export async function signUpForPresentation(
         } else {
           await conn.execute(
             `INSERT INTO signups (email, presentation_id, slot_id, amount, details) VALUES (?, ?, ?, ?, ?)`,
-            [email, presentation_id, slot_id, amount, details],
+            [actualEmail, presentation_id, slot_id, amount, details],
           );
           return { success: true, message: "Jelentkezés sikeres" };
         }

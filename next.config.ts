@@ -12,6 +12,9 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactProductionProfiling: true,
+  env: {
+    NEXT_PUBLIC_EXTERNAL_SIGNUPS: process.env.EXTERNAL_SIGNUPS,
+  },
   async headers() {
     return [
       {
@@ -59,12 +62,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
       },
       {
-        protocol: 'https',
-        hostname: 'd3t3ozftmdmh3i.cloudfront.net',
+        protocol: "https",
+        hostname: "d3t3ozftmdmh3i.cloudfront.net",
       },
       {
-        protocol: 'http',
-        hostname: 'd3t3ozftmdmh3i.cloudfront.net',
+        protocol: "http",
+        hostname: "d3t3ozftmdmh3i.cloudfront.net",
       },
       {
         hostname:

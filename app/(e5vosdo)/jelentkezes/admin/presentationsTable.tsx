@@ -1,6 +1,9 @@
 "use client";
 
-import { PresentationType } from "@/db/presentationSignup";
+import {
+  PresentationType,
+  PresentationSlotType,
+} from "@/db/presentationSignup";
 import { Button } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import SearchUser from "@/components/searchUser";
@@ -26,10 +29,15 @@ const AdminPresentationsPage = () => {
   const [filteredPresentations, setFilteredPresentations] = useState<
     PresentationType[]
   >([]);
-  const [existingSlots, setExistingSlots] = useState<string[]>([]);
+  const [existingSlots, setExistingSlots] = useState<PresentationSlotType[]>(
+    [],
+  );
   const [addingUserToPresentationId, setAddingUserToPresentationId] = useState<
     number | null
   >(null);
+  const [isManagingSlots, setIsManagingSlots] = useState(false);
+  const [newSlotTitle, setNewSlotTitle] = useState("");
+  const [newSlotDetails, setNewSlotDetails] = useState("");
 
   useEffect(() => {
     if (editingPresentation !== null) {
@@ -91,7 +99,7 @@ const AdminPresentationsPage = () => {
 
   const fetchSlots = async () => {
     try {
-      const response = await fetch("/api/presentations/getSlots");
+      const response = await fetch("/api/presentations/getPresentationSlots");
       if (response.ok) {
         const data = await response.json();
         setExistingSlots(data);
@@ -100,6 +108,59 @@ const AdminPresentationsPage = () => {
       }
     } catch (error) {
       console.error("Error fetching slots:", error);
+    }
+  };
+
+  const handleCreateSlot = async () => {
+    if (!newSlotTitle.trim()) {
+      alert("A slot neve kötelező!");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/slots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newSlotTitle,
+          details: newSlotDetails || null,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchSlots();
+        setNewSlotTitle("");
+        setNewSlotDetails("");
+        alert("Slot sikeresen létrehozva");
+      } else {
+        const error = await response.json();
+        alert(`Hiba: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Error creating slot:", error);
+      alert("Hiba a slot létrehozása során");
+    }
+  };
+
+  const handleDeleteSlot = async (slotId: number) => {
+    if (!confirm("Biztosan törölni szeretnéd ezt a slotot?")) return;
+
+    try {
+      const response = await fetch(`/api/admin/slots?id=${slotId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        await fetchSlots();
+        await fetchPresentations(); // Frissítjük a prezentációkat is
+        alert("Slot sikeresen törölve");
+      } else {
+        const error = await response.json();
+        alert(`Hiba: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Error deleting slot:", error);
+      alert("Hiba a slot törlése során");
     }
   };
 
@@ -161,40 +222,42 @@ const AdminPresentationsPage = () => {
     if (searchTerm.trim() === "") {
       setFilteredPresentations(presentations);
     } else {
-      const filtered = presentations.filter(
-        (p) =>
-          p.slot.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const filtered = presentations.filter((p) => {
+        const slotTitle =
+          existingSlots.find((s) => s.id === p.slot_id)?.title || "";
+        return (
+          slotTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.requirements.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
+          p.requirements.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      });
       setFilteredPresentations(filtered);
     }
-  }, [presentations, searchTerm]);
+  }, [presentations, searchTerm, existingSlots]);
 
-  const validateSlot = (slot: string): boolean => {
-    if (!slot || slot.trim() === "") return true;
+  const validateSlotId = (slot_id: number | undefined): boolean => {
+    if (!slot_id) return false;
 
-    const slotExists = existingSlots.includes(slot);
+    const slotExists = existingSlots.some((s) => s.id === slot_id);
     if (slotExists) return true;
 
-    const confirmMessage =
-      existingSlots.length > 0
-        ? `A megadott slot (${slot}) még nem létezik.\n\nMeglévő slotok:\n${existingSlots.join(", ")}\n\nBiztosan létre szeretnéd hozni ezt az új slotot?`
-        : `A megadott slot (${slot}) még nem létezik.\n\nJelenleg nincsenek meglévő slotok.\n\nBiztosan létre szeretnéd hozni ezt az új slotot?`;
-
-    return confirm(confirmMessage);
+    alert("A megadott slot ID nem létezik. Kérlek válassz egy létező slotot.");
+    return false;
   };
 
   const handleSave = async () => {
     if (!editingPresentation) return;
 
-    // Slot validáció - mind új, mind szerkesztett prezentációnál
-    if (editingPresentation.slot) {
-      if (!validateSlot(editingPresentation.slot)) {
+    // Slot ID validáció - mind új, mind szerkesztett prezentációnál
+    if (editingPresentation.slot_id) {
+      if (!validateSlotId(editingPresentation.slot_id)) {
         return;
       }
+    } else {
+      alert("A slot kiválasztása kötelező!");
+      return;
     }
 
     try {
@@ -264,7 +327,7 @@ const AdminPresentationsPage = () => {
   const startCreating = () => {
     setEditingPresentation({
       isNew: true,
-      slot: "",
+      slot_id: existingSlots.length > 0 ? existingSlots[0].id : undefined,
       title: "",
       description: "",
       address: "",
@@ -321,7 +384,7 @@ const AdminPresentationsPage = () => {
         body: JSON.stringify({
           email: finalEmail,
           presentation_id: presentationId,
-          slot: presentation.slot,
+          slot_id: presentation.slot_id,
         }),
       });
 
@@ -413,15 +476,25 @@ const AdminPresentationsPage = () => {
         <Button
           color="primary"
           onPress={startCreating}
-          isDisabled={isCreating || editingPresentation !== null}
+          isDisabled={
+            isCreating || editingPresentation !== null || isManagingSlots
+          }
         >
           Új Prezentáció Hozzáadása
         </Button>
 
         <Button
+          color="secondary"
+          onPress={() => setIsManagingSlots(!isManagingSlots)}
+          isDisabled={editingPresentation !== null}
+        >
+          {isManagingSlots ? "Slot kezelés bezárása" : "Slotok kezelése"}
+        </Button>
+
+        <Button
           color="success"
           onPress={startSignupProcess}
-          isDisabled={editingPresentation !== null}
+          isDisabled={editingPresentation !== null || isManagingSlots}
         >
           Jelentkezés Indítása
         </Button>
@@ -429,7 +502,7 @@ const AdminPresentationsPage = () => {
         <Button
           color="warning"
           onPress={pauseSignup}
-          isDisabled={editingPresentation !== null}
+          isDisabled={editingPresentation !== null || isManagingSlots}
         >
           Jelentkezés Szüneteltetése
         </Button>
@@ -443,6 +516,102 @@ const AdminPresentationsPage = () => {
           PDF létrehozása
         </Button>
       </div>
+
+      {isManagingSlots && (
+        <div className="mb-8 rounded-lg bg-blue-100 p-6">
+          <h2 className="mb-4 text-2xl font-semibold">Slotok Kezelése</h2>
+
+          {/* Create new slot form */}
+          <div className="mb-6 rounded-lg bg-white p-4">
+            <h3 className="mb-3 text-lg font-semibold">Új Slot Létrehozása</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label
+                  htmlFor="new-slot-title"
+                  className="mb-2 block font-medium"
+                >
+                  Slot neve (kötelező)
+                </label>
+                <input
+                  id="new-slot-title"
+                  className="w-full rounded-md border border-gray-300 p-2"
+                  value={newSlotTitle}
+                  onChange={(e) => setNewSlotTitle(e.target.value)}
+                  placeholder="Pl.: 1. sáv, 2. sáv, Délelőtt"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="new-slot-details"
+                  className="mb-2 block font-medium"
+                >
+                  Részletek (opcionális)
+                </label>
+                <input
+                  id="new-slot-details"
+                  className="w-full rounded-md border border-gray-300 p-2"
+                  value={newSlotDetails}
+                  onChange={(e) => setNewSlotDetails(e.target.value)}
+                  placeholder="Pl.: 8:00-9:00, A épület"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <Button color="primary" onPress={handleCreateSlot}>
+                Slot Létrehozása
+              </Button>
+            </div>
+          </div>
+
+          {/* Existing slots list */}
+          <div className="rounded-lg bg-white p-4">
+            <h3 className="mb-3 text-lg font-semibold">
+              Meglévő Slotok ({existingSlots.length})
+            </h3>
+            {existingSlots.length === 0 ? (
+              <p className="text-gray-500">Még nincsenek slotok</p>
+            ) : (
+              <div className="space-y-2">
+                {existingSlots.map((slot) => {
+                  const presentationCount = presentations.filter(
+                    (p) => p.slot_id === slot.id,
+                  ).length;
+                  return (
+                    <div
+                      key={slot.id}
+                      className="flex items-center justify-between rounded-lg border border-gray-200 p-3"
+                    >
+                      <div className="flex-1">
+                        <div className="font-semibold">
+                          {slot.title}
+                          {slot.details && (
+                            <span className="ml-2 text-sm font-normal text-gray-600">
+                              ({slot.details})
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          ID: {slot.id} | {presentationCount} prezentáció
+                          használja
+                        </div>
+                      </div>
+                      <Button
+                        color="danger"
+                        size="sm"
+                        variant="light"
+                        onPress={() => handleDeleteSlot(slot.id)}
+                        isDisabled={presentationCount > 0}
+                      >
+                        Törlés
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {editingPresentation && (
         <div className="mb-8 rounded-lg bg-selfprimary-100 p-6">
@@ -460,25 +629,30 @@ const AdminPresentationsPage = () => {
               <label htmlFor="slot-input" className="mb-2 block font-medium">
                 Időpont/Slot
               </label>
-              {editingPresentation.isNew ? (
-                <input
-                  id="slot-input"
-                  className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
-                  value={editingPresentation.slot || ""}
-                  onChange={(e) =>
-                    setEditingPresentation({
-                      ...editingPresentation,
-                      slot: e.target.value,
-                    })
-                  }
-                  placeholder="Pl.: H1, K2, P3"
-                />
-              ) : (
-                <p>{editingPresentation.slot}</p>
-              )}
+              <select
+                id="slot-input"
+                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                value={editingPresentation.slot_id || ""}
+                onChange={(e) =>
+                  setEditingPresentation({
+                    ...editingPresentation,
+                    slot_id: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
+                  })
+                }
+                disabled={!editingPresentation.isNew}
+              >
+                <option value="">Válassz slotot...</option>
+                {existingSlots.map((slot) => (
+                  <option key={slot.id} value={slot.id}>
+                    {slot.title} {slot.details ? `(${slot.details})` : ""}
+                  </option>
+                ))}
+              </select>
               {existingSlots.length > 0 && (
                 <div className="mt-1 text-xs text-gray-600">
-                  Meglévő slotok: {existingSlots.join(", ")}
+                  Meglévő slotok: {existingSlots.map((s) => s.title).join(", ")}
                 </div>
               )}
             </div>
@@ -598,9 +772,9 @@ const AdminPresentationsPage = () => {
                 onChange={(e) =>
                   setEditingPresentation({
                     ...editingPresentation,
-                    capacity: parseInt(e.target.value) || 0,
+                    capacity: Number.parseInt(e.target.value) || 0,
                     remaining_capacity: editingPresentation.isNew
-                      ? parseInt(e.target.value) || 0
+                      ? Number.parseInt(e.target.value) || 0
                       : editingPresentation.remaining_capacity,
                   })
                 }
@@ -640,8 +814,9 @@ const AdminPresentationsPage = () => {
                 <div className="grid gap-4 md:grid-cols-4">
                   <div className="md:col-span-2">
                     <h3 className="text-lg font-bold">
-                      {presentation.slot} | {presentation.id}.{" "}
-                      {presentation.title}
+                      {existingSlots.find((s) => s.id === presentation.slot_id)
+                        ?.title || `Slot #${presentation.slot_id}`}{" "}
+                      | {presentation.id}. {presentation.title}
                     </h3>
                     {presentation.performer && (
                       <p className="mt-1 text-sm font-semibold text-gray-700">

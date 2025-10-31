@@ -1,7 +1,11 @@
 "use client";
 import { siteConfig } from "@/config/site";
 import { PossibleUserType } from "@/db/dbreq";
-import { PresentationType } from "@/db/presentationSignup";
+import {
+  PresentationType,
+  PresentationSlotType,
+  SignupType,
+} from "@/db/presentationSignup";
 import {
   addToast,
   Button,
@@ -26,46 +30,56 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
   const [isFetchingAutomatically, setIsFetchingAutomatically] = useState<
     boolean | null
   >(null);
-  const [slots, setSlots] = useState<string[]>();
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  // Slot-onkénti kiválasztott előadások: {slot: presentation_id}
+  const [slots, setSlots] = useState<PresentationSlotType[]>();
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  // Slot-onkénti kiválasztott előadások: {slot_id: presentation_id}
   const [selectedBySlot, setSelectedBySlot] = useState<{
-    [slot: string]: number | null;
+    [slot_id: number]: number | null;
+  }>({});
+  const [mySignups, setMySignups] = useState<SignupType[]>([]);
+  const [signupAmounts, setSignupAmounts] = useState<{
+    [slot_id: number]: number;
   }>({});
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [isToastVisible, setIsToastVisible] = useState(false);
 
   const isVerified = selfUser?.is_verified;
+  const externalSignups = process.env.NEXT_PUBLIC_EXTERNAL_SIGNUPS === "true";
 
   async function initData() {
     const presRes = await fetch("/api/presentations/getPresentations");
     const presData = await presRes.json();
     setPresentations(presData);
 
-    const myPresRes = await fetch("/api/presentations/getMyPresentations");
-    const myPres = await myPresRes.json();
+    const mySignupsRes = await fetch("/api/presentations/getMySignups");
+    const mySignupsData = await mySignupsRes.json();
+    setMySignups(mySignupsData);
 
-    // Slot-alapú kiválasztások feltöltése
-    const slotSelections: { [slot: string]: number | null } = {};
-    if (Array.isArray(myPres)) {
-      myPres.forEach((pres: PresentationType) => {
-        slotSelections[pres.slot] = pres.id;
+    // Slot-alapú kiválasztások és mennyiségek feltöltése
+    const slotSelections: { [slot_id: number]: number | null } = {};
+    const amounts: { [slot_id: number]: number } = {};
+    if (Array.isArray(mySignupsData)) {
+      mySignupsData.forEach((signup: SignupType) => {
+        slotSelections[signup.slot_id] = signup.presentation_id;
+        amounts[signup.slot_id] = signup.amount;
       });
     }
 
-    const slotsRes = await fetch("/api/presentations/getSlots");
+    const slotsRes = await fetch("/api/presentations/getPresentationSlots");
     const slotsData = await slotsRes.json();
     setSlots(slotsData);
 
-    // Inicializáljuk az összes slot-ot null-lal, ha nincs kiválasztás
-    slotsData.forEach((slot: string) => {
-      if (!(slot in slotSelections)) {
-        slotSelections[slot] = null;
+    // Inicializáljuk az összes slot-ot null-lal és amount-ot 1-gyel, ha nincs kiválasztás
+    slotsData.forEach((slot: PresentationSlotType) => {
+      if (!(slot.id in slotSelections)) {
+        slotSelections[slot.id] = null;
+        amounts[slot.id] = 1;
       }
     });
 
     setSelectedBySlot(slotSelections);
-    setSelectedSlot(slotsData[0] || null);
+    setSignupAmounts(amounts);
+    setSelectedSlot(slotsData[0]?.id || null);
   }
 
   const setupSSE = () => {
@@ -146,10 +160,12 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
       );
     if (!selectedSlot) return;
 
+    const amount = signupAmounts[selectedSlot] || 1;
+
     const response = await fetch("/api/presentations/signUpForPresentation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ presentation_id, slot: selectedSlot }),
+      body: JSON.stringify({ presentation_id, slot_id: selectedSlot, amount }),
     });
 
     if (response.ok) {
@@ -168,33 +184,84 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
 
   function scrollToPresentationDetails() {
     const element = document.getElementById(
-      "presentation-card-" + selectedBySlot[selectedSlot || ""],
+      "presentation-card-" +
+        (selectedSlot !== null ? selectedBySlot[selectedSlot] : ""),
     );
     if (element) element.scrollIntoView({ behavior: "smooth" });
   }
+
+  const currentSlotTitle =
+    slots?.find((s) => s.id === selectedSlot)?.title || "";
 
   return (
     <div>
       <div className="mb-3 grid text-center max-md:gap-3 md:grid-cols-2">
         <div className="ml-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
-          <p>Kiválasztva ({selectedSlot}):</p>
+          <p>Kiválasztva ({currentSlotTitle}):</p>
           <p className="text-xl font-bold">
             {
               presentations?.find(
                 (presentation) =>
-                  presentation.id === selectedBySlot[selectedSlot || ""],
+                  selectedSlot !== null &&
+                  presentation.id === selectedBySlot[selectedSlot],
               )?.title
             }
-            {(selectedBySlot[selectedSlot || ""] === null ||
-              selectedBySlot[selectedSlot || ""] === undefined) &&
+            {(selectedSlot === null ||
+              selectedBySlot[selectedSlot] === null ||
+              selectedBySlot[selectedSlot] === undefined) &&
               "Nincs kiválasztva"}
           </p>
+          {externalSignups &&
+            selectedSlot !== null &&
+            selectedBySlot[selectedSlot] !== null &&
+            selectedBySlot[selectedSlot] !== undefined && (
+              <p className="mt-1 text-sm italic">
+                Jelentkezett létszám: {signupAmounts[selectedSlot] || 1} fő
+              </p>
+            )}
+          {externalSignups &&
+            selectedSlot !== null &&
+            (selectedBySlot[selectedSlot] === null ||
+              selectedBySlot[selectedSlot] === undefined) && (
+              <div className="mt-2 flex items-center justify-center gap-2">
+                <p className="text-sm">Létszám:</p>
+                <ButtonGroup size="sm">
+                  <Button
+                    color={
+                      signupAmounts[selectedSlot] === 1 ? "primary" : "default"
+                    }
+                    onPress={() =>
+                      setSignupAmounts((prev) => ({
+                        ...prev,
+                        [selectedSlot]: 1,
+                      }))
+                    }
+                  >
+                    1 fő
+                  </Button>
+                  <Button
+                    color={
+                      signupAmounts[selectedSlot] === 2 ? "primary" : "default"
+                    }
+                    onPress={() =>
+                      setSignupAmounts((prev) => ({
+                        ...prev,
+                        [selectedSlot]: 2,
+                      }))
+                    }
+                  >
+                    2 fő
+                  </Button>
+                </ButtonGroup>
+              </div>
+            )}
           <div className="mt-2 grid grid-cols-2 gap-2">
             <Button
               color="primary"
               isDisabled={
-                selectedBySlot[selectedSlot || ""] === null ||
-                selectedBySlot[selectedSlot || ""] === undefined
+                selectedSlot === null ||
+                selectedBySlot[selectedSlot] === null ||
+                selectedBySlot[selectedSlot] === undefined
               }
               onPress={scrollToPresentationDetails}
             >
@@ -204,8 +271,9 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
               variant="bordered"
               color="danger"
               isDisabled={
-                selectedBySlot[selectedSlot || ""] === null ||
-                selectedBySlot[selectedSlot || ""] === undefined
+                selectedSlot === null ||
+                selectedBySlot[selectedSlot] === null ||
+                selectedBySlot[selectedSlot] === undefined
               }
               onPress={async () => {
                 if (!selectedSlot) return;
@@ -220,7 +288,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                       presentation_id: "NULL",
-                      slot: selectedSlot,
+                      slot_id: selectedSlot,
                     }),
                   },
                 );
@@ -255,20 +323,20 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
             <ButtonGroup>
               {slots?.map((slot) => {
                 let buttonColor: "success" | "primary" | undefined = undefined;
-                if (selectedSlot === slot) {
+                if (selectedSlot === slot.id) {
                   buttonColor = "success";
-                } else if (selectedBySlot[slot]) {
+                } else if (selectedBySlot[slot.id]) {
                   buttonColor = "primary";
                 }
 
                 return (
                   <Button
-                    key={slot}
-                    isDisabled={selectedSlot === slot}
+                    key={slot.id}
+                    isDisabled={selectedSlot === slot.id}
                     color={buttonColor}
-                    onPress={() => setSelectedSlot(slot)}
+                    onPress={() => setSelectedSlot(slot.id)}
                   >
-                    {slot} {selectedBySlot[slot] ? "✓" : ""}
+                    {slot.title} {selectedBySlot[slot.id] ? "✓" : ""}
                   </Button>
                 );
               })}
@@ -290,7 +358,7 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
         <div className="text-center">Betöltés...</div>
       )}
       {presentations
-        ?.filter((presentation) => presentation.slot === selectedSlot)
+        ?.filter((presentation) => presentation.slot_id === selectedSlot)
         ?.map((presentation) => (
           <div
             id={`presentation-card-${presentation.id}`}
@@ -327,24 +395,26 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
               </p>
               <Button
                 color={
-                  selectedBySlot[selectedSlot || ""] === presentation.id
+                  selectedSlot !== null &&
+                  selectedBySlot[selectedSlot] === presentation.id
                     ? "success"
                     : undefined
                 }
                 style={
-                  selectedBySlot[selectedSlot || ""] !== presentation.id
+                  selectedSlot === null ||
+                  selectedBySlot[selectedSlot] !== presentation.id
                     ? {
                         backgroundSize: "100% 100%",
                         backgroundPosition: "0 0",
                         backgroundRepeat: "no-repeat",
                         backgroundImage: `linear-gradient(270deg, var(--color-secondary-50) ${
                           100 -
-                          (presentation.remaining_capacity /
+                          ((presentation.remaining_capacity ?? 0) /
                             presentation.capacity) *
                             100
                         }%, var(--color-secondary-300) ${
                           100 -
-                          (presentation.remaining_capacity /
+                          ((presentation.remaining_capacity ?? 0) /
                             presentation.capacity) *
                             100
                         }%)`,
@@ -352,17 +422,29 @@ const Table = ({ selfUser }: { selfUser: PossibleUserType }) => {
                     : {}
                 }
                 isDisabled={
-                  selectedBySlot[selectedSlot || ""] === presentation.id ||
+                  (selectedSlot !== null &&
+                    selectedBySlot[selectedSlot] === presentation.id) ||
                   presentation.remaining_capacity === 0 ||
                   !isVerified ||
-                  presentation.remaining_capacity === null
+                  presentation.remaining_capacity === null ||
+                  (externalSignups &&
+                    selectedSlot !== null &&
+                    (presentation.remaining_capacity ?? 0) <
+                      (signupAmounts[selectedSlot] || 1))
                 }
                 onPress={() => signup(presentation.id)}
               >
                 {(() => {
-                  if (selectedBySlot[selectedSlot || ""] === presentation.id)
+                  if (
+                    selectedSlot !== null &&
+                    selectedBySlot[selectedSlot] === presentation.id
+                  )
                     return "Jelentkezve";
                   if (presentation.remaining_capacity === 0) return "Betelt";
+                  if (externalSignups && selectedSlot !== null) {
+                    const amount = signupAmounts[selectedSlot] || 1;
+                    return `Jelentkezés (${amount} fő)`;
+                  }
                   return "Jelentkezés";
                 })()}
               </Button>

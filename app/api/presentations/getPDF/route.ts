@@ -4,6 +4,7 @@ import fs from "fs";
 import {
   getPresentations,
   getSignupsWithParticipation,
+  getPresentationSlots,
 } from "@/db/presentationSignup";
 import { getAuth, getUser } from "@/db/dbreq";
 import PDFDocumentWithTables from "pdfkit-table";
@@ -56,14 +57,18 @@ export async function GET() {
     // Capture PDF output.
     doc.on("data", (chunk) => chunks.push(chunk));
 
-    // Retrieve presentations.
+    // Retrieve presentations and slots.
     const presentations = await getPresentations();
+    const slots = await getPresentationSlots();
+
+    // Create a map for quick slot lookup
+    const slotMap = new Map(slots.map((s) => [s.id, s]));
 
     let i = 0;
 
     const signupsByPresentation = new Map<
       number,
-      Array<{ email: string; participated: boolean }>
+      Array<{ email: string; participated: boolean; amount: number }>
     >();
     await Promise.all(
       presentations.map(async (presentation) => {
@@ -73,6 +78,7 @@ export async function GET() {
           signups.map((s) => ({
             email: s.email,
             participated: s.participated,
+            amount: s.amount,
           })),
         );
       }),
@@ -96,16 +102,27 @@ export async function GET() {
       signups.sort((a, b) => a.email.localeCompare(b.email));
 
       const presSignuped = signups.length;
+      const totalAmount = signups.reduce((sum, s) => sum + s.amount, 0);
       const presParticipated = signups.filter((s) => s.participated).length;
+      const totalParticipatedAmount = signups
+        .filter((s) => s.participated)
+        .reduce((sum, s) => sum + s.amount, 0);
+
+      const slotInfo = slotMap.get(presentation.slot_id);
+      const slotTitle = slotInfo ? sanitizeText(slotInfo.title) : "N/A";
 
       // Write presentation details.
       doc.registerFont("Outfit", fontPath, "bold");
       doc
         .fontSize(14)
         .font("Outfit")
-        .text(`${presentation.id}: ${presTitle}`, { underline: true });
+        .text(`${presentation.id}: ${presTitle} (${slotTitle})`, {
+          underline: true,
+        });
       doc.text(`Előadó: ${presPerformer}`);
-      doc.text(`Helyszín: ${presAddress} | Jelentkezők száma: ${presSignuped} (max. ${presMaxCapacity} fő) | Résztvevők száma: ${presParticipated}`);
+      doc.text(
+        `Helyszín: ${presAddress} | Jelentkezők száma: ${presSignuped} (${totalAmount} fő, max. ${presMaxCapacity} fő) | Résztvevők száma: ${presParticipated} (${totalParticipatedAmount} fő)`,
+      );
       doc.moveDown(0.5);
 
       if (signups.length > 0) {
@@ -120,9 +137,10 @@ export async function GET() {
             user && typeof user.name === "string"
               ? sanitizeText(user.full_name ?? "*" + user.name)
               : "Unknown";
+          const amountStr = signup.amount > 1 ? ` (${signup.amount} fő)` : "";
           rows.push({
             index: `${j}.`,
-            name: name,
+            name: name + amountStr,
             class: getUserClass(user) || "N/A",
             email: emailStr,
             participated: signup.participated ? "✓" : "",

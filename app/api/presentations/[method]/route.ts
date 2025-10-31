@@ -9,6 +9,9 @@ type Params = {
 const allowedFunctionsForUnauthorized = new Set<string>([
   "getSlots",
   "getPresentations",
+  "getPresentationSlots",
+  "getPresentationsBySlot",
+  "getPresentationsCapacity",
 ]);
 
 export async function POST(

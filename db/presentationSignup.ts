@@ -98,7 +98,7 @@ export interface PresentationType {
   address: string;
   requirements: string;
   capacity: number;
-  remaining_capacity: number;
+  remaining_capacity: number | null;
 }
 
 export interface SignupType {
@@ -107,10 +107,24 @@ export interface SignupType {
   presentation_id: number;
   slot_id: number;
   participated: boolean;
+  amount: number;
+  details: string | null;
 }
 
 export async function getPresentations(): Promise<PresentationType[]> {
   return await dbreq("SELECT * FROM presentations");
+}
+
+export async function getPresentationsBySlot(
+  slot_id: number,
+): Promise<PresentationType[]> {
+  return await dbreq("SELECT * FROM presentations WHERE slot_id = ?", [
+    slot_id,
+  ]);
+}
+
+export async function getPresentationSlots(): Promise<PresentationSlotType[]> {
+  return await dbreq("SELECT * FROM presentation_slots ORDER BY id");
 }
 
 export async function getPresentationsCapacity(): Promise<{
@@ -135,6 +149,37 @@ export async function getMyPresentations(
   );
 }
 
+export async function getMySignups(
+  email: string | null | undefined,
+): Promise<SignupType[]> {
+  const result = await dbreq(
+    `SELECT id, email, presentation_id, slot_id, participated, amount, details FROM signups WHERE email = ?`,
+    [email],
+  );
+
+  return result.map((signup: any) => ({
+    ...signup,
+    participated: Boolean(signup.participated),
+  }));
+}
+
+export async function getSignupsBySlot(
+  email: string | null | undefined,
+  slot_id: number,
+): Promise<SignupType | null> {
+  const result = await dbreq(
+    `SELECT id, email, presentation_id, slot_id, participated, amount, details FROM signups WHERE email = ? AND slot_id = ?`,
+    [email, slot_id],
+  );
+
+  if (result.length === 0) return null;
+
+  return {
+    ...result[0],
+    participated: Boolean(result[0].participated),
+  };
+}
+
 export async function getMembersAtPresentation(
   email: string | null | undefined,
   presentation_id: number,
@@ -149,7 +194,9 @@ export async function getMembersAtPresentation(
 export async function signUpForPresentation(
   email: string | null | undefined,
   presentation_id: number | "NULL",
-  slot: string,
+  slot_id: number,
+  amount: number = 1,
+  details: string | null = null,
   retries = 3,
 ): Promise<any> {
   try {
@@ -159,11 +206,11 @@ export async function signUpForPresentation(
         // if the signuped presentation is NULL, then the signup period is over, so do nothing
 
         const [selResult] = await conn.execute(
-          `SELECT presentation_id FROM signups WHERE email = ? AND slot = ? FOR UPDATE`,
-          [email, slot],
+          `SELECT presentation_id, amount FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
+          [email, slot_id],
         );
         const signupRows = Array.isArray(selResult)
-          ? (selResult as { presentation_id: number }[])
+          ? (selResult as { presentation_id: number; amount: number }[])
           : [];
 
         if (signupRows.length > 0) {
@@ -172,7 +219,7 @@ export async function signUpForPresentation(
             [signupRows[0].presentation_id],
           );
           const isNullCapacity = Array.isArray(isNull)
-            ? (isNull as { remaining_capacity: number }[])
+            ? (isNull as { remaining_capacity: number | null }[])
             : [];
           if (isNullCapacity[0].remaining_capacity === null)
             return { success: false, message: "Jelentkezési időszak lezárva" };
@@ -181,50 +228,55 @@ export async function signUpForPresentation(
           return { success: true, message: "Nincs törlendő jelentkezés" };
 
         const prevPresentationId = signupRows[0].presentation_id;
-        await conn.execute(`DELETE FROM signups WHERE email = ? AND slot = ?`, [
-          email,
-          slot,
-        ]);
+        const prevAmount = signupRows[0].amount;
         await conn.execute(
-          `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = ?`,
-          [prevPresentationId],
+          `DELETE FROM signups WHERE email = ? AND slot_id = ?`,
+          [email, slot_id],
+        );
+        await conn.execute(
+          `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,
+          [prevAmount, prevPresentationId],
         );
         return { success: true, message: "Jelentkezés törölve" };
       } else {
         // Ha nem NULL, akkor jelentkezünk
         const [existingResult] = await conn.execute(
-          `SELECT presentation_id FROM signups WHERE email = ? AND slot = ? FOR UPDATE`,
-          [email, slot],
+          `SELECT presentation_id, amount FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
+          [email, slot_id],
         );
         const existing = Array.isArray(existingResult)
-          ? (existingResult as { presentation_id: number }[])
+          ? (existingResult as { presentation_id: number; amount: number }[])
           : [];
         const isUpdate = existing.length > 0;
         let previousPresentationId: number | null = null;
-        if (isUpdate) previousPresentationId = existing[0].presentation_id;
+        let previousAmount = 0;
+        if (isUpdate) {
+          previousPresentationId = existing[0].presentation_id;
+          previousAmount = existing[0].amount;
+        }
 
         const [updateResult]: any = await conn.execute(
-          `UPDATE presentations SET remaining_capacity = remaining_capacity - 1
-             WHERE id = ? AND remaining_capacity > 0`,
-          [presentation_id],
+          `UPDATE presentations SET remaining_capacity = remaining_capacity - ?
+             WHERE id = ? AND remaining_capacity >= ?`,
+          [amount, presentation_id, amount],
         );
         if (updateResult.affectedRows === 0)
           return { success: false, message: "Nincs elegendő kapacitás" };
 
         if (isUpdate) {
           await conn.execute(
-            `UPDATE signups SET presentation_id = ? WHERE email = ? AND slot = ?`,
-            [presentation_id, email, slot],
+            `UPDATE signups SET presentation_id = ?, amount = ?, details = ? WHERE email = ? AND slot_id = ?`,
+            [presentation_id, amount, details, email, slot_id],
           );
           await conn.execute(
-            `UPDATE presentations SET remaining_capacity = remaining_capacity + 1 WHERE id = ?`,
-            [previousPresentationId],
+            `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,
+            [previousAmount, previousPresentationId],
           );
           return { success: true, message: "Jelentkezés módosítva" };
         } else {
           await conn.execute(
-            `INSERT INTO signups (email, presentation_id, slot) VALUES (?, ?, ?)`,
-            [email, presentation_id, slot],
+            `INSERT INTO signups (email, presentation_id, slot_id, amount, details) VALUES (?, ?, ?, ?, ?)`,
+            [email, presentation_id, slot_id, amount, details],
           );
           return { success: true, message: "Jelentkezés sikeres" };
         }
@@ -236,7 +288,14 @@ export async function signUpForPresentation(
       console.warn(
         `Deadlock történt, újrapróbálom a tranzakciót. Hátralévő próbálkozások: ${retries}`,
       );
-      return signUpForPresentation(email, presentation_id, slot, retries - 1);
+      return signUpForPresentation(
+        email,
+        presentation_id,
+        slot_id,
+        amount,
+        details,
+        retries - 1,
+      );
     }
     console.error("Hiba a signUpForPresentation-ben:", error);
     throw new Error("Hiba a jelentkezés során");
@@ -246,7 +305,9 @@ export async function signUpForPresentation(
 export async function makeUserSignedUp(
   email: string,
   presentation_id: number,
-  slot: string,
+  slot_id: number,
+  amount: number = 1,
+  details: string | null = null,
 ) {
   const selfUser = await getAuth();
   if (!selfUser) throw new Error("Nem vagy bejelentkezve");
@@ -254,24 +315,24 @@ export async function makeUserSignedUp(
     throw new Error("Nincs jogosultságod ehhez");
   return await multipledbreq(async (conn) => {
     const [currentSignups]: any = await conn.execute(
-      `SELECT presentation_id FROM signups WHERE email = ? AND slot = ? FOR UPDATE`,
-      [email, slot],
+      `SELECT presentation_id FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
+      [email, slot_id],
     );
 
     if (currentSignups.length > 0)
       throw new Error("A felhasználó már jelentkezett ebben a sávban");
 
     const [updateResult]: any = await conn.execute(
-      `UPDATE presentations SET remaining_capacity = remaining_capacity - 1
-         WHERE id = ? AND remaining_capacity > 0`,
-      [presentation_id],
+      `UPDATE presentations SET remaining_capacity = remaining_capacity - ?
+         WHERE id = ? AND remaining_capacity >= ?`,
+      [amount, presentation_id, amount],
     );
     if (updateResult.affectedRows === 0)
       throw new Error("Nincs elegendő kapacitás");
 
     await conn.execute(
-      `INSERT INTO signups (email, presentation_id, slot) VALUES (?, ?, ?)`,
-      [email, presentation_id, slot],
+      `INSERT INTO signups (email, presentation_id, slot_id, amount, details) VALUES (?, ?, ?, ?, ?)`,
+      [email, presentation_id, slot_id, amount, details],
     );
   });
 }
@@ -279,7 +340,9 @@ export async function makeUserSignedUp(
 export async function adminForceUserSignUp(
   email: string,
   presentation_id: number,
-  slot: string,
+  slot_id: number,
+  amount: number = 1,
+  details: string | null = null,
 ) {
   const selfUser = await getAuth();
   if (!selfUser) throw new Error("Nem vagy bejelentkezve");
@@ -289,8 +352,8 @@ export async function adminForceUserSignUp(
   return await multipledbreq(async (conn) => {
     // Ellenőrizzük, hogy a felhasználó már jelentkezett-e ebben a sávban
     const [currentSignups]: any = await conn.execute(
-      `SELECT presentation_id FROM signups WHERE email = ? AND slot = ? FOR UPDATE`,
-      [email, slot],
+      `SELECT presentation_id FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
+      [email, slot_id],
     );
 
     if (currentSignups.length > 0)
@@ -309,14 +372,14 @@ export async function adminForceUserSignUp(
     // A remaining_capacity-t csak akkor csökkentjük, ha nem NULL (jelentkezési időszak aktív)
     if (presentationCheck[0].remaining_capacity !== null) {
       await conn.execute(
-        `UPDATE presentations SET remaining_capacity = remaining_capacity - 1 WHERE id = ?`,
-        [presentation_id],
+        `UPDATE presentations SET remaining_capacity = remaining_capacity - ? WHERE id = ?`,
+        [amount, presentation_id],
       );
     }
 
     await conn.execute(
-      `INSERT INTO signups (email, presentation_id, slot) VALUES (?, ?, ?)`,
-      [email, presentation_id, slot],
+      `INSERT INTO signups (email, presentation_id, slot_id, amount, details) VALUES (?, ?, ?, ?, ?)`,
+      [email, presentation_id, slot_id, amount, details],
     );
   });
 }
@@ -334,7 +397,7 @@ export async function startSignup() {
   if (!selfUser) throw new Error("Nem vagy bejelentkezve");
   gate(selfUser, "admin");
   return await dbreq(
-    `UPDATE presentations SET remaining_capacity = capacity - (SELECT COUNT(*) FROM signups WHERE presentation_id = presentations.id)`,
+    `UPDATE presentations SET remaining_capacity = capacity - (SELECT COALESCE(SUM(amount), 0) FROM signups WHERE presentation_id = presentations.id)`,
   );
 }
 
@@ -359,30 +422,15 @@ export async function getAllSignups(): Promise<{
   return signupsByPresentation;
 }
 
-let slotsCache: { value: string[]; expires: number } | null = null;
-export async function getSlots(): Promise<string[]> {
+let slotsCache: { value: PresentationSlotType[]; expires: number } | null =
+  null;
+export async function getSlots(): Promise<PresentationSlotType[]> {
   const now = Date.now();
   if (slotsCache && slotsCache.expires > now) return slotsCache.value;
 
-  const slots = (
-    await dbreq("SELECT slot FROM presentations GROUP BY slot ORDER BY slot")
-  ).map((row: any) => row.slot);
-
-  const orderBeginings = ["H", "K", "Sz", "S", "Cs", "C", "P", "Szo", "V"];
-
-  slots.sort((a: string, b: string) => {
-    const aMatch = RegExp(/^([A-Za-z]+)(\d+)$/).exec(a);
-    const bMatch = RegExp(/^([A-Za-z]+)(\d+)$/).exec(b);
-    if (!aMatch || !bMatch) return a.localeCompare(b);
-    const aPrefix = aMatch[1];
-    const aNumber = parseInt(aMatch[2], 10);
-    const bPrefix = bMatch[1];
-    const bNumber = parseInt(bMatch[2], 10);
-    const prefixComparison =
-      orderBeginings.indexOf(aPrefix) - orderBeginings.indexOf(bPrefix);
-    if (prefixComparison !== 0) return prefixComparison;
-    return aNumber - bNumber;
-  });
+  const slots: PresentationSlotType[] = await dbreq(
+    "SELECT * FROM presentation_slots ORDER BY id",
+  );
 
   slotsCache = { value: slots, expires: now + 60 * 1000 };
   return slots;
@@ -397,7 +445,7 @@ export async function getSignupsWithParticipation(
     throw new Error("Nincs jogosultságod ehhez");
 
   const result = await dbreq(
-    `SELECT id, email, presentation_id, slot, participated FROM signups WHERE presentation_id = ? ORDER BY email`,
+    `SELECT id, email, presentation_id, slot_id, participated, amount, details FROM signups WHERE presentation_id = ? ORDER BY email`,
     [presentation_id],
   );
 
@@ -436,4 +484,16 @@ export async function markAllParticipation(
     participated,
     presentation_id,
   ]);
+}
+
+export async function updateSignupDetails(
+  email: string | null | undefined,
+  slot_id: number,
+  amount: number,
+  details: string | null,
+): Promise<void> {
+  await dbreq(
+    `UPDATE signups SET amount = ?, details = ? WHERE email = ? AND slot_id = ?`,
+    [amount, details, email, slot_id],
+  );
 }

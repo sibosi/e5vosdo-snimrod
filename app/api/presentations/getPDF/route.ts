@@ -5,6 +5,7 @@ import {
   getPresentations,
   getSignupsWithParticipation,
   getPresentationSlots,
+  SignupType,
 } from "@/db/presentationSignup";
 import { getAuth, getUser } from "@/db/dbreq";
 import PDFDocumentWithTables from "pdfkit-table";
@@ -66,19 +67,20 @@ export async function GET() {
 
     let i = 0;
 
-    const signupsByPresentation = new Map<
-      number,
-      Array<{ email: string; participated: boolean; amount: number }>
-    >();
+    const signupsByPresentation = new Map<number, Array<SignupType>>();
     await Promise.all(
       presentations.map(async (presentation) => {
         const signups = await getSignupsWithParticipation(presentation.id);
         signupsByPresentation.set(
           presentation.id,
           signups.map((s) => ({
+            id: s.id,
             email: s.email,
             participated: s.participated,
             amount: s.amount,
+            presentation_id: s.presentation_id,
+            slot_id: s.slot_id,
+            details: s.details,
           })),
         );
       }),
@@ -133,18 +135,32 @@ export async function GET() {
           j += 1;
           const emailStr = sanitizeText(String(signup.email));
           const user = await getUser(emailStr);
-          const name =
-            user && typeof user.name === "string"
-              ? sanitizeText(user.full_name ?? "*" + user.name)
-              : "Unknown";
-          const amountStr = signup.amount > 1 ? ` (${signup.amount} fő)` : "";
-          rows.push({
-            index: `${j}.`,
-            name: name + amountStr,
-            class: getUserClass(user) || "N/A",
-            email: emailStr,
-            participated: signup.participated ? "✓" : "",
-          });
+
+          if (typeof user?.name === "string") {
+            const name = sanitizeText(user.full_name ?? "*" + user.name);
+            const amountStr = signup.amount > 1 ? ` (${signup.amount} fő)` : "";
+            rows.push({
+              index: `${j}.`,
+              name: name + amountStr,
+              class: getUserClass(user) || "N/A",
+              email: emailStr,
+              participated: signup.participated ? "✓" : "",
+            });
+          } else {
+            const user: { omId?: string; fullName?: string; email?: string } =
+              JSON.parse(signup.details || "{}");
+            const namePre = user.fullName
+              ? sanitizeText(user.fullName)
+              : "Ismeretlen";
+            const emailField = `${user.email} (${user.omId})`;
+            rows.push({
+              index: `${j}.`,
+              name: namePre + ` (${signup.amount} fő)`,
+              class: "-",
+              email: emailField,
+              participated: signup.participated ? "✓" : "",
+            });
+          }
         }
 
         // Calculate available width.

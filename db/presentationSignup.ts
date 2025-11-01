@@ -206,50 +206,51 @@ export async function signUpForPresentation(
 
     const result = await multipledbreq(async (conn) => {
       const [existingSignupsRes] = await conn.execute(
-        `SELECT presentation_id, amount FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
-        [email, slot_id],
+        `SELECT presentation_id, amount, slot_id FROM signups WHERE email = ? FOR UPDATE`,
+        [email],
       );
       const existingSignups = Array.isArray(existingSignupsRes)
-        ? (existingSignupsRes as { presentation_id: number; amount: number }[])
+        ? (existingSignupsRes as {
+            presentation_id: number;
+            amount: number;
+            slot_id: number;
+          }[])
         : [];
+
+      const existingSignupInThatSlot = existingSignups.find(
+        (signup) => signup.slot_id === slot_id,
+      );
 
       // Ha NULL, akkor töröljük a jelentkezést
       if (presentation_id === "NULL") {
-        if (existingSignups.length > 0) {
-          const [isNull] = await conn.execute(
+        if (existingSignupInThatSlot) {
+          const [isNullCapacityRes] = await conn.execute(
             `SELECT remaining_capacity FROM presentations WHERE id = ?`,
-            [existingSignups[0].presentation_id],
+            [existingSignupInThatSlot.presentation_id],
           );
-          const isNullCapacity = Array.isArray(isNull)
-            ? (isNull as { remaining_capacity: number | null }[])
+          const isNullCapacity = Array.isArray(isNullCapacityRes)
+            ? (isNullCapacityRes as { remaining_capacity: number | null }[])
             : [];
           if (isNullCapacity[0].remaining_capacity === null)
             return { success: false, message: "Jelentkezési időszak lezárva" };
         }
-        if (existingSignups.length === 0)
+        if (!existingSignupInThatSlot)
           return { success: true, message: "Nincs törlendő jelentkezés" };
 
-        const prevPresentationId = existingSignups[0].presentation_id;
-        const prevAmount = existingSignups[0].amount;
         await conn.execute(
           `DELETE FROM signups WHERE email = ? AND slot_id = ?`,
           [email, slot_id],
         );
         await conn.execute(
           `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,
-          [prevAmount, prevPresentationId],
+          [
+            existingSignupInThatSlot.amount,
+            existingSignupInThatSlot.presentation_id,
+          ],
         );
         return { success: true, message: "Jelentkezés törölve" };
       } else {
         // Ha nem NULL, akkor jelentkezünk
-        const isUpdate = existingSignups.length > 0;
-        let previousPresentationId: number | null = null;
-        let previousAmount = 0;
-        if (isUpdate) {
-          previousPresentationId = existingSignups[0].presentation_id;
-          previousAmount = existingSignups[0].amount;
-        }
-
         const [updateResult]: any = await conn.execute(
           `UPDATE presentations SET remaining_capacity = remaining_capacity - ?
              WHERE id = ? AND remaining_capacity >= ?`,
@@ -258,14 +259,17 @@ export async function signUpForPresentation(
         if (updateResult.affectedRows === 0)
           return { success: false, message: "Nincs elegendő kapacitás" };
 
-        if (isUpdate) {
+        if (existingSignupInThatSlot) {
           await conn.execute(
             `UPDATE signups SET presentation_id = ?, amount = ?, details = ? WHERE email = ? AND slot_id = ?`,
             [presentation_id, amount, details, email, slot_id],
           );
           await conn.execute(
             `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,
-            [previousAmount, previousPresentationId],
+            [
+              existingSignupInThatSlot.amount,
+              existingSignupInThatSlot.presentation_id,
+            ],
           );
           return { success: true, message: "Jelentkezés módosítva" };
         } else {

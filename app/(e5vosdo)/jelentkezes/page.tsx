@@ -6,7 +6,9 @@ const SignupPage = async () => {
   const selfUser = await getAuth();
   return (
     <div>
-      <IsVerified selfUser={selfUser} />
+      {process.env.EXTERNAL_SIGNUPS !== "true" && (
+        <IsVerified selfUser={selfUser} />
+      )}
       <Table
         selfUser={selfUser}
         EXTERNAL_SIGNUPS={process.env.EXTERNAL_SIGNUPS === "true"}

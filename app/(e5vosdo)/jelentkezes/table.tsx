@@ -250,7 +250,10 @@ const Table = ({
       if (pres !== null) signupsCount++;
     }
 
-    if (selectedBySlot[selectedSlot] === null) {
+    if (
+      selectedBySlot[selectedSlot] === null ||
+      selectedBySlot[selectedSlot] === undefined
+    ) {
       signupsCount++;
     } else if (
       !confirm(

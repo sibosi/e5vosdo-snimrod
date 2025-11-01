@@ -323,27 +323,29 @@ const Table = ({
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label htmlFor="om-id" className="mb-1 block font-medium">
-                OM azonosító <span className="text-red-500">*</span>
+                OM azonosító
               </label>
               <input
                 id="om-id"
                 type="text"
-                className="w-full rounded-md border border-gray-300 p-2"
+                className="w-full rounded-md border border-foreground-300 p-2"
                 placeholder="11 számjegy"
                 maxLength={11}
                 value={omId}
                 onChange={(e) => setOmId(e.target.value.replaceAll(/\D/g, ""))}
               />
-              <p className="mt-1 text-xs text-gray-600">Például: 12345678901</p>
+              <p className="mt-1 text-xs text-foreground-600">
+                Például: 12345678901
+              </p>
             </div>
             <div>
               <label htmlFor="full-name" className="mb-1 block font-medium">
-                Teljes név <span className="text-red-500">*</span>
+                Teljes név
               </label>
               <input
                 id="full-name"
                 type="text"
-                className="w-full rounded-md border border-gray-300 p-2"
+                className="w-full rounded-md border border-foreground-300 p-2"
                 placeholder="Vezetéknév Keresztnév"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -351,48 +353,17 @@ const Table = ({
             </div>
             <div>
               <label htmlFor="email" className="mb-1 block font-medium">
-                Email cím <span className="text-red-500">*</span>
+                Email cím
               </label>
               <input
                 id="email"
                 type="email"
-                className="w-full rounded-md border border-gray-300 p-2"
+                className="w-full rounded-md border border-foreground-300 p-2"
                 placeholder="pelda@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-          </div>
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              * Ezek az adatok minden jelentkezéshez szükségesek
-            </p>
-            <Button
-              color="primary"
-              onPress={async () => {
-                if (!omId.trim() || !fullName.trim() || !email.trim()) {
-                  alert(
-                    "Kérjük, töltsd ki az összes mezőt (OM azonosító, Név, Email)!",
-                  );
-                  return;
-                }
-
-                if (!/^\d{11}$/.test(omId.trim())) {
-                  alert("Az OM azonosító 11 számjegyből kell álljon!");
-                  return;
-                }
-
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-                  alert("Kérjük, adj meg egy érvényes email címet!");
-                  return;
-                }
-
-                await loadMySignups();
-                alert("Korábbi jelentkezések betöltve!");
-              }}
-            >
-              Korábbi jelentkezéseim betöltése
-            </Button>
           </div>
         </div>
       )}

@@ -10,6 +10,11 @@ const SignupPage = async () => {
       <Table
         selfUser={selfUser}
         EXTERNAL_SIGNUPS={process.env.EXTERNAL_SIGNUPS === "true"}
+        EXTERNAL_SIGNUPS_PRESENTATION_LIMIT={
+          process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT
+            ? Number.parseInt(process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT)
+            : null
+        }
       />
     </div>
   );

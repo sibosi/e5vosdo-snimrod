@@ -30,9 +30,11 @@ const Field = ({
 const Table = ({
   selfUser,
   EXTERNAL_SIGNUPS,
+  EXTERNAL_SIGNUPS_PRESENTATION_LIMIT,
 }: {
   selfUser: PossibleUserType;
   EXTERNAL_SIGNUPS: boolean;
+  EXTERNAL_SIGNUPS_PRESENTATION_LIMIT: number | null;
 }) => {
   const [presentations, setPresentations] = useState<PresentationType[]>();
   const [isFetchingAutomatically, setIsFetchingAutomatically] = useState<
@@ -44,7 +46,6 @@ const Table = ({
   const [selectedBySlot, setSelectedBySlot] = useState<{
     [slot_id: number]: number | null;
   }>({});
-  const [mySignups, setMySignups] = useState<SignupType[]>([]);
   const [signupAmounts, setSignupAmounts] = useState<{
     [slot_id: number]: number;
   }>({});
@@ -57,34 +58,31 @@ const Table = ({
   const [email, setEmail] = useState("");
 
   const isVerified = selfUser?.is_verified;
-  const externalSignups = EXTERNAL_SIGNUPS;
 
   async function initData() {
     const presRes = await fetch("/api/presentations/getPresentations");
     const presData = await presRes.json();
     setPresentations(presData);
 
-    if (!externalSignups) {
-      await loadMySignups();
-    }
+    if (!EXTERNAL_SIGNUPS) await loadMySignups();
 
     const slotsRes = await fetch("/api/presentations/getPresentationSlots");
     const slotsData = await slotsRes.json();
     setSlots(slotsData);
 
-    slotsData.forEach((slot: PresentationSlotType) => {
+    for (const slot of slotsData as PresentationSlotType[]) {
       if (!(slot.id in selectedBySlot)) {
         setSelectedBySlot((prev) => ({ ...prev, [slot.id]: null }));
         setSignupAmounts((prev) => ({ ...prev, [slot.id]: 1 }));
       }
-    });
+    }
 
     setSelectedSlot(slotsData[0]?.id || null);
   }
 
   async function loadMySignups() {
     let mySignupsData = [];
-    if (externalSignups && omId) {
+    if (EXTERNAL_SIGNUPS && omId) {
       const details = JSON.stringify({
         omId: omId.trim(),
         fullName: fullName.trim(),
@@ -96,21 +94,19 @@ const Table = ({
         body: JSON.stringify({ details }),
       });
       mySignupsData = await mySignupsRes.json();
-    } else if (!externalSignups) {
+    } else if (!EXTERNAL_SIGNUPS) {
       const mySignupsRes = await fetch("/api/presentations/getMySignups");
       mySignupsData = await mySignupsRes.json();
     }
-
-    setMySignups(mySignupsData);
 
     // Slot-alapú kiválasztások és mennyiségek feltöltése
     const slotSelections: { [slot_id: number]: number | null } = {};
     const amounts: { [slot_id: number]: number } = {};
     if (Array.isArray(mySignupsData)) {
-      mySignupsData.forEach((signup: SignupType) => {
+      for (const signup of mySignupsData as SignupType[]) {
         slotSelections[signup.slot_id] = signup.presentation_id;
         amounts[signup.slot_id] = signup.amount;
-      });
+      }
     }
 
     setSelectedBySlot((prev) => ({ ...prev, ...slotSelections }));
@@ -191,7 +187,7 @@ const Table = ({
   const [isValidExternalData, setIsValidExternalData] = useState(false);
   useEffect(() => {
     setIsValidExternalData(() => {
-      if (!externalSignups) return true;
+      if (!EXTERNAL_SIGNUPS) return true;
 
       return (
         /^\d{11}$/.test(omId.trim()) &&
@@ -199,19 +195,18 @@ const Table = ({
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
       );
     });
-  }, [externalSignups, omId, fullName, email]);
+  }, [EXTERNAL_SIGNUPS, omId, fullName, email]);
 
   useEffect(() => {
-    if (!externalSignups) return;
+    if (!EXTERNAL_SIGNUPS) return;
     if (!isValidExternalData) {
-      setMySignups([]);
       setSelectedBySlot({});
     }
     loadMySignups();
-  }, [externalSignups, omId]);
+  }, [EXTERNAL_SIGNUPS, omId]);
 
   const signup = async (presentation_id: number) => {
-    if (!externalSignups && !isVerified) {
+    if (!EXTERNAL_SIGNUPS && !isVerified) {
       alert(
         `Csak igazolt diákok jelentkezhetnek előadásra. Probléma esetén értesítendő: ${siteConfig.developer} (${siteConfig.developerEmail})`,
       );
@@ -224,7 +219,7 @@ const Table = ({
     let details = null;
 
     // External signups: validate and prepare details
-    if (externalSignups) {
+    if (EXTERNAL_SIGNUPS) {
       if (!omId.trim() || !fullName.trim() || !email.trim()) {
         alert("Kérjük, töltsd ki az összes mezőt (OM azonosító, Név, Email)!");
         return;
@@ -249,6 +244,36 @@ const Table = ({
       });
     }
 
+    let signupsCount = 0;
+
+    for (const pres of Object.values(selectedBySlot)) {
+      if (pres !== null) signupsCount++;
+    }
+
+    if (selectedBySlot[selectedSlot] === null) {
+      signupsCount++;
+    } else if (
+      !confirm(
+        `Ebben a sávban már jelentkeztél az alábbira: ${
+          presentations?.find((p) => p.id === selectedBySlot[selectedSlot])
+            ?.title
+        }. Felülírod a jelentkezésed?`,
+      )
+    ) {
+      return;
+    }
+
+    if (
+      EXTERNAL_SIGNUPS &&
+      EXTERNAL_SIGNUPS_PRESENTATION_LIMIT !== null &&
+      signupsCount > EXTERNAL_SIGNUPS_PRESENTATION_LIMIT
+    ) {
+      alert(
+        `Legfeljebb ${EXTERNAL_SIGNUPS_PRESENTATION_LIMIT} előadásra jelentkezhetsz!`,
+      );
+      return;
+    }
+
     const response = await fetch("/api/presentations/signUpForPresentation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -266,7 +291,7 @@ const Table = ({
         [selectedSlot]: presentation_id,
       }));
 
-      if (externalSignups) {
+      if (EXTERNAL_SIGNUPS) {
         await loadMySignups();
       }
 
@@ -282,7 +307,7 @@ const Table = ({
   function scrollToPresentationDetails() {
     const element = document.getElementById(
       "presentation-card-" +
-        (selectedSlot !== null ? selectedBySlot[selectedSlot] : ""),
+        (selectedSlot === null ? "" : selectedBySlot[selectedSlot]),
     );
     if (element) element.scrollIntoView({ behavior: "smooth" });
   }
@@ -292,7 +317,7 @@ const Table = ({
 
   return (
     <div>
-      {externalSignups && (
+      {EXTERNAL_SIGNUPS && (
         <div className="mb-6 rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100 p-4">
           <h2 className="mb-3 text-xl font-bold">Jelentkező adatai</h2>
           <div className="grid gap-4 md:grid-cols-3">
@@ -388,7 +413,7 @@ const Table = ({
               selectedBySlot[selectedSlot] === undefined) &&
               "Nincs kiválasztva"}
           </p>
-          {externalSignups &&
+          {EXTERNAL_SIGNUPS &&
             selectedSlot !== null &&
             selectedBySlot[selectedSlot] !== null &&
             selectedBySlot[selectedSlot] !== undefined && (
@@ -396,7 +421,7 @@ const Table = ({
                 Jelentkezett létszám: {signupAmounts[selectedSlot] || 1} fő
               </p>
             )}
-          {externalSignups &&
+          {EXTERNAL_SIGNUPS &&
             selectedSlot !== null &&
             (selectedBySlot[selectedSlot] === null ||
               selectedBySlot[selectedSlot] === undefined) && (
@@ -463,7 +488,7 @@ const Table = ({
                   slot_id: selectedSlot,
                 };
 
-                if (externalSignups) {
+                if (EXTERNAL_SIGNUPS) {
                   body.details = JSON.stringify({
                     omId: omId.trim(),
                     fullName: fullName.trim(),
@@ -485,7 +510,7 @@ const Table = ({
                     [selectedSlot]: null,
                   }));
 
-                  if (externalSignups) {
+                  if (EXTERNAL_SIGNUPS) {
                     await loadMySignups();
                   }
 
@@ -559,7 +584,9 @@ const Table = ({
             <Field className="bg-selfprimary-200 md:col-span-2">
               <div>
                 <div className="text-lg font-bold">
-                  {presentation.id}. {presentation.title}
+                  {EXTERNAL_SIGNUPS
+                    ? presentation.title
+                    : presentation.id.toString() + ". " + presentation.title}
                 </div>
 
                 {presentation.performer && (
@@ -618,9 +645,9 @@ const Table = ({
                   (selectedSlot !== null &&
                     selectedBySlot[selectedSlot] === presentation.id) ||
                   presentation.remaining_capacity === 0 ||
-                  (externalSignups && !isValidExternalData) ||
+                  (EXTERNAL_SIGNUPS && !isValidExternalData) ||
                   presentation.remaining_capacity === null ||
-                  (externalSignups &&
+                  (EXTERNAL_SIGNUPS &&
                     selectedSlot !== null &&
                     (presentation.remaining_capacity ?? 0) <
                       (signupAmounts[selectedSlot] || 1))
@@ -634,7 +661,7 @@ const Table = ({
                   )
                     return "Jelentkezve";
                   if (presentation.remaining_capacity === 0) return "Betelt";
-                  if (externalSignups && selectedSlot !== null) {
+                  if (EXTERNAL_SIGNUPS && selectedSlot !== null) {
                     const amount = signupAmounts[selectedSlot] || 1;
                     return `Jelentkezés (${amount} fő)`;
                   }

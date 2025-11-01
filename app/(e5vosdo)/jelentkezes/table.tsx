@@ -525,6 +525,7 @@ const Table = ({
               {slots?.map((slot) => (
                 <SelectItem
                   key={slot.id}
+                  color={selectedBySlot[slot.id] ? "success" : undefined}
                   endContent={selectedBySlot[slot.id] ? "✓" : ""}
                 >
                   {slot.title}

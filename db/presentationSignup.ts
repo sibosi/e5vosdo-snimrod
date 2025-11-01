@@ -205,20 +205,20 @@ export async function signUpForPresentation(
     }
 
     const result = await multipledbreq(async (conn) => {
+      const [existingSignupsRes] = await conn.execute(
+        `SELECT presentation_id, amount FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
+        [email, slot_id],
+      );
+      const existingSignups = Array.isArray(existingSignupsRes)
+        ? (existingSignupsRes as { presentation_id: number; amount: number }[])
+        : [];
+
       // Ha NULL, akkor töröljük a jelentkezést
       if (presentation_id === "NULL") {
-        const [selResult] = await conn.execute(
-          `SELECT presentation_id, amount FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
-          [email, slot_id],
-        );
-        const signupRows = Array.isArray(selResult)
-          ? (selResult as { presentation_id: number; amount: number }[])
-          : [];
-
-        if (signupRows.length > 0) {
+        if (existingSignups.length > 0) {
           const [isNull] = await conn.execute(
             `SELECT remaining_capacity FROM presentations WHERE id = ?`,
-            [signupRows[0].presentation_id],
+            [existingSignups[0].presentation_id],
           );
           const isNullCapacity = Array.isArray(isNull)
             ? (isNull as { remaining_capacity: number | null }[])
@@ -226,11 +226,11 @@ export async function signUpForPresentation(
           if (isNullCapacity[0].remaining_capacity === null)
             return { success: false, message: "Jelentkezési időszak lezárva" };
         }
-        if (signupRows.length === 0)
+        if (existingSignups.length === 0)
           return { success: true, message: "Nincs törlendő jelentkezés" };
 
-        const prevPresentationId = signupRows[0].presentation_id;
-        const prevAmount = signupRows[0].amount;
+        const prevPresentationId = existingSignups[0].presentation_id;
+        const prevAmount = existingSignups[0].amount;
         await conn.execute(
           `DELETE FROM signups WHERE email = ? AND slot_id = ?`,
           [email, slot_id],
@@ -242,19 +242,12 @@ export async function signUpForPresentation(
         return { success: true, message: "Jelentkezés törölve" };
       } else {
         // Ha nem NULL, akkor jelentkezünk
-        const [existingResult] = await conn.execute(
-          `SELECT presentation_id, amount FROM signups WHERE email = ? AND slot_id = ? FOR UPDATE`,
-          [email, slot_id],
-        );
-        const existing = Array.isArray(existingResult)
-          ? (existingResult as { presentation_id: number; amount: number }[])
-          : [];
-        const isUpdate = existing.length > 0;
+        const isUpdate = existingSignups.length > 0;
         let previousPresentationId: number | null = null;
         let previousAmount = 0;
         if (isUpdate) {
-          previousPresentationId = existing[0].presentation_id;
-          previousAmount = existing[0].amount;
+          previousPresentationId = existingSignups[0].presentation_id;
+          previousAmount = existingSignups[0].amount;
         }
 
         const [updateResult]: any = await conn.execute(

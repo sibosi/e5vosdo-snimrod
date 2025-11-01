@@ -12,7 +12,7 @@ CREATE TABLE
         title VARCHAR(255) NOT NULL,
         performer VARCHAR(255) DEFAULT NULL,
         description TEXT DEFAULT NULL,
-        address VARCHAR(255) NOT NULL,
+        address VARCHAR(255),
         requirements VARCHAR(255) DEFAULT NULL,
         capacity INTEGER NOT NULL,
         remaining_capacity INTEGER DEFAULT NULL,

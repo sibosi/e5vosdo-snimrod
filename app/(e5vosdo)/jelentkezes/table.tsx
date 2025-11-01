@@ -584,7 +584,9 @@ const Table = ({
                 <p className="info">
                   Maximális létszám: {presentation.capacity} fő
                 </p>
-                <p className="info">Helyszín: {presentation.address}</p>
+                {presentation.address && (
+                  <p className="info">Helyszín: {presentation.address}</p>
+                )}
               </div>
             </Field>
             <Field className="md:col-span-2">

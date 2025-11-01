@@ -251,6 +251,19 @@ export async function signUpForPresentation(
         return { success: true, message: "Jelentkezés törölve" };
       } else {
         // Ha nem NULL, akkor jelentkezünk
+
+        if (
+          process.env.EXTERNAL_SIGNUPS === "true" &&
+          Number.isInteger(process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) &&
+          existingSignups.length + (existingSignupInThatSlot ? 0 : 1) >
+            Number(process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT)
+        ) {
+          return {
+            success: false,
+            message: `Legfeljebb ${process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT} prezentációra lehet jelentkezni`,
+          };
+        }
+
         const [updateResult]: any = await conn.execute(
           `UPDATE presentations SET remaining_capacity = remaining_capacity - ?
              WHERE id = ? AND remaining_capacity >= ?`,

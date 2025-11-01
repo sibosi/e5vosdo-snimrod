@@ -368,7 +368,7 @@ const Table = ({
         </div>
       )}
 
-      <div className="mb-3 grid text-center max-md:gap-3 md:grid-cols-2">
+      <div className="mb-3 grid gap-2 text-center max-md:gap-3 md:grid-cols-2">
         <div className="ml-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
           <p>Kiválasztva ({currentSlotTitle}):</p>
           <p className="text-xl font-bold">
@@ -499,14 +499,14 @@ const Table = ({
           </div>
         </div>
 
-        <div className="mb-3 grid grid-cols-2">
-          <div className="ml-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col rounded-xl bg-selfprimary-200 p-2">
             <p>Automatikus frissítés:</p>
             <p className="text-xl font-bold">
               {isFetchingAutomatically ? "Be" : "Ki"}
             </p>
           </div>
-          <div className="ml-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
+          <div className="flex flex-col rounded-xl bg-selfprimary-200 p-2">
             <p>Előadássáv:</p>
             <Select
               selectedKeys={selectedSlot ? [selectedSlot.toString()] : []}
@@ -528,6 +528,14 @@ const Table = ({
                 </SelectItem>
               )) || []}
             </Select>
+          </div>
+
+          <div className="col-span-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
+            <p>Előadássáv részletei:</p>
+            <p className="font-xl font-bold">
+              {slots?.find((s) => s.id === selectedSlot)?.details ||
+                "Nincsenek részletek"}
+            </p>
           </div>
         </div>
       </div>

@@ -59,6 +59,8 @@ const Table = ({
 
   const isVerified = selfUser?.is_verified;
 
+  const presName = EXTERNAL_SIGNUPS ? "Óra" : "Előadás";
+
   async function initData() {
     const presRes = await fetch("/api/presentations/getPresentations");
     const presData = await presRes.json();
@@ -439,7 +441,7 @@ const Table = ({
               }
               onPress={scrollToPresentationDetails}
             >
-              Előadás részletei
+              {presName} részletei
             </Button>
             <Button
               variant="bordered"
@@ -508,7 +510,7 @@ const Table = ({
             </p>
           </div>
           <div className="flex flex-col rounded-xl bg-selfprimary-200 p-2">
-            <p>Előadássáv:</p>
+            <p>{presName}sáv:</p>
             <Select
               selectedKeys={selectedSlot ? [selectedSlot.toString()] : []}
               onSelectionChange={(keys) => {
@@ -541,7 +543,7 @@ const Table = ({
           </div>
 
           <div className="col-span-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
-            <p>Előadássáv részletei:</p>
+            <p>{presName}sáv részletei:</p>
             <p className="font-xl font-bold">
               {slots?.find((s) => s.id === selectedSlot)?.details ||
                 "Nincsenek részletek"}

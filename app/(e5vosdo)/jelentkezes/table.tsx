@@ -199,11 +199,9 @@ const Table = ({
 
   useEffect(() => {
     if (!EXTERNAL_SIGNUPS) return;
-    if (!isValidExternalData) {
-      setSelectedBySlot({});
-    }
-    loadMySignups();
-  }, [EXTERNAL_SIGNUPS, omId]);
+    if (isValidExternalData) loadMySignups();
+    else setSelectedBySlot({});
+  }, [EXTERNAL_SIGNUPS, isValidExternalData]);
 
   const signup = async (presentation_id: number) => {
     if (!EXTERNAL_SIGNUPS && !isVerified) {
@@ -331,7 +329,7 @@ const Table = ({
               <input
                 id="om-id"
                 type="text"
-                className="w-full rounded-md border border-foreground-300 p-2"
+                className="w-full rounded-md border border-foreground-300 bg-foreground-100 p-2"
                 placeholder="11 számjegy"
                 maxLength={11}
                 value={omId}
@@ -348,7 +346,7 @@ const Table = ({
               <input
                 id="full-name"
                 type="text"
-                className="w-full rounded-md border border-foreground-300 p-2"
+                className="w-full rounded-md border border-foreground-300 bg-foreground-100 p-2"
                 placeholder="Vezetéknév Keresztnév"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -361,7 +359,7 @@ const Table = ({
               <input
                 id="email"
                 type="email"
-                className="w-full rounded-md border border-foreground-300 p-2"
+                className="w-full rounded-md border border-foreground-300 bg-foreground-100 p-2"
                 placeholder="pelda@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -525,7 +523,15 @@ const Table = ({
               {slots?.map((slot) => (
                 <SelectItem
                   key={slot.id}
+                  className={
+                    selectedBySlot[slot.id]
+                      ? "bg-success-300 text-success-900"
+                      : selectedSlot === slot.id
+                        ? "bg-foreground-300 text-foreground-900"
+                        : undefined
+                  }
                   color={selectedBySlot[slot.id] ? "success" : undefined}
+                  classNames={{ selectedIcon: "hidden" }}
                   endContent={selectedBySlot[slot.id] ? "✓" : ""}
                 >
                   {slot.title}

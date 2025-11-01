@@ -60,17 +60,15 @@ export async function POST(
       { status: 400 },
     );
 
-  let emailToUse = selfEmail;
-  if (isExternalSignupAllowed && !selfEmail) {
-    emailToUse = extractExternalEmail(body);
+  const emailToUse = isExternalSignupAllowed
+    ? extractExternalEmail(body)
+    : selfEmail;
 
-    if (!emailToUse) {
-      return NextResponse.json(
-        { error: { message: "OM ID required for external signup" } },
-        { status: 400 },
-      );
-    }
-  }
+  if (isExternalSignupAllowed && !emailToUse)
+    return NextResponse.json(
+      { error: { message: "OM ID required for external signup" } },
+      { status: 400 },
+    );
 
   const result = await funct(emailToUse, ...Object.values(body));
   if (result?.success === false)

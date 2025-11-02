@@ -29,12 +29,10 @@ async function fetchUsers(setUsers: (data: any) => void) {
 
 function displayDate(dateInStr: string) {
   const date = new Date(dateInStr);
-  const diff = new Date().getTime() - date.getTime();
+  const diff = Date.now() - date.getTime();
 
   // if invvalid date, return empty string
-  if (isNaN(date.getTime())) {
-    return "";
-  }
+  if (Number.isNaN(date.getTime())) return "";
 
   if (diff < 1000 * 60) {
     return `${Math.floor(diff / 1000)} másodperce`;
@@ -56,7 +54,6 @@ function displayDate(dateInStr: string) {
 
 const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
   const [users, setUsers] = useState(sortUsers(initialUsers));
-  const [reloadUsers, setReloadUsers] = useState(false);
 
   const [searchName, setSearchName] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
@@ -73,7 +70,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, permission: permission }),
-    }).then(() => setReloadUsers(true));
+    }).then(() => reload());
   }
 
   async function removeUserPermission(email: any, permission: string) {
@@ -83,7 +80,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, permission: permission }),
-    }).then(() => setReloadUsers(true));
+    }).then(() => reload());
   }
 
   async function addTicket(email: any, ticket: string) {
@@ -93,7 +90,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, ticket: ticket }),
-    }).then(() => setReloadUsers(true));
+    }).then(() => reload());
   }
 
   async function deleteTicket(email: any, ticket: string) {
@@ -103,7 +100,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email: email, ticket: ticket }),
-    }).then(() => setReloadUsers(true));
+    }).then(() => reload());
   }
 
   useEffect(() => {
@@ -119,17 +116,12 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
   }, [searchName]);
 
   async function reload() {
-    if (reloadUsers) await fetchUsers(setUsers);
+    await fetchUsers(setUsers);
 
     setSelectedUser(
       users.find((user) => selectedUser?.email == user.email) ?? null,
     );
-    setReloadUsers(false);
   }
-
-  useEffect(() => {
-    reload();
-  }, [reloadUsers]);
 
   function getUserName(user: UserType) {
     return user.full_name || user.name;
@@ -391,6 +383,9 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                           color="success"
                           className="m-1"
                           size="sm"
+                          onPress={() =>
+                            removeUserPermission(selectedUser.email, permission)
+                          }
                         >
                           {permission}
                         </Button>

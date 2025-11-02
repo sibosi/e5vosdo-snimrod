@@ -4,6 +4,8 @@ import fs from "fs";
 import {
   getPresentations,
   getSignupsWithParticipation,
+  getPresentationSlots,
+  SignupType,
 } from "@/db/presentationSignup";
 import { getAuth, getUser } from "@/db/dbreq";
 import PDFDocumentWithTables from "pdfkit-table";
@@ -56,23 +58,29 @@ export async function GET() {
     // Capture PDF output.
     doc.on("data", (chunk) => chunks.push(chunk));
 
-    // Retrieve presentations.
+    // Retrieve presentations and slots.
     const presentations = await getPresentations();
+    const slots = await getPresentationSlots();
+
+    // Create a map for quick slot lookup
+    const slotMap = new Map(slots.map((s) => [s.id, s]));
 
     let i = 0;
 
-    const signupsByPresentation = new Map<
-      number,
-      Array<{ email: string; participated: boolean }>
-    >();
+    const signupsByPresentation = new Map<number, Array<SignupType>>();
     await Promise.all(
       presentations.map(async (presentation) => {
         const signups = await getSignupsWithParticipation(presentation.id);
         signupsByPresentation.set(
           presentation.id,
           signups.map((s) => ({
+            id: s.id,
             email: s.email,
             participated: s.participated,
+            amount: s.amount,
+            presentation_id: s.presentation_id,
+            slot_id: s.slot_id,
+            details: s.details,
           })),
         );
       }),
@@ -96,16 +104,27 @@ export async function GET() {
       signups.sort((a, b) => a.email.localeCompare(b.email));
 
       const presSignuped = signups.length;
+      const totalAmount = signups.reduce((sum, s) => sum + s.amount, 0);
       const presParticipated = signups.filter((s) => s.participated).length;
+      const totalParticipatedAmount = signups
+        .filter((s) => s.participated)
+        .reduce((sum, s) => sum + s.amount, 0);
+
+      const slotInfo = slotMap.get(presentation.slot_id);
+      const slotTitle = slotInfo ? sanitizeText(slotInfo.title) : "N/A";
 
       // Write presentation details.
       doc.registerFont("Outfit", fontPath, "bold");
       doc
         .fontSize(14)
         .font("Outfit")
-        .text(`${presentation.id}: ${presTitle}`, { underline: true });
+        .text(`${presentation.id}: ${presTitle} (${slotTitle})`, {
+          underline: true,
+        });
       doc.text(`Előadó: ${presPerformer}`);
-      doc.text(`Helyszín: ${presAddress} | Jelentkezők száma: ${presSignuped} (max. ${presMaxCapacity} fő) | Résztvevők száma: ${presParticipated}`);
+      doc.text(
+        `Helyszín: ${presAddress} | Jelentkezők száma: ${presSignuped} (${totalAmount} fő, max. ${presMaxCapacity} fő) | Résztvevők száma: ${presParticipated} (${totalParticipatedAmount} fő)`,
+      );
       doc.moveDown(0.5);
 
       if (signups.length > 0) {
@@ -116,17 +135,32 @@ export async function GET() {
           j += 1;
           const emailStr = sanitizeText(String(signup.email));
           const user = await getUser(emailStr);
-          const name =
-            user && typeof user.name === "string"
-              ? sanitizeText(user.full_name ?? "*" + user.name)
-              : "Unknown";
-          rows.push({
-            index: `${j}.`,
-            name: name,
-            class: getUserClass(user) || "N/A",
-            email: emailStr,
-            participated: signup.participated ? "✓" : "",
-          });
+
+          if (typeof user?.name === "string") {
+            const name = sanitizeText(user.full_name ?? "*" + user.name);
+            const amountStr = signup.amount > 1 ? ` (${signup.amount} fő)` : "";
+            rows.push({
+              index: `${j}.`,
+              name: name + amountStr,
+              class: getUserClass(user) || "N/A",
+              email: emailStr,
+              participated: signup.participated ? "✓" : "",
+            });
+          } else {
+            const user: { omId?: string; fullName?: string; email?: string } =
+              JSON.parse(signup.details || "{}");
+            const namePre = user.fullName
+              ? sanitizeText(user.fullName)
+              : "Ismeretlen";
+            const emailField = `${user.email} (${user.omId})`;
+            rows.push({
+              index: `${j}.`,
+              name: namePre + ` (${signup.amount} fő)`,
+              class: "-",
+              email: emailField,
+              participated: signup.participated ? "✓" : "",
+            });
+          }
         }
 
         // Calculate available width.

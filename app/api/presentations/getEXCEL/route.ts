@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
 import {
   getPresentations,
-  getMembersAtPresentation,
+  getSignupsWithParticipation,
+  getPresentationSlots,
 } from "@/db/presentationSignup";
 import { getAllUsersNameByEmail, getAuth } from "@/db/dbreq";
 import { gate } from "@/db/permissions";
@@ -20,17 +21,25 @@ export async function GET() {
 
     const presentations = await getPresentations();
     const namesByEmail = await getAllUsersNameByEmail();
+    const slots = await getPresentationSlots();
+    const slotMap = new Map(slots.map((s) => [s.id, s]));
 
     if (!presentations || presentations.length === 0) {
       return new NextResponse("No presentations found", { status: 404 });
     }
 
-    let tableData: Record<string, string[]> = {};
+    let tableData: Record<
+      string,
+      Array<{ email: string; amount: number }>
+    > = {};
     let longestList = 0;
     for (const p of presentations) {
-      const emails = await getMembersAtPresentation(user.email, p.id);
-      tableData[p.title] = emails;
-      longestList = Math.max(longestList, emails.length);
+      const signups = await getSignupsWithParticipation(p.id);
+      tableData[p.title] = signups.map((s) => ({
+        email: s.email,
+        amount: s.amount,
+      }));
+      longestList = Math.max(longestList, signups.length);
     }
 
     const workbook = new ExcelJS.Workbook();
@@ -40,26 +49,39 @@ export async function GET() {
         `Jelentkezések (${type === "email" ? "Email" : "Név"})`,
       );
 
-      const headerRow = presentations.map((p) => p.title);
+      const headerRow = presentations.map((p) => {
+        const slot = slotMap.get(p.slot_id);
+        return `${p.title} (${slot?.title || "N/A"})`;
+      });
       sheet.addRow(headerRow).font = { bold: true };
 
       sheet.addRow(presentations.map((p) => `Létszámkorlát: ${p.capacity}`));
+
+      const totalAmounts = presentations.map((p) =>
+        tableData[p.title].reduce((sum, s) => sum + s.amount, 0),
+      );
+
       sheet.addRow(
         presentations.map(
-          (p) => `Jelentkezettek száma: ${tableData[p.title].length}`,
+          (p, idx) =>
+            `Jelentkezések száma: ${tableData[p.title].length} (${totalAmounts[idx]} fő)`,
         ),
       );
       sheet.addRow(
         presentations.map(
-          (p) => `Hátralévő helyek: ${p.capacity - tableData[p.title].length}`,
+          (p, idx) => `Hátralévő helyek: ${p.capacity - totalAmounts[idx]}`,
         ),
       );
 
       for (let i = 0; i < longestList; i++) {
         const row = presentations.map((p) => {
-          const email = tableData[p.title][i];
-          if (!email) return "";
-          return type === "email" ? email : namesByEmail[email] || email;
+          const signup = tableData[p.title][i];
+          if (!signup) return "";
+          const emailStr = signup.email;
+          const amountStr = signup.amount > 1 ? ` (${signup.amount} fő)` : "";
+          return type === "email"
+            ? emailStr + amountStr
+            : (namesByEmail[emailStr] || emailStr) + amountStr;
         });
         sheet.addRow(row);
       }

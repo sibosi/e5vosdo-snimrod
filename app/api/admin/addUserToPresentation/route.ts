@@ -11,16 +11,31 @@ export async function POST(request: NextRequest) {
     }
     gate(user, "admin");
 
-    const { email, presentation_id, slot } = await request.json();
+    const {
+      email,
+      presentation_id,
+      slot_id,
+      amount = 1,
+      details = null,
+    } = await request.json();
 
-    if (!email || !presentation_id || !slot) {
+    if (!email || !presentation_id || slot_id === undefined) {
       return NextResponse.json(
-        { error: "All fields are required: email, presentation_id, slot" },
+        {
+          error:
+            "Required fields: email, presentation_id, slot_id. Optional: amount, details",
+        },
         { status: 400 },
       );
     }
 
-    await adminForceUserSignUp(email, presentation_id, slot);
+    await adminForceUserSignUp(
+      email,
+      presentation_id,
+      slot_id,
+      amount,
+      details,
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

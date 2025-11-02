@@ -14,33 +14,41 @@ export async function GET() {
     const result = await dbreq(`
       SELECT 
         p.id,
+        p.slot_id,
+        ps.title as slot_title,
         p.title,
+        p.performer,
         p.description,
         p.address,
         p.requirements,
         p.capacity,
         p.remaining_capacity,
-        COUNT(s.email) as signup_count,
-        GROUP_CONCAT(s.email SEPARATOR ', ') as signups
+        COALESCE(SUM(s.amount), 0) as signup_count,
+        COUNT(DISTINCT s.email) as unique_signups,
+        GROUP_CONCAT(CONCAT(s.email, ' (', s.amount, ' fő)') SEPARATOR ', ') as signups
       FROM presentations p
+      LEFT JOIN presentation_slots ps ON p.slot_id = ps.id
       LEFT JOIN signups s ON p.id = s.presentation_id
-      GROUP BY p.id, p.title, p.description, p.address, p.requirements, p.capacity, p.remaining_capacity
-      ORDER BY p.id
+      GROUP BY p.id, p.slot_id, ps.title, p.title, p.performer, p.description, p.address, p.requirements, p.capacity, p.remaining_capacity
+      ORDER BY p.slot_id, p.id
     `);
 
     const csvHeaders =
-      "ID,Cím,Leírás,Cím,Követelmények,Kapacitás,Szabad_helyek,Jelentkezők_száma,Jelentkezők_email\n";
+      "ID,Sáv,Cím,Előadó,Leírás,Helyszín,Követelmények,Kapacitás,Szabad_helyek,Összes_fő,Jelentkezések_száma,Jelentkezők\n";
     const csvRows = result
       .map((row: any) => {
         const values = [
           row.id,
+          `"${(row.slot_title || "").replace(/"/g, '""')}"`,
           `"${row.title.replace(/"/g, '""')}"`,
+          `"${(row.performer || "").replace(/"/g, '""')}"`,
           `"${row.description.replace(/"/g, '""')}"`,
           `"${row.address.replace(/"/g, '""')}"`,
           `"${row.requirements.replace(/"/g, '""')}"`,
           row.capacity,
           row.remaining_capacity ?? "NULL",
           row.signup_count,
+          row.unique_signups,
           `"${(row.signups || "").replace(/"/g, '""')}"`,
         ];
         return values.join(",");

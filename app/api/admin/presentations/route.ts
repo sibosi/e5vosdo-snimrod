@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const {
       title,
       performer,
-      slot,
+      slot_id,
       description,
       address,
       requirements,
@@ -44,28 +44,39 @@ export async function POST(request: NextRequest) {
 
     if (
       !title ||
-      !slot ||
-      !description ||
+      slot_id === undefined ||
+      slot_id === null ||
       !address ||
-      !requirements ||
       capacity === undefined ||
       capacity === null
     ) {
+      let missingFields = [];
+      if (!title) missingFields.push("név");
+      if (slot_id === undefined || slot_id === null) missingFields.push("sáv");
+      if (!address) missingFields.push("helyszín");
+      if (capacity === undefined || capacity === null)
+        missingFields.push("kapacitás");
       return NextResponse.json(
-        { error: "All fields are required" },
+        {
+          error:
+            "Minden mező kitöltése kötelező " +
+            "(" +
+            missingFields.filter(Boolean).join(", ") +
+            ")",
+        },
         { status: 400 },
       );
     }
 
     const result = await dbreq(
-      "INSERT INTO presentations (title, performer, slot, description, address, requirements, capacity, remaining_capacity) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO presentations (title, performer, slot_id, description, address, requirements, capacity, remaining_capacity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [
         title,
         performer,
-        slot,
-        description,
+        slot_id,
+        description || null,
         address,
-        requirements,
+        requirements || null,
         capacity,
         capacity,
       ],
@@ -91,7 +102,7 @@ export async function PUT(request: NextRequest) {
 
     const {
       id,
-      slot,
+      slot_id,
       title,
       performer,
       description,
@@ -102,9 +113,9 @@ export async function PUT(request: NextRequest) {
 
     if (
       !id ||
-      !slot ||
+      slot_id === undefined ||
+      slot_id === null ||
       !title ||
-      !description ||
       !address ||
       capacity === undefined ||
       capacity === null
@@ -112,23 +123,23 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Minden mező kitöltése kötelező (ID, slot, név, leírás, kapacitás, helyszín)",
+            "Minden mező kitöltése kötelező (ID, slot_id, név, kapacitás, helyszín)",
         },
         { status: 400 },
       );
     }
 
-    // Get current signups count
+    // Get current signups total amount (sum of all amounts)
     const [signupsResult] = await dbreq(
-      "SELECT COUNT(*) as count FROM signups WHERE presentation_id = ?",
+      "SELECT COALESCE(SUM(amount), 0) as total FROM signups WHERE presentation_id = ?",
       [id],
     );
-    const currentSignups = signupsResult.count;
+    const currentSignupsTotal = signupsResult.total;
 
-    if (capacity < currentSignups && !gate(user,"admin", "boolean")) {
+    if (capacity < currentSignupsTotal && !gate(user, "admin", "boolean")) {
       return NextResponse.json(
         {
-          error: `Cannot set capacity below current signups (${currentSignups})`,
+          error: `Cannot set capacity below current signups total (${currentSignupsTotal})`,
         },
         { status: 400 },
       );
@@ -142,17 +153,17 @@ export async function PUT(request: NextRequest) {
       currentRemainingCapacityResult[0].remaining_capacity;
 
     const newRemainingCapacity =
-      currentRemainingCapacity === null ? null : capacity - currentSignups;
+      currentRemainingCapacity === null ? null : capacity - currentSignupsTotal;
 
     await dbreq(
-      "UPDATE presentations SET slot = ?, title = ?, performer = ?, description = ?, address = ?, requirements = ?, capacity = ?, remaining_capacity = ? WHERE id = ?",
+      "UPDATE presentations SET slot_id = ?, title = ?, performer = ?, description = ?, address = ?, requirements = ?, capacity = ?, remaining_capacity = ? WHERE id = ?",
       [
-        slot,
+        slot_id,
         title,
         performer,
-        description,
+        description || null,
         address,
-        requirements,
+        requirements || null,
         capacity,
         newRemainingCapacity,
         id,
@@ -189,11 +200,11 @@ export async function DELETE(request: NextRequest) {
 
     // Check if there are any signups for this presentation
     const [signupsResult] = await dbreq(
-      "SELECT COUNT(*) as count FROM signups WHERE presentation_id = ?",
+      "SELECT COALESCE(SUM(amount), 0) as total FROM signups WHERE presentation_id = ?",
       [id],
     );
 
-    if (signupsResult.count > 0) {
+    if (signupsResult.total > 0) {
       return NextResponse.json(
         { error: "Cannot delete presentation with existing signups" },
         { status: 400 },

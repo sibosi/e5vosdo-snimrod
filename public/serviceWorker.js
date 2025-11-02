@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.0.2509.0.4";
+const VERSION = "0.0.2511.0.0";
 
 self.addEventListener("install", (event) => {
   console.log(`Service Worker version ${VERSION} installing...`);

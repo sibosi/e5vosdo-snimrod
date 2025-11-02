@@ -6,14 +6,17 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Checkbox,
   Chip,
   Input,
   Select,
   SelectItem,
   Spinner,
 } from "@heroui/react";
-import { PresentationType, SignupType } from "@/db/presentationSignup";
+import {
+  PresentationType,
+  PresentationSlotType,
+  SignupType,
+} from "@/db/presentationSignup";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import SearchUser from "@/components/searchUser";
@@ -29,7 +32,7 @@ interface StudentPresentations {
   presentations: Array<{
     id: number;
     title: string;
-    slot: string;
+    slotTitle: string;
     participated: boolean;
   }>;
 }
@@ -42,6 +45,7 @@ export default function PresentationAttendancePage() {
   const [presentation, setPresentation] = useState<PresentationType | null>(
     null,
   );
+  const [slots, setSlots] = useState<PresentationSlotType[]>([]);
   const [signups, setSignups] = useState<SignupWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,11 +61,24 @@ export default function PresentationAttendancePage() {
 
   useEffect(() => {
     if (presentationId) {
+      fetchSlots();
       fetchPresentation();
       fetchSignups();
       fetchAllUsers();
     }
   }, [presentationId]);
+
+  const fetchSlots = async () => {
+    try {
+      const response = await fetch("/api/presentations/getPresentationSlots");
+      if (response.ok) {
+        const data = await response.json();
+        setSlots(data);
+      }
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+    }
+  };
 
   const fetchAllUsers = async () => {
     try {
@@ -184,7 +201,7 @@ export default function PresentationAttendancePage() {
       const studentPresentations: Array<{
         id: number;
         title: string;
-        slot: string;
+        slotTitle: string;
         participated: boolean;
       }> = [];
 
@@ -196,10 +213,11 @@ export default function PresentationAttendancePage() {
           const presSignups: SignupWithUser[] = await signupsResponse.json();
           const studentSignup = presSignups.find((s) => s.email === email);
           if (studentSignup) {
+            const slot = slots.find((s) => s.id === pres.slot_id);
             studentPresentations.push({
               id: pres.id,
               title: pres.title,
-              slot: pres.slot,
+              slotTitle: slot?.title || `Slot #${pres.slot_id}`,
               participated: Boolean(studentSignup.participated),
             });
           }
@@ -265,7 +283,9 @@ export default function PresentationAttendancePage() {
                 <strong>Terem:</strong> {presentation.address}
               </p>
               <p>
-                <strong>Előadássáv:</strong> {presentation.slot}
+                <strong>Előadássáv:</strong>{" "}
+                {slots.find((s) => s.id === presentation.slot_id)?.title ||
+                  `Slot #${presentation.slot_id}`}
               </p>
               {presentation.requirements && (
                 <p>
@@ -437,7 +457,7 @@ export default function PresentationAttendancePage() {
                             )}
                           </div>
                           <p className="text-sm text-foreground-600">
-                            Időpont: {pres.slot}
+                            Időpont: {pres.slotTitle}
                           </p>
                         </div>
                         <Chip

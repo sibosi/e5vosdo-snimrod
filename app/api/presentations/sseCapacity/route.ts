@@ -34,15 +34,10 @@ console.log(
   `Worker ${workerId || "standalone"} (PID: ${process.pid}) - Timer initialization: ${isTimerWorker ? "YES" : "NO"}`,
 );
 
-let sendCapacityRunning = false;
-
 async function sendCapacity(conditional = true) {
-  if (sendCapacityRunning) return;
-  sendCapacityRunning = true;
-
   try {
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Database query timeout")), 10000),
+      setTimeout(() => reject(new Error("Database query timeout")), 5000),
     );
 
     const capacity = await Promise.race([
@@ -70,10 +65,14 @@ async function sendCapacity(conditional = true) {
     const subscribersArray = Array.from(globalState.gSignupSseSubscribers!);
     const writePromises = subscribersArray.map(async (writer) => {
       try {
-        await writer.write(data);
+        const writeTimeout = new Promise<void>((_, reject) =>
+          setTimeout(() => reject(new Error("Client write timeout")), 3000),
+        );
+
+        await Promise.race([writer.write(data), writeTimeout]);
       } catch (e) {
         globalState.gSignupSseSubscribers!.delete(writer);
-        console.error("Error sending SSE data:", e);
+        console.error("Error sending SSE data (slow client removed):", e);
         try {
           await writer.close();
         } catch (error_) {
@@ -82,20 +81,17 @@ async function sendCapacity(conditional = true) {
       }
     });
 
-    await Promise.race([
-      Promise.allSettled(writePromises),
-      new Promise((resolve) => setTimeout(resolve, 1000)),
-    ]);
-  } finally {
-    sendCapacityRunning = false;
+    await Promise.allSettled(writePromises);
+  } catch (error) {
+    console.error("Unexpected error in sendCapacity:", error);
   }
 }
 
 if (isTimerWorker) {
-  globalState.gSignupPresentationsInterval ??= setInterval(sendCapacity, 2000);
+  globalState.gSignupPresentationsInterval ??= setInterval(sendCapacity, 3000);
   globalState.gSignupHeartbeatInterval ??= setInterval(
     () => sendCapacity(false),
-    10000,
+    15000,
   );
 }
 

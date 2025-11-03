@@ -116,11 +116,23 @@ const Table = ({
     setSignupAmounts((prev) => ({ ...prev, ...amounts }));
   }
 
+  const [evtSource, setEvtSource] = useState<EventSource | null>(null);
+
   const setupSSE = () => {
-    const evtSource = new EventSource("/api/presentations/sseCapacity");
+    // Clean up existing connection if any
+    if (evtSource) {
+      console.log(
+        "Cleaning up existing SSE connection before creating new one",
+      );
+      evtSource.close();
+    }
+
+    console.log("Setting up new SSE connection");
+    const newEvtSource = new EventSource("/api/presentations/sseCapacity");
+    setEvtSource(newEvtSource);
     setIsFetchingAutomatically(null);
 
-    evtSource.onmessage = (event) => {
+    newEvtSource.onmessage = (event) => {
       setIsFetchingAutomatically(true);
       try {
         const capacityData: { [key: number]: number } | { message: string } =
@@ -140,14 +152,17 @@ const Table = ({
       setLastUpdated(Date.now());
     };
 
-    evtSource.onerror = (err) => {
+    newEvtSource.onerror = (err) => {
       console.error("EventSource encountered an error:", err);
-      evtSource.close();
+      newEvtSource.close();
+      setEvtSource(null);
       setIsFetchingAutomatically(false);
     };
 
     return () => {
-      evtSource.close();
+      console.log("Cleaning up SSE connection");
+      newEvtSource.close();
+      setEvtSource(null);
       setIsFetchingAutomatically(false);
     };
   };
@@ -165,19 +180,39 @@ const Table = ({
     return () => clearTimeout(timeoutId);
   }, [lastUpdated]);
 
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
+
   useEffect(() => {
     if (isFetchingAutomatically === false) {
-      setupSSE();
+      // Add exponential backoff for reconnection attempts
+      const reconnectDelay = Math.min(
+        1000 * Math.pow(2, reconnectAttempts),
+        30000,
+      ); // Max 30 second delay
+
+      console.log(
+        `Scheduling reconnection attempt ${reconnectAttempts + 1} in ${reconnectDelay}ms`,
+      );
+
+      const timeoutId = setTimeout(() => {
+        setReconnectAttempts((prev) => prev + 1);
+        setupSSE();
+      }, reconnectDelay);
+
       if (!isToastVisible) {
         setIsToastVisible(true);
         addToast({
-          title: "Az automatikus frissítés leállt. Frissítsd az oldalt!",
+          title: "Az automatikus frissítés leállt. Újrakapcsolódás...",
           timeout: Infinity,
-          color: "danger",
+          color: "warning",
         });
       }
+
+      return () => clearTimeout(timeoutId);
     }
+
     if (isFetchingAutomatically === true) {
+      setReconnectAttempts(0);
       setIsToastVisible(false);
       closeAll();
     }
@@ -185,6 +220,14 @@ const Table = ({
 
   useEffect(() => {
     initData().then(() => setupSSE());
+
+    // Cleanup on component unmount
+    return () => {
+      if (evtSource) {
+        console.log("Component unmounting - cleaning up SSE connection");
+        evtSource.close();
+      }
+    };
   }, []);
 
   const [isValidExternalData, setIsValidExternalData] = useState(false);

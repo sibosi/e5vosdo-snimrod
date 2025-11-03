@@ -25,7 +25,7 @@ VALUES
         NULL
     ),
     (
-        "Az oldal átmenetileg karbantartás alatt áll, előfordulhat, hogy egyes funkciók nem működnek megfelelően.",
+        "Legfeljebb 2 órára lehet jelentkezni.",
         "hidden",
         1,
         NULL

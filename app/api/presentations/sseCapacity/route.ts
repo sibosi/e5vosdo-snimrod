@@ -100,7 +100,9 @@ export async function GET(request: NextRequest) {
 
   globalState.gSignupSseSubscribers!.add(writer);
 
-  const initialMessage = `data: ${JSON.stringify({ message: "SSE connection established" })}\n\n`;
+  const connectionsCount = globalState.gSignupSseSubscribers!.size;
+
+  const initialMessage = `data: ${JSON.stringify({ message: "SSE connection established", connectionsCount })}\n\n`;
   const encodedInitialMessage = textEncoder.encode(initialMessage);
 
   writer.write(encodedInitialMessage).catch((error) => {

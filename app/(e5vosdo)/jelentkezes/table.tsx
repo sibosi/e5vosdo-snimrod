@@ -60,6 +60,7 @@ const Table = ({
   const isVerified = selfUser?.is_verified;
 
   const presName = EXTERNAL_SIGNUPS ? "Óra" : "Előadás";
+  const presNamePrep = EXTERNAL_SIGNUPS ? "órára" : "előadásra";
 
   async function initData() {
     const presRes = await fetch("/api/presentations/getPresentations");
@@ -372,7 +373,7 @@ const Table = ({
       )}
 
       <div className="mb-3 grid gap-2 text-center max-md:gap-3 md:grid-cols-2">
-        <div className="ml-2 flex flex-col rounded-xl bg-selfprimary-200 p-2">
+        <div className="flex flex-col rounded-xl bg-selfprimary-200 p-2">
           <p>Kiválasztva ({currentSlotTitle}):</p>
           <p className="text-xl font-bold">
             {
@@ -550,6 +551,15 @@ const Table = ({
             </p>
           </div>
         </div>
+
+        {Number.isInteger(EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) && (
+          <div className="col-span-2 rounded-xl bg-selfprimary-200 p-2">
+            <p className="font-xl font-bold">
+              Legfeljebb {EXTERNAL_SIGNUPS_PRESENTATION_LIMIT}{" "}
+              {presNamePrep.toLowerCase()}ra jelentkezhetsz.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="fixed z-[100]">

@@ -96,7 +96,9 @@ export async function GET() {
         presPerformerPre.length > 146
           ? `${presPerformerPre.slice(0, 143)}...`
           : presPerformerPre;
-      const presAddress = sanitizeText(presentation.address);
+      const presAddress = presentation.address
+        ? sanitizeText(presentation.address)
+        : undefined;
       const presMaxCapacity = presentation.capacity;
 
       // Retrieve signup data with participation status
@@ -122,9 +124,10 @@ export async function GET() {
           underline: true,
         });
       doc.text(`Előadó: ${presPerformer}`);
-      doc.text(
-        `Helyszín: ${presAddress} | Jelentkezők száma: ${presSignuped} (${totalAmount} fő, max. ${presMaxCapacity} fő) | Résztvevők száma: ${presParticipated} (${totalParticipatedAmount} fő)`,
-      );
+      let text = "";
+      if (presAddress) text += `Helyszín: ${presAddress} | `;
+      text += `Jelentkezések: ${presSignuped} db (${totalAmount}/${presMaxCapacity} fő) | Résztvevők száma: ${presParticipated}/${totalParticipatedAmount} fő`;
+      doc.text(text);
       doc.moveDown(0.5);
 
       if (signups.length > 0) {

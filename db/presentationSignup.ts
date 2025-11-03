@@ -95,7 +95,7 @@ export interface PresentationType {
   title: string;
   performer: string | null;
   description: string;
-  address: string;
+  address?: string;
   requirements: string;
   capacity: number;
   remaining_capacity: number | null;

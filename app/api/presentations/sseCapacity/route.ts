@@ -71,8 +71,18 @@ async function sendCapacity(conditional = true) {
 
         await Promise.race([writer.write(data), writeTimeout]);
       } catch (e) {
+        const isTimeoutError =
+          e instanceof Error && e.message === "Client write timeout";
+        console.error(
+          `SSE write error (${isTimeoutError ? "timeout" : "other error"}):`,
+          e,
+        );
+
         globalState.gSignupSseSubscribers!.delete(writer);
-        console.error("Error sending SSE data (slow client removed):", e);
+        console.log(
+          `Client removed. Active connections remaining: ${globalState.gSignupSseSubscribers!.size}`,
+        );
+
         try {
           await writer.close();
         } catch (error_) {
@@ -108,12 +118,17 @@ export async function OPTIONS() {
 }
 
 export async function GET(request: NextRequest) {
+  console.log("New SSE connection request received");
+
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();
 
   globalState.gSignupSseSubscribers!.add(writer);
 
   const connectionsCount = globalState.gSignupSseSubscribers!.size;
+  console.log(
+    `New SSE connection established. Total active connections: ${connectionsCount}`,
+  );
 
   const initialMessage = `data: ${JSON.stringify({ message: "SSE connection established", connectionsCount })}\n\n`;
   const encodedInitialMessage = textEncoder.encode(initialMessage);
@@ -125,12 +140,21 @@ export async function GET(request: NextRequest) {
   });
 
   const cleanup = async () => {
+    const subscriberCount = globalState.gSignupSseSubscribers!.size;
+    console.log(
+      `SSE connection cleanup. Active connections before: ${subscriberCount}`,
+    );
+
     globalState.gSignupSseSubscribers!.delete(writer);
     try {
       await writer.close();
     } catch (error) {
       console.error("Error closing writer during cleanup:", error);
     }
+
+    console.log(
+      `SSE connection closed. Active connections after: ${globalState.gSignupSseSubscribers!.size}`,
+    );
   };
 
   request.signal.addEventListener("abort", cleanup);

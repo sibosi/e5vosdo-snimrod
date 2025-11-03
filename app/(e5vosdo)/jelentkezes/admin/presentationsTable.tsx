@@ -241,12 +241,17 @@ const AdminPresentationsPage = () => {
       const filtered = presentations.filter((p) => {
         const slotTitle =
           existingSlots.find((s) => s.id === p.slot_id)?.title || "";
+        const search = searchTerm.toLowerCase();
+        const title = (p.title || "").toLowerCase();
+        const description = (p.description || "").toLowerCase();
+        const address = (p.address || "").toLowerCase();
+        const requirements = (p.requirements || "").toLowerCase();
         return (
-          slotTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.requirements.toLowerCase().includes(searchTerm.toLowerCase())
+          slotTitle.toLowerCase().includes(search) ||
+          title.includes(search) ||
+          description.includes(search) ||
+          address.includes(search) ||
+          requirements.includes(search)
         );
       });
       setFilteredPresentations(filtered);

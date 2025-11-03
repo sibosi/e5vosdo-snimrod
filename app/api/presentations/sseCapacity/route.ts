@@ -34,43 +34,60 @@ console.log(
   `Worker ${workerId || "standalone"} (PID: ${process.pid}) - Timer initialization: ${isTimerWorker ? "YES" : "NO"}`,
 );
 
+let sendCapacityRunning = false;
+
 async function sendCapacity(conditional = true) {
-  const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("Database query timeout")), 10000),
-  );
+  if (sendCapacityRunning) return;
+  sendCapacityRunning = true;
 
-  const capacity = await Promise.race([
-    getPresentationsCapacity(),
-    timeoutPromise,
-  ]).catch((e) => {
-    console.error("Error in getPresentationsCapacity:", e);
-    console.error("Error stack:", e.stack);
-    console.error("Error name:", e.name);
-    console.error("Error message:", e.message);
-    return null;
-  });
+  try {
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Database query timeout")), 10000),
+    );
 
-  if (capacity === null) return;
-
-  if (
-    conditional &&
-    globalState.gSignupLastCapacity &&
-    JSON.stringify(globalState.gSignupLastCapacity) === JSON.stringify(capacity)
-  )
-    return;
-
-  globalState.gSignupLastCapacity = capacity;
-  const data = textEncoder.encode(`data: ${JSON.stringify(capacity)}\n\n`);
-  const subscribersArray = Array.from(globalState.gSignupSseSubscribers!);
-
-  for (const writer of subscribersArray) {
-    writer.write(data).catch((e) => {
-      globalState.gSignupSseSubscribers!.delete(writer);
-      console.error("Error sending SSE data:", e);
-      writer.close().catch((closeError) => {
-        console.error("Error closing writer:", closeError);
-      });
+    const capacity = await Promise.race([
+      getPresentationsCapacity(),
+      timeoutPromise,
+    ]).catch((e) => {
+      console.error("Error in getPresentationsCapacity:", e);
+      return null;
     });
+
+    if (capacity === null) return;
+
+    const capacityJson = JSON.stringify(capacity);
+    if (
+      conditional &&
+      globalState.gSignupLastCapacity &&
+      globalState.gSignupLastCapacity === capacityJson
+    ) {
+      return;
+    }
+
+    globalState.gSignupLastCapacity = capacityJson;
+    const data = textEncoder.encode(`data: ${capacityJson}\n\n`);
+
+    const subscribersArray = Array.from(globalState.gSignupSseSubscribers!);
+    const writePromises = subscribersArray.map(async (writer) => {
+      try {
+        await writer.write(data);
+      } catch (e) {
+        globalState.gSignupSseSubscribers!.delete(writer);
+        console.error("Error sending SSE data:", e);
+        try {
+          await writer.close();
+        } catch (error_) {
+          console.error("Error closing writer:", error_);
+        }
+      }
+    });
+
+    await Promise.race([
+      Promise.allSettled(writePromises),
+      new Promise((resolve) => setTimeout(resolve, 1000)),
+    ]);
+  } finally {
+    sendCapacityRunning = false;
   }
 }
 

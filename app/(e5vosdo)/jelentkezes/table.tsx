@@ -596,7 +596,7 @@ const Table = ({
         </div>
 
         {Number.isInteger(EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) && (
-          <div className="col-span-2 rounded-xl bg-selfprimary-200 p-2">
+          <div className="rounded-xl bg-selfprimary-200 p-2 md:col-span-2">
             <p className="font-xl font-bold">
               Legfeljebb {EXTERNAL_SIGNUPS_PRESENTATION_LIMIT}{" "}
               {presNamePrep.toLowerCase()}ra jelentkezhetsz.

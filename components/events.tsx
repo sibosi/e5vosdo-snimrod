@@ -327,13 +327,15 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                                 },
                               )}
                             </Chip>
-                            <Chip
-                              key={`day-of-week-${event.id}-info`}
-                              size="sm"
-                              className="bg-selfprimary-50"
-                            >
-                              &nbsp;ⓘ&nbsp;
-                            </Chip>
+                            {event.description ? (
+                              <Chip
+                                key={`archived-info-${event.id}`}
+                                size="sm"
+                                className="bg-selfprimary-50"
+                              >
+                                részletek
+                              </Chip>
+                            ) : null}
                           </>
                         ) : null}
                         {event.tags != undefined
@@ -430,13 +432,15 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                                       },
                                     )}
                                   </Chip>
-                                  <Chip
-                                    key={`future-info-${event.id}`}
-                                    size="sm"
-                                    className="bg-selfprimary-50"
-                                  >
-                                    &nbsp;ⓘ&nbsp;
-                                  </Chip>
+                                  {event.description ? (
+                                    <Chip
+                                      key={`archived-info-${event.id}`}
+                                      size="sm"
+                                      className="bg-selfprimary-50"
+                                    >
+                                      részletek
+                                    </Chip>
+                                  ) : null}
                                 </>
                               ) : null}
                               {event.tags != undefined
@@ -462,6 +466,15 @@ export const Events = ({ all = false }: { all?: boolean }) => {
           </div>
         </Section>
       )}
+
+      <a
+        className="w-full max-w-sm rounded-2xl border-2 border-dashed border-selfsecondary-400 px-4 py-1.5 text-left hover:border-selfsecondary-500"
+        href="/creator"
+      >
+        <h2 className="text-base font-semibold text-foreground">
+          Hiányolsz valamit? Tölts fel eseményt! ➜
+        </h2>
+      </a>
 
       {!all && (
         <a

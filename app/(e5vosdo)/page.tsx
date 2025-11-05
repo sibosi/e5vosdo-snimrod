@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
 import { MenuInSection } from "@/components/menza/menu";
@@ -5,7 +6,7 @@ import { getAuth, UserType } from "@/db/dbreq";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Carousel from "@/components/home/carousel";
-import { Alert, Button, Chip } from "@heroui/react";
+import { Chip } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
@@ -18,6 +19,20 @@ import {
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
 import RedirectToWelcome from "@/components/welcome/redirectToWelcome";
+
+export const metadata: Metadata = {
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  alternates: {
+    canonical: siteConfig.links.home,
+  },
+};
 
 const PageHeadContent = async ({
   selfUser,

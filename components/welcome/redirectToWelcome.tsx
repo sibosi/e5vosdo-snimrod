@@ -5,7 +5,12 @@ const RedirectToWelcome = ({ isActive = true }: { isActive: boolean }) => {
   useEffect(() => {
     if (!isActive) return;
     const skipWelcome = localStorage.getItem("skipWelcome");
-    if (!skipWelcome) window.location.href = "/welcome";
+    const isBot =
+      /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandex|semrush|ahrefs|mj12bot|seznambot|facebookexternalhit|twitterbot|linkedinbot|embedly|crawler|spider|\bbot\b/i.test(
+        navigator.userAgent,
+      );
+
+    if (!skipWelcome && !isBot) globalThis.location.href = "/welcome";
   }, [isActive]);
 
   return <></>;

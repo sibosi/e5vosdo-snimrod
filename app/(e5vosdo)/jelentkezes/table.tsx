@@ -566,23 +566,52 @@ const Table = ({
               placeholder="Válassz előadássávot"
               className="max-w-xs"
             >
-              {slots?.map((slot) => (
-                <SelectItem
-                  key={slot.id}
-                  className={
-                    selectedBySlot[slot.id]
-                      ? "bg-success-300 text-success-900"
-                      : selectedSlot === slot.id
-                        ? "bg-foreground-300 text-foreground-900"
-                        : undefined
+              {slots?.map((slot) => {
+                let itemClassName = "border-selfprimary ";
+                let backgroundImage = undefined;
+
+                if (selectedSlot === slot.id) itemClassName += "border-4  ";
+
+                if (selectedBySlot[slot.id]) {
+                  itemClassName += "bg-success-300 text-success-900";
+                } else {
+                  let remainingCapacityInThisSlot = 0;
+                  let maxCapacityInThisSlot = 0;
+                  for (const p of presentations ?? []) {
+                    maxCapacityInThisSlot += p.capacity;
+                    if (p.slot_id === slot.id)
+                      remainingCapacityInThisSlot += p.remaining_capacity ?? 0;
                   }
-                  color={selectedBySlot[slot.id] ? "success" : undefined}
-                  classNames={{ selectedIcon: "hidden" }}
-                  endContent={selectedBySlot[slot.id] ? "✓" : ""}
-                >
-                  {slot.title}
-                </SelectItem>
-              )) || []}
+
+                  backgroundImage = `linear-gradient(270deg, transparent ${
+                    100 -
+                    (remainingCapacityInThisSlot / maxCapacityInThisSlot) * 100
+                  }%, var(--color-primary-200) ${
+                    100 -
+                    (remainingCapacityInThisSlot / maxCapacityInThisSlot) * 100
+                  }%)`;
+
+                  if (remainingCapacityInThisSlot === 0) {
+                    backgroundImage = undefined;
+                    itemClassName += "bg-danger-50 text-danger-900";
+                  }
+                }
+
+                return (
+                  <SelectItem
+                    key={slot.id}
+                    className={itemClassName}
+                    style={{
+                      backgroundImage: backgroundImage,
+                    }}
+                    color={selectedBySlot[slot.id] ? "success" : "primary"}
+                    classNames={{ selectedIcon: "hidden" }}
+                    endContent={selectedBySlot[slot.id] ? "✓" : ""}
+                  >
+                    {slot.title}
+                  </SelectItem>
+                );
+              }) || []}
             </Select>
           </div>
 

@@ -6,8 +6,8 @@ import https from "https";
 
 export async function GET() {
   let cache: { data: any; timestamp: number } | null =
-    (global as any)._ejgCache ?? null;
-  const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2h
+    (globalThis as any)._ejgCache ?? null;
+  const CACHE_DURATION = 2 * 60 * 60 * 1000 * 0; // 2h
 
   const now = Date.now();
   if (cache && now - cache.timestamp < CACHE_DURATION) {
@@ -77,7 +77,7 @@ function parseEventsFromHTML(html: string): EventType[] {
 
   function getYear(month: number) {
     if (month < 0 || month > 11) throw new Error("Invalid month");
-    return month < new Date().getUTCMonth()
+    return month < 9 - 1
       ? currentYearPeriodStarterYear + 1
       : currentYearPeriodStarterYear;
   }

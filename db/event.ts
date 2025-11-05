@@ -51,8 +51,13 @@ export async function getCarouselEvents() {
 }
 
 export async function getEventEvents() {
+  const now = new Date();
+  const year = now.getMonth() < 8 ? now.getFullYear() - 1 : now.getFullYear();
+  const lastSeptFirstDate = new Date(year, 8, 1);
+  lastSeptFirstDate.setHours(0, 0, 0, 0);
   return (await dbreq(
-    "SELECT * FROM events_active WHERE show_at_events = 1",
+    "SELECT * FROM events_active WHERE show_at_events = 1 AND time >= ? ORDER BY time ASC",
+    [lastSeptFirstDate.toISOString()],
   )) as EventType[];
 }
 

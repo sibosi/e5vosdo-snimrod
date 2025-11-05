@@ -93,7 +93,11 @@ export const QuickTeachers = ({
               ({date.slice(5, 10).replace("-", "/")})
             </h5>
             <div
-              className={isNewView ? "flex flex-wrap justify-around gap-4" : ""}
+              className={
+                isNewView
+                  ? "flex flex-wrap justify-around gap-4"
+                  : "flex flex-wrap items-center"
+              }
             >
               {tableData[date].map((teacher, rowIndex: number) => (
                 <Dropdown key={rowIndex} className="md:block">

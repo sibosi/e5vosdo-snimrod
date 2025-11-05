@@ -95,6 +95,15 @@ const renderEventCard = (
     <div className="flex gap-2">
       {event.show_time ? (
         <>
+          {event.description ? (
+            <Chip
+              key={`${keyPrefix}-info-${event.id}`}
+              size="sm"
+              className="bg-selfprimary-50"
+            >
+              részletek
+            </Chip>
+          ) : null}
           <Chip
             key={`${keyPrefix}-time-${event.id}`}
             size="sm"
@@ -105,15 +114,6 @@ const renderEventCard = (
               minute: "numeric",
             })}
           </Chip>
-          {event.description ? (
-            <Chip
-              key={`${keyPrefix}-info-${event.id}`}
-              size="sm"
-              className="bg-selfprimary-50"
-            >
-              részletek
-            </Chip>
-          ) : null}
         </>
       ) : null}
       {event.tags?.map((tag, idx) => (

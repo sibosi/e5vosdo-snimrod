@@ -7,7 +7,7 @@ import https from "https";
 export async function GET() {
   let cache: { data: any; timestamp: number } | null =
     (globalThis as any)._ejgCache ?? null;
-  const CACHE_DURATION = 2 * 60 * 60 * 1000 * 0; // 2h
+  const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2h
 
   const now = Date.now();
   if (cache && now - cache.timestamp < CACHE_DURATION) {

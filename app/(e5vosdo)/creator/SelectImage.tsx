@@ -119,6 +119,7 @@ const SelectImage = ({
       <Modal
         isOpen={selectedImage === null}
         onClose={() => setSelectedImage(undefined)}
+        size="3xl"
       >
         <ModalContent className="bg-selfprimary-200">
           <ModalHeader>Kép kiválasztása</ModalHeader>
@@ -131,23 +132,23 @@ const SelectImage = ({
                     <p className="text-foreground-100">Képek betöltése...</p>
                   </div>
                 )}
-                {!currentFolder ? (
-                  showedFolders.map((folder) => (
-                    <button
-                      key={folder}
-                      className="m-1 h-48 w-48 rounded-lg bg-selfprimary-300 text-selfprimary-900"
-                      onClick={() => setCurrentFolder(folder)}
-                    >
-                      {folder}
-                    </button>
-                  ))
-                ) : (
+                {currentFolder ? (
                   <button
-                    className="m-1 h-48 w-48 rounded-lg bg-selfprimary-300 text-selfprimary-900"
+                    className="m-1 h-44 w-44 rounded-lg bg-selfprimary-300 text-selfprimary-900"
                     onClick={() => setCurrentFolder("")}
                   >
                     Vissza
                   </button>
+                ) : (
+                  showedFolders.map((folder) => (
+                    <button
+                      key={folder}
+                      className="m-1 h-44 w-44 rounded-lg bg-selfprimary-300 text-selfprimary-900"
+                      onClick={() => setCurrentFolder(folder)}
+                    >
+                      📁 {folder}
+                    </button>
+                  ))
                 )}
                 {images.map(
                   (image) =>
@@ -160,8 +161,8 @@ const SelectImage = ({
                       >
                         <Image
                           src={image.url}
-                          width={192}
-                          height={192}
+                          width={176}
+                          height={176}
                           alt={image.name}
                           className="object-cover"
                         />

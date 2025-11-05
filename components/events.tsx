@@ -15,7 +15,7 @@ const shortWeekday: { [key: string]: string } = {
 };
 
 const parseDateString = (dateStr: string): Date => {
-  return new Date(dateStr.replace(/-/g, "/"));
+  return new Date(dateStr.replaceAll("-", "/"));
 };
 
 export const Events = ({ all = false }: { all?: boolean }) => {
@@ -213,17 +213,20 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                                       },
                                     )}
                                   </Chip>
-                                  <Chip
-                                    key={`archived-info-${event.id}`}
-                                    size="sm"
-                                    className="bg-selfprimary-50"
-                                  >
-                                    &nbsp;ⓘ&nbsp;
-                                  </Chip>
+                                  {event.description ? (
+                                    <Chip
+                                      key={`archived-info-${event.id}`}
+                                      size="sm"
+                                      className="bg-selfprimary-50"
+                                    >
+                                      részletek
+                                    </Chip>
+                                  ) : null}
                                 </>
                               ) : null}
-                              {event.tags != undefined
-                                ? event.tags.map((tag, tagIndex) => (
+                              {event.tags == undefined
+                                ? null
+                                : event.tags.map((tag, tagIndex) => (
                                     <Chip
                                       key={`archived-tag-${event.id}-${tagIndex}`}
                                       className="bg-selfprimary-200"
@@ -231,8 +234,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
                                     >
                                       {tag}
                                     </Chip>
-                                  ))
-                                : null}
+                                  ))}
                             </div>
                           </SideCard>
                         </div>

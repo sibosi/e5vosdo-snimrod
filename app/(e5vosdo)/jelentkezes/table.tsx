@@ -61,6 +61,7 @@ const Table = ({
 
   const presName = EXTERNAL_SIGNUPS ? "Óra" : "Előadás";
   const presNamePrep = EXTERNAL_SIGNUPS ? "órára" : "előadásra";
+  const presNamePlural = EXTERNAL_SIGNUPS ? "Órák" : "Előadások";
 
   async function initData() {
     const presRes = await fetch("/api/presentations/getPresentations");
@@ -645,6 +646,9 @@ const Table = ({
       </div>
       {presentations === undefined && (
         <div className="text-center">Betöltés...</div>
+      )}
+      {presentations?.length === 0 && (
+        <div className="text-center">Nincsenek elérhető {presNamePlural}.</div>
       )}
       {presentations
         ?.filter((presentation) => presentation.slot_id === selectedSlot)

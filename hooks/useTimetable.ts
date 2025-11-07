@@ -6,14 +6,7 @@ import { TimetableWeek } from "@/app/api/timetable/route";
 
 export type DayType = "Hétfő" | "Kedd" | "Szerda" | "Csütörtök" | "Péntek";
 
-const days: DayType[] = [
-  "Hétfő",
-  "Kedd",
-  "Szerda",
-  "Csütörtök",
-  "Péntek",
-  "Hétfő",
-];
+const days: DayType[] = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek"];
 
 export const periodTimes = {
   0: "7:15 - 8:00",
@@ -71,7 +64,7 @@ export const useTimetable = ({
     const todayName = days[now.getDay() - 1];
     const tomorrowName = days[now.getDay()];
     const isItAfter1515 = todayAt1515 < now;
-    if (isItAfter1515) return tomorrowName;
+    if (isItAfter1515 && todayName != "Péntek") return tomorrowName;
     return todayName;
   });
 

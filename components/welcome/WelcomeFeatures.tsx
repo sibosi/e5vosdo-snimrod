@@ -220,8 +220,7 @@ export default function WelcomeFeatures() {
                   Köszönjük, hogy velünk tartottatok az Eötvös Napokon!
                 </p>
                 <p className="mt-2 text-sm text-selfprimary-600">
-                  Mindenkinek kellemes őszi szünetet kívánunk! 🍁
-                  <br />A KiMitTud? videó már elérhető a főoldalon!
+                  Lemaradtál a KiMitTud?-ról? Nézd vissza a teljes műsort!
                 </p>
                 <p className="mt-2 text-xs text-selfprimary-500">
                   - Diákönkormányzat

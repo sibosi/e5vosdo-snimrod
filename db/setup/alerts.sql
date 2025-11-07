@@ -13,8 +13,8 @@ INSERT INTO
     alerts (text, className, padding, icon)
 VALUES
     (
-        "<a href='https://docs.google.com/spreadsheets/d/1097V-LMPhvk4vhOe8B_zUEp2Fpf7mtGs' className='text-selfprimary-700'>Az aktuális teremcseréket itt találod.</a>",
-        "hidden",
+        "<a href='https://terkep.e5vos.dev/' className='text-selfprimary-700'>Kattints ide az interaktív térkép megtekintéséhez</a>",
+        "",
         1,
         NULL
     ),

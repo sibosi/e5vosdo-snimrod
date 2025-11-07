@@ -16,6 +16,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { useEvents } from "@/hooks/useEvents";
+import { usePodcast } from "@/hooks/usePodcast";
 import { useDominantColors } from "./dynamicColors";
 
 export default function WelcomeFeatures() {
@@ -32,6 +33,7 @@ export default function WelcomeFeatures() {
   const clubsInView = useInView(clubsRef, { once: true, margin: "-100px" });
 
   const { events, futureEvents, isLoading } = useEvents(false);
+  const { latestEpisode, isLoading: isPodcastLoading } = usePodcast();
 
   const nextEventWithImage = (() => {
     if (isLoading) return null;
@@ -273,12 +275,43 @@ export default function WelcomeFeatures() {
                 beszélgetésekkel.
               </p>
               <div className="mb-6">
-                <PodcastPlayer
-                  title="Tippjeink a szezonra"
-                  episode="SE:1 EP:2"
-                  audioUrl="https://anchor.fm/s/10134ec00/podcast/play/109998896/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-9-21%2F409687339-44100-2-487d0d2c3c047.m4a"
-                  coverImage="https://d3t3ozftmdmh3i.cloudfront.net/staging/podcast_uploaded_episode/43052128/43052128-1761054507160-4acbbb2fe2103.jpg"
-                />
+                {(() => {
+                  if (isPodcastLoading) {
+                    return (
+                      <div className="rounded-lg bg-foreground/10 p-4">
+                        <p className="text-sm text-foreground/70">
+                          Betöltés...
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  if (!latestEpisode) {
+                    return (
+                      <div className="rounded-lg bg-foreground/10 p-4">
+                        <p className="text-sm text-foreground/70">
+                          Jelenleg nincs elérhető epizód
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  const episodeLabel =
+                    latestEpisode.season && latestEpisode.episode
+                      ? `SE:${latestEpisode.season} EP:${latestEpisode.episode}`
+                      : "Legfrissebb epizód";
+
+                  return (
+                    <PodcastPlayer
+                      title={latestEpisode.title}
+                      episode={episodeLabel}
+                      audioUrl={latestEpisode.enclosure.url}
+                      coverImage={
+                        latestEpisode.image || "/e5podcast/e5podcast_tote.png"
+                      }
+                    />
+                  );
+                })()}
               </div>
               <Link href="/est">
                 <Chip

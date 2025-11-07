@@ -39,7 +39,9 @@ const PageHeadContent = async ({
 }: {
   selfUser: UserType | null | undefined;
 }) => {
-  if (selfUser?.permissions.includes("user"))
+  const allowForEveryone = true;
+
+  if (selfUser?.permissions.includes("user") || allowForEveryone)
     return <Carousel data={await getCarouselEvents()} />;
 
   if (selfUser === null)

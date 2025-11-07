@@ -173,10 +173,9 @@ export default function WelcomeFeatures() {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
                       })}
-                      {nextEventWithImage.show_time
-                        ? " • " + nextEventWithImage.time
-                        : " • Egész nap"}
                     </p>
                   </div>
                 );

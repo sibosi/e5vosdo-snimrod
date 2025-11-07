@@ -6,12 +6,13 @@ import { TimetableWeek } from "@/app/api/timetable/route";
 
 export type DayType = "Hétfő" | "Kedd" | "Szerda" | "Csütörtök" | "Péntek";
 
-export const days: DayType[] = [
+const days: DayType[] = [
   "Hétfő",
   "Kedd",
   "Szerda",
   "Csütörtök",
   "Péntek",
+  "Hétfő",
 ];
 
 export const periodTimes = {

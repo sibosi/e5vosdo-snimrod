@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         address,
         requirements || null,
         capacity,
-        capacity,
+        null,
       ],
     );
 

@@ -12,12 +12,12 @@ CREATE TABLE
 INSERT INTO
     alerts (text, className, padding, icon)
 VALUES
-    (
-        "<a href='https://terkep.e5vos.dev/' className='text-selfprimary-700'>Kattints ide az interaktív térkép megtekintéséhez</a>",
-        "",
-        1,
-        NULL
-    ),
+    --    (
+    --        "TSX",
+    --        "hidden/not",
+    --        1,
+    --        NULL
+    --    ),
     (
         "Kedves Diákok! A jelentkezési felület holnap HiSchool program után, a délután folyamán nyílik meg.",
         "hidden",

@@ -46,14 +46,12 @@ export async function POST(request: NextRequest) {
       !title ||
       slot_id === undefined ||
       slot_id === null ||
-      !address ||
       capacity === undefined ||
       capacity === null
     ) {
       let missingFields = [];
       if (!title) missingFields.push("név");
       if (slot_id === undefined || slot_id === null) missingFields.push("sáv");
-      if (!address) missingFields.push("helyszín");
       if (capacity === undefined || capacity === null)
         missingFields.push("kapacitás");
       return NextResponse.json(
@@ -75,7 +73,7 @@ export async function POST(request: NextRequest) {
         performer,
         slot_id,
         description || null,
-        address,
+        address || null,
         requirements || null,
         capacity,
         null,
@@ -116,14 +114,12 @@ export async function PUT(request: NextRequest) {
       slot_id === undefined ||
       slot_id === null ||
       !title ||
-      !address ||
       capacity === undefined ||
       capacity === null
     ) {
       return NextResponse.json(
         {
-          error:
-            "Minden mező kitöltése kötelező (ID, slot_id, név, kapacitás, helyszín)",
+          error: "Minden mező kitöltése kötelező (ID, slot_id, név, kapacitás)",
         },
         { status: 400 },
       );
@@ -162,7 +158,7 @@ export async function PUT(request: NextRequest) {
         title,
         performer,
         description || null,
-        address,
+        address || null,
         requirements || null,
         capacity,
         newRemainingCapacity,

@@ -188,8 +188,8 @@ const Table = ({
       // Add exponential backoff for reconnection attempts
       const reconnectDelay = Math.min(
         1000 * Math.pow(2, reconnectAttempts),
-        30000,
-      ); // Max 30 second delay
+        12000,
+      ); // Max 12 second delay
 
       console.log(
         `Scheduling reconnection attempt ${reconnectAttempts + 1} in ${reconnectDelay}ms`,

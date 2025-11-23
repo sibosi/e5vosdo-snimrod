@@ -23,6 +23,7 @@ interface Group {
 }
 
 export const clubsOrder: string[] = [
+  "Geopolitika szakkör",
   "Közéleti vitakör",
   "Horgolás és relax",
   "Eötvös Diák + Kreatív író műhely",
@@ -58,6 +59,21 @@ export const clubsOrder: string[] = [
 ];
 
 export const clubsConfig: Group[] = [
+  {
+    title: "Geopolitika szakkör",
+    details:
+      "A Geopolitikai Szakkörben megértheted, hogyan működik a világpolitika, kik mozgatják a vilagot és milyen erők alakítják a nemzetközi döntéseket. Aktuálpolitikai elemzések, viták, stratégiák és vendégelőadók várnak. Ha érteni akarod a világot, minden csütörtökön 15:30-tól a 112-esbe a helyed!",
+    description: "",
+    image: "/groups/geopolitika.jpg",
+    links: [
+      {
+        title: "Geopolitika szakkör Instagram",
+        value: "https://www.instagram.com/geopolitika.eotvos",
+        type: "instagram",
+      },
+    ],
+    new: false,
+  },
   {
     title: "MediGenX Egészségügyi Szakkör",
     details:

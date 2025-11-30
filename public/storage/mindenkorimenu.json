@@ -741,5 +741,212 @@
       "Gyümölcs"
     ],
     "nap": "Friday"
+  },
+  "2025.12.01": {
+    "A": ["Csontleves cérnametélttel", "Székelykáposzta", "Tk.kenyér", null],
+    "B": [
+      "Csontleves cérnametélttel",
+      "Tonhalrúd rántva",
+      "Jázmin rizs",
+      "Tartár mártás"
+    ],
+    "nap": "Monday"
+  },
+  "2025.12.02": {
+    "A": [
+      "Vöröslencse krémleves pir.hagyma",
+      "Gyömbéres csirkecsíkok",
+      "Bulgur",
+      "Gyümölcs"
+    ],
+    "B": [
+      "Vöröslencse krémleves pir.hagyma",
+      "Rántott csirkemell",
+      "Burgonyapüré",
+      "Gyümölcs"
+    ],
+    "nap": "Tuesday"
+  },
+  "2025.12.03": {
+    "A": ["Erdei gyümölcsleves", "Rakott burgonya gazdagon", "Csemege uborka"],
+    "B": ["Erdei gyümölcsleves", "Tavaszi rizseshús", "Csemege uborka"],
+    "nap": "Wednesday"
+  },
+  "2025.12.04": {
+    "A": [
+      "Zöldséges karfiolleves",
+      "Tejszínes halas penne",
+      "Reszelt sajt",
+      "Gyümölcs",
+      null
+    ],
+    "B": [
+      "Zöldséges karfiolleves",
+      "Gyros csirkecombcsíkok",
+      "Joghurtos kevert saláta",
+      "Pita",
+      "Gyümölcs"
+    ],
+    "nap": "Thursday"
+  },
+  "2025.12.05": {
+    "A": [
+      "100%-os ivólé",
+      "Rántott sajt",
+      "Jázmin rizs",
+      "Tartár mártás",
+      "Csoki mikulás"
+    ],
+    "B": [
+      "100%-os ivólé",
+      "Serpenyős burgonya",
+      "Vitamin saláta",
+      "Csoki mikulás",
+      "Tk.kenyér"
+    ],
+    "nap": "Friday"
+  },
+  "2025.12.08": {
+    "A": [
+      "Tavaszi zöldborsóleves",
+      "Burgonyafőzelék",
+      "Sertéspörkölt",
+      "Tk.kenyér",
+      "Gyümölcs"
+    ],
+    "B": [
+      "Tavaszi zöldborsóleves",
+      "Milánói makaróni",
+      "Sajt szórás",
+      "Gyümölcs",
+      null
+    ],
+    "nap": "Monday"
+  },
+  "2025.12.09": {
+    "A": [
+      "Sütőtökkrémleves pir.tökmag",
+      "Barackos csirkemellfilé",
+      "Rizi-bizi",
+      null
+    ],
+    "B": [
+      "Sütőtökkrémleves pir.tökmag",
+      "Párizsi sertésborda",
+      "Rizi-bizi",
+      "Vitamin saláta"
+    ],
+    "nap": "Tuesday"
+  },
+  "2025.12.10": {
+    "A": ["Karalábéleves", "Marokkói pulykaragu", "Bulgur"],
+    "B": ["Karalábéleves", "Grillfűszeres csirkemellfilé", "Burgonyapüré"],
+    "nap": "Wednesday"
+  },
+  "2025.12.11": {
+    "A": ["Erőleves gazdagon", "Erdélyi rakott káposzta", "Tk.kenyér"],
+    "B": ["Erőleves gazdagon", "Bácskai rizseshús", "Cékla saláta"],
+    "nap": "Thursday"
+  },
+  "2025.12.12": {
+    "A": ["Kapros zöldbableves", "Mac and cheese", "Gyümölcs"],
+    "B": ["Kapros zöldbableves", "Túrós batyú 2db/fő", "Gyümölcs"],
+    "nap": "Friday"
+  },
+  "2025.12.13": {
+    "A": [
+      "Kolbászos lencseleves",
+      "Császármorzsa",
+      "Barack lekvár",
+      "Tk.kenyér",
+      null
+    ],
+    "B": [
+      "Kolbászos lencseleves",
+      "Panírozott sajtgolyók",
+      "Jázmin rizs",
+      "Tartár mártás",
+      "Tk.kenyér"
+    ],
+    "nap": "Saturday"
+  },
+  "2025.12.15": {
+    "A": [
+      "Reszelttészta leves",
+      "Zöldborsófőzelék",
+      "Sült virsli",
+      "Gyümölcs",
+      "Tk.kenyér"
+    ],
+    "B": [
+      "Reszelttészta leves",
+      "Mustáros lazac",
+      "Jázmin rizs",
+      "Gyümölcs",
+      null
+    ],
+    "nap": "Monday"
+  },
+  "2025.12.16": {
+    "A": [
+      "Zöldséges kelkáposztaleves",
+      "Paradicsomos húsgombóc",
+      "Főtt burgonya 1/2adag",
+      null
+    ],
+    "B": [
+      "Zöldséges kelkáposztaleves",
+      "Marhapörkölt",
+      "Főtt burgonya",
+      "Csemege uborka"
+    ],
+    "nap": "Tuesday"
+  },
+  "2025.12.17": {
+    "A": [
+      "Csontleves eperlevéllel",
+      "Hentes pulykatokány",
+      "Párolt rizs",
+      null
+    ],
+    "B": [
+      "Csontleves eperlevéllel",
+      "Mátrai borzas csirkemellfilé",
+      "Párolt rizs",
+      "Vitamin saláta"
+    ],
+    "nap": "Wednesday"
+  },
+  "2025.12.18": {
+    "A": [
+      "100%-os ivólé",
+      "Rántott csirkemellfilé",
+      "Petrezselymes burgonya",
+      "Csalamádé",
+      "Szaloncukor"
+    ],
+    "B": [
+      "100%-os ivólé",
+      "Dijoni mustáros sertésborda",
+      "Petrezselymes burgonya",
+      "Csalamádé",
+      "Szaloncukor"
+    ],
+    "nap": "Thursday"
+  },
+  "2025.12.19": {
+    "A": [
+      "Tárkonyos zöldségleves",
+      "Spenótos ricottás tortellini",
+      "Sajt mártás",
+      null
+    ],
+    "B": [
+      "Tárkonyos zöldségleves",
+      "Mexikói bab (vega)",
+      "Tk.kenyér",
+      "Túró Rudi"
+    ],
+    "nap": "Friday"
   }
 }

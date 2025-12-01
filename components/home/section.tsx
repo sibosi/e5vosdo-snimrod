@@ -121,6 +121,8 @@ export const Section = ({
 
   localStorageKey = localStorageKey ?? title;
 
+  savable = dropdownable ? savable : false;
+
   useEffect(() => {
     setIsOpen(
       (savable ? loadSectionStatus(localStorageKey) : undefined) ??

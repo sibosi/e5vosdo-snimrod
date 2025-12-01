@@ -368,7 +368,7 @@ export const ThemeOptions = ({ className = "" }: { className?: string }) => {
         <button
           type="button"
           key={template.name}
-          className="w-[86px] rounded-lg bg-selfprimary-200 p-2 text-center hover:bg-selfprimary-300"
+          className="w-[86px] min-w-[86px] rounded-lg bg-selfprimary-200 p-2 text-center hover:bg-selfprimary-300"
           onClick={() => {
             localStorage.setItem("primaryHue", String(template.primary[0]));
             localStorage.setItem("primaryChroma", String(template.primary[1]));

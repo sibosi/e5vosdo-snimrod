@@ -1,8 +1,18 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Snowfall from "react-snowfall";
 
 export default function SnowfallOverlay() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("hideSnowfall") === "true") setIsVisible(false);
+    else setIsVisible(true);
+  }, []);
+
+  if (!isVisible) return null;
+
   return (
     <Snowfall
       color="#fff"
@@ -13,7 +23,7 @@ export default function SnowfallOverlay() {
         width: "100vw",
         height: "100vh",
         pointerEvents: "none",
-        zIndex: 10,
+        zIndex: 20,
       }}
     />
   );

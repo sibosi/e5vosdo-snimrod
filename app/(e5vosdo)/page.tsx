@@ -20,6 +20,7 @@ import {
 } from "@/components/helyettesites/quickteacher";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import AddCookie from "./addCookie";
 
 export const metadata: Metadata = {
   robots: {
@@ -82,7 +83,8 @@ export default async function Home() {
         userAgent,
       );
 
-    if (!isBot) redirect("/welcome");
+    // if (!isBot) redirect("/welcome");
+    // set skipWelcome cookie to true without redirecting
   }
 
   const [selfUser, carouselEvents] = await Promise.all([
@@ -92,6 +94,7 @@ export default async function Home() {
 
   return (
     <div>
+      <AddCookie />
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
 
       {gate(selfUser, "user", "boolean") && (

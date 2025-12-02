@@ -108,6 +108,7 @@ const tabs = [pages.podcast, pages.events, pages.home, pages.clubs, pages.me];
 
 export const PageNav = () => {
   const pathname = usePathname();
+  const [isHidden, setIsHidden] = useState(false);
   const [currentPage, setCurrentPage] = useState(() =>
     tabs.find((page) => page.route === pathname),
   );
@@ -124,6 +125,8 @@ export const PageNav = () => {
   useEffect(() => {
     const newPage = tabs.find((page) => page.route === pathname);
     setCurrentPage(newPage);
+    if (pathname === "/" && localStorage.getItem("skipWelcome") !== "true")
+      setIsHidden(true);
 
     if (newPage) {
       const index = tabs.indexOf(newPage);
@@ -141,6 +144,8 @@ export const PageNav = () => {
       }
     }
   }, [pathname]);
+
+  if (isHidden) return null;
 
   return (
     <div className="myglass fixed bottom-6 z-50 w-auto items-center rounded-full p-2 shadow-xl lg:hidden">

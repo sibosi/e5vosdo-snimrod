@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.0.2511.1.0";
+const VERSION = "0.0.2512.1.0";
 
 const IMAGE_CACHE_NAME = "images-v1";
 const IMAGE_META_CACHE_NAME = "images-meta-v1";

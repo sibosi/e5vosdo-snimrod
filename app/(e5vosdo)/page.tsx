@@ -19,6 +19,8 @@ import {
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
 import RedirectToWelcome from "@/components/welcome/redirectToWelcome";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   robots: {
@@ -68,7 +70,13 @@ const PageHeadContent = async ({
 };
 
 export default async function Home() {
+  const cookieStore = await cookies();
+  const skipWelcome = cookieStore.get("skipWelcome")?.value === "true";
+
+  if (!skipWelcome) redirect("/welcome");
+
   const selfUser = await getAuth();
+
   return (
     <div>
       <RedirectToWelcome isActive={!selfUser} />

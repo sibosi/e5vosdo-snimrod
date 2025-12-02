@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { getCookie } from "@/lib/clientCookies";
 
 const ICON_SIZE = 20;
 
@@ -125,7 +126,7 @@ export const PageNav = () => {
   useEffect(() => {
     const newPage = tabs.find((page) => page.route === pathname);
     setCurrentPage(newPage);
-    if (pathname === "/" && localStorage.getItem("skipWelcome") !== "true")
+    if (pathname === "/" && getCookie("skipWelcome") !== "true")
       setIsHidden(true);
 
     if (newPage) {

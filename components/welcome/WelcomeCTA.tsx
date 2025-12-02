@@ -2,10 +2,11 @@
 import { Button } from "@heroui/react";
 import { motion } from "framer-motion";
 import { ThemeOptions } from "../themePicker";
+import { setCookie } from "@/lib/clientCookies";
 
 export default function WelcomeCTA() {
   const handleSkipWelcome = () => {
-    localStorage.setItem("skipWelcome", "true");
+    setCookie("skipWelcome", "true");
     window.location.href = "/";
   };
 

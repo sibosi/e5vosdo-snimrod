@@ -3,6 +3,7 @@ import { Button } from "@heroui/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Logo from "@/public/logo.svg";
+import { setCookie } from "@/lib/clientCookies";
 
 export default function WelcomeHero() {
   return (
@@ -89,7 +90,7 @@ export default function WelcomeHero() {
                     variant="bordered"
                     className="w-full min-w-48 font-semibold"
                     onPress={() => {
-                      localStorage.setItem("skipWelcome", "true");
+                      setCookie("skipWelcome", "true");
                       window.location.href = "/";
                     }}
                   >

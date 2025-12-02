@@ -18,7 +18,7 @@ import {
   QuickTeachers,
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
-import RedirectToWelcome from "@/components/welcome/redirectToWelcome";
+// RedirectToWelcome not needed when we already server-redirect
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -36,15 +36,17 @@ export const metadata: Metadata = {
   },
 };
 
-const PageHeadContent = async ({
+const PageHeadContent = ({
   selfUser,
+  carouselEvents,
 }: {
   selfUser: UserType | null | undefined;
+  carouselEvents: Awaited<ReturnType<typeof getCarouselEvents>>;
 }) => {
   const allowForEveryone = true;
 
   if (selfUser?.permissions.includes("user") || allowForEveryone)
-    return <Carousel data={await getCarouselEvents()} />;
+    return <Carousel data={carouselEvents} />;
 
   if (selfUser === null)
     return (
@@ -75,13 +77,14 @@ export default async function Home() {
 
   if (!skipWelcome) redirect("/welcome");
 
-  const selfUser = await getAuth();
+  const [selfUser, carouselEvents] = await Promise.all([
+    getAuth(),
+    getCarouselEvents(),
+  ]);
 
   return (
     <div>
-      <RedirectToWelcome isActive={!selfUser} />
-
-      <PageHeadContent selfUser={selfUser} />
+      <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
 
       {gate(selfUser, "user", "boolean") && (
         <Section

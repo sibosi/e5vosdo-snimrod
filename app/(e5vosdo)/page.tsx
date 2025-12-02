@@ -18,7 +18,6 @@ import {
   QuickTeachers,
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
-// RedirectToWelcome not needed when we already server-redirect
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 

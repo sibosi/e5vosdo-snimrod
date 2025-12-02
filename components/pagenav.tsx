@@ -126,7 +126,7 @@ export const PageNav = () => {
   useEffect(() => {
     const newPage = tabs.find((page) => page.route === pathname);
     setCurrentPage(newPage);
-    if (pathname === "/" && getCookie("skipWelcome") !== "true")
+    if (pathname === "/welcome" && getCookie("skipWelcome") !== "true")
       setIsHidden(true);
 
     if (newPage) {

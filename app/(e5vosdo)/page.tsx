@@ -19,7 +19,7 @@ import {
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
 // RedirectToWelcome not needed when we already server-redirect
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -72,10 +72,19 @@ const PageHeadContent = ({
 };
 
 export default async function Home() {
-  const cookieStore = await cookies();
-  const skipWelcome = cookieStore.get("skipWelcome")?.value === "true";
+  const skipWelcome = (await cookies()).get("skipWelcome")?.value === "true";
 
-  if (!skipWelcome) redirect("/welcome");
+  if (!skipWelcome) {
+    const pageHeaders = await headers();
+    const userAgent = pageHeaders.get("user-agent")?.toLowerCase() ?? "";
+    const isBot =
+      navigator.userAgent.toLowerCase().includes("google.com/bot.html") ||
+      /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandex|semrush|ahrefs|mj12bot|seznambot|facebookexternalhit|twitterbot|linkedinbot|embedly|crawler|spider|\bbot\b/i.test(
+        userAgent,
+      );
+
+    if (!isBot) redirect("/welcome");
+  }
 
   const [selfUser, carouselEvents] = await Promise.all([
     getAuth(),

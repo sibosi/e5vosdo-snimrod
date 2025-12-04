@@ -18,7 +18,8 @@ import {
   QuickTeachers,
   QuickTeachersDev,
 } from "@/components/helyettesites/quickteacher";
-import RedirectToWelcome from "@/components/welcome/redirectToWelcome";
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   robots: {
@@ -34,15 +35,17 @@ export const metadata: Metadata = {
   },
 };
 
-const PageHeadContent = async ({
+const PageHeadContent = ({
   selfUser,
+  carouselEvents,
 }: {
   selfUser: UserType | null | undefined;
+  carouselEvents: Awaited<ReturnType<typeof getCarouselEvents>>;
 }) => {
   const allowForEveryone = true;
 
   if (selfUser?.permissions.includes("user") || allowForEveryone)
-    return <Carousel data={await getCarouselEvents()} />;
+    return <Carousel data={carouselEvents} />;
 
   if (selfUser === null)
     return (
@@ -68,12 +71,28 @@ const PageHeadContent = async ({
 };
 
 export default async function Home() {
-  const selfUser = await getAuth();
+  const skipWelcome = (await cookies()).get("skipWelcome")?.value === "true";
+
+  if (!skipWelcome) {
+    const pageHeaders = await headers();
+    const userAgent = pageHeaders.get("user-agent")?.toLowerCase() ?? "";
+    const isBot =
+      navigator.userAgent.toLowerCase().includes("google.com/bot.html") ||
+      /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandex|semrush|ahrefs|mj12bot|seznambot|facebookexternalhit|twitterbot|linkedinbot|embedly|crawler|spider|\bbot\b/i.test(
+        userAgent,
+      );
+
+    if (!isBot) redirect("/welcome");
+  }
+
+  const [selfUser, carouselEvents] = await Promise.all([
+    getAuth(),
+    getCarouselEvents(),
+  ]);
+
   return (
     <div>
-      <RedirectToWelcome isActive={!selfUser} />
-
-      <PageHeadContent selfUser={selfUser} />
+      <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
 
       {gate(selfUser, "user", "boolean") && (
         <Section

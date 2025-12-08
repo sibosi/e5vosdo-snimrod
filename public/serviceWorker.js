@@ -17,12 +17,7 @@ self.addEventListener("activate", (event) => {
 
 function isImageRequest(request) {
   try {
-    if (request.method !== "GET") return false;
-    if (request.destination === "image") return true;
-    const url = new URL(request.url);
-    if (/\.(png|jpe?g|gif|webp|avif|ico|svg)$/i.test(url.pathname)) return true;
-    const accept = request.headers.get("accept") || "";
-    if (accept.includes("image/")) return true;
+    if (request.headers?.get("Content-Type")?.includes("image/")) return true;
   } catch {}
   return false;
 }
@@ -71,9 +66,9 @@ self.addEventListener("fetch", (event) => {
           }
         } catch {}
 
-        if (!fresh) {
+        if (!fresh)
           event.waitUntil(updateImageCache(request, cache, metaCache));
-        }
+
         return cached;
       }
 
@@ -146,7 +141,7 @@ self.addEventListener("notificationclick", (event) => {
             return client.focus();
           }
         }
-        return clients.openWindow("/");
+        return clients.openWindow(event.notification.data?.url || "/");
       }),
   );
 });

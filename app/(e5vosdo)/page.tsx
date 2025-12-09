@@ -77,7 +77,7 @@ export default async function Home() {
     const pageHeaders = await headers();
     const userAgent = pageHeaders.get("user-agent")?.toLowerCase() ?? "";
     const isBot =
-      navigator.userAgent.toLowerCase().includes("google.com/bot.html") ||
+      userAgent.toLowerCase().includes("google.com/bot.html") ||
       /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandex|semrush|ahrefs|mj12bot|seznambot|facebookexternalhit|twitterbot|linkedinbot|embedly|crawler|spider|\bbot\b/i.test(
         userAgent,
       );

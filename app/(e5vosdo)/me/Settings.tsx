@@ -52,7 +52,7 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
     {
       title: "Megjelenés",
       saveAble: false,
-      content: <AppearanceSettings />,
+      content: <AppearanceSettings selfUser={selfUser} />,
     },
 
     /*{

@@ -12,6 +12,8 @@ export interface TimetableLesson {
   room?: string;
   isSubstitution?: boolean;
   substitutionTeacher?: string;
+  substitutionComment?: string;
+  substitutionText?: string;
 }
 
 export interface TimetableDay {

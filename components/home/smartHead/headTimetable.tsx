@@ -10,19 +10,19 @@ import {
   useSubstitutions,
 } from "@/hooks/useSubstitutions";
 
+function getSlot0ByDate(date: string) {
+  const weekday: "h" | "k" | "s" | "c" | "p" = new Date(date)
+    .toLocaleDateString("hu-HU", {
+      weekday: "narrow",
+    })
+    .toLocaleLowerCase()[0] as any;
+  return weekday;
+}
+
 function extendLessonWithSubstitutions(
   lesson: TimetableLesson,
   substitutions: TeacherChangesByDate,
 ): TimetableLesson {
-  function getSlot0ByDate(date: string) {
-    const weekday: "h" | "k" | "s" | "c" | "p" = new Date(date)
-      .toLocaleDateString("hu-HU", {
-        weekday: "narrow",
-      })
-      .toLocaleLowerCase()[0] as any;
-    return weekday;
-  }
-
   const allChanges = Object.values(substitutions).flatMap((changes) =>
     changes.flatMap((change) => change.changes),
   );
@@ -36,21 +36,25 @@ function extendLessonWithSubstitutions(
   if (lessonChanges.length !== 1) return lesson;
   lesson.isSubstitution = true;
   console.log(JSON.stringify(lessonChanges[0]));
-  if (lessonChanges[0].replacementTeacher)
-    lesson.substitutionTeacher = lessonChanges[0].replacementTeacher;
-  else lesson.substitutionTeacher = lessonChanges[0].comment;
+  lesson.substitutionTeacher = lessonChanges[0].replacementTeacher;
+  lesson.substitutionComment = lessonChanges[0].comment;
+  lesson.substitutionText = "";
+
+  lesson.substitutionText += lessonChanges[0].replacementTeacher ?? "";
+  if (lessonChanges[0].comment && lessonChanges[0].comment != "-/X")
+    lesson.substitutionTeacher +=
+      " " + lessonChanges[0].comment.replaceAll("/X", "");
 
   return lesson;
 }
 
 const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
   const { selfUser } = props;
-  if (!selfUser) return null;
   const { tableData: substitutions, isLoaded } = useSubstitutions();
-
   const { timetable, isLoading, isError, selectedDay, setSelectedDay, days } =
     useTimetable();
 
+  if (!selfUser) return null;
   if (!isLoaded) {
     return (
       <div className="flex h-40 items-center justify-center">
@@ -84,7 +88,7 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
             {lesson.subject_name} &nbsp;
             {lesson.isSubstitution ? (
               <span className="text-selfsecondary-500">
-                ({lesson.substitutionTeacher})
+                ({lesson.substitutionText})
               </span>
             ) : (
               <span className="info">({lesson.teacher})</span>
@@ -135,7 +139,7 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
                   <div className="flex-grow" key={period}>
                     {renderLesson(
                       extendLessonWithSubstitutions(lesson, substitutions),
-                      parseInt(period),
+                      Number.parseInt(period),
                     )}
                   </div>
                 ),

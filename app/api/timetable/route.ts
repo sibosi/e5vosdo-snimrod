@@ -118,6 +118,7 @@ async function getTimetable(): Promise<TimetableWeek | null> {
             an: "Angol nyelv",
             nyt: "Nyelvtan",
             ne: "Német nyelv",
+            or: "Orosz nyelv",
             fiz: "Fizika",
             ofn: "Osztályfőnöki",
             ird: "Irodalom",

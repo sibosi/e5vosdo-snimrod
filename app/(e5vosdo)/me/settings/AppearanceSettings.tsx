@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { Radio, RadioGroup, Switch } from "@heroui/react";
 import ThemePicker, { ThemeOptions } from "@/components/themePicker";
 import { Section } from "@/components/home/section";
+import HelloMessage from "@/components/home/helloMessage";
+import { PossibleUserType } from "@/db/dbreq";
 
-const AppearanceSettings = () => {
+const AppearanceSettings = ({ selfUser }: { selfUser: PossibleUserType }) => {
   const [theme, setTheme] = useState<string>(
     localStorage.getItem("theme") || "system",
   );
@@ -17,6 +19,10 @@ const AppearanceSettings = () => {
 
   return (
     <div className="">
+      <Section title="Köszöntő" titleClassName="text-lg font-semibold">
+        <HelloMessage selfUser={selfUser} />
+      </Section>
+
       <Section title="Téma" titleClassName="text-lg font-semibold">
         <RadioGroup
           value={theme}

@@ -42,7 +42,7 @@ function extendLessonWithSubstitutions(
 
   lesson.substitutionText += lessonChanges[0].replacementTeacher ?? "";
   if (lessonChanges[0].comment && lessonChanges[0].comment != "-/X")
-    lesson.substitutionTeacher +=
+    lesson.substitutionText +=
       " " + lessonChanges[0].comment.replaceAll("/X", "");
 
   return lesson;

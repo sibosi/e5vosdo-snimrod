@@ -1,5 +1,5 @@
 // app/api/admin/media/batch/route.ts
-// Összevont műveletek - egy letöltéssel több feladat
+// Összevont műveletek - egy letöltéssel minden művelet egy képhez
 import { NextResponse } from "next/server";
 import { getAuth } from "@/db/dbreq";
 import { gate } from "@/db/permissions";
@@ -162,13 +162,27 @@ export async function POST(req: Request) {
       try {
         const drive = getDriveClient();
 
-        // ========== 1. FÁZIS: Új képek szinkronizálása ==========
-        if (options.syncNew && ORIGINAL_MEDIA_FOLDER_ID) {
-          batchProgress.phase = "sync";
-          batchProgress.currentFile = "Fetching new images from Drive...";
+        // Összegyűjtjük a feldolgozandó képeket
+        interface ImageToProcess {
+          id: number | null; // null = új kép, még nincs DB-ben
+          driveFileId: string;
+          fileName: string;
+          needsSync: boolean;
+          needsColor: boolean;
+          needsSmallDriveCache: boolean;
+          needsLargeDriveCache: boolean;
+          needsSmallLocalCache: boolean;
+          needsLargeLocalCache: boolean;
+        }
 
-          // Drive-ból listázás
-          let allFiles: any[] = [];
+        const imagesToProcess: ImageToProcess[] = [];
+
+        batchProgress.phase = "collecting";
+        batchProgress.currentFile = "Collecting images to process...";
+
+        // 1. Új képek a Drive-ról (ha syncNew be van kapcsolva)
+        if (options.syncNew && ORIGINAL_MEDIA_FOLDER_ID) {
+          let allDriveFiles: any[] = [];
           let pageToken: string | undefined;
           do {
             const listRes: any = await drive.files.list({
@@ -179,362 +193,234 @@ export async function POST(req: Request) {
               supportsAllDrives: true,
               includeItemsFromAllDrives: true,
             });
-            allFiles = allFiles.concat(listRes.data.files || []);
+            allDriveFiles = allDriveFiles.concat(listRes.data.files || []);
             pageToken = listRes.data.nextPageToken;
           } while (pageToken);
 
           const existingIds = new Set(await getOriginalImagesFileID());
-          const newFiles = allFiles.filter((f) => !existingIds.has(f.id));
 
-          for (let i = 0; i < newFiles.length; i++) {
-            const file = newFiles[i];
-            batchProgress.current = i + 1;
-            batchProgress.total = newFiles.length;
-            batchProgress.currentFile = `[Sync] ${file.name}`;
+          for (const file of allDriveFiles) {
+            if (!existingIds.has(file.id)) {
+              imagesToProcess.push({
+                id: null,
+                driveFileId: file.id,
+                fileName: file.name,
+                needsSync: true,
+                needsColor: options.generateColors,
+                needsSmallDriveCache:
+                  options.driveCache && options.sizes.includes("small"),
+                needsLargeDriveCache:
+                  options.driveCache && options.sizes.includes("large"),
+                needsSmallLocalCache:
+                  options.localCache && options.sizes.includes("small"),
+                needsLargeLocalCache:
+                  options.localCache && options.sizes.includes("large"),
+              });
+            }
+          }
+        }
 
-            try {
-              // Letöltés
-              const res: any = await drive.files.get(
-                {
-                  fileId: file.id,
-                  alt: "media",
-                  supportsAllDrives: true,
-                } as any,
-                { responseType: "stream" } as any,
-              );
-              const originalBuffer = await streamToBuffer(res.data);
+        // 2. Meglévő képek, amiknek hiányzik valami
+        const existingImages = (await dbreq(
+          `SELECT id, original_drive_id, original_file_name, color,
+                  small_preview_drive_id, large_preview_drive_id
+           FROM media_images`,
+        )) as {
+          id: number;
+          original_drive_id: string;
+          original_file_name: string;
+          color: string | null;
+          small_preview_drive_id: string | null;
+          large_preview_drive_id: string | null;
+        }[];
 
-              // Szín számítás
-              const color = await averageColorHex(originalBuffer);
+        for (const img of existingImages) {
+          const needsColor = options.generateColors && !img.color;
+          const needsSmallDriveCache =
+            options.driveCache &&
+            options.sizes.includes("small") &&
+            !img.small_preview_drive_id;
+          const needsLargeDriveCache =
+            options.driveCache &&
+            options.sizes.includes("large") &&
+            !img.large_preview_drive_id;
+          const needsSmallLocalCache =
+            options.localCache &&
+            options.sizes.includes("small") &&
+            !isCached(img.id, "small");
+          const needsLargeLocalCache =
+            options.localCache &&
+            options.sizes.includes("large") &&
+            !isCached(img.id, "large");
 
-              // DB upsert
+          // Csak akkor adjuk hozzá, ha van teendő
+          if (
+            needsColor ||
+            needsSmallDriveCache ||
+            needsLargeDriveCache ||
+            needsSmallLocalCache ||
+            needsLargeLocalCache
+          ) {
+            imagesToProcess.push({
+              id: img.id,
+              driveFileId: img.original_drive_id,
+              fileName: img.original_file_name,
+              needsSync: false,
+              needsColor,
+              needsSmallDriveCache,
+              needsLargeDriveCache,
+              needsSmallLocalCache,
+              needsLargeLocalCache,
+            });
+          }
+        }
+
+        batchProgress.total = imagesToProcess.length;
+        batchProgress.phase = "processing";
+        batchProgress.currentFile = `Found ${imagesToProcess.length} images to process`;
+
+        // 3. Egyesével feldolgozás
+        for (let i = 0; i < imagesToProcess.length; i++) {
+          const img = imagesToProcess[i];
+          batchProgress.current = i + 1;
+          batchProgress.currentFile = img.fileName;
+
+          try {
+            // Letöltés az eredetiből
+            const res: any = await drive.files.get(
+              {
+                fileId: img.driveFileId,
+                alt: "media",
+                supportsAllDrives: true,
+              } as any,
+              { responseType: "stream" } as any,
+            );
+            const originalBuffer = await streamToBuffer(res.data);
+
+            let imageId = img.id;
+
+            // A) Sync: DB-be mentés (új képeknél)
+            if (img.needsSync) {
+              const color = img.needsColor
+                ? await averageColorHex(originalBuffer)
+                : null;
+
               await upsertMediaImage(selfUser, {
-                original_drive_id: file.id,
-                original_file_name: file.name,
+                original_drive_id: img.driveFileId,
+                original_file_name: img.fileName,
                 color,
               });
               batchProgress.stats.synced++;
+              if (color) batchProgress.stats.colorsGenerated++;
 
-              // Ha kell Drive/Local cache is, azonnal csináljuk
-              if (options.driveCache || options.localCache) {
-                // Lekérjük az image ID-t
-                const [row] = (await dbreq(
-                  "SELECT id FROM media_images WHERE original_drive_id = ?",
-                  [file.id],
-                )) as { id: number }[];
-
-                if (row) {
-                  for (const size of options.sizes) {
-                    const preview = await generatePreview(originalBuffer, size);
-
-                    if (options.localCache) {
-                      writeCacheFile(row.id, size, preview.buffer);
-                      batchProgress.stats.localCached++;
-                    }
-
-                    if (options.driveCache && PREVIEW_FOLDER_ID) {
-                      const previewName = `${file.name.replace(/\.[^/.]+$/, "")}_${size}.webp`;
-                      const mediaStream = Readable.from(preview.buffer);
-                      const uploadRes: any = await drive.files.create(
-                        {
-                          requestBody: {
-                            name: previewName,
-                            parents: [PREVIEW_FOLDER_ID],
-                            mimeType: "image/webp",
-                          },
-                          media: { mimeType: "image/webp", body: mediaStream },
-                          supportsAllDrives: true,
-                        } as any,
-                        { fields: "id" } as any,
-                      );
-                      const driveId = uploadRes.data?.id;
-                      if (driveId) {
-                        await updateImagePreview(
-                          row.id,
-                          size,
-                          driveId,
-                          preview.width,
-                          preview.height,
-                        );
-                        batchProgress.stats.driveCached++;
-                      }
-                    }
-                  }
-                }
-              }
-            } catch (error: any) {
-              batchProgress.errors.push(
-                `[Sync] ${file.name}: ${error.message}`,
-              );
+              // Lekérjük az új ID-t
+              const [row] = (await dbreq(
+                "SELECT id FROM media_images WHERE original_drive_id = ?",
+                [img.driveFileId],
+              )) as { id: number }[];
+              imageId = row?.id ?? null;
             }
-          }
-        }
 
-        // ========== 2. FÁZIS: Hiányzó színek ==========
-        if (options.generateColors) {
-          batchProgress.phase = "colors";
-          batchProgress.currentFile = "Finding images without color...";
-
-          const imagesWithoutColor = (await dbreq(
-            "SELECT id, original_drive_id, original_file_name FROM media_images WHERE color IS NULL",
-          )) as {
-            id: number;
-            original_drive_id: string;
-            original_file_name: string;
-          }[];
-
-          batchProgress.total = imagesWithoutColor.length;
-
-          for (let i = 0; i < imagesWithoutColor.length; i++) {
-            const img = imagesWithoutColor[i];
-            batchProgress.current = i + 1;
-            batchProgress.currentFile = `[Color] ${img.original_file_name || img.id}`;
-
-            try {
-              const res: any = await drive.files.get(
-                {
-                  fileId: img.original_drive_id,
-                  alt: "media",
-                  supportsAllDrives: true,
-                } as any,
-                { responseType: "stream" } as any,
-              );
-              const buffer = await streamToBuffer(res.data);
-              const color = await averageColorHex(buffer);
-
-              if (color) {
+            // B) Szín generálás (meglévő képeknél, amiknek nincs)
+            if (!img.needsSync && img.needsColor) {
+              const color = await averageColorHex(originalBuffer);
+              if (color && imageId) {
                 await dbreq("UPDATE media_images SET color = ? WHERE id = ?", [
                   color,
-                  img.id,
+                  imageId,
                 ]);
                 batchProgress.stats.colorsGenerated++;
               }
+            }
 
-              // Kihasználjuk, hogy már letöltöttük - preview-k
-              if (options.driveCache || options.localCache) {
-                for (const size of options.sizes) {
-                  const needsDrive =
-                    options.driveCache &&
-                    PREVIEW_FOLDER_ID &&
-                    !(await hasPreviewOnDrive(img.id, size));
-                  const needsLocal =
-                    options.localCache && !isCached(img.id, size);
+            // C) Preview-k generálása és mentése
+            if (imageId) {
+              // Small preview
+              if (img.needsSmallDriveCache || img.needsSmallLocalCache) {
+                const smallPreview = await generatePreview(
+                  originalBuffer,
+                  "small",
+                );
 
-                  if (needsDrive || needsLocal) {
-                    const preview = await generatePreview(buffer, size);
+                if (img.needsSmallLocalCache) {
+                  writeCacheFile(imageId, "small", smallPreview.buffer);
+                  batchProgress.stats.localCached++;
+                }
 
-                    if (needsLocal) {
-                      writeCacheFile(img.id, size, preview.buffer);
-                      batchProgress.stats.localCached++;
-                    }
-
-                    if (needsDrive && PREVIEW_FOLDER_ID) {
-                      const previewName = `${(img.original_file_name || "image").replace(/\.[^/.]+$/, "")}_${size}.webp`;
-                      const mediaStream = Readable.from(preview.buffer);
-                      const uploadRes: any = await drive.files.create(
-                        {
-                          requestBody: {
-                            name: previewName,
-                            parents: [PREVIEW_FOLDER_ID],
-                            mimeType: "image/webp",
-                          },
-                          media: { mimeType: "image/webp", body: mediaStream },
-                          supportsAllDrives: true,
-                        } as any,
-                        { fields: "id" } as any,
-                      );
-                      const driveId = uploadRes.data?.id;
-                      if (driveId) {
-                        await updateImagePreview(
-                          img.id,
-                          size,
-                          driveId,
-                          preview.width,
-                          preview.height,
-                        );
-                        batchProgress.stats.driveCached++;
-                      }
-                    }
+                if (img.needsSmallDriveCache && PREVIEW_FOLDER_ID) {
+                  const previewName = `${img.fileName.replace(/\.[^/.]+$/, "")}_small.webp`;
+                  const mediaStream = Readable.from(smallPreview.buffer);
+                  const uploadRes: any = await drive.files.create(
+                    {
+                      requestBody: {
+                        name: previewName,
+                        parents: [PREVIEW_FOLDER_ID],
+                        mimeType: "image/webp",
+                      },
+                      media: { mimeType: "image/webp", body: mediaStream },
+                      supportsAllDrives: true,
+                    } as any,
+                    { fields: "id" } as any,
+                  );
+                  const driveId = uploadRes.data?.id;
+                  if (driveId) {
+                    await updateImagePreview(
+                      imageId,
+                      "small",
+                      driveId,
+                      smallPreview.width,
+                      smallPreview.height,
+                    );
+                    batchProgress.stats.driveCached++;
                   }
                 }
               }
-            } catch (error: any) {
-              batchProgress.errors.push(
-                `[Color] ${img.original_file_name || img.id}: ${error.message}`,
-              );
-            }
-          }
-        }
 
-        // ========== 3. FÁZIS: Hiányzó Drive cache ==========
-        if (options.driveCache && PREVIEW_FOLDER_ID) {
-          batchProgress.phase = "drive-cache";
-          batchProgress.currentFile = "Finding images without Drive preview...";
+              // Large preview
+              if (img.needsLargeDriveCache || img.needsLargeLocalCache) {
+                const largePreview = await generatePreview(
+                  originalBuffer,
+                  "large",
+                );
 
-          for (const size of options.sizes) {
-            const column =
-              size === "small"
-                ? "small_preview_drive_id"
-                : "large_preview_drive_id";
-            const images = (await dbreq(
-              `SELECT id, original_drive_id, original_file_name FROM media_images WHERE ${column} IS NULL`,
-            )) as {
-              id: number;
-              original_drive_id: string;
-              original_file_name: string;
-            }[];
+                if (img.needsLargeLocalCache) {
+                  writeCacheFile(imageId, "large", largePreview.buffer);
+                  batchProgress.stats.localCached++;
+                }
 
-            batchProgress.total = images.length;
-
-            for (let i = 0; i < images.length; i++) {
-              const img = images[i];
-              batchProgress.current = i + 1;
-              batchProgress.currentFile = `[Drive ${size}] ${img.original_file_name || img.id}`;
-
-              try {
-                let previewBuffer: Buffer;
-                let width: number;
-                let height: number;
-
-                // Először lokális cache-ből
-                if (isCached(img.id, size)) {
-                  const cached = await import("@/lib/mediaCache").then((m) =>
-                    m.readCachedFile(img.id, size),
-                  );
-                  if (cached) {
-                    previewBuffer = cached;
-                    const meta = await sharp(cached).metadata();
-                    width = meta.width || 0;
-                    height = meta.height || 0;
-                  } else {
-                    continue;
-                  }
-                } else {
-                  // Letöltés és generálás
-                  const res: any = await drive.files.get(
+                if (img.needsLargeDriveCache && PREVIEW_FOLDER_ID) {
+                  const previewName = `${img.fileName.replace(/\.[^/.]+$/, "")}_large.webp`;
+                  const mediaStream = Readable.from(largePreview.buffer);
+                  const uploadRes: any = await drive.files.create(
                     {
-                      fileId: img.original_drive_id,
-                      alt: "media",
+                      requestBody: {
+                        name: previewName,
+                        parents: [PREVIEW_FOLDER_ID],
+                        mimeType: "image/webp",
+                      },
+                      media: { mimeType: "image/webp", body: mediaStream },
                       supportsAllDrives: true,
                     } as any,
-                    { responseType: "stream" } as any,
+                    { fields: "id" } as any,
                   );
-                  const originalBuffer = await streamToBuffer(res.data);
-                  const preview = await generatePreview(originalBuffer, size);
-                  previewBuffer = preview.buffer;
-                  width = preview.width;
-                  height = preview.height;
-
-                  // Mentés lokálba is ha kell
-                  if (options.localCache) {
-                    writeCacheFile(img.id, size, previewBuffer);
-                    batchProgress.stats.localCached++;
+                  const driveId = uploadRes.data?.id;
+                  if (driveId) {
+                    await updateImagePreview(
+                      imageId,
+                      "large",
+                      driveId,
+                      largePreview.width,
+                      largePreview.height,
+                    );
+                    batchProgress.stats.driveCached++;
                   }
                 }
-
-                // Feltöltés Drive-ra
-                const previewName = `${(img.original_file_name || "image").replace(/\.[^/.]+$/, "")}_${size}.webp`;
-                const mediaStream = Readable.from(previewBuffer);
-                const uploadRes: any = await drive.files.create(
-                  {
-                    requestBody: {
-                      name: previewName,
-                      parents: [PREVIEW_FOLDER_ID],
-                      mimeType: "image/webp",
-                    },
-                    media: { mimeType: "image/webp", body: mediaStream },
-                    supportsAllDrives: true,
-                  } as any,
-                  { fields: "id" } as any,
-                );
-                const driveId = uploadRes.data?.id;
-                if (driveId) {
-                  await updateImagePreview(
-                    img.id,
-                    size,
-                    driveId,
-                    width,
-                    height,
-                  );
-                  batchProgress.stats.driveCached++;
-                }
-              } catch (error: any) {
-                batchProgress.errors.push(
-                  `[Drive ${size}] ${img.original_file_name || img.id}: ${error.message}`,
-                );
               }
             }
-          }
-        }
 
-        // ========== 4. FÁZIS: Hiányzó lokális cache ==========
-        if (options.localCache) {
-          batchProgress.phase = "local-cache";
-          batchProgress.currentFile = "Finding images not in local cache...";
-
-          const allImages = (await dbreq(
-            "SELECT id, original_drive_id, original_file_name, small_preview_drive_id, large_preview_drive_id FROM media_images",
-          )) as {
-            id: number;
-            original_drive_id: string;
-            original_file_name: string;
-            small_preview_drive_id?: string;
-            large_preview_drive_id?: string;
-          }[];
-
-          for (const size of options.sizes) {
-            const notCached = allImages.filter(
-              (img) => !isCached(img.id, size),
-            );
-            batchProgress.total = notCached.length;
-
-            for (let i = 0; i < notCached.length; i++) {
-              const img = notCached[i];
-              batchProgress.current = i + 1;
-              batchProgress.currentFile = `[Local ${size}] ${img.original_file_name || img.id}`;
-
-              try {
-                let previewBuffer: Buffer;
-
-                // Először Drive preview-ból
-                const previewDriveId =
-                  size === "small"
-                    ? img.small_preview_drive_id
-                    : img.large_preview_drive_id;
-
-                if (previewDriveId) {
-                  const res: any = await drive.files.get(
-                    {
-                      fileId: previewDriveId,
-                      alt: "media",
-                      supportsAllDrives: true,
-                    } as any,
-                    { responseType: "stream" } as any,
-                  );
-                  previewBuffer = await streamToBuffer(res.data);
-                } else {
-                  // Generálás az eredetiből
-                  const res: any = await drive.files.get(
-                    {
-                      fileId: img.original_drive_id,
-                      alt: "media",
-                      supportsAllDrives: true,
-                    } as any,
-                    { responseType: "stream" } as any,
-                  );
-                  const originalBuffer = await streamToBuffer(res.data);
-                  const preview = await generatePreview(originalBuffer, size);
-                  previewBuffer = preview.buffer;
-                }
-
-                writeCacheFile(img.id, size, previewBuffer);
-                batchProgress.stats.localCached++;
-              } catch (error: any) {
-                batchProgress.errors.push(
-                  `[Local ${size}] ${img.original_file_name || img.id}: ${error.message}`,
-                );
-              }
-            }
+            // Memória felszabadítás - az originalBuffer kikerül a scope-ból
+          } catch (error: any) {
+            batchProgress.errors.push(`${img.fileName}: ${error.message}`);
           }
         }
 
@@ -559,18 +445,4 @@ export async function POST(req: Request) {
       { status: 500 },
     );
   }
-}
-
-/** Segéd: van-e már Drive preview */
-async function hasPreviewOnDrive(
-  imageId: number,
-  size: "small" | "large",
-): Promise<boolean> {
-  const column =
-    size === "small" ? "small_preview_drive_id" : "large_preview_drive_id";
-  const result = (await dbreq(
-    `SELECT ${column} FROM media_images WHERE id = ?`,
-    [imageId],
-  )) as { [key: string]: string | null }[];
-  return result.length > 0 && result[0][column] !== null;
 }

@@ -6,11 +6,7 @@ const MediaPage = async () => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
-  return (
-    <PhotoGridWrapper
-      GOOGLE_CLIENT_ID={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}
-    />
-  );
+  return <PhotoGridWrapper />;
 };
 
 export default MediaPage;

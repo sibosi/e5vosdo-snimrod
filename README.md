@@ -170,16 +170,18 @@ Külön köszönet mindenkinek, aki hozzájárult a projekt sikeréhez:
 
 ### 💪 Támogatók
 
-- **Ábel** - Tanácsadás
-- **Lajos** - Szerverszerzési ötletek
-- **Barnabás** - Tanácsadás és ihletszerzés
+- **Domi** - aki "jó fej" (mindenkori motivátor)
 - **Zsolt** - Segítség mindenben is
+- **Barnabás** - Tanácsadás és ihletszerzés
+- **Lajos** - Szerverszerzési ötletek
 - **Ádám** - A transzfermester
+- **Ábel** - Tanácsadás
 
 ### 🧪 Tesztelők
 
 - **Vince** - Az örök Android tesztelő
 - **Timi** - Az örök iOS tesztelő, aki sajnos (vagy nem sajnos) Androidra váltott
+- **Hanna** - Az új iOS tesztelő
 
 ---
 

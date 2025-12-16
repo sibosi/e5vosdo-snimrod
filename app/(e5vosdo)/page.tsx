@@ -44,30 +44,42 @@ const PageHeadContent = ({
 }) => {
   const allowForEveryone = true;
 
-  if (selfUser?.permissions.includes("user") || allowForEveryone)
-    return <Carousel data={carouselEvents} />;
+  const ConditionalCarousel =
+    selfUser?.permissions.includes("user") || allowForEveryone ? (
+      <Carousel data={carouselEvents} />
+    ) : (
+      <></>
+    );
 
   if (selfUser === null)
     return (
-      <Tray>
-        <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
-          Sajnáljuk, valamilyen hiba történt. Kérjük, próbáld újra később!
-        </h1>
-      </Tray>
+      <div className="space-y-4">
+        {ConditionalCarousel}
+        <Tray>
+          <h1 className="text-3xl font-bold text-selfprimary-900 md:text-4xl">
+            Sajnáljuk, valamilyen hiba történt. Kérjük, próbáld újra később!
+          </h1>
+        </Tray>
+      </div>
     );
 
-  return (
-    <Tray className="mx-auto max-w-md">
-      <h1 className="mb-2 text-3xl font-bold text-selfprimary-900 md:text-4xl">
-        Hiányolsz valamit? <br />
-        Netán a híreket? <br />
-        <span className="bg-gradient-to-r from-selfprimary-900 to-selfsecondary-300 bg-clip-text text-transparent">
-          Vagy az órarendedet?
-        </span>
-      </h1>
-      <LoginButton />
-    </Tray>
-  );
+  if (selfUser === undefined)
+    return (
+      <div className="space-y-4">
+        {ConditionalCarousel}
+        <Tray className="mx-auto max-w-md">
+          <h1 className="mb-2 text-3xl font-bold text-selfprimary-900 md:text-4xl">
+            Hiányolsz valamit? <br />
+            <span className="bg-gradient-to-r from-selfprimary-900 to-selfsecondary-300 bg-clip-text text-transparent">
+              Netán az órarendedet?
+            </span>
+          </h1>
+          <LoginButton />
+        </Tray>
+      </div>
+    );
+
+  return ConditionalCarousel;
 };
 
 export default async function Home() {
@@ -113,10 +125,6 @@ export default async function Home() {
         </Section>
       )}
 
-      <Section title="Millió lépés" dropdownable={true}>
-        <MillioLepes />
-      </Section>
-
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section
           title={"Helyettesítések"}
@@ -133,6 +141,10 @@ export default async function Home() {
       {siteConfig.pageSections["menza"] != "hidden" && (
         <MenuInSection selfUser={selfUser} />
       )}
+
+      <Section title="Millió lépés" dropdownable={true}>
+        <MillioLepes />
+      </Section>
 
       {siteConfig.pageSections["esemenyek"] != "hidden" && (
         <Section

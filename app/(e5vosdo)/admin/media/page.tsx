@@ -7,11 +7,8 @@ export default async function MediaAdminPage() {
   const selfUser = await getAuth();
   if (!selfUser) redirect("/");
 
-  try {
-    gate(selfUser, "admin");
-  } catch {
-    redirect("/");
-  }
+  const hasPermission = gate(selfUser, ["admin", "media_admin"], "boolean");
+  if (!hasPermission) redirect("/");
 
   return <MediaAdminClient />;
 }

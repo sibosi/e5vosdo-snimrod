@@ -9,6 +9,7 @@ export const PERMISSIONS = [
   "delegate",
   "delegate_counter",
   "matchOrganiser",
+  "media_admin",
 ];
 
 /**
@@ -21,12 +22,13 @@ head_of_parlament: can manage parlaments
 delegate: can see the list of parlaments
 delegate_counter: can register delegates to parlaments
 matchOrganiser: can manage matches
+media_admin: can manage media images, tags, and import XML metadata
 */
 
 export function gate(
   user: PossibleUserType,
   permission: string | string[],
-  type?: "boolean" | "throw",
+  type: "boolean" | "throw" = "throw",
 ) {
   if (!user) {
     if (type === "boolean") return false;

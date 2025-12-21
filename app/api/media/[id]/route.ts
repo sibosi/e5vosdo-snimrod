@@ -182,20 +182,6 @@ function getPreviewDriveId(
     : image.large_preview_drive_id;
 }
 
-async function getFullImageFromDrive(
-  originalDriveId: string,
-): Promise<Buffer | null> {
-  const drive = getDriveClient();
-
-  // Eredeti kép letöltése
-  const res: any = await drive.files.get(
-    { fileId: originalDriveId, alt: "media", supportsAllDrives: true } as any,
-    { responseType: "stream" } as any,
-  );
-  const fileBuffer = await streamToBuffer(res.data);
-  return fileBuffer;
-}
-
 /**
  * GET /api/media/[id]?size=small|large|full
  *
@@ -226,27 +212,53 @@ export async function GET(
     (url.searchParams.get("size") as any) || "small";
 
   if (size === "full") {
-    // Eredeti kép lekérése Drive-ról
     const originalImage = await getImageById(imageId);
     if (!originalImage) {
       return NextResponse.json({ error: "Image not found" }, { status: 404 });
     }
-    const fullBuffer = await getFullImageFromDrive(
-      originalImage.original_drive_id,
-    );
-    if (!fullBuffer) {
+
+    try {
+      const drive = getDriveClient();
+
+      const res: any = await drive.files.get(
+        {
+          fileId: originalImage.original_drive_id,
+          alt: "media",
+          supportsAllDrives: true,
+        } as any,
+        { responseType: "stream" } as any,
+      );
+
+      const webStream = new ReadableStream({
+        start(controller) {
+          res.data.on("data", (chunk: Buffer) => {
+            controller.enqueue(new Uint8Array(chunk));
+          });
+          res.data.on("end", () => {
+            controller.close();
+          });
+          res.data.on("error", (err: Error) => {
+            console.error("[media-proxy] Stream error:", err);
+            controller.error(err);
+          });
+        },
+      });
+
+      return new NextResponse(webStream, {
+        headers: {
+          "Content-Type": "image/jpeg",
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Disposition": `attachment; filename="${originalImage.original_file_name || "image.jpg"}"`,
+          "X-Cache": "FULL-DRIVE-STREAM",
+        },
+      });
+    } catch (error) {
+      console.error("[media-proxy] Error streaming full image:", error);
       return NextResponse.json(
         { error: "Failed to fetch original image from Drive" },
         { status: 500 },
       );
     }
-    return new NextResponse(new Uint8Array(fullBuffer), {
-      headers: {
-        "Content-Type": "image/jpeg",
-        "Cache-Control": "public, max-age=31536000, immutable",
-        "X-Cache": "FULL-DRIVE",
-      },
-    });
   }
 
   if (size !== "small" && size !== "large") {

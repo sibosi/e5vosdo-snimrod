@@ -182,8 +182,22 @@ function getPreviewDriveId(
     : image.large_preview_drive_id;
 }
 
+async function getFullImageFromDrive(
+  originalDriveId: string,
+): Promise<Buffer | null> {
+  const drive = getDriveClient();
+
+  // Eredeti kép letöltése
+  const res: any = await drive.files.get(
+    { fileId: originalDriveId, alt: "media", supportsAllDrives: true } as any,
+    { responseType: "stream" } as any,
+  );
+  const fileBuffer = await streamToBuffer(res.data);
+  return fileBuffer;
+}
+
 /**
- * GET /api/media/[id]?size=small|large
+ * GET /api/media/[id]?size=small|large|full
  *
  * Prioritás:
  * 1. Helyi cache (leggyorsabb)
@@ -208,8 +222,32 @@ export async function GET(
   }
 
   const url = new URL(request.url);
-  const size: PreviewSize =
-    (url.searchParams.get("size") as PreviewSize) || "small";
+  const size: PreviewSize | "full" =
+    (url.searchParams.get("size") as any) || "small";
+
+  if (size === "full") {
+    // Eredeti kép lekérése Drive-ról
+    const originalImage = await getImageById(imageId);
+    if (!originalImage) {
+      return NextResponse.json({ error: "Image not found" }, { status: 404 });
+    }
+    const fullBuffer = await getFullImageFromDrive(
+      originalImage.original_drive_id,
+    );
+    if (!fullBuffer) {
+      return NextResponse.json(
+        { error: "Failed to fetch original image from Drive" },
+        { status: 500 },
+      );
+    }
+    return new NextResponse(new Uint8Array(fullBuffer), {
+      headers: {
+        "Content-Type": "image/jpeg",
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "X-Cache": "FULL-DRIVE",
+      },
+    });
+  }
 
   if (size !== "small" && size !== "large") {
     return NextResponse.json(

@@ -267,7 +267,7 @@ const PhotoGrid = () => {
   const downloadOriginal = useCallback(
     async (imageId: number, suggestedName?: string | null) => {
       try {
-        const res = await fetch(`/api/media/${imageId}?size=large`);
+        const res = await fetch(`/api/media/${imageId}?size=full`);
         if (!res.ok) {
           throw new Error(`Download failed: ${res.status}`);
         }

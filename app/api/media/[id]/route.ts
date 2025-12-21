@@ -220,6 +220,15 @@ export async function GET(
     try {
       const drive = getDriveClient();
 
+      const fileMeta: any = await drive.files.get({
+        fileId: originalImage.original_drive_id,
+        fields: "size,mimeType",
+        supportsAllDrives: true,
+      });
+
+      const fileSize = fileMeta.data?.size;
+      const mimeType = fileMeta.data?.mimeType || "image/jpeg";
+
       const res: any = await drive.files.get(
         {
           fileId: originalImage.original_drive_id,
@@ -229,29 +238,20 @@ export async function GET(
         { responseType: "stream" } as any,
       );
 
-      const webStream = new ReadableStream({
-        start(controller) {
-          res.data.on("data", (chunk: Buffer) => {
-            controller.enqueue(new Uint8Array(chunk));
-          });
-          res.data.on("end", () => {
-            controller.close();
-          });
-          res.data.on("error", (err: Error) => {
-            console.error("[media-proxy] Stream error:", err);
-            controller.error(err);
-          });
-        },
-      });
+      const webStream = Readable.toWeb(res.data) as ReadableStream<Uint8Array>;
 
-      return new NextResponse(webStream, {
-        headers: {
-          "Content-Type": "image/jpeg",
-          "Cache-Control": "public, max-age=31536000, immutable",
-          "Content-Disposition": `attachment; filename="${originalImage.original_file_name || "image.jpg"}"`,
-          "X-Cache": "FULL-DRIVE-STREAM",
-        },
-      });
+      const headers: Record<string, string> = {
+        "Content-Type": mimeType,
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Disposition": `attachment; filename="${originalImage.original_file_name || "image.jpg"}"`,
+        "X-Cache": "FULL-DRIVE-STREAM",
+      };
+
+      if (fileSize) {
+        headers["Content-Length"] = fileSize;
+      }
+
+      return new NextResponse(webStream, { headers });
     } catch (error) {
       console.error("[media-proxy] Error streaming full image:", error);
       return NextResponse.json(

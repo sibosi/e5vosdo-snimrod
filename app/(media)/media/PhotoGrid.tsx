@@ -156,6 +156,27 @@ const PhotoGrid = () => {
     loadImages();
   }, []);
 
+  const handleNextImage = useCallback(() => {
+    if (!selected || !imageFiles) return;
+    setSelected(null);
+    const currentIndex = imageFiles.findIndex((img) => img.id === selected.id);
+    const nextIndex = (currentIndex + 1) % imageFiles.length;
+    setSelected(imageFiles[nextIndex]);
+    fetch(`/api/media/${imageFiles[nextIndex + 1].id}?size=large`);
+    fetch(`/api/media/${imageFiles[nextIndex + 2].id}?size=large`);
+  }, [selected, imageFiles]);
+
+  const handlePreviousImage = useCallback(() => {
+    if (!selected || !imageFiles) return;
+    setSelected(null);
+    const currentIndex = imageFiles.findIndex((img) => img.id === selected.id);
+    const previousIndex =
+      (currentIndex - 1 + imageFiles.length) % imageFiles.length;
+    setSelected(imageFiles[previousIndex]);
+    fetch(`/api/media/${imageFiles[previousIndex - 1].id}?size=large`);
+    fetch(`/api/media/${imageFiles[previousIndex - 2].id}?size=large`);
+  }, [selected, imageFiles]);
+
   const closeModal = useCallback(() => setSelected(null), []);
 
   const organizeImagesIntoRows = useCallback(
@@ -236,10 +257,12 @@ const PhotoGrid = () => {
     if (!selected) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeModal();
+      if (e.key === "ArrowRight") handleNextImage();
+      if (e.key === "ArrowLeft") handlePreviousImage();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, closeModal]);
+  }, [selected, closeModal, handleNextImage, handlePreviousImage]);
 
   const downloadOriginal = useCallback(
     async (imageId: number, suggestedName?: string | null) => {
@@ -271,11 +294,11 @@ const PhotoGrid = () => {
 
   if (error) {
     return (
-      <div className="mb-4 rounded-3xl border-2 border-red-400 bg-red-100 p-4">
-        <p className="text-red-700">{error}</p>
+      <div className="mb-4 rounded-3xl border-2 border-danger-400 bg-danger-100 p-4">
+        <p className="text-danger-700">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-2 rounded bg-red-500 px-4 py-2 text-white"
+          className="mt-2 rounded bg-danger-500 px-4 py-2 text-foreground"
         >
           Újratöltés
         </button>
@@ -333,6 +356,8 @@ const PhotoGrid = () => {
           onDownload={() =>
             downloadOriginal(selected.id, selected.original_file_name)
           }
+          handleNextImage={handleNextImage}
+          handlePreviousImage={handlePreviousImage}
         />
       )}
     </div>
@@ -343,16 +368,98 @@ const ImageModal = ({
   image,
   onClose,
   onDownload,
+  handleNextImage,
+  handlePreviousImage,
 }: {
   image: MediaImageType;
   onClose: () => void;
   onDownload: () => void;
+  handleNextImage: () => void;
+  handlePreviousImage: () => void;
 }) => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const title = image.original_file_name || "Kép";
   const src = `/api/media/${image.id}?size=large`;
+
+  // Reseteljük a loaded state-et, amikor új képre vált
+  useEffect(() => {
+    setLoaded(false);
+    setError(false);
+  }, [image.id]);
+
+  // Fullscreen mód
+  if (isFullscreen) {
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+        onClick={() => setIsFullscreen(false)}
+      >
+        {!loaded && !error && (
+          <div className="p-8 text-sm text-foreground-600">Betöltés…</div>
+        )}
+        {error && (
+          <div className="p-8 text-sm text-danger-600">
+            Hiba a kép betöltésekor
+          </div>
+        )}
+        <img
+          src={src}
+          alt={title}
+          className={`max-h-screen w-auto max-w-full object-contain ${
+            loaded ? "" : "hidden"
+          }`}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+          onClick={(e) => e.stopPropagation()}
+        />
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNextImage();
+          }}
+          className="absolute right-4 h-12 w-12 rounded-full bg-foreground-300 text-center text-2xl opacity-70 hover:opacity-100"
+        >
+          ➜
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePreviousImage();
+          }}
+          className="absolute left-4 h-12 w-12 rotate-180 rounded-full bg-foreground-300 text-center text-2xl opacity-70 hover:opacity-100"
+        >
+          ➜
+        </button>
+
+        <div className="absolute right-4 top-4 flex gap-2">
+          <button
+            className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
+            onClick={onDownload}
+          >
+            Letöltés
+          </button>
+          <button
+            className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
+            onClick={() => setIsFullscreen(true)}
+          >
+            Fullscreen
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFullscreen(false);
+            }}
+            className="rounded bg-danger-600 px-3 py-2 text-sm text-foreground-50 hover:bg-danger-700"
+          >
+            Kilépés
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -372,13 +479,19 @@ const ImageModal = ({
           </h2>
           <div className="flex gap-2">
             <button
-              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-white"
+              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
               onClick={onDownload}
             >
               Letöltés
             </button>
             <button
-              className="rounded bg-selfsecondary-600 px-3 py-2 text-sm text-white"
+              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
+              onClick={() => setIsFullscreen(true)}
+            >
+              Fullscreen
+            </button>
+            <button
+              className="rounded bg-selfsecondary-600 px-3 py-2 text-sm text-foreground-50"
               onClick={onClose}
             >
               Bezárás
@@ -391,10 +504,10 @@ const ImageModal = ({
           style={{ backgroundColor: image.color ?? "#f3f4f6" }}
         >
           {!loaded && !error && (
-            <div className="p-8 text-sm text-gray-600">Betöltés…</div>
+            <div className="p-8 text-sm text-foreground-600">Betöltés…</div>
           )}
           {error && (
-            <div className="p-8 text-sm text-red-600">
+            <div className="p-8 text-sm text-danger-600">
               Hiba a kép betöltésekor
             </div>
           )}
@@ -405,6 +518,18 @@ const ImageModal = ({
             onLoad={() => setLoaded(true)}
             onError={() => setError(true)}
           />
+          <button
+            onClick={handleNextImage}
+            className="absolute right-0 h-10 w-10 items-center rounded-full bg-foreground-300 text-center text-lg opacity-70 hover:opacity-100"
+          >
+            ➜
+          </button>
+          <button
+            onClick={handlePreviousImage}
+            className="absolute left-0 h-10 w-10 rotate-180 items-center rounded-full bg-foreground-300 text-center text-lg opacity-70 hover:opacity-100"
+          >
+            ➜
+          </button>
         </div>
       </div>
     </div>

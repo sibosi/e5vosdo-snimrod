@@ -380,9 +380,19 @@ const ImageModal = ({
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const title = image.original_file_name || "Kép";
   const src = `/api/media/${image.id}?size=large`;
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      await onDownload();
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   // Reseteljük a loaded state-et, amikor új képre vált
   useEffect(() => {
@@ -465,10 +475,21 @@ const ImageModal = ({
 
         <div className="absolute right-4 top-4 flex gap-2">
           <button
-            className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
-            onClick={onDownload}
+            className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDownload();
+            }}
+            disabled={downloading}
           >
-            Letöltés
+            {downloading ? (
+              <div className="flex items-center gap-2">
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-foreground-50 border-t-transparent" />
+                Letöltés...
+              </div>
+            ) : (
+              "Letöltés"
+            )}
           </button>
           <button
             className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
@@ -508,10 +529,18 @@ const ImageModal = ({
           </h2>
           <div className="flex gap-2">
             <button
-              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
-              onClick={onDownload}
+              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={handleDownload}
+              disabled={downloading}
             >
-              Letöltés
+              {downloading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-foreground-50 border-t-transparent" />
+                  Letöltés...
+                </div>
+              ) : (
+                "Letöltés"
+              )}
             </button>
             <button
               className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"

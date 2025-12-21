@@ -433,7 +433,7 @@ const ImageModal = ({
   if (isFullscreen) {
     return (
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+        className="fixed inset-0 z-50 flex justify-center bg-black"
         onClick={() => setIsFullscreen(false)}
       >
         {!loaded && !error && (
@@ -459,7 +459,7 @@ const ImageModal = ({
             e.stopPropagation();
             handleNextImage();
           }}
-          className="absolute right-4 h-12 w-12 rounded-full bg-foreground-300 text-center text-2xl opacity-70 hover:opacity-100"
+          className="absolute right-4 h-12 w-12 self-center rounded-full bg-foreground-300 text-center text-2xl opacity-70 hover:opacity-100"
         >
           ➜
         </button>
@@ -468,7 +468,7 @@ const ImageModal = ({
             e.stopPropagation();
             handlePreviousImage();
           }}
-          className="absolute left-4 h-12 w-12 rotate-180 rounded-full bg-foreground-300 text-center text-2xl opacity-70 hover:opacity-100"
+          className="absolute left-4 h-12 w-12 rotate-180 self-center rounded-full bg-foreground-300 text-center text-2xl opacity-70 hover:opacity-100"
         >
           ➜
         </button>

@@ -390,6 +390,35 @@ const ImageModal = ({
     setError(false);
   }, [image.id]);
 
+  // Fullscreen API kezelése
+  useEffect(() => {
+    if (isFullscreen) {
+      // Belépés natív fullscreen módba
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error("Fullscreen request failed:", err);
+      });
+    } else {
+      // Kilépés fullscreen módból
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => {
+          console.error("Exit fullscreen failed:", err);
+        });
+      }
+    }
+
+    // Figyeljük a fullscreen változásokat (pl. F11 vagy ESC)
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [isFullscreen]);
+
   // Fullscreen mód
   if (isFullscreen) {
     return (

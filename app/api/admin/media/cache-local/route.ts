@@ -1,5 +1,3 @@
-// app/api/admin/media/cache-local/route.ts
-// Preview képek lokális cache-elése
 import { NextResponse } from "next/server";
 import { getAuth } from "@/db/dbreq";
 import { gate } from "@/db/permissions";

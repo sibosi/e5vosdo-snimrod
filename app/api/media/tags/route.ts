@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     if (!selfUser)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    gate(selfUser, "user");
+    gate(selfUser, ["user", "media_view"]);
 
     const searchParams = request.nextUrl.searchParams;
     const imageId = searchParams.get("imageId");

@@ -46,7 +46,10 @@ export async function GET(request: NextRequest) {
         .split(",")
         .map((t) => t.trim())
         .filter((t) => t.length > 0);
-      const images = await searchImagesByTags(selfUser, tagNames, matchAll);
+      const images = await searchImagesByTags(selfUser, {
+        tagNames: tagNames,
+        matchAll: matchAll,
+      });
       return NextResponse.json({ images });
     }
 

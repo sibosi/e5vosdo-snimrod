@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { getAuth } from "@/db/dbreq";
 import {
   getImageById,
@@ -18,6 +19,10 @@ import {
   MIN_QUALITY_THRESHOLD,
   MAX_COMPRESSION_ATTEMPTS,
 } from "@/config/mediaPreview";
+import {
+  SZALAGAVATO_COOKIE_NAME,
+  verifySzalagavatoToken,
+} from "@/lib/szalagavatoAuth";
 import sharp from "sharp";
 import { Readable } from "stream";
 
@@ -185,9 +190,22 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  // Auth ellenőrzés
+  // Auth ellenőrzés - bejelentkezett user VAGY szalagavatós cookie
+  let isAuthenticated = false;
   const selfUser = await getAuth();
-  if (!selfUser) {
+
+  if (selfUser) {
+    isAuthenticated = true;
+  } else {
+    // Check szalagavato cookie
+    const cookieStore = await cookies();
+    const szalagavatoCookie = cookieStore.get(SZALAGAVATO_COOKIE_NAME);
+    if (verifySzalagavatoToken(szalagavatoCookie?.value || "")) {
+      isAuthenticated = true;
+    }
+  }
+
+  if (!isAuthenticated) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

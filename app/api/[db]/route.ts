@@ -1,14 +1,44 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import {
   apioptions,
   apireq,
   apireqType,
   defaultApiReq,
   getAuth,
+  UserType,
 } from "@/db/dbreq";
+import {
+  SZALAGAVATO_COOKIE_NAME,
+  verifySzalagavatoToken,
+} from "@/lib/szalagavatoAuth";
 
 type Params = {
   db: string;
+};
+
+// Fake user for szalagavato authenticated guests
+const SZALAGAVATO_GUEST_USER: UserType = {
+  name: "Szalagavató Vendég",
+  full_name: "Szalagavató Vendég",
+  username: "szalagavato_guest",
+  nickname: "Szalagavató Vendég",
+  email: "szalagavato@guest",
+  image: "",
+  last_login: "",
+  permissions: ["media_view"],
+  EJG_code: null,
+  OM: null,
+  OM5: null,
+  food_menu: "",
+  coming_year: 0,
+  class_character: "",
+  order_number: 0,
+  tickets: [],
+  push_permission: false,
+  push_about_games: false,
+  push_about_timetable: false,
+  is_verified: false,
 };
 
 const modules = {
@@ -27,7 +57,17 @@ export const GET = async (
   request: Request,
   context: { params: Promise<Params> },
 ) => {
-  const selfUser = await getAuth();
+  let selfUser = await getAuth();
+
+  // Check for szalagavato cookie auth if not logged in
+  if (!selfUser) {
+    const cookieStore = await cookies();
+    const szalagavatoCookie = cookieStore.get(SZALAGAVATO_COOKIE_NAME);
+    if (verifySzalagavatoToken(szalagavatoCookie?.value || "")) {
+      selfUser = SZALAGAVATO_GUEST_USER as any;
+    }
+  }
+
   const requestedModule = request.headers.get("module") ?? "";
   if (Object.keys(modules).includes(requestedModule)) {
     const body = request.method === "POST" ? await request.json() : {};

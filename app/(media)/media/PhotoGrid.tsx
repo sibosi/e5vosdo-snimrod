@@ -110,9 +110,11 @@ const LazyImage = ({
 };
 
 const PhotoGrid = ({
+  requiredTag,
   filterTags = [],
   matchAll = false,
 }: {
+  requiredTag?: string;
   filterTags?: string[];
   matchAll?: boolean;
 }) => {
@@ -136,15 +138,26 @@ const PhotoGrid = ({
   function loadImages() {
     setLoading(true);
 
-    // Ha vannak szűrő
-    if (filterTags.length > 0) {
+    // Ha van requiredTag vagy filterTags
+    const hasFilters = requiredTag || filterTags.length > 0;
+
+    if (hasFilters) {
+      // Készítsük el a kérést a szerver felé
+      // requiredTag mindig ÉS kapcsolatban van, filterTags között a matchAll dönt
+      // Az options objektum egyetlen paraméterként kerül átadásra
       fetch("/api/searchImagesByTags", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           module: "mediaTags",
         },
-        body: JSON.stringify([filterTags, matchAll]),
+        body: JSON.stringify({
+          options: {
+            tagNames: filterTags,
+            matchAll: matchAll,
+            requiredTag: requiredTag || null,
+          },
+        }),
       })
         .then((res) => res.json())
         .then((data) => {
@@ -188,7 +201,7 @@ const PhotoGrid = ({
 
   useEffect(() => {
     loadImages();
-  }, [filterTags.join(","), matchAll]);
+  }, [requiredTag, filterTags.join(","), matchAll]);
 
   const handleNextImage = useCallback(() => {
     if (!selected || !imageFiles) return;

@@ -53,7 +53,7 @@ export interface TagAttachment {
  * Get all available tags
  */
 export async function getAllTags(selfUser: UserType): Promise<MediaTagType[]> {
-  gate(selfUser, "user");
+  gate(selfUser, ["user", "media_view"]);
   return (await dbreq(
     "SELECT * FROM media_images_tags ORDER BY tag_name ASC",
   )) as MediaTagType[];
@@ -130,7 +130,7 @@ export async function getTagsForImage(
     coordinate2_y: number | null;
   }>
 > {
-  gate(selfUser, "user");
+  gate(selfUser, ["user", "media_view"]);
   return (await dbreq(
     `SELECT 
       tags.id as tag_id, 
@@ -255,21 +255,113 @@ export async function removeAllTagsFromImage(
 }
 
 // ============ Search Operations ============
-
+// @sibosi TODO: Refactor
 /**
  * Search images by tags (user access)
+ * @param options.tagNames - Filter tags
+ * @param options.matchAll - If true, all filterTags must match (AND), if false any can match (OR)
+ * @param options.requiredTag - Tag that must be present on all results (always AND)
  */
 export async function searchImagesByTags(
   selfUser: UserType,
-  tagNames: string[],
-  matchAll: boolean = false,
+  options: {
+    tagNames: string[];
+    matchAll?: boolean;
+    requiredTag?: string | null;
+  },
 ): Promise<MediaImageWithTags[]> {
-  gate(selfUser, "user");
+  gate(selfUser, ["user", "media_view"]);
 
-  if (tagNames.length === 0) {
+  const { tagNames, matchAll = false, requiredTag } = options;
+
+  // Ha nincs se requiredTag se filterTags, üres eredmény
+  if (!requiredTag && tagNames.length === 0) {
     return [];
   }
 
+  // Ha csak requiredTag van, azt keressük
+  if (requiredTag && tagNames.length === 0) {
+    const query = `
+      SELECT DISTINCT images.* 
+      FROM media_images images
+      JOIN media_images_to_tags relations ON images.id = relations.media_image_id
+      JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
+      WHERE tags.tag_name = ?
+      ORDER BY images.datetime DESC
+    `;
+    const images = (await dbreq(query, [requiredTag])) as any[];
+    const result: MediaImageWithTags[] = [];
+    for (const img of images) {
+      const imgTags = await getTagsForImage(selfUser, img.id);
+      result.push({ ...img, tags: imgTags });
+    }
+    return result;
+  }
+
+  // Ha van requiredTag és filterTags is
+  if (requiredTag && tagNames.length > 0) {
+    // Először lekérjük a requiredTag-gel rendelkező képeket
+    // Aztán szűrjük a filterTags alapján
+    const requiredQuery = `
+      SELECT DISTINCT images.id
+      FROM media_images images
+      JOIN media_images_to_tags relations ON images.id = relations.media_image_id
+      JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
+      WHERE tags.tag_name = ?
+    `;
+    const requiredImages = (await dbreq(requiredQuery, [requiredTag])) as {
+      id: number;
+    }[];
+
+    if (requiredImages.length === 0) {
+      return [];
+    }
+
+    const requiredIds = requiredImages.map((img) => img.id);
+    const idPlaceholders = requiredIds.map(() => "?").join(",");
+    const tagPlaceholders = tagNames.map(() => "?").join(",");
+
+    let query: string;
+    let params: (string | number)[];
+
+    if (matchAll) {
+      // Minden filterTag-nek meg kell egyeznie
+      query = `
+        SELECT DISTINCT images.* 
+        FROM media_images images
+        JOIN media_images_to_tags relations ON images.id = relations.media_image_id
+        JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
+        WHERE images.id IN (${idPlaceholders})
+          AND tags.tag_name IN (${tagPlaceholders})
+        GROUP BY images.id
+        HAVING COUNT(DISTINCT tags.tag_name) = ?
+        ORDER BY images.datetime DESC
+      `;
+      params = [...requiredIds, ...tagNames, tagNames.length];
+    } else {
+      // Bármelyik filterTag egyezhet (VAGY)
+      query = `
+        SELECT DISTINCT images.* 
+        FROM media_images images
+        JOIN media_images_to_tags relations ON images.id = relations.media_image_id
+        JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
+        WHERE images.id IN (${idPlaceholders})
+          AND tags.tag_name IN (${tagPlaceholders})
+        ORDER BY images.datetime DESC
+      `;
+      params = [...requiredIds, ...tagNames];
+    }
+
+    const images = (await dbreq(query, params)) as any[];
+    const result: MediaImageWithTags[] = [];
+    for (const img of images) {
+      const imgTags = await getTagsForImage(selfUser, img.id);
+      result.push({ ...img, tags: imgTags });
+    }
+    return result;
+  }
+
+  // Ha csak filterTags van (eredeti logika)
   const placeholders = tagNames.map(() => "?").join(",");
 
   let query: string;
@@ -278,8 +370,8 @@ export async function searchImagesByTags(
     query = `
       SELECT DISTINCT images.* 
       FROM media_images images
-      JOIN media_images_to_tags relatons ON images.id = relatons.media_image_id
-      JOIN media_images_tags tags ON relatons.media_image_tag_id = tags.id
+      JOIN media_images_to_tags relations ON images.id = relations.media_image_id
+      JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
       WHERE tags.tag_name IN (${placeholders})
       GROUP BY images.id
       HAVING COUNT(DISTINCT tags.tag_name) = ?
@@ -291,8 +383,8 @@ export async function searchImagesByTags(
     query = `
       SELECT DISTINCT images.* 
       FROM media_images images
-      JOIN media_images_to_tags relatons ON images.id = relatons.media_image_id
-      JOIN media_images_tags tags ON relatons.media_image_tag_id = tags.id
+      JOIN media_images_to_tags relations ON images.id = relations.media_image_id
+      JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
       WHERE tags.tag_name IN (${placeholders})
       ORDER BY images.datetime DESC
     `;
@@ -303,8 +395,8 @@ export async function searchImagesByTags(
   // Fetch tags for each image
   const result: MediaImageWithTags[] = [];
   for (const img of images) {
-    const tags = await getTagsForImage(selfUser, img.id);
-    result.push({ ...img, tags });
+    const imgTags = await getTagsForImage(selfUser, img.id);
+    result.push({ ...img, tags: imgTags });
   }
 
   return result;

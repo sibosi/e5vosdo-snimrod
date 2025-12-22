@@ -20,6 +20,7 @@ const modules = {
   matches: import("@/db/matches"),
   pageSettings: import("@/db/pageSettings"),
   mediaPhotos: import("@/db/mediaPhotos"),
+  mediaTags: import("@/db/mediaTags"),
 };
 
 export const GET = async (

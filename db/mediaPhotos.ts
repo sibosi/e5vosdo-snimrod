@@ -123,3 +123,126 @@ export async function bulkUpsertMediaImages(
   }
   return results;
 }
+
+/**
+ * Töröl egy képet az adatbázisból (és a kapcsolódó tag-eket is).
+ * A Drive-ról való törlést külön kell kezelni!
+ */
+export async function deleteImage(
+  selfUser: UserType,
+  imageId: number,
+): Promise<{ success: boolean; deletedDriveIds: string[] }> {
+  gate(selfUser, ["admin", "media_admin"]);
+
+  const image = await getImageById(imageId);
+  if (!image) return { success: false, deletedDriveIds: [] };
+
+  const driveIds: string[] = [];
+  if (image.original_drive_id) driveIds.push(image.original_drive_id);
+  if (image.small_preview_drive_id) driveIds.push(image.small_preview_drive_id);
+  if (image.large_preview_drive_id) driveIds.push(image.large_preview_drive_id);
+
+  await dbreq("DELETE FROM media_images_to_tags WHERE media_image_id = ?", [
+    imageId,
+  ]);
+
+  await dbreq("DELETE FROM media_images WHERE id = ?", [imageId]);
+
+  return { success: true, deletedDriveIds: driveIds };
+}
+
+/**
+ * Töröl több képet egyszerre.
+ */
+export async function deleteImages(
+  selfUser: UserType,
+  imageIds: number[],
+): Promise<{ success: number; failed: number; deletedDriveIds: string[] }> {
+  gate(selfUser, ["admin", "media_admin"]);
+
+  let success = 0;
+  let failed = 0;
+  const allDriveIds: string[] = [];
+
+  for (const imageId of imageIds) {
+    try {
+      const result = await deleteImage(selfUser, imageId);
+      if (result.success) {
+        success++;
+        allDriveIds.push(...result.deletedDriveIds);
+      } else {
+        failed++;
+      }
+    } catch (error) {
+      console.error(`Failed to delete image ${imageId}:`, error);
+      failed++;
+    }
+  }
+
+  return { success, failed, deletedDriveIds: allDriveIds };
+}
+
+/**
+ * Reseteli (törli) egy kép preview-jait az adatbázisból.
+ * A Drive-ról és a helyi cache-ből is törölni kell külön!
+ */
+export async function resetImagePreviews(
+  selfUser: UserType,
+  imageId: number,
+): Promise<{ success: boolean; deletedDriveIds: string[] }> {
+  gate(selfUser, ["admin", "media_admin"]);
+
+  const image = await getImageById(imageId);
+  if (!image) {
+    return { success: false, deletedDriveIds: [] };
+  }
+
+  const driveIds: string[] = [];
+  if (image.small_preview_drive_id) driveIds.push(image.small_preview_drive_id);
+  if (image.large_preview_drive_id) driveIds.push(image.large_preview_drive_id);
+
+  await dbreq(
+    `UPDATE media_images SET 
+      small_preview_drive_id = NULL, 
+      small_preview_width = NULL, 
+      small_preview_height = NULL,
+      large_preview_drive_id = NULL, 
+      large_preview_width = NULL, 
+      large_preview_height = NULL
+    WHERE id = ?`,
+    [imageId],
+  );
+
+  return { success: true, deletedDriveIds: driveIds };
+}
+
+/**
+ * Reseteli több kép preview-jait egyszerre.
+ */
+export async function resetImagesPreviews(
+  selfUser: UserType,
+  imageIds: number[],
+): Promise<{ success: number; failed: number; deletedDriveIds: string[] }> {
+  gate(selfUser, ["admin", "media_admin"]);
+
+  let success = 0;
+  let failed = 0;
+  const allDriveIds: string[] = [];
+
+  for (const imageId of imageIds) {
+    try {
+      const result = await resetImagePreviews(selfUser, imageId);
+      if (result.success) {
+        success++;
+        allDriveIds.push(...result.deletedDriveIds);
+      } else {
+        failed++;
+      }
+    } catch (error) {
+      console.error(`Failed to reset previews for image ${imageId}:`, error);
+      failed++;
+    }
+  }
+
+  return { success, failed, deletedDriveIds: allDriveIds };
+}

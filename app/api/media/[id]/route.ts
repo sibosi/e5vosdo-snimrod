@@ -12,27 +12,14 @@ import {
   writeCacheFile,
   type PreviewSize,
 } from "@/lib/mediaCache";
+import {
+  PREVIEW_CONFIG,
+  PREVIEW_FOLDER_ID,
+  MIN_QUALITY_THRESHOLD,
+  MAX_COMPRESSION_ATTEMPTS,
+} from "@/config/mediaPreview";
 import sharp from "sharp";
 import { Readable } from "stream";
-
-// Preview mappa ID-k (a tömörített képek ide kerülnek)
-const PREVIEW_FOLDER_ID = process.env.NEXT_PUBLIC_MEDIA_FOLDER_ID;
-
-// Preview méretek konfigurációja
-const PREVIEW_CONFIG = {
-  small: {
-    width: undefined,
-    height: 200,
-    quality: 75,
-    targetBytes: 15 * 1024, // 15KB max
-  },
-  large: {
-    width: 1200,
-    height: undefined,
-    quality: 85,
-    targetBytes: 200 * 1024, // 200KB max
-  },
-} as const;
 
 /** Segéd: stream -> Buffer */
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -151,10 +138,14 @@ async function compressOriginalToPreview(
 
     do {
       buffer = await sharpInstance.clone().webp({ quality }).toBuffer();
-      if (buffer.length <= config.targetBytes || quality <= 30) break;
+      if (
+        buffer.length <= config.targetBytes ||
+        quality <= MIN_QUALITY_THRESHOLD
+      )
+        break;
       quality -= 10;
       attempts++;
-    } while (attempts < 6);
+    } while (attempts < MAX_COMPRESSION_ATTEMPTS);
 
     // Méretek lekérése
     const metadata = await sharp(buffer).metadata();

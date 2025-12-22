@@ -9,6 +9,7 @@ import { Divider } from "@heroui/divider";
 import { Tabs, Tab } from "@heroui/tabs";
 import TagManager from "./components/TagManager";
 import ImageTagger from "./components/ImageTagger";
+import ImageManager from "./components/ImageManager";
 import XMLImporter from "./components/XMLImporter";
 import DriveXmlImporter from "./components/DriveXmlImporter";
 
@@ -154,7 +155,13 @@ function ProgressCard({
   );
 }
 
-type TabKey = "sync" | "images" | "tags" | "xml-upload" | "xml-drive";
+type TabKey =
+  | "sync"
+  | "images"
+  | "manage"
+  | "tags"
+  | "xml-upload"
+  | "xml-drive";
 
 export default function MediaAdminClient() {
   const [activeTab, setActiveTab] = useState<TabKey>("sync");
@@ -377,6 +384,7 @@ export default function MediaAdminClient() {
       >
         <Tab key="sync" title="⚡ Szinkronizálás" />
         <Tab key="images" title="📷 Képek címkézése" />
+        <Tab key="manage" title="🗑️ Képek kezelése" />
         <Tab key="tags" title="🏷️ Címkék kezelése" />
         <Tab key="xml-drive" title="📁 XML Import (Drive)" />
         <Tab key="xml-upload" title="📥 XML Import (Feltöltés)" />
@@ -726,6 +734,9 @@ export default function MediaAdminClient() {
         {activeTab === "images" && (
           <ImageTagger tags={tags} onTagsChange={fetchTags} />
         )}
+
+        {/* Manage Tab */}
+        {activeTab === "manage" && <ImageManager onRefresh={fetchStats} />}
 
         {/* Tags Tab */}
         {activeTab === "tags" && (

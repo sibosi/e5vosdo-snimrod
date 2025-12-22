@@ -109,7 +109,13 @@ const LazyImage = ({
   );
 };
 
-const PhotoGrid = () => {
+const PhotoGrid = ({
+  filterTags = [],
+  matchAll = false,
+}: {
+  filterTags?: string[];
+  matchAll?: boolean;
+}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<MediaImageType[]>();
@@ -129,32 +135,60 @@ const PhotoGrid = () => {
 
   function loadImages() {
     setLoading(true);
-    fetch("/api/getImages", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        module: "mediaPhotos",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setImageFiles(data);
-        } else {
-          console.error("Invalid response:", data);
-          setError("Nem sikerült betölteni a képeket");
-        }
+
+    // Ha vannak szűrő
+    if (filterTags.length > 0) {
+      fetch("/api/searchImagesByTags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          module: "mediaTags",
+        },
+        body: JSON.stringify([filterTags, matchAll]),
       })
-      .catch((err) => {
-        console.error("Error fetching images:", err);
-        setError("Hiba a képek betöltésekor");
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setImageFiles(data);
+          } else {
+            console.error("Invalid response:", data);
+            setError("Nem sikerült betölteni a képeket");
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching images:", err);
+          setError("Hiba a képek betöltésekor");
+        })
+        .finally(() => setLoading(false));
+    } else {
+      // Ha nincs szűrő
+      fetch("/api/getImages", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          module: "mediaPhotos",
+        },
       })
-      .finally(() => setLoading(false));
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setImageFiles(data);
+          } else {
+            console.error("Invalid response:", data);
+            setError("Nem sikerült betölteni a képeket");
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching images:", err);
+          setError("Hiba a képek betöltésekor");
+        })
+        .finally(() => setLoading(false));
+    }
   }
 
   useEffect(() => {
     loadImages();
-  }, []);
+  }, [filterTags.join(","), matchAll]);
 
   const handleNextImage = useCallback(() => {
     if (!selected || !imageFiles) return;

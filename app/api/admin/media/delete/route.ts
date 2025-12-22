@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuth } from "@/db/dbreq";
 import { deleteImages, resetImagesPreviews } from "@/db/mediaPhotos";
 import { deleteAllCacheForImage } from "@/lib/mediaCache";
+import { gate } from "@/db/permissions";
 
 interface DeleteRequest {
   imageIds: number[];
@@ -14,6 +15,8 @@ export async function POST(request: Request) {
     if (!selfUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    gate(selfUser, ["admin", "media_admin"]);
 
     const body: DeleteRequest = await request.json();
     const { imageIds, mode } = body;

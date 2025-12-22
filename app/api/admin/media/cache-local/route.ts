@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     if (!selfUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    gate(selfUser, "admin");
+    gate(selfUser, ["admin", "media_admin"]);
 
     if (localCacheProgress.running) {
       return NextResponse.json(

@@ -44,6 +44,9 @@ public/storage/quick-teachers.json
 public/storage/teachers.json
 public/sw.js
 
+# media cache (server-side image cache)
+.media-cache/
+
 .vscode
 
 /.vscode/

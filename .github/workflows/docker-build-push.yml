@@ -72,6 +72,7 @@ jobs:
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             PUBLIC_VAPID_KEY=${{ secrets.PUBLIC_VAPID_KEY }}
             PRIVATE_VAPID_KEY=${{ secrets.PRIVATE_VAPID_KEY }}
+            SZALAGAVATO_SECRET=${{ secrets.SZALAGAVATO_SECRET }}
 
       - name: Log out from GHCR
         run: docker logout ghcr.io

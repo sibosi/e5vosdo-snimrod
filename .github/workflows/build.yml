@@ -33,6 +33,7 @@ jobs:
 
       PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
       PRIVATE_VAPID_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
+      SZALAGAVATO_SECRET: ${{ secrets.SZALAGAVATO_SECRET }}
 
     steps:
       - name: Checkout code

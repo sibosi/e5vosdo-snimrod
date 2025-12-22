@@ -56,7 +56,7 @@ export async function POST() {
     if (!selfUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    gate(selfUser, "admin");
+    gate(selfUser, ["admin", "media_admin"]);
 
     if (colorProgress.running) {
       return NextResponse.json(

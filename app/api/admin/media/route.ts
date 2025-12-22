@@ -12,7 +12,7 @@ export async function GET() {
     if (!selfUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    gate(selfUser, "admin");
+    gate(selfUser, ["admin", "media_admin"]);
 
     // Adatbázis statisztikák
     const [totalResult] = (await dbreq(

@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     if (!selfUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    gate(selfUser, "admin");
+    gate(selfUser, ["admin", "media_admin"]);
 
     const searchParams = request.nextUrl.searchParams;
     const page = Math.max(

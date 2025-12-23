@@ -177,11 +177,12 @@ const PhotoGrid = ({
     } else {
       // Ha nincs szűrő
       fetch("/api/getImages", {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           module: "mediaPhotos",
         },
+        body: JSON.stringify({ byName: true }),
       })
         .then((res) => res.json())
         .then((data) => {

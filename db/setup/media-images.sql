@@ -1,7 +1,10 @@
 CREATE TABLE
     IF NOT EXISTS media_images (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        datetime VARCHAR(50) NOT NULL,
+        -- Kép készítésének időpontja (EXIF-ből kinyerve, NULL ha nem elérhető)
+        datetime VARCHAR(50) DEFAULT NULL,
+        -- Drive-ra feltöltés időpontja
+        upload_datetime VARCHAR(50) NOT NULL,
         original_drive_id VARCHAR(255) NOT NULL UNIQUE KEY,
         original_file_name VARCHAR(255),
         color VARCHAR(50),
@@ -41,7 +44,7 @@ CREATE TABLE
 SELECT
     *
 FROM
-    media_images_tags
+    media_images
     --@block
 ALTER TABLE media_images_tags
 ADD COLUMN priority VARCHAR(10) DEFAULT 'normal' CHECK (priority IN ('madeBy', 'normal', 'high'));

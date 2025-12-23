@@ -25,11 +25,20 @@ export async function getOriginalImagesFileID() {
   return images.map((image) => image.original_drive_id);
 }
 
-export async function getImages(selfUser: UserType) {
+export async function getImages(
+  selfUser: UserType,
+  byName = false,
+): Promise<MediaImageType[]> {
   gate(selfUser, "user");
-  return (await dbreq(
-    "SELECT * FROM media_images ORDER BY datetime DESC",
-  )) as MediaImageType[];
+  if (byName) {
+    return (await dbreq(
+      "SELECT * FROM media_images ORDER BY original_file_name DESC",
+    )) as MediaImageType[];
+  } else {
+    return (await dbreq(
+      "SELECT * FROM media_images ORDER BY datetime DESC",
+    )) as MediaImageType[];
+  }
 }
 
 /**
@@ -72,7 +81,9 @@ export async function updateImagePreview(
  * Paraméterek:
  * - original_drive_id (kötelező)
  * - original_file_name (opcionális)
- * - color (opcionális)
+ * - color (opcionális) - domináns szín
+ * - datetime (opcionális) - kép készítésének időpontja (EXIF-ből)
+ * - upload_datetime (opcionális) - Drive feltöltés időpontja
  *
  * Visszatérési érték: a dbreq eredménye (insert/update result)
  */
@@ -82,23 +93,37 @@ export async function upsertMediaImage(
     original_drive_id: string;
     original_file_name?: string | null;
     color?: string | null;
+    datetime?: string | null; // EXIF capture time
+    upload_datetime?: string | null; // Drive upload time
   },
 ) {
-  const { original_drive_id, original_file_name = null, color = null } = params;
+  const {
+    original_drive_id,
+    original_file_name = null,
+    color = null,
+    datetime = null,
+    upload_datetime = null,
+  } = params;
 
   gate(selfUser, "user");
 
   const sql = `
     INSERT INTO media_images
-      (datetime, original_drive_id, original_file_name, color)
-    VALUES (NOW(), ?, ?, ?)
+      (datetime, upload_datetime, original_drive_id, original_file_name, color)
+    VALUES (?, COALESCE(?, NOW()), ?, ?, ?)
     ON DUPLICATE KEY UPDATE
-      original_file_name = VALUES(original_file_name),
-      color = VALUES(color),
-      datetime = VALUES(datetime)
+      original_file_name = COALESCE(VALUES(original_file_name), original_file_name),
+      color = COALESCE(VALUES(color), color),
+      datetime = COALESCE(VALUES(datetime), datetime)
   `;
 
-  return await dbreq(sql, [original_drive_id, original_file_name, color]);
+  return await dbreq(sql, [
+    datetime,
+    upload_datetime,
+    original_drive_id,
+    original_file_name,
+    color,
+  ]);
 }
 
 /**

@@ -72,6 +72,37 @@ async function averageColorHex(buffer: Buffer): Promise<string | null> {
   }
 }
 
+/** Kinyeri a kép készítésének időpontját az EXIF adatokból */
+async function extractExifDatetime(buffer: Buffer): Promise<string | null> {
+  try {
+    const metadata = await sharp(buffer).metadata();
+    if (metadata.exif) {
+      const ExifReader = await import("exifreader");
+      const tags = ExifReader.load(buffer);
+
+      const dateFields = [
+        "DateTimeOriginal",
+        "CreateDate",
+        "DateTime",
+        "DateTimeDigitized",
+      ];
+
+      for (const field of dateFields) {
+        if (tags[field]?.description) {
+          const exifDate = tags[field].description;
+          const isoDate = exifDate
+            .replace(/^(\d{4}):(\d{2}):(\d{2})/, "$1-$2-$3")
+            .replace(" ", "T");
+          return isoDate;
+        }
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 /** Preview generálás */
 async function generatePreview(
   originalBuffer: Buffer,
@@ -167,6 +198,7 @@ export async function POST(req: Request) {
           id: number | null; // null = új kép, még nincs DB-ben
           driveFileId: string;
           fileName: string;
+          driveCreatedTime?: string; // Drive upload time
           needsSync: boolean;
           needsColor: boolean;
           needsSmallDriveCache: boolean;
@@ -205,6 +237,7 @@ export async function POST(req: Request) {
                 id: null,
                 driveFileId: file.id,
                 fileName: file.name,
+                driveCreatedTime: file.createdTime, // Drive upload time
                 needsSync: true,
                 needsColor: options.generateColors,
                 needsSmallDriveCache:
@@ -301,6 +334,9 @@ export async function POST(req: Request) {
 
             // A) Sync: DB-be mentés (új képeknél)
             if (img.needsSync) {
+              // EXIF datetime kinyerése (kép készítésének időpontja)
+              const datetime = await extractExifDatetime(originalBuffer);
+
               const color = img.needsColor
                 ? await averageColorHex(originalBuffer)
                 : null;
@@ -309,6 +345,8 @@ export async function POST(req: Request) {
                 original_drive_id: img.driveFileId,
                 original_file_name: img.fileName,
                 color,
+                datetime, // EXIF capture time
+                upload_datetime: img.driveCreatedTime, // Drive upload time
               });
               batchProgress.stats.synced++;
               if (color) batchProgress.stats.colorsGenerated++;

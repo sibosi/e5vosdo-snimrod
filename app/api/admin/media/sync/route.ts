@@ -47,6 +47,44 @@ async function averageColorHex(buffer: Buffer): Promise<string | null> {
   }
 }
 
+/** Kinyeri a kép készítésének időpontját az EXIF adatokból */
+async function extractExifDatetime(buffer: Buffer): Promise<string | null> {
+  try {
+    const metadata = await sharp(buffer).metadata();
+    // Sharp az exif-et nyers buffer-ként adja vissza, de van DateTimeOriginal/CreateDate
+    // Ha az exif mezők közvetlenül elérhetők:
+    if (metadata.exif) {
+      // EXIF buffer parse-olása
+      const ExifReader = await import("exifreader");
+      const tags = ExifReader.load(buffer);
+
+      // Próbáljuk kinyerni a dátumot különböző mezőkből
+      const dateFields = [
+        "DateTimeOriginal",
+        "CreateDate",
+        "DateTime",
+        "DateTimeDigitized",
+      ];
+
+      for (const field of dateFields) {
+        if (tags[field]?.description) {
+          // EXIF formátum: "2024:12:23 14:30:00" -> ISO formátum
+          const exifDate = tags[field].description;
+          // Átalakítás ISO formátumra
+          const isoDate = exifDate
+            .replace(/^(\d{4}):(\d{2}):(\d{2})/, "$1-$2-$3")
+            .replace(" ", "T");
+          return isoDate;
+        }
+      }
+    }
+    return null;
+  } catch (e) {
+    console.warn("extractExifDatetime failed:", e);
+    return null;
+  }
+}
+
 // GET: Progress lekérdezése
 export async function GET() {
   return NextResponse.json(syncProgress);
@@ -123,18 +161,24 @@ export async function POST(req: Request) {
 
           try {
             let color: string | null = null;
+            let datetime: string | null = null;
 
+            // Mindig letöltjük a képet, hogy kinyerjük az EXIF dátumot
+            const res: any = await drive.files.get(
+              {
+                fileId: file.id,
+                alt: "media",
+                supportsAllDrives: true,
+              } as any,
+              { responseType: "stream" } as any,
+            );
+            const buffer = await streamToBuffer(res.data);
+
+            // EXIF datetime kinyerése (kép készítésének időpontja)
+            datetime = await extractExifDatetime(buffer);
+
+            // Domináns szín számítása (opcionális)
             if (withColors) {
-              // Letöltés és szín számítás
-              const res: any = await drive.files.get(
-                {
-                  fileId: file.id,
-                  alt: "media",
-                  supportsAllDrives: true,
-                } as any,
-                { responseType: "stream" } as any,
-              );
-              const buffer = await streamToBuffer(res.data);
               color = await averageColorHex(buffer);
             }
 
@@ -142,6 +186,8 @@ export async function POST(req: Request) {
               original_drive_id: file.id,
               original_file_name: file.name,
               color,
+              datetime, // EXIF capture time
+              upload_datetime: file.createdTime, // Drive upload time
             });
           } catch (error: any) {
             syncProgress.errors.push(`${file.name}: ${error.message}`);

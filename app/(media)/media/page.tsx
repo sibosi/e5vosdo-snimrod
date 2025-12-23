@@ -5,12 +5,16 @@ import { gate } from "@/db/permissions";
 import { redirect } from "next/navigation";
 
 const MediaPage = async () => {
+  redirect("/media/szalagavato");
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
 
   if (!gate(selfUser, "media_admin", "boolean")) {
-    redirect("/media/szalagavato");
-    // return (<div className="p-4 text-danger-500">Az oldal karbantartás alatt áll.</div>);
+    return (
+      <div className="p-4 text-danger-500">
+        Az oldal karbantartás alatt áll.
+      </div>
+    );
   }
 
   return <PhotoGridWrapper />;

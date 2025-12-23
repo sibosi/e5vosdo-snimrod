@@ -35,6 +35,8 @@ interface Stats {
     total: number;
     withColor: number;
     withoutColor: number;
+    withDatetime: number;
+    withoutDatetime: number;
     withSmallPreview: number;
     withLargePreview: number;
   };
@@ -179,6 +181,7 @@ export default function MediaAdminClient() {
   const [colorProgress, setColorProgress] = useState<ProgressState | null>(
     null,
   );
+  const [exifProgress, setExifProgress] = useState<ProgressState | null>(null);
   const [driveCacheProgress, setDriveCacheProgress] =
     useState<ProgressState | null>(null);
   const [localCacheProgress, setLocalCacheProgress] =
@@ -226,6 +229,7 @@ export default function MediaAdminClient() {
     const endpoints = [
       { url: "/api/admin/media/sync", setter: setSyncProgress },
       { url: "/api/admin/media/generate-colors", setter: setColorProgress },
+      { url: "/api/admin/media/extract-exif", setter: setExifProgress },
       { url: "/api/admin/media/cache-drive", setter: setDriveCacheProgress },
       { url: "/api/admin/media/cache-local", setter: setLocalCacheProgress },
       { url: "/api/admin/media/batch", setter: setBatchProgress },
@@ -256,6 +260,7 @@ export default function MediaAdminClient() {
       if (
         syncProgress?.running ||
         colorProgress?.running ||
+        exifProgress?.running ||
         driveCacheProgress?.running ||
         localCacheProgress?.running ||
         batchProgress?.running
@@ -271,6 +276,7 @@ export default function MediaAdminClient() {
     pollProgress,
     syncProgress?.running,
     colorProgress?.running,
+    exifProgress?.running,
     driveCacheProgress?.running,
     localCacheProgress?.running,
     batchProgress?.running,
@@ -294,6 +300,19 @@ export default function MediaAdminClient() {
     try {
       await fetch("/api/admin/media/generate-colors", {
         method: "POST",
+      });
+      pollProgress();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const startExifExtraction = async (forceAll: boolean = false) => {
+    try {
+      await fetch("/api/admin/media/extract-exif", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ forceAll }),
       });
       pollProgress();
     } catch (err: any) {
@@ -666,6 +685,35 @@ export default function MediaAdminClient() {
                   </span>
                 )}
               </p>
+            </ProgressCard>
+
+            {/* Extract EXIF datetime */}
+            <ProgressCard
+              title="2b. EXIF dátum kinyerése"
+              progress={exifProgress}
+              onStart={() => startExifExtraction(false)}
+              startLabel="Hiányzó dátumok kinyerése"
+            >
+              <p className="text-sm text-default-500">
+                Kép készítésének időpontja (EXIF) kinyerése azoknál a képeknél,
+                ahol még nincs.
+              </p>
+              {(exifProgress as any)?.stats && (
+                <div className="mt-2 text-xs text-default-400">
+                  Kinyerve: {(exifProgress as any).stats.extracted} | Nincs
+                  EXIF: {(exifProgress as any).stats.noExif}
+                </div>
+              )}
+              <Button
+                color="default"
+                variant="flat"
+                size="sm"
+                className="mt-2"
+                onPress={() => startExifExtraction(true)}
+                isDisabled={exifProgress?.running}
+              >
+                Minden kép újrafeldolgozása
+              </Button>
             </ProgressCard>
 
             {/* Drive cache */}

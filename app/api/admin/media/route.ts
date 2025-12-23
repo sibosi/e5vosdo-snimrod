@@ -35,6 +35,11 @@ export async function GET() {
     )) as { count: number }[];
     const withLargePreview = withLargePreviewResult?.count ?? 0;
 
+    const [withDatetimeResult] = (await dbreq(
+      "SELECT COUNT(*) as count FROM media_images WHERE datetime IS NOT NULL",
+    )) as { count: number }[];
+    const withDatetime = withDatetimeResult?.count ?? 0;
+
     // Lokális cache statisztikák
     const cacheStats = getCacheStats();
 
@@ -43,6 +48,8 @@ export async function GET() {
         total,
         withColor,
         withoutColor: total - withColor,
+        withDatetime,
+        withoutDatetime: total - withDatetime,
         withSmallPreview,
         withLargePreview,
       },

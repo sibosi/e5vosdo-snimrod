@@ -5,6 +5,7 @@ import { gate } from "./permissions";
 export interface MediaTagType {
   id: number;
   tag_name: string;
+  priority: "madeBy" | "normal" | "high";
 }
 
 export interface MediaImageTagRelation {
@@ -124,6 +125,7 @@ export async function getTagsForImage(
   Array<{
     tag_id: number;
     tag_name: string;
+    priority: "madeBy" | "normal" | "high";
     coordinate1_x: number | null;
     coordinate1_y: number | null;
     coordinate2_x: number | null;
@@ -135,6 +137,7 @@ export async function getTagsForImage(
     `SELECT 
       tags.id as tag_id, 
       tags.tag_name, 
+      tags.priority,
       relatons.coordinate1_x, 
       relatons.coordinate1_y, 
       relatons.coordinate2_x, 
@@ -505,18 +508,41 @@ export async function getImageByOriginalFileName(
  */
 export async function getTagStats(
   selfUser: UserType,
-): Promise<Array<{ tag_id: number; tag_name: string; usage_count: number }>> {
+): Promise<
+  Array<{
+    tag_id: number;
+    tag_name: string;
+    usage_count: number;
+    priority: "madeBy" | "normal" | "high";
+  }>
+> {
   gate(selfUser, ["admin", "media_admin"]);
 
   return (await dbreq(`
     SELECT 
       tags.id as tag_id, 
       tags.tag_name, 
+      tags.priority,
       COUNT(relatons.id) as usage_count
     FROM media_images_tags tags
     LEFT JOIN media_images_to_tags relatons
       ON tags.id = relatons.media_image_tag_id
-    GROUP BY tags.id, tags.tag_name
+    GROUP BY tags.id, tags.tag_name, tags.priority
     ORDER BY usage_count DESC, tags.tag_name ASC
   `)) as any[];
+}
+
+/**
+ * Update a tag's priority (media_admin only)
+ */
+export async function updateTagPriority(
+  selfUser: UserType,
+  tagId: number,
+  priority: "madeBy" | "normal" | "high",
+): Promise<void> {
+  gate(selfUser, ["admin", "media_admin"]);
+  await dbreq("UPDATE media_images_tags SET priority = ? WHERE id = ?", [
+    priority,
+    tagId,
+  ]);
 }

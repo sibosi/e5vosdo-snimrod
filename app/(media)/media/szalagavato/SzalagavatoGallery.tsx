@@ -22,6 +22,7 @@ const SzalagavatoGallery = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
   const [matchAll, setMatchAll] = useState(false);
+  const [filteredTags, setFilteredTags] = useState<MediaTagType[]>([]);
 
   useEffect(() => {
     fetch("/api/getAllTags", {
@@ -43,9 +44,16 @@ const SzalagavatoGallery = () => {
       });
   }, []);
 
-  const filteredTags = availableTags.filter((tag) =>
-    tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  useEffect(() => {
+    setFilteredTags(
+      availableTags.filter(
+        (tag) =>
+          (!searchQuery && tag.priority === "high") ||
+          (searchQuery &&
+            tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase())),
+      ),
+    );
+  }, [searchQuery, availableTags]);
 
   const toggleTag = (tagName: string) => {
     setSelectedTags((prev) =>

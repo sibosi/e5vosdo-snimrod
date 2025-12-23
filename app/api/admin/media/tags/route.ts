@@ -6,6 +6,7 @@ import {
   createTag,
   deleteTag,
   updateTag,
+  updateTagPriority,
   getTagStats,
 } from "@/db/mediaTags";
 
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
 /**
  * PUT /api/admin/media/tags
  * Update a tag
- * Body: { id: number, tag_name: string }
+ * Body: { id: number, tag_name?: string, priority?: "madeBy" | "normal" | "high" }
  */
 export async function PUT(request: NextRequest) {
   try {
@@ -88,18 +89,29 @@ export async function PUT(request: NextRequest) {
     gate(selfUser, ["admin", "media_admin"]);
 
     const body = await request.json();
-    const { id, tag_name } = body;
+    const { id, tag_name, priority } = body;
 
     if (!id || typeof id !== "number")
       return NextResponse.json({ error: "id is required" }, { status: 400 });
 
-    if (!tag_name || typeof tag_name !== "string")
+    // Update tag name if provided
+    if (tag_name && typeof tag_name === "string") {
+      await updateTag(selfUser, id, tag_name.trim());
+    }
+
+    // Update priority if provided
+    if (priority && ["madeBy", "normal", "high"].includes(priority)) {
+      await updateTagPriority(selfUser, id, priority);
+    }
+
+    // Must provide at least one field to update
+    if (!tag_name && !priority) {
       return NextResponse.json(
-        { error: "tag_name is required" },
+        { error: "tag_name or priority is required" },
         { status: 400 },
       );
+    }
 
-    await updateTag(selfUser, id, tag_name.trim());
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("[admin/media/tags] PUT Error:", error);

@@ -41,7 +41,7 @@ CREATE TABLE
 SELECT
     *
 FROM
-    media_images;
-
---@block
--- delete all
+    media_images_tags
+    --@block
+ALTER TABLE media_images_tags
+ADD COLUMN priority VARCHAR(10) DEFAULT 'normal' CHECK (priority IN ('madeBy', 'normal', 'high'));

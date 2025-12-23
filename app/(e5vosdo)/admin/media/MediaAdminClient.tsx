@@ -49,6 +49,7 @@ interface TagStats {
   tag_id: number;
   tag_name: string;
   usage_count: number;
+  priority: "madeBy" | "normal" | "high";
 }
 
 function formatBytes(bytes: number): string {

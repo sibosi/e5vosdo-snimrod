@@ -1,6 +1,7 @@
 "use client";
 
 import { MediaImageType } from "@/db/mediaPhotos";
+import { MediaTagType } from "@/db/mediaTags";
 import React, {
   useCallback,
   useEffect,
@@ -428,6 +429,34 @@ const ImageModal = ({
   const [error, setError] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [madeByTags, setMadeByTags] = useState<string[]>([]);
+
+  // Fetch madeBy tags for the image
+  useEffect(() => {
+    const fetchMadeByTags = async () => {
+      try {
+        const res = await fetch(`/api/media/tags?imageId=${image.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.tags && Array.isArray(data.tags)) {
+            const madeBy = data.tags
+              .filter(
+                (t: MediaTagType) =>
+                  t.priority === "madeBy" || t.tag_name.startsWith("Made by:"),
+              )
+              .map((t: { tag_name: string }) =>
+                t.tag_name.replaceAll("Made by:", "").trim(),
+              );
+            setMadeByTags(madeBy);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching tags:", err);
+      }
+    };
+
+    fetchMadeByTags();
+  }, [image.id]);
 
   const title = image.original_file_name || "Kép";
   const src = `/api/media/${image.id}?size=large`;
@@ -445,6 +474,7 @@ const ImageModal = ({
   useEffect(() => {
     setLoaded(false);
     setError(false);
+    setMadeByTags([]);
   }, [image.id]);
 
   // Fullscreen API kezelése
@@ -554,6 +584,16 @@ const ImageModal = ({
             Kilépés
           </button>
         </div>
+
+        {/* Made By Tags - Fullscreen */}
+        {madeByTags.length > 0 && (
+          <div className="absolute bottom-4 right-4 rounded-lg bg-black/70 px-3 py-2">
+            <div className="flex items-center gap-2 text-sm text-white">
+              <span className="text-foreground-400">📷</span>
+              {madeByTags.join(", ")}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -635,6 +675,16 @@ const ImageModal = ({
           >
             ➜
           </button>
+
+          {/* Made By Tags - Normal mode */}
+          {madeByTags.length > 0 && (
+            <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 px-3 py-2">
+              <div className="flex items-center gap-2 text-sm text-white">
+                <span className="text-foreground-400">📷</span>
+                {madeByTags.join(", ")}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

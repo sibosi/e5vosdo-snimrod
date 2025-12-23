@@ -6,6 +6,7 @@ interface TagStats {
   tag_id: number;
   tag_name: string;
   usage_count: number;
+  priority: "madeBy" | "normal" | "high";
 }
 
 interface ImageTag {

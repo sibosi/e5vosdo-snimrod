@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 interface TagStats {
   tag_id: number;
   tag_name: string;
   usage_count: number;
+  priority: "madeBy" | "normal" | "high";
 }
 
 interface TagManagerProps {
@@ -27,6 +28,7 @@ const TagManager: React.FC<TagManagerProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const filteredTags = tags.filter((tag) =>
     tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -121,6 +123,37 @@ const TagManager: React.FC<TagManagerProps> = ({
     }
   };
 
+  const handleUpdatePriority = async (
+    tagId: number,
+    priority: "madeBy" | "normal" | "high",
+  ) => {
+    setError(null);
+    const scrollTop = scrollContainerRef.current?.scrollTop ?? 0;
+
+    try {
+      const res = await fetch("/api/admin/media/tags", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: tagId, priority }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to update priority");
+      }
+
+      await onTagsChange();
+      // Restore scroll position after data refresh
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = scrollTop;
+        }
+      });
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -177,11 +210,12 @@ const TagManager: React.FC<TagManagerProps> = ({
       </div>
 
       {/* Tags List */}
-      <div className="max-h-96 overflow-y-auto">
+      <div ref={scrollContainerRef} className="max-h-96 overflow-y-auto">
         <table className="w-full">
           <thead className="sticky top-0 bg-foreground-100">
             <tr>
               <th className="px-4 py-2 text-left">Címke</th>
+              <th className="px-4 py-2 text-center">Prioritás</th>
               <th className="px-4 py-2 text-center">Használat</th>
               <th className="px-4 py-2 text-right">Műveletek</th>
             </tr>
@@ -203,6 +237,28 @@ const TagManager: React.FC<TagManagerProps> = ({
                   ) : (
                     <span className="font-medium">{tag.tag_name}</span>
                   )}
+                </td>
+                <td className="px-4 py-2 text-center">
+                  <select
+                    value={tag.priority}
+                    onChange={(e) =>
+                      handleUpdatePriority(
+                        tag.tag_id,
+                        e.target.value as "madeBy" | "normal" | "high",
+                      )
+                    }
+                    className={`rounded border px-2 py-1 text-sm focus:border-selfprimary-500 focus:outline-none ${
+                      tag.priority === "madeBy"
+                        ? "border-purple-400 bg-purple-100 text-purple-800"
+                        : tag.priority === "high"
+                          ? "border-green-400 bg-green-100 text-green-800"
+                          : "border-foreground-300 bg-foreground-100"
+                    }`}
+                  >
+                    <option value="normal">Normal</option>
+                    <option value="high">Kiemelt</option>
+                    <option value="madeBy">Készítő</option>
+                  </select>
                 </td>
                 <td className="px-4 py-2 text-center">
                   <span className="rounded-full bg-foreground-200 px-2 py-1 text-sm">

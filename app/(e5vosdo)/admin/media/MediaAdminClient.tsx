@@ -230,14 +230,32 @@ export default function MediaAdminClient() {
       const res = await fetch("/api/admin/media/progress");
       if (res.ok) {
         const data = await res.json();
-        // Update all progress states with the same global progress
-        // This prevents jumping between states
-        setBatchProgress(data);
-        setSyncProgress(data);
-        setColorProgress(data);
-        setExifProgress(data);
-        setDriveCacheProgress(data);
-        setLocalCacheProgress(data);
+        // Update only the progress state that matches the current operation type
+        // This prevents UI jumping between different operation states
+        switch (data.operationType) {
+          case "batch":
+            setBatchProgress(data);
+            break;
+          case "sync":
+            setSyncProgress(data);
+            break;
+          case "generate-colors":
+            setColorProgress(data);
+            break;
+          case "extract-exif":
+            setExifProgress(data);
+            break;
+          case "cache-drive":
+            setDriveCacheProgress(data);
+            break;
+          case "cache-local":
+            setLocalCacheProgress(data);
+            break;
+          default:
+            // If no operation is running (operationType is null), do nothing
+            // This preserves the last known state of each operation
+            break;
+        }
       }
     } catch {
       // Ignore polling errors

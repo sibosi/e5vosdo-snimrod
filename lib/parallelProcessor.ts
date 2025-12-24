@@ -1,7 +1,7 @@
 // lib/parallelProcessor.ts
 // Parallel image processing utility using controlled concurrency
 
-import os from "os";
+import * as os from "os";
 
 export interface ProcessTask<T> {
   data: T;

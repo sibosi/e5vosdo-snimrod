@@ -93,8 +93,8 @@ export async function upsertMediaImage(
     original_drive_id: string;
     original_file_name?: string | null;
     color?: string | null;
-    datetime?: string | null; // EXIF capture time
-    upload_datetime?: string | null; // Drive upload time
+    datetime?: string | null; // EXIF capture time (ISO string)
+    upload_datetime?: string | null; // Drive upload time (ISO string)
   },
 ) {
   const {
@@ -107,10 +107,13 @@ export async function upsertMediaImage(
 
   gate(selfUser, "user");
 
+  // Ha nincs upload_datetime, használjunk JS ISO stringet (VARCHAR-ban tároljuk)
+  const effectiveUploadDatetime = upload_datetime ?? new Date().toISOString();
+
   const sql = `
     INSERT INTO media_images
       (datetime, upload_datetime, original_drive_id, original_file_name, color)
-    VALUES (?, COALESCE(?, NOW()), ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       original_file_name = COALESCE(VALUES(original_file_name), original_file_name),
       color = COALESCE(VALUES(color), color),
@@ -119,7 +122,7 @@ export async function upsertMediaImage(
 
   return await dbreq(sql, [
     datetime,
-    upload_datetime,
+    effectiveUploadDatetime,
     original_drive_id,
     original_file_name,
     color,

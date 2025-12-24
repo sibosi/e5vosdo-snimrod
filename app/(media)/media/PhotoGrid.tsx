@@ -127,7 +127,11 @@ const PhotoGrid = ({
 
   useEffect(() => {
     const updateWidth = () => {
-      const width = Math.min(window.innerWidth - 32, 1200);
+      const min1 =
+        window.innerWidth < 1024
+          ? window.innerWidth - 32
+          : window.innerWidth - 300;
+      const width = Math.min(min1, 1200);
       setContainerWidth(width);
     };
 

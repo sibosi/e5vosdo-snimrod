@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Progress } from "@heroui/progress";
@@ -12,21 +12,21 @@ import ImageTagger from "./components/ImageTagger";
 import ImageManager from "./components/ImageManager";
 import XMLImporter from "./components/XMLImporter";
 import DriveXmlImporter from "./components/DriveXmlImporter";
-import type { ProgressState as GlobalProgressState, OperationType } from "@/lib/globalProgress";
+import type { OperationType } from "@/lib/globalProgress";
 
-// Local UI-specific progress state that extends the global state
-interface ProgressState extends Omit<GlobalProgressState, 'startedAt'> {
+// Local UI-specific progress state - standalone interface (not extending GlobalProgressState)
+interface ProgressState {
+  running: boolean;
+  current: number;
+  total: number;
+  currentFile: string;
+  phase: string;
+  operationType: OperationType | null;
+  options?: Record<string, any>;
+  stats?: Record<string, number>;
+  errors: string[];
   startedAt: string | null; // Serialized as string when fetched from API
   size?: "small" | "large";
-  stats?: {
-    synced?: number;
-    colorsGenerated?: number;
-    driveCached?: number;
-    localCached?: number;
-    extracted?: number;
-    noExif?: number;
-    [key: string]: number | undefined;
-  };
 }
 
 interface Stats {
@@ -175,22 +175,40 @@ export default function MediaAdminClient() {
   const [tags, setTags] = useState<TagStats[]>([]);
   const [tagsLoading, setTagsLoading] = useState(true);
 
-  // Progress states
-  const [syncProgress, setSyncProgress] = useState<ProgressState | null>(null);
-  const [colorProgress, setColorProgress] = useState<ProgressState | null>(
-    null,
-  );
-  const [exifProgress, setExifProgress] = useState<ProgressState | null>(null);
-  const [driveCacheProgress, setDriveCacheProgress] =
-    useState<ProgressState | null>(null);
-  const [localCacheProgress, setLocalCacheProgress] =
-    useState<ProgressState | null>(null);
-  const [batchProgress, setBatchProgress] = useState<ProgressState | null>(
-    null,
-  );
+  // Centralized progress state - single source of truth
+  const [progress, setProgress] = useState<ProgressState | null>(null);
+
+  // Cache of last completed operation states (for showing "Kész" after completion)
+  const [completedOperations, setCompletedOperations] = useState<
+    Partial<Record<OperationType, ProgressState>>
+  >({});
+
+  // Track if we're currently polling to avoid duplicate fetches
+  const isPollingRef = useRef(false);
 
   // Size selection for cache operations
   const [selectedSize, setSelectedSize] = useState<"small" | "large">("small");
+
+  // Helper to get progress for a specific operation type
+  const getOperationProgress = useCallback(
+    (type: OperationType): ProgressState | null => {
+      // If current operation matches, return it
+      if (progress?.operationType === type) {
+        return progress;
+      }
+      // Otherwise return cached completed state
+      return completedOperations[type] || null;
+    },
+    [progress, completedOperations],
+  );
+
+  // Derived progress states for each operation
+  const syncProgress = getOperationProgress("sync");
+  const colorProgress = getOperationProgress("generate-colors");
+  const exifProgress = getOperationProgress("extract-exif");
+  const driveCacheProgress = getOperationProgress("cache-drive");
+  const localCacheProgress = getOperationProgress("cache-local");
+  const batchProgress = getOperationProgress("batch");
 
   // Fetch tags
   const fetchTags = useCallback(async () => {
@@ -223,41 +241,32 @@ export default function MediaAdminClient() {
     }
   }, []);
 
-  // Poll progress for running operations
+  // Poll progress for running operations - centralized
   const pollProgress = useCallback(async () => {
+    // Prevent concurrent polling
+    if (isPollingRef.current) return;
+    isPollingRef.current = true;
+
     try {
       const res = await fetch("/api/admin/media/progress");
       if (res.ok) {
-        const data = await res.json();
-        // Update only the progress state that matches the current operation type
-        // This prevents UI jumping between different operation states
-        switch (data.operationType) {
-          case "batch":
-            setBatchProgress(data);
-            break;
-          case "sync":
-            setSyncProgress(data);
-            break;
-          case "generate-colors":
-            setColorProgress(data);
-            break;
-          case "extract-exif":
-            setExifProgress(data);
-            break;
-          case "cache-drive":
-            setDriveCacheProgress(data);
-            break;
-          case "cache-local":
-            setLocalCacheProgress(data);
-            break;
-          default:
-            // If no operation is running (operationType is null), do nothing
-            // This preserves the last known state of each operation
-            break;
+        const data: ProgressState = await res.json();
+
+        // Update the central progress state
+        setProgress(data);
+
+        // If operation just completed (not running but has operationType), cache it
+        if (!data.running && data.operationType) {
+          setCompletedOperations((prev) => ({
+            ...prev,
+            [data.operationType!]: data,
+          }));
         }
       }
     } catch {
       // Ignore polling errors
+    } finally {
+      isPollingRef.current = false;
     }
   }, []);
 
@@ -270,30 +279,13 @@ export default function MediaAdminClient() {
     const interval = setInterval(() => {
       pollProgress();
       // Refresh stats if any operation is running
-      if (
-        syncProgress?.running ||
-        colorProgress?.running ||
-        exifProgress?.running ||
-        driveCacheProgress?.running ||
-        localCacheProgress?.running ||
-        batchProgress?.running
-      ) {
+      if (progress?.running) {
         fetchStats();
       }
-    }, 2000);
+    }, 3000);
 
     return () => clearInterval(interval);
-  }, [
-    fetchStats,
-    fetchTags,
-    pollProgress,
-    syncProgress?.running,
-    colorProgress?.running,
-    exifProgress?.running,
-    driveCacheProgress?.running,
-    localCacheProgress?.running,
-    batchProgress?.running,
-  ]);
+  }, [fetchStats, fetchTags, pollProgress, progress?.running]);
 
   // Action handlers
   const startSync = async (withColors: boolean) => {

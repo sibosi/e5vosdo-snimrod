@@ -45,6 +45,11 @@ const MePage = async () => {
       href: "/tanari/jelenletek",
       access: selfUser.permissions.includes("admin"),
     },
+    {
+      title: "Média admin",
+      href: "/admin/media",
+      access: selfUser.permissions.includes("admin") || selfUser.permissions.includes("media_admin"),
+    },
   ];
 
   return (

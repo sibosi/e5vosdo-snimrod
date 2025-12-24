@@ -12,21 +12,20 @@ import ImageTagger from "./components/ImageTagger";
 import ImageManager from "./components/ImageManager";
 import XMLImporter from "./components/XMLImporter";
 import DriveXmlImporter from "./components/DriveXmlImporter";
+import type { ProgressState as GlobalProgressState, OperationType } from "@/lib/globalProgress";
 
-interface ProgressState {
-  running: boolean;
-  current: number;
-  total: number;
-  currentFile: string;
-  errors: string[];
-  startedAt: string | null;
+// Local UI-specific progress state that extends the global state
+interface ProgressState extends Omit<GlobalProgressState, 'startedAt'> {
+  startedAt: string | null; // Serialized as string when fetched from API
   size?: "small" | "large";
-  phase?: string;
   stats?: {
-    synced: number;
-    colorsGenerated: number;
-    driveCached: number;
-    localCached: number;
+    synced?: number;
+    colorsGenerated?: number;
+    driveCached?: number;
+    localCached?: number;
+    extracted?: number;
+    noExif?: number;
+    [key: string]: number | undefined;
   };
 }
 

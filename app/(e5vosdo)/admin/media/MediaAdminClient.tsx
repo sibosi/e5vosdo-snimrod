@@ -226,25 +226,21 @@ export default function MediaAdminClient() {
 
   // Poll progress for running operations
   const pollProgress = useCallback(async () => {
-    const endpoints = [
-      { url: "/api/admin/media/sync", setter: setSyncProgress },
-      { url: "/api/admin/media/generate-colors", setter: setColorProgress },
-      { url: "/api/admin/media/extract-exif", setter: setExifProgress },
-      { url: "/api/admin/media/cache-drive", setter: setDriveCacheProgress },
-      { url: "/api/admin/media/cache-local", setter: setLocalCacheProgress },
-      { url: "/api/admin/media/batch", setter: setBatchProgress },
-    ];
-
-    for (const { url, setter } of endpoints) {
-      try {
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          setter(data);
-        }
-      } catch {
-        // Ignore polling errors
+    try {
+      const res = await fetch("/api/admin/media/progress");
+      if (res.ok) {
+        const data = await res.json();
+        // Update all progress states with the same global progress
+        // This prevents jumping between states
+        setBatchProgress(data);
+        setSyncProgress(data);
+        setColorProgress(data);
+        setExifProgress(data);
+        setDriveCacheProgress(data);
+        setLocalCacheProgress(data);
       }
+    } catch {
+      // Ignore polling errors
     }
   }, []);
 

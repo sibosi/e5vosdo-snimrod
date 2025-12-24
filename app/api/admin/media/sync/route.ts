@@ -6,19 +6,21 @@ import { gate } from "@/db/permissions";
 import { getDriveClient } from "@/db/autobackup";
 import { getOriginalImagesFileID, upsertMediaImage } from "@/db/mediaPhotos";
 import sharp from "sharp";
+import {
+  startOperation,
+  isOperationRunning,
+  setTotal,
+  setCurrent,
+  setCurrentFile,
+  addError,
+  completeOperation,
+  failOperation,
+  getGlobalProgress,
+} from "@/lib/globalProgress";
+import { processInParallel } from "@/lib/parallelProcessor";
 
 const ORIGINAL_MEDIA_FOLDER_ID =
   process.env.NEXT_PUBLIC_ORIGINAL_MEDIA_FOLDER_ID;
-
-// In-memory progress state
-let syncProgress = {
-  running: false,
-  current: 0,
-  total: 0,
-  currentFile: "",
-  errors: [] as string[],
-  startedAt: null as Date | null,
-};
 
 /** Segéd: stream -> Buffer */
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -87,7 +89,7 @@ async function extractExifDatetime(buffer: Buffer): Promise<string | null> {
 
 // GET: Progress lekérdezése
 export async function GET() {
-  return NextResponse.json(syncProgress);
+  return NextResponse.json(getGlobalProgress());
 }
 
 // POST: Szinkronizálás indítása
@@ -99,7 +101,7 @@ export async function POST(req: Request) {
     }
     gate(selfUser, ["admin", "media_admin"]);
 
-    if (syncProgress.running) {
+    if (isOperationRunning()) {
       return NextResponse.json(
         { error: "Sync already in progress" },
         { status: 409 },
@@ -118,17 +120,14 @@ export async function POST(req: Request) {
 
     // Aszinkron indítás
     (async () => {
-      syncProgress = {
-        running: true,
-        current: 0,
-        total: 0,
-        currentFile: "Fetching file list...",
-        errors: [],
-        startedAt: new Date(),
-      };
+      if (!startOperation("sync", { withColors })) {
+        return;
+      }
 
       try {
         const drive = getDriveClient();
+
+        setCurrentFile("Fetching file list...");
 
         // Képek listázása a Drive mappából
         let allFiles: any[] = [];
@@ -151,60 +150,60 @@ export async function POST(req: Request) {
         const existingIds = new Set(await getOriginalImagesFileID());
         const newFiles = allFiles.filter((f) => !existingIds.has(f.id));
 
-        syncProgress.total = newFiles.length;
-        syncProgress.currentFile = `Found ${newFiles.length} new images`;
+        setTotal(newFiles.length);
+        setCurrentFile(`Found ${newFiles.length} new images`);
 
-        for (let i = 0; i < newFiles.length; i++) {
-          const file = newFiles[i];
-          syncProgress.current = i + 1;
-          syncProgress.currentFile = file.name;
+        await processInParallel(
+          newFiles,
+          async (file, index) => {
+            setCurrent(index + 1);
+            setCurrentFile(file.name);
 
-          try {
-            let color: string | null = null;
-            let datetime: string | null = null;
+            try {
+              let color: string | null = null;
+              let datetime: string | null = null;
 
-            // Mindig letöltjük a képet, hogy kinyerjük az EXIF dátumot
-            const res: any = await drive.files.get(
-              {
-                fileId: file.id,
-                alt: "media",
-                supportsAllDrives: true,
-              } as any,
-              { responseType: "stream" } as any,
-            );
-            const buffer = await streamToBuffer(res.data);
+              // Mindig letöltjük a képet, hogy kinyerjük az EXIF dátumot
+              const res: any = await drive.files.get(
+                {
+                  fileId: file.id,
+                  alt: "media",
+                  supportsAllDrives: true,
+                } as any,
+                { responseType: "stream" } as any,
+              );
+              const buffer = await streamToBuffer(res.data);
 
-            // EXIF datetime kinyerése (kép készítésének időpontja)
-            datetime = await extractExifDatetime(buffer);
+              // EXIF datetime kinyerése (kép készítésének időpontja)
+              datetime = await extractExifDatetime(buffer);
 
-            // Domináns szín számítása (opcionális)
-            if (withColors) {
-              color = await averageColorHex(buffer);
+              // Domináns szín számítása (opcionális)
+              if (withColors) {
+                color = await averageColorHex(buffer);
+              }
+
+              await upsertMediaImage(selfUser, {
+                original_drive_id: file.id,
+                original_file_name: file.name,
+                color,
+                datetime, // EXIF capture time
+                upload_datetime: file.createdTime, // Drive upload time
+              });
+            } catch (error: any) {
+              addError(`${file.name}: ${error.message}`);
             }
+          },
+        );
 
-            await upsertMediaImage(selfUser, {
-              original_drive_id: file.id,
-              original_file_name: file.name,
-              color,
-              datetime, // EXIF capture time
-              upload_datetime: file.createdTime, // Drive upload time
-            });
-          } catch (error: any) {
-            syncProgress.errors.push(`${file.name}: ${error.message}`);
-          }
-        }
-
-        syncProgress.currentFile = "Done!";
+        completeOperation("Done!");
       } catch (error: any) {
-        syncProgress.errors.push(`Fatal error: ${error.message}`);
-      } finally {
-        syncProgress.running = false;
+        failOperation(`Fatal error: ${error.message}`);
       }
     })();
 
     return NextResponse.json({
       message: "Sync started",
-      progress: syncProgress,
+      progress: getGlobalProgress(),
     });
   } catch (error: any) {
     console.error("[admin/media/sync] Error:", error);

@@ -9,6 +9,18 @@ import { updateImagePreview } from "@/db/mediaPhotos";
 import { isCached, readCachedFile } from "@/lib/mediaCache";
 import sharp from "sharp";
 import { Readable } from "stream";
+import {
+  startOperation,
+  isOperationRunning,
+  setTotal,
+  setCurrent,
+  setCurrentFile,
+  addError,
+  completeOperation,
+  failOperation,
+  getGlobalProgress,
+} from "@/lib/globalProgress";
+import { processInParallel } from "@/lib/parallelProcessor";
 
 const PREVIEW_FOLDER_ID = process.env.NEXT_PUBLIC_MEDIA_FOLDER_ID;
 
@@ -22,17 +34,6 @@ const PREVIEW_CONFIG = {
     quality: 85,
   },
 } as const;
-
-// In-memory progress state
-let cacheProgress = {
-  running: false,
-  current: 0,
-  total: 0,
-  currentFile: "",
-  size: "small" as "small" | "large",
-  errors: [] as string[],
-  startedAt: null as Date | null,
-};
 
 /** Segéd: stream -> Buffer */
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -48,7 +49,7 @@ async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
 
 // GET: Progress lekérdezése
 export async function GET() {
-  return NextResponse.json(cacheProgress);
+  return NextResponse.json(getGlobalProgress());
 }
 
 // POST: Drive cache indítása
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
     }
     gate(selfUser, ["admin", "media_admin"]);
 
-    if (cacheProgress.running) {
+    if (isOperationRunning()) {
       return NextResponse.json(
         { error: "Drive caching already in progress" },
         { status: 409 },
@@ -85,15 +86,9 @@ export async function POST(req: Request) {
 
     // Aszinkron indítás
     (async () => {
-      cacheProgress = {
-        running: true,
-        current: 0,
-        total: 0,
-        currentFile: "Fetching images without Drive preview...",
-        size,
-        errors: [],
-        startedAt: new Date(),
-      };
+      if (!startOperation("cache-drive", { size })) {
+        return;
+      }
 
       try {
         const drive = getDriveClient();
@@ -111,106 +106,107 @@ export async function POST(req: Request) {
           original_file_name: string;
         }[];
 
-        cacheProgress.total = images.length;
-        cacheProgress.currentFile = `Found ${images.length} images without ${size} Drive preview`;
+        setTotal(images.length);
+        setCurrentFile(`Found ${images.length} images without ${size} Drive preview`);
 
-        for (let i = 0; i < images.length; i++) {
-          const image = images[i];
-          cacheProgress.current = i + 1;
-          cacheProgress.currentFile =
-            image.original_file_name || `ID: ${image.id}`;
+        await processInParallel(
+          images,
+          async (image, index) => {
+            setCurrent(index + 1);
+            setCurrentFile(
+              image.original_file_name || `ID: ${image.id}`,
+            );
 
-          try {
-            let previewBuffer: Buffer;
-            let width: number;
-            let height: number;
+            try {
+              let previewBuffer: Buffer;
+              let width: number;
+              let height: number;
 
-            // Először próbáljuk a lokális cache-ből
-            if (isCached(image.id, size)) {
-              previewBuffer = readCachedFile(image.id, size)!;
-              const meta = await sharp(previewBuffer).metadata();
-              width = meta.width || 0;
-              height = meta.height || 0;
-            } else {
-              // Generálás az eredetiből
-              const res: any = await drive.files.get(
-                {
-                  fileId: image.original_drive_id,
-                  alt: "media",
-                  supportsAllDrives: true,
-                } as any,
-                { responseType: "stream" } as any,
-              );
-              const originalBuffer = await streamToBuffer(res.data);
-
-              let sharpInstance = sharp(originalBuffer).rotate();
-
-              if (size === "small") {
-                sharpInstance = sharpInstance.resize({
-                  height: PREVIEW_CONFIG.small.height,
-                  withoutEnlargement: true,
-                });
+              // Először próbáljuk a lokális cache-ből
+              if (isCached(image.id, size)) {
+                previewBuffer = readCachedFile(image.id, size)!;
+                const meta = await sharp(previewBuffer).metadata();
+                width = meta.width || 0;
+                height = meta.height || 0;
               } else {
-                sharpInstance = sharpInstance.resize({
-                  width: PREVIEW_CONFIG.large.width,
-                  withoutEnlargement: true,
-                });
+                // Generálás az eredetiből
+                const res: any = await drive.files.get(
+                  {
+                    fileId: image.original_drive_id,
+                    alt: "media",
+                    supportsAllDrives: true,
+                  } as any,
+                  { responseType: "stream" } as any,
+                );
+                const originalBuffer = await streamToBuffer(res.data);
+
+                let sharpInstance = sharp(originalBuffer).rotate();
+
+                if (size === "small") {
+                  sharpInstance = sharpInstance.resize({
+                    height: PREVIEW_CONFIG.small.height,
+                    withoutEnlargement: true,
+                  });
+                } else {
+                  sharpInstance = sharpInstance.resize({
+                    width: PREVIEW_CONFIG.large.width,
+                    withoutEnlargement: true,
+                  });
+                }
+
+                const quality =
+                  size === "small"
+                    ? PREVIEW_CONFIG.small.quality
+                    : PREVIEW_CONFIG.large.quality;
+                previewBuffer = await sharpInstance.webp({ quality }).toBuffer();
+                const meta = await sharp(previewBuffer).metadata();
+                width = meta.width || 0;
+                height = meta.height || 0;
               }
 
-              const quality =
-                size === "small"
-                  ? PREVIEW_CONFIG.small.quality
-                  : PREVIEW_CONFIG.large.quality;
-              previewBuffer = await sharpInstance.webp({ quality }).toBuffer();
-              const meta = await sharp(previewBuffer).metadata();
-              width = meta.width || 0;
-              height = meta.height || 0;
+              // Feltöltés Drive-ra
+              const previewName = `${(
+                image.original_file_name || "image"
+              ).replace(/\.[^/.]+$/, "")}_${size}.webp`;
+              const mediaStream = Readable.from(previewBuffer);
+
+              const uploadRes: any = await drive.files.create(
+                {
+                  requestBody: {
+                    name: previewName,
+                    parents: [PREVIEW_FOLDER_ID],
+                    mimeType: "image/webp",
+                  },
+                  media: {
+                    mimeType: "image/webp",
+                    body: mediaStream,
+                  },
+                  supportsAllDrives: true,
+                } as any,
+                { fields: "id" } as any,
+              );
+
+              const driveId = uploadRes.data?.id as string | undefined;
+              if (driveId) {
+                await updateImagePreview(image.id, size, driveId, width, height);
+              }
+            } catch (error: any) {
+              addError(
+                `${image.original_file_name || image.id}: ${error.message}`,
+              );
             }
+          },
+        );
 
-            // Feltöltés Drive-ra
-            const previewName = `${(
-              image.original_file_name || "image"
-            ).replace(/\.[^/.]+$/, "")}_${size}.webp`;
-            const mediaStream = Readable.from(previewBuffer);
-
-            const uploadRes: any = await drive.files.create(
-              {
-                requestBody: {
-                  name: previewName,
-                  parents: [PREVIEW_FOLDER_ID],
-                  mimeType: "image/webp",
-                },
-                media: {
-                  mimeType: "image/webp",
-                  body: mediaStream,
-                },
-                supportsAllDrives: true,
-              } as any,
-              { fields: "id" } as any,
-            );
-
-            const driveId = uploadRes.data?.id as string | undefined;
-            if (driveId) {
-              await updateImagePreview(image.id, size, driveId, width, height);
-            }
-          } catch (error: any) {
-            cacheProgress.errors.push(
-              `${image.original_file_name || image.id}: ${error.message}`,
-            );
-          }
-        }
-
-        cacheProgress.currentFile = "Done!";
+        completeOperation("Done!");
       } catch (error: any) {
-        cacheProgress.errors.push(`Fatal error: ${error.message}`);
-      } finally {
-        cacheProgress.running = false;
+        failOperation(`Fatal error: ${error.message}`);
       }
     })();
 
     return NextResponse.json({
       message: "Drive caching started",
-      progress: cacheProgress,
+      progress: getGlobalProgress(),
     });
   } catch (error: any) {
     console.error("[admin/media/cache-drive] Error:", error);

@@ -225,8 +225,8 @@ export async function POST(request: NextRequest) {
     if (action === "preview") {
       const previews: (XMLImportPreview & { driveId: string })[] = [];
 
-      for (const file of filesToProcess.slice(0, 50)) {
-        // Limit preview to 50 files
+      for (const file of filesToProcess.slice(0, 500)) {
+        // Limit preview to 500 files
         try {
           const res: any = await drive.files.get(
             { fileId: file.id, alt: "media", supportsAllDrives: true } as any,

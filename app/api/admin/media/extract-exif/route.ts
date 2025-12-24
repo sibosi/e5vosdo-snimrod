@@ -6,20 +6,19 @@ import { gate } from "@/db/permissions";
 import { getDriveClient } from "@/db/autobackup";
 import { dbreq } from "@/db/db";
 import sharp from "sharp";
-
-// In-memory progress state
-let exifProgress = {
-  running: false,
-  current: 0,
-  total: 0,
-  currentFile: "",
-  stats: {
-    extracted: 0,
-    noExif: 0,
-  },
-  errors: [] as string[],
-  startedAt: null as Date | null,
-};
+import {
+  startOperation,
+  isOperationRunning,
+  setTotal,
+  setCurrent,
+  setCurrentFile,
+  incrementStat,
+  addError,
+  completeOperation,
+  failOperation,
+  getGlobalProgress,
+} from "@/lib/globalProgress";
+import { processInParallel } from "@/lib/parallelProcessor";
 
 /** Segéd: stream -> Buffer */
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -67,7 +66,7 @@ async function extractExifDatetime(buffer: Buffer): Promise<string | null> {
 
 // GET: Progress lekérdezése
 export async function GET() {
-  return NextResponse.json(exifProgress);
+  return NextResponse.json(getGlobalProgress());
 }
 
 // POST: EXIF kinyerés indítása
@@ -79,7 +78,7 @@ export async function POST(req: Request) {
     }
     gate(selfUser, ["admin", "media_admin"]);
 
-    if (exifProgress.running) {
+    if (isOperationRunning()) {
       return NextResponse.json(
         { error: "EXIF extraction already in progress" },
         { status: 409 },
@@ -91,21 +90,18 @@ export async function POST(req: Request) {
 
     // Aszinkron indítás
     (async () => {
-      exifProgress = {
-        running: true,
-        current: 0,
-        total: 0,
-        currentFile: "Fetching images...",
-        stats: {
-          extracted: 0,
-          noExif: 0,
-        },
-        errors: [],
-        startedAt: new Date(),
-      };
+      if (!startOperation("extract-exif", { forceAll })) {
+        return;
+      }
+
+      // Initialize stats
+      incrementStat("extracted", 0);
+      incrementStat("noExif", 0);
 
       try {
         const drive = getDriveClient();
+
+        setCurrentFile("Fetching images...");
 
         // Képek datetime nélkül (vagy mindegyik ha forceAll)
         const query = forceAll
@@ -118,55 +114,56 @@ export async function POST(req: Request) {
           original_file_name: string;
         }[];
 
-        exifProgress.total = images.length;
-        exifProgress.currentFile = `Found ${images.length} images to process`;
+        setTotal(images.length);
+        setCurrentFile(`Found ${images.length} images to process`);
 
-        for (let i = 0; i < images.length; i++) {
-          const image = images[i];
-          exifProgress.current = i + 1;
-          exifProgress.currentFile =
-            image.original_file_name || `ID: ${image.id}`;
-
-          try {
-            // Letöltés
-            const res: any = await drive.files.get(
-              {
-                fileId: image.original_drive_id,
-                alt: "media",
-                supportsAllDrives: true,
-              } as any,
-              { responseType: "stream" } as any,
+        await processInParallel(
+          images,
+          async (image, index) => {
+            setCurrent(index + 1);
+            setCurrentFile(
+              image.original_file_name || `ID: ${image.id}`,
             );
-            const buffer = await streamToBuffer(res.data);
-            const datetime = await extractExifDatetime(buffer);
 
-            if (datetime) {
-              await dbreq("UPDATE media_images SET datetime = ? WHERE id = ?", [
-                datetime,
-                image.id,
-              ]);
-              exifProgress.stats.extracted++;
-            } else {
-              exifProgress.stats.noExif++;
+            try {
+              // Letöltés
+              const res: any = await drive.files.get(
+                {
+                  fileId: image.original_drive_id,
+                  alt: "media",
+                  supportsAllDrives: true,
+                } as any,
+                { responseType: "stream" } as any,
+              );
+              const buffer = await streamToBuffer(res.data);
+              const datetime = await extractExifDatetime(buffer);
+
+              if (datetime) {
+                await dbreq("UPDATE media_images SET datetime = ? WHERE id = ?", [
+                  datetime,
+                  image.id,
+                ]);
+                incrementStat("extracted");
+              } else {
+                incrementStat("noExif");
+              }
+            } catch (error: any) {
+              addError(
+                `${image.original_file_name || image.id}: ${error.message}`,
+              );
             }
-          } catch (error: any) {
-            exifProgress.errors.push(
-              `${image.original_file_name || image.id}: ${error.message}`,
-            );
-          }
-        }
+          },
+        );
 
-        exifProgress.currentFile = "Done!";
+        completeOperation("Done!");
       } catch (error: any) {
-        exifProgress.errors.push(`Fatal error: ${error.message}`);
-      } finally {
-        exifProgress.running = false;
+        failOperation(`Fatal error: ${error.message}`);
       }
     })();
 
     return NextResponse.json({
       message: "EXIF extraction started",
-      progress: exifProgress,
+      progress: getGlobalProgress(),
     });
   } catch (error: any) {
     console.error("[admin/media/extract-exif] Error:", error);

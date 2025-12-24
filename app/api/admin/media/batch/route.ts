@@ -1,5 +1,6 @@
 // app/api/admin/media/batch/route.ts
 // Összevont műveletek - egy letöltéssel minden művelet egy képhez
+// Parallel processing support for faster operations
 import { NextResponse } from "next/server";
 import { getAuth } from "@/db/dbreq";
 import { gate } from "@/db/permissions";
@@ -13,6 +14,20 @@ import {
 import { isCached, writeCacheFile } from "@/lib/mediaCache";
 import sharp from "sharp";
 import { Readable } from "stream";
+import {
+  startOperation,
+  isOperationRunning,
+  setTotal,
+  setCurrent,
+  setCurrentFile,
+  setPhase,
+  incrementStat,
+  addError,
+  completeOperation,
+  failOperation,
+  getGlobalProgress,
+} from "@/lib/globalProgress";
+import { processInParallel } from "@/lib/parallelProcessor";
 
 const ORIGINAL_MEDIA_FOLDER_ID =
   process.env.NEXT_PUBLIC_ORIGINAL_MEDIA_FOLDER_ID;
@@ -22,29 +37,6 @@ const PREVIEW_CONFIG = {
   small: { height: 200, quality: 75 },
   large: { width: 1200, quality: 85 },
 } as const;
-
-// In-memory progress state
-let batchProgress = {
-  running: false,
-  current: 0,
-  total: 0,
-  currentFile: "",
-  phase: "" as string,
-  options: {
-    syncNew: false,
-    generateColors: false,
-    driveCache: false,
-    localCache: false,
-  },
-  stats: {
-    synced: 0,
-    colorsGenerated: 0,
-    driveCached: 0,
-    localCached: 0,
-  },
-  errors: [] as string[],
-  startedAt: null as Date | null,
-};
 
 /** Segéd: stream -> Buffer */
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -138,7 +130,7 @@ async function generatePreview(
 
 // GET: Progress lekérdezése
 export async function GET() {
-  return NextResponse.json(batchProgress);
+  return NextResponse.json(getGlobalProgress());
 }
 
 // POST: Batch folyamat indítása
@@ -150,7 +142,7 @@ export async function POST(req: Request) {
     }
     gate(selfUser, ["admin", "media_admin"]);
 
-    if (batchProgress.running) {
+    if (isOperationRunning()) {
       return NextResponse.json(
         { error: "Batch process already in progress" },
         { status: 409 },
@@ -168,27 +160,22 @@ export async function POST(req: Request) {
 
     // Aszinkron indítás
     (async () => {
-      batchProgress = {
-        running: true,
-        current: 0,
-        total: 0,
-        currentFile: "Initializing...",
-        phase: "init",
-        options: {
+      if (
+        !startOperation("batch", {
           syncNew: options.syncNew,
           generateColors: options.generateColors,
           driveCache: options.driveCache,
           localCache: options.localCache,
-        },
-        stats: {
-          synced: 0,
-          colorsGenerated: 0,
-          driveCached: 0,
-          localCached: 0,
-        },
-        errors: [],
-        startedAt: new Date(),
-      };
+        })
+      ) {
+        return;
+      }
+
+      // Initialize stats
+      incrementStat("synced", 0);
+      incrementStat("colorsGenerated", 0);
+      incrementStat("driveCached", 0);
+      incrementStat("localCached", 0);
 
       try {
         const drive = getDriveClient();
@@ -209,8 +196,8 @@ export async function POST(req: Request) {
 
         const imagesToProcess: ImageToProcess[] = [];
 
-        batchProgress.phase = "collecting";
-        batchProgress.currentFile = "Collecting images to process...";
+        setPhase("collecting");
+        setCurrentFile("Collecting images to process...");
 
         // 1. Új képek a Drive-ról (ha syncNew be van kapcsolva)
         if (options.syncNew && ORIGINAL_MEDIA_FOLDER_ID) {
@@ -308,173 +295,176 @@ export async function POST(req: Request) {
           }
         }
 
-        batchProgress.total = imagesToProcess.length;
-        batchProgress.phase = "processing";
-        batchProgress.currentFile = `Found ${imagesToProcess.length} images to process`;
+        setTotal(imagesToProcess.length);
+        setPhase("processing");
+        setCurrentFile(`Found ${imagesToProcess.length} images to process`);
 
-        // 3. Egyesével feldolgozás
-        for (let i = 0; i < imagesToProcess.length; i++) {
-          const img = imagesToProcess[i];
-          batchProgress.current = i + 1;
-          batchProgress.currentFile = img.fileName;
+        // 3. Parallel feldolgozás
+        await processInParallel(
+          imagesToProcess,
+          async (img, index) => {
+            setCurrent(index + 1);
+            setCurrentFile(img.fileName);
 
-          try {
-            // Letöltés az eredetiből
-            const res: any = await drive.files.get(
-              {
-                fileId: img.driveFileId,
-                alt: "media",
-                supportsAllDrives: true,
-              } as any,
-              { responseType: "stream" } as any,
-            );
-            const originalBuffer = await streamToBuffer(res.data);
+            try {
+              // Letöltés az eredetiből
+              const res: any = await drive.files.get(
+                {
+                  fileId: img.driveFileId,
+                  alt: "media",
+                  supportsAllDrives: true,
+                } as any,
+                { responseType: "stream" } as any,
+              );
+              const originalBuffer = await streamToBuffer(res.data);
 
-            let imageId = img.id;
+              let imageId = img.id;
 
-            // A) Sync: DB-be mentés (új képeknél)
-            if (img.needsSync) {
-              // EXIF datetime kinyerése (kép készítésének időpontja)
-              const datetime = await extractExifDatetime(originalBuffer);
+              // A) Sync: DB-be mentés (új képeknél)
+              if (img.needsSync) {
+                // EXIF datetime kinyerése (kép készítésének időpontja)
+                const datetime = await extractExifDatetime(originalBuffer);
 
-              const color = img.needsColor
-                ? await averageColorHex(originalBuffer)
-                : null;
+                const color = img.needsColor
+                  ? await averageColorHex(originalBuffer)
+                  : null;
 
-              await upsertMediaImage(selfUser, {
-                original_drive_id: img.driveFileId,
-                original_file_name: img.fileName,
-                color,
-                datetime, // EXIF capture time
-                upload_datetime: img.driveCreatedTime, // Drive upload time
-              });
-              batchProgress.stats.synced++;
-              if (color) batchProgress.stats.colorsGenerated++;
-
-              // Lekérjük az új ID-t
-              const [row] = (await dbreq(
-                "SELECT id FROM media_images WHERE original_drive_id = ?",
-                [img.driveFileId],
-              )) as { id: number }[];
-              imageId = row?.id ?? null;
-            }
-
-            // B) Szín generálás (meglévő képeknél, amiknek nincs)
-            if (!img.needsSync && img.needsColor) {
-              const color = await averageColorHex(originalBuffer);
-              if (color && imageId) {
-                await dbreq("UPDATE media_images SET color = ? WHERE id = ?", [
+                await upsertMediaImage(selfUser, {
+                  original_drive_id: img.driveFileId,
+                  original_file_name: img.fileName,
                   color,
-                  imageId,
-                ]);
-                batchProgress.stats.colorsGenerated++;
+                  datetime, // EXIF capture time
+                  upload_datetime: img.driveCreatedTime, // Drive upload time
+                });
+                incrementStat("synced");
+                if (color) incrementStat("colorsGenerated");
+
+                // Lekérjük az új ID-t
+                const [row] = (await dbreq(
+                  "SELECT id FROM media_images WHERE original_drive_id = ?",
+                  [img.driveFileId],
+                )) as { id: number }[];
+                imageId = row?.id ?? null;
               }
-            }
 
-            // C) Preview-k generálása és mentése
-            if (imageId) {
-              // Small preview
-              if (img.needsSmallDriveCache || img.needsSmallLocalCache) {
-                const smallPreview = await generatePreview(
-                  originalBuffer,
-                  "small",
-                );
+              // B) Szín generálás (meglévő képeknél, amiknek nincs)
+              if (!img.needsSync && img.needsColor) {
+                const color = await averageColorHex(originalBuffer);
+                if (color && imageId) {
+                  await dbreq("UPDATE media_images SET color = ? WHERE id = ?", [
+                    color,
+                    imageId,
+                  ]);
+                  incrementStat("colorsGenerated");
+                }
+              }
 
-                if (img.needsSmallLocalCache) {
-                  writeCacheFile(imageId, "small", smallPreview.buffer);
-                  batchProgress.stats.localCached++;
+              // C) Preview-k generálása és mentése
+              if (imageId) {
+                // Small preview
+                if (img.needsSmallDriveCache || img.needsSmallLocalCache) {
+                  const smallPreview = await generatePreview(
+                    originalBuffer,
+                    "small",
+                  );
+
+                  if (img.needsSmallLocalCache) {
+                    writeCacheFile(imageId, "small", smallPreview.buffer);
+                    incrementStat("localCached");
+                  }
+
+                  if (img.needsSmallDriveCache && PREVIEW_FOLDER_ID) {
+                    const previewName = `${img.fileName.replace(/\.[^/.]+$/, "")}_small.webp`;
+                    const mediaStream = Readable.from(smallPreview.buffer);
+                    const uploadRes: any = await drive.files.create(
+                      {
+                        requestBody: {
+                          name: previewName,
+                          parents: [PREVIEW_FOLDER_ID],
+                          mimeType: "image/webp",
+                        },
+                        media: { mimeType: "image/webp", body: mediaStream },
+                        supportsAllDrives: true,
+                      } as any,
+                      { fields: "id" } as any,
+                    );
+                    const driveId = uploadRes.data?.id;
+                    if (driveId) {
+                      await updateImagePreview(
+                        imageId,
+                        "small",
+                        driveId,
+                        smallPreview.width,
+                        smallPreview.height,
+                      );
+                      incrementStat("driveCached");
+                    }
+                  }
                 }
 
-                if (img.needsSmallDriveCache && PREVIEW_FOLDER_ID) {
-                  const previewName = `${img.fileName.replace(/\.[^/.]+$/, "")}_small.webp`;
-                  const mediaStream = Readable.from(smallPreview.buffer);
-                  const uploadRes: any = await drive.files.create(
-                    {
-                      requestBody: {
-                        name: previewName,
-                        parents: [PREVIEW_FOLDER_ID],
-                        mimeType: "image/webp",
-                      },
-                      media: { mimeType: "image/webp", body: mediaStream },
-                      supportsAllDrives: true,
-                    } as any,
-                    { fields: "id" } as any,
+                // Large preview
+                if (img.needsLargeDriveCache || img.needsLargeLocalCache) {
+                  const largePreview = await generatePreview(
+                    originalBuffer,
+                    "large",
                   );
-                  const driveId = uploadRes.data?.id;
-                  if (driveId) {
-                    await updateImagePreview(
-                      imageId,
-                      "small",
-                      driveId,
-                      smallPreview.width,
-                      smallPreview.height,
+
+                  if (img.needsLargeLocalCache) {
+                    writeCacheFile(imageId, "large", largePreview.buffer);
+                    incrementStat("localCached");
+                  }
+
+                  if (img.needsLargeDriveCache && PREVIEW_FOLDER_ID) {
+                    const previewName = `${img.fileName.replace(/\.[^/.]+$/, "")}_large.webp`;
+                    const mediaStream = Readable.from(largePreview.buffer);
+                    const uploadRes: any = await drive.files.create(
+                      {
+                        requestBody: {
+                          name: previewName,
+                          parents: [PREVIEW_FOLDER_ID],
+                          mimeType: "image/webp",
+                        },
+                        media: { mimeType: "image/webp", body: mediaStream },
+                        supportsAllDrives: true,
+                      } as any,
+                      { fields: "id" } as any,
                     );
-                    batchProgress.stats.driveCached++;
+                    const driveId = uploadRes.data?.id;
+                    if (driveId) {
+                      await updateImagePreview(
+                        imageId,
+                        "large",
+                        driveId,
+                        largePreview.width,
+                        largePreview.height,
+                      );
+                      incrementStat("driveCached");
+                    }
                   }
                 }
               }
 
-              // Large preview
-              if (img.needsLargeDriveCache || img.needsLargeLocalCache) {
-                const largePreview = await generatePreview(
-                  originalBuffer,
-                  "large",
-                );
-
-                if (img.needsLargeLocalCache) {
-                  writeCacheFile(imageId, "large", largePreview.buffer);
-                  batchProgress.stats.localCached++;
-                }
-
-                if (img.needsLargeDriveCache && PREVIEW_FOLDER_ID) {
-                  const previewName = `${img.fileName.replace(/\.[^/.]+$/, "")}_large.webp`;
-                  const mediaStream = Readable.from(largePreview.buffer);
-                  const uploadRes: any = await drive.files.create(
-                    {
-                      requestBody: {
-                        name: previewName,
-                        parents: [PREVIEW_FOLDER_ID],
-                        mimeType: "image/webp",
-                      },
-                      media: { mimeType: "image/webp", body: mediaStream },
-                      supportsAllDrives: true,
-                    } as any,
-                    { fields: "id" } as any,
-                  );
-                  const driveId = uploadRes.data?.id;
-                  if (driveId) {
-                    await updateImagePreview(
-                      imageId,
-                      "large",
-                      driveId,
-                      largePreview.width,
-                      largePreview.height,
-                    );
-                    batchProgress.stats.driveCached++;
-                  }
-                }
-              }
+              // Memória felszabadítás - az originalBuffer kikerül a scope-ból
+            } catch (error: any) {
+              addError(`${img.fileName}: ${error.message}`);
             }
+          },
+          {
+            onProgress: (current, total) => {
+              // Progress updates are handled inside the processor
+            },
+          },
+        );
 
-            // Memória felszabadítás - az originalBuffer kikerül a scope-ból
-          } catch (error: any) {
-            batchProgress.errors.push(`${img.fileName}: ${error.message}`);
-          }
-        }
-
-        batchProgress.phase = "done";
-        batchProgress.currentFile = "Done!";
+        completeOperation("Done!");
       } catch (error: any) {
-        batchProgress.errors.push(`Fatal error: ${error.message}`);
-        batchProgress.phase = "error";
-      } finally {
-        batchProgress.running = false;
+        failOperation(`Fatal error: ${error.message}`);
       }
     })();
 
     return NextResponse.json({
       message: "Batch process started",
-      progress: batchProgress,
+      progress: getGlobalProgress(),
     });
   } catch (error: any) {
     console.error("[admin/media/batch] Error:", error);

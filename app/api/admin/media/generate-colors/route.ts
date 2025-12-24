@@ -6,16 +6,18 @@ import { gate } from "@/db/permissions";
 import { getDriveClient } from "@/db/autobackup";
 import { dbreq } from "@/db/db";
 import sharp from "sharp";
-
-// In-memory progress state
-let colorProgress = {
-  running: false,
-  current: 0,
-  total: 0,
-  currentFile: "",
-  errors: [] as string[],
-  startedAt: null as Date | null,
-};
+import {
+  startOperation,
+  isOperationRunning,
+  setTotal,
+  setCurrent,
+  setCurrentFile,
+  addError,
+  completeOperation,
+  failOperation,
+  getGlobalProgress,
+} from "@/lib/globalProgress";
+import { processInParallel } from "@/lib/parallelProcessor";
 
 /** Segéd: stream -> Buffer */
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -46,7 +48,7 @@ async function averageColorHex(buffer: Buffer): Promise<string | null> {
 
 // GET: Progress lekérdezése
 export async function GET() {
-  return NextResponse.json(colorProgress);
+  return NextResponse.json(getGlobalProgress());
 }
 
 // POST: Szín generálás indítása
@@ -58,7 +60,7 @@ export async function POST() {
     }
     gate(selfUser, ["admin", "media_admin"]);
 
-    if (colorProgress.running) {
+    if (isOperationRunning()) {
       return NextResponse.json(
         { error: "Color generation already in progress" },
         { status: 409 },
@@ -67,14 +69,9 @@ export async function POST() {
 
     // Aszinkron indítás
     (async () => {
-      colorProgress = {
-        running: true,
-        current: 0,
-        total: 0,
-        currentFile: "Fetching images without color...",
-        errors: [],
-        startedAt: new Date(),
-      };
+      if (!startOperation("generate-colors")) {
+        return;
+      }
 
       try {
         const drive = getDriveClient();
@@ -88,52 +85,53 @@ export async function POST() {
           original_file_name: string;
         }[];
 
-        colorProgress.total = images.length;
-        colorProgress.currentFile = `Found ${images.length} images without color`;
+        setTotal(images.length);
+        setCurrentFile(`Found ${images.length} images without color`);
 
-        for (let i = 0; i < images.length; i++) {
-          const image = images[i];
-          colorProgress.current = i + 1;
-          colorProgress.currentFile =
-            image.original_file_name || `ID: ${image.id}`;
-
-          try {
-            // Letöltés
-            const res: any = await drive.files.get(
-              {
-                fileId: image.original_drive_id,
-                alt: "media",
-                supportsAllDrives: true,
-              } as any,
-              { responseType: "stream" } as any,
+        await processInParallel(
+          images,
+          async (image, index) => {
+            setCurrent(index + 1);
+            setCurrentFile(
+              image.original_file_name || `ID: ${image.id}`,
             );
-            const buffer = await streamToBuffer(res.data);
-            const color = await averageColorHex(buffer);
 
-            if (color) {
-              await dbreq("UPDATE media_images SET color = ? WHERE id = ?", [
-                color,
-                image.id,
-              ]);
+            try {
+              // Letöltés
+              const res: any = await drive.files.get(
+                {
+                  fileId: image.original_drive_id,
+                  alt: "media",
+                  supportsAllDrives: true,
+                } as any,
+                { responseType: "stream" } as any,
+              );
+              const buffer = await streamToBuffer(res.data);
+              const color = await averageColorHex(buffer);
+
+              if (color) {
+                await dbreq("UPDATE media_images SET color = ? WHERE id = ?", [
+                  color,
+                  image.id,
+                ]);
+              }
+            } catch (error: any) {
+              addError(
+                `${image.original_file_name || image.id}: ${error.message}`,
+              );
             }
-          } catch (error: any) {
-            colorProgress.errors.push(
-              `${image.original_file_name || image.id}: ${error.message}`,
-            );
-          }
-        }
+          },
+        );
 
-        colorProgress.currentFile = "Done!";
+        completeOperation("Done!");
       } catch (error: any) {
-        colorProgress.errors.push(`Fatal error: ${error.message}`);
-      } finally {
-        colorProgress.running = false;
+        failOperation(`Fatal error: ${error.message}`);
       }
     })();
 
     return NextResponse.json({
       message: "Color generation started",
-      progress: colorProgress,
+      progress: getGlobalProgress(),
     });
   } catch (error: any) {
     console.error("[admin/media/generate-colors] Error:", error);

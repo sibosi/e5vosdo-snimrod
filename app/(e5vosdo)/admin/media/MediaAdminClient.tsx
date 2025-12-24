@@ -12,21 +12,20 @@ import ImageTagger from "./components/ImageTagger";
 import ImageManager from "./components/ImageManager";
 import XMLImporter from "./components/XMLImporter";
 import DriveXmlImporter from "./components/DriveXmlImporter";
+import type { ProgressState as GlobalProgressState, OperationType } from "@/lib/globalProgress";
 
-interface ProgressState {
-  running: boolean;
-  current: number;
-  total: number;
-  currentFile: string;
-  errors: string[];
-  startedAt: string | null;
+// Local UI-specific progress state that extends the global state
+interface ProgressState extends Omit<GlobalProgressState, 'startedAt'> {
+  startedAt: string | null; // Serialized as string when fetched from API
   size?: "small" | "large";
-  phase?: string;
   stats?: {
-    synced: number;
-    colorsGenerated: number;
-    driveCached: number;
-    localCached: number;
+    synced?: number;
+    colorsGenerated?: number;
+    driveCached?: number;
+    localCached?: number;
+    extracted?: number;
+    noExif?: number;
+    [key: string]: number | undefined;
   };
 }
 
@@ -230,14 +229,32 @@ export default function MediaAdminClient() {
       const res = await fetch("/api/admin/media/progress");
       if (res.ok) {
         const data = await res.json();
-        // Update all progress states with the same global progress
-        // This prevents jumping between states
-        setBatchProgress(data);
-        setSyncProgress(data);
-        setColorProgress(data);
-        setExifProgress(data);
-        setDriveCacheProgress(data);
-        setLocalCacheProgress(data);
+        // Update only the progress state that matches the current operation type
+        // This prevents UI jumping between different operation states
+        switch (data.operationType) {
+          case "batch":
+            setBatchProgress(data);
+            break;
+          case "sync":
+            setSyncProgress(data);
+            break;
+          case "generate-colors":
+            setColorProgress(data);
+            break;
+          case "extract-exif":
+            setExifProgress(data);
+            break;
+          case "cache-drive":
+            setDriveCacheProgress(data);
+            break;
+          case "cache-local":
+            setLocalCacheProgress(data);
+            break;
+          default:
+            // If no operation is running (operationType is null), do nothing
+            // This preserves the last known state of each operation
+            break;
+        }
       }
     } catch {
       // Ignore polling errors

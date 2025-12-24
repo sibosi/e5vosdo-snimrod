@@ -7,6 +7,11 @@ interface PasswordGateProps {
   children: React.ReactNode;
   title?: string;
   description?: string;
+  /**
+   * If true, the gate will be skipped initially (user is considered authenticated).
+   * We'll still ping the auth endpoint in the background to ensure the cookie is set.
+   */
+  initialAuthenticated?: boolean;
 }
 
 const PasswordGate: React.FC<PasswordGateProps> = ({
@@ -14,14 +19,25 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
   children,
   title = "Jelszó szükséges",
   description = "Kérjük, add meg a jelszót a hozzáféréshez.",
+  initialAuthenticated = false,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(initialAuthenticated);
   const [inputPassword, setInputPassword] = useState("");
   const [error, setError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!initialAuthenticated);
 
   useEffect(() => {
-    // Check if already authenticated via API (cookie check)
+    // If we already know the user is authenticated (server-side), skip loading gate
+    // but still ping the endpoint in the background to set cookie if needed.
+    if (initialAuthenticated) {
+      // Fire-and-forget, don't toggle loading
+      fetch(authEndpoint, { method: "GET", credentials: "include" })
+        .then(() => {})
+        .catch(() => {});
+      return;
+    }
+
+    // Otherwise, check via API (cookie/session check)
     fetch(authEndpoint, { method: "GET", credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
@@ -31,7 +47,7 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, [authEndpoint]);
+  }, [authEndpoint, initialAuthenticated]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

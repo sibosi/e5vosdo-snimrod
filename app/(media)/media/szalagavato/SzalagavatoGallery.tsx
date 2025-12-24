@@ -16,7 +16,13 @@ const PhotoGrid = dynamic(() => import("../PhotoGrid"), {
 
 const SZALAGAVATO_TAG = "Szalagavató";
 
-const SzalagavatoGallery = () => {
+interface SzalagavatoGalleryProps {
+  initialAuthenticated?: boolean;
+}
+
+const SzalagavatoGallery: React.FC<SzalagavatoGalleryProps> = ({
+  initialAuthenticated = false,
+}) => {
   const [availableTags, setAvailableTags] = useState<MediaTagType[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,6 +77,7 @@ const SzalagavatoGallery = () => {
   return (
     <PasswordGate
       authEndpoint="/api/auth/szalagavato"
+      initialAuthenticated={initialAuthenticated}
       title="Szalagavató 2025"
       description="Add meg a jelszót a galéria megtekintéséhez"
     >

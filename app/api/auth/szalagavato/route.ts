@@ -6,6 +6,7 @@ import {
   generateSzalagavatoToken,
   verifySzalagavatoToken,
 } from "@/lib/szalagavatoAuth";
+import { auth } from "@/auth";
 
 const SZALAGAVATO_PASSWORD = process.env.SZALAGAVATO_SECRET;
 
@@ -45,9 +46,26 @@ export async function GET() {
   const cookieStore = await cookies();
   const authCookie = cookieStore.get(SZALAGAVATO_COOKIE_NAME);
 
-  return NextResponse.json({
-    authenticated: verifySzalagavatoToken(authCookie?.value || ""),
-  });
+  if (verifySzalagavatoToken(authCookie?.value || "")) {
+    return NextResponse.json({ authenticated: true });
+  }
+
+  const session = await auth();
+  if (session?.user?.email) {
+    const token = generateSzalagavatoToken();
+
+    cookieStore.set(SZALAGAVATO_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: SZALAGAVATO_COOKIE_MAX_AGE,
+      path: "/",
+    });
+
+    return NextResponse.json({ authenticated: true });
+  }
+
+  return NextResponse.json({ authenticated: false });
 }
 
 export async function DELETE() {

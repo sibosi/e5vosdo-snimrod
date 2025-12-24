@@ -259,6 +259,66 @@ export async function removeAllTagsFromImage(
 
 // ============ Search Operations ============
 // @sibosi TODO: Refactor
+
+// 5 perces cache a Szalagavató tag-hez (requiredTag: "Szalagavató", tagNames: [], matchAll: false)
+let szalagavatoCache: {
+  value: MediaImageWithTags[];
+  expires: number;
+} | null = null;
+const SZALAGAVATO_CACHE_TTL = 5 * 60 * 1000; // 5 perc
+
+/**
+ * Helper: Batch fetch tags for multiple images in a single query
+ */
+async function batchFetchTagsForImages(
+  images: any[],
+): Promise<MediaImageWithTags[]> {
+  if (images.length === 0) {
+    return [];
+  }
+
+  const imageIds = images.map((img) => img.id);
+  const placeholders = imageIds.map(() => "?").join(",");
+
+  const allTags = (await dbreq(
+    `SELECT 
+      relatons.media_image_id,
+      tags.id as tag_id, 
+      tags.tag_name, 
+      relatons.coordinate1_x, 
+      relatons.coordinate1_y, 
+      relatons.coordinate2_x, 
+      relatons.coordinate2_y
+    FROM media_images_to_tags relatons
+    JOIN media_images_tags tags ON relatons.media_image_tag_id = tags.id
+    WHERE relatons.media_image_id IN (${placeholders})`,
+    imageIds,
+  )) as any[];
+
+  // Group tags by image ID
+  const tagsByImageId = new Map<number, any[]>();
+  for (const tag of allTags) {
+    const imgId = tag.media_image_id;
+    if (!tagsByImageId.has(imgId)) {
+      tagsByImageId.set(imgId, []);
+    }
+    tagsByImageId.get(imgId)!.push({
+      tag_id: tag.tag_id,
+      tag_name: tag.tag_name,
+      coordinate1_x: tag.coordinate1_x,
+      coordinate1_y: tag.coordinate1_y,
+      coordinate2_x: tag.coordinate2_x,
+      coordinate2_y: tag.coordinate2_y,
+    });
+  }
+
+  // Combine images with their tags
+  return images.map((img) => ({
+    ...img,
+    tags: tagsByImageId.get(img.id) || [],
+  }));
+}
+
 /**
  * Search images by tags (user access)
  * @param options.tagNames - Filter tags
@@ -277,6 +337,14 @@ export async function searchImagesByTags(
 
   const { tagNames, matchAll = false, requiredTag } = options;
 
+  // Cache ellenőrzés: Szalagavató tag, üres tagNames, matchAll: false
+  if (requiredTag === "Szalagavató" && tagNames.length === 0 && !matchAll) {
+    const now = Date.now();
+    if (szalagavatoCache && szalagavatoCache.expires > now) {
+      return szalagavatoCache.value;
+    }
+  }
+
   // Ha nincs se requiredTag se filterTags, üres eredmény
   if (!requiredTag && tagNames.length === 0) {
     return [];
@@ -293,11 +361,16 @@ export async function searchImagesByTags(
       ORDER BY images.datetime DESC
     `;
     const images = (await dbreq(query, [requiredTag])) as any[];
-    const result: MediaImageWithTags[] = [];
-    for (const img of images) {
-      const imgTags = await getTagsForImage(selfUser, img.id);
-      result.push({ ...img, tags: imgTags });
+    const result = await batchFetchTagsForImages(images);
+
+    // Cache frissítése Szalagavató tag esetén
+    if (requiredTag === "Szalagavató" && !matchAll) {
+      szalagavatoCache = {
+        value: result,
+        expires: Date.now() + SZALAGAVATO_CACHE_TTL,
+      };
     }
+
     return result;
   }
 
@@ -356,12 +429,7 @@ export async function searchImagesByTags(
     }
 
     const images = (await dbreq(query, params)) as any[];
-    const result: MediaImageWithTags[] = [];
-    for (const img of images) {
-      const imgTags = await getTagsForImage(selfUser, img.id);
-      result.push({ ...img, tags: imgTags });
-    }
-    return result;
+    return await batchFetchTagsForImages(images);
   }
 
   // Ha csak filterTags van (eredeti logika)
@@ -395,14 +463,8 @@ export async function searchImagesByTags(
 
   const images = (await dbreq(query, tagNames)) as any[];
 
-  // Fetch tags for each image
-  const result: MediaImageWithTags[] = [];
-  for (const img of images) {
-    const imgTags = await getTagsForImage(selfUser, img.id);
-    result.push({ ...img, tags: imgTags });
-  }
-
-  return result;
+  // Batch fetch tags for all images
+  return await batchFetchTagsForImages(images);
 }
 
 /**
@@ -506,9 +568,7 @@ export async function getImageByOriginalFileName(
 /**
  * Get tag usage statistics (media_admin only)
  */
-export async function getTagStats(
-  selfUser: UserType,
-): Promise<
+export async function getTagStats(selfUser: UserType): Promise<
   Array<{
     tag_id: number;
     tag_name: string;

@@ -113,8 +113,8 @@ async function update() {
             nap = "Péntek";
             break;
         }
-        event.push(nap);
         event.push(
+          nap,
           ora_terem.split("/")[0].charAt(ora_terem.split(" ")[0].length - 1),
         );
         if (!napok.includes(nap)) napok.push(nap);

@@ -139,18 +139,18 @@ export const QuickTeachers = ({
                                 ". ó"}
                               &nbsp;
                               {" 📍" +
-                                (event.room.replace(" ", "").length !== 0
-                                  ? event.room
-                                  : "???")}{" "}
+                                (event.room.replace(" ", "").length === 0
+                                  ? "???"
+                                  : event.room)}{" "}
                               &nbsp;
                               {"  📔" + event.subject}
                             </p>
                             <p>
                               {"   🧑🏼‍🏫 " +
                                 (event.replacementTeacher.replace(" ", "")
-                                  .length !== 0
-                                  ? event.replacementTeacher
-                                  : "???")}{" "}
+                                  .length === 0
+                                  ? "???"
+                                  : event.replacementTeacher)}{" "}
                               &nbsp;
                               {" 📝" + event.comment}
                             </p>
@@ -202,9 +202,9 @@ export const QuickTeachers = ({
                       ". ó"}
                     &nbsp;
                     {" 📍" +
-                      (selectedEvent.room.replace(" ", "").length !== 0
-                        ? selectedEvent.room
-                        : "???")}{" "}
+                      (selectedEvent.room.replace(" ", "").length === 0
+                        ? "???"
+                        : selectedEvent.room)}{" "}
                     &nbsp;
                     {"  📔" + selectedEvent.subject}
                   </p>
@@ -212,15 +212,15 @@ export const QuickTeachers = ({
                   <p>
                     {"Helyettesítő tanár: " +
                       (selectedEvent.replacementTeacher.replace(" ", "")
-                        .length !== 0
-                        ? selectedEvent.replacementTeacher
-                        : "???")}
+                        .length === 0
+                        ? "???"
+                        : selectedEvent.replacementTeacher)}
                   </p>
                   <p>
                     {"Megjegyzés: " +
-                      (selectedEvent.comment.replace(" ", "").length !== 0
-                        ? selectedEvent.comment
-                        : "Nincs")}
+                      (selectedEvent.comment.replace(" ", "").length === 0
+                        ? "Nincs"
+                        : selectedEvent.comment)}
                   </p>
                 </div>
               </div>

@@ -32,7 +32,7 @@ export default function WelcomeFeatures() {
   const podcastInView = useInView(podcastRef, { once: true, margin: "-100px" });
   const clubsInView = useInView(clubsRef, { once: true, margin: "-100px" });
 
-  const { events, futureEvents, isLoading } = useEvents(false);
+  const { events, futureEvents, isLoading } = useEvents(true);
   const { latestEpisode, isLoading: isPodcastLoading } = usePodcast();
 
   const nextEventWithImage = (() => {

@@ -1,138 +1,124 @@
 "use client";
 
 import { MediaImageType } from "@/db/mediaPhotos";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { MediaTagType } from "@/db/mediaTags";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
-type TokenClientType = {
-  requestAccessToken: (opts?: { prompt?: string }) => void;
-};
-
-declare global {
-  interface Window {
-    google?: any;
-  }
-}
-
-const useDriveFileUrl = (
-  fileId: string | null | undefined,
-  accessToken: string | null,
-) => {
-  const [url, setUrl] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    if (!fileId) {
-      setUrl("");
-      setLoading(false);
-      setError("Missing fileId");
-      return;
-    }
-    if (!accessToken) {
-      setUrl("");
-      setLoading(false);
-      setError("No access token");
-      return;
-    }
-
-    const controller = new AbortController();
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(
-          `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`,
-          {
-            method: "GET",
-            headers: { Authorization: `Bearer ${accessToken}` },
-            signal: controller.signal,
-          },
-        );
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`Drive file fetch failed: ${res.status} ${text}`);
-        }
-        const blob = await res.blob();
-        if (!isMounted) return;
-        const objectUrl = URL.createObjectURL(blob);
-        setUrl(objectUrl);
-      } catch (e: any) {
-        if (e?.name === "AbortError") return;
-        console.error("Drive fetch error", e);
-        setError(e?.message || String(e));
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-    load();
-
-    return () => {
-      isMounted = false;
-      controller.abort();
-      if (url) URL.revokeObjectURL(url);
-    };
-  }, [fileId, accessToken]);
-
-  return { url, loading, error } as const;
-};
-
-const AuthenticatedImage = ({
-  fileId,
+/**
+ * Lazy loading kép komponens - csak akkor tölti be, ha látható.
+ */
+const LazyImage = ({
+  imageId,
   fileName,
-  accessToken,
   bgColor,
   width,
   height,
+  size = "small",
+  onClick,
 }: {
-  fileId: string;
+  imageId: number;
   fileName: string;
-  accessToken: string | null;
   bgColor?: string;
   width: number;
   height: number;
+  size?: "small" | "large";
+  onClick?: () => void;
 }) => {
-  const {
-    url: imageSrc,
-    loading,
-    error,
-  } = useDriveFileUrl(fileId, accessToken);
+  const [isVisible, setIsVisible] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  if (loading) {
-    return (
-      <div
-        style={{ backgroundColor: bgColor ?? "gray", width, height }}
-        className="flex items-center justify-center text-sm text-gray-500"
-      >
-        <p>Betöltés...</p>
-      </div>
+  // Intersection Observer - figyeli, hogy a kép látható-e
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            // Ha egyszer látható lett, többé nem kell figyelni
+            observer.unobserve(element);
+          }
+        });
+      },
+      {
+        rootMargin: "200px", // 200px-el a viewport előtt elkezdi betölteni
+        threshold: 0,
+      },
     );
-  }
-  if (error || !imageSrc) {
-    return (
-      <div
-        style={{ width, height }}
-        className="flex items-center justify-center bg-red-100 text-sm text-red-500"
-      >
-        <p>Failed</p>
-      </div>
-    );
-  }
+
+    observer.observe(element);
+
+    return () => {
+      observer.unobserve(element);
+    };
+  }, []);
+
+  const src = `/api/media/${imageId}?size=${size}`;
 
   return (
-    <img
-      src={imageSrc}
-      alt={fileName}
-      width={width}
-      height={height}
-      className="cursor-pointer object-cover"
-    />
+    <div
+      ref={containerRef}
+      style={{ width, height, backgroundColor: bgColor ?? "gray" }}
+      className="cursor-pointer"
+      onClick={onClick}
+    >
+      {!isVisible ? (
+        // Placeholder amíg nem látható
+        <div
+          style={{ width, height }}
+          className="flex items-center justify-center"
+        />
+      ) : error ? (
+        <div
+          style={{ width, height }}
+          className="flex items-center justify-center bg-red-100 text-sm text-red-500"
+        >
+          <p>Hiba</p>
+        </div>
+      ) : (
+        <>
+          {!loaded && (
+            <div
+              style={{ width, height }}
+              className="flex items-center justify-center text-sm text-gray-500"
+            >
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
+            </div>
+          )}
+          <img
+            src={src}
+            alt={fileName}
+            width={width}
+            height={height}
+            className={`object-cover ${loaded ? "" : "hidden"}`}
+            onLoad={() => setLoaded(true)}
+            onError={() => setError(true)}
+          />
+        </>
+      )}
+    </div>
   );
 };
 
-const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [tokenClient, setTokenClient] = useState<TokenClientType | null>(null);
+const PhotoGrid = ({
+  requiredTag,
+  filterTags = [],
+  matchAll = false,
+}: {
+  requiredTag?: string;
+  filterTags?: string[];
+  matchAll?: boolean;
+}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<MediaImageType[]>();
@@ -141,7 +127,11 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
 
   useEffect(() => {
     const updateWidth = () => {
-      const width = Math.min(window.innerWidth - 32, 1200); // 32px for padding
+      const min1 =
+        window.innerWidth < 1024
+          ? window.innerWidth - 32
+          : window.innerWidth - 300;
+      const width = Math.min(min1, 1200);
       setContainerWidth(width);
     };
 
@@ -151,101 +141,94 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
   }, []);
 
   function loadImages() {
-    fetch("/api/getImages", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        module: "mediaPhotos",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setImageFiles(data);
-        } else {
-          console.error("Invalid response:", data);
-        }
+    setLoading(true);
+
+    // Ha van requiredTag vagy filterTags
+    const hasFilters = requiredTag || filterTags.length > 0;
+
+    if (hasFilters) {
+      // Készítsük el a kérést a szerver felé
+      // requiredTag mindig ÉS kapcsolatban van, filterTags között a matchAll dönt
+      // Az options objektum egyetlen paraméterként kerül átadásra
+      fetch("/api/searchImagesByTags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          module: "mediaTags",
+        },
+        body: JSON.stringify({
+          options: {
+            tagNames: filterTags,
+            matchAll: matchAll,
+            requiredTag: requiredTag || null,
+          },
+        }),
       })
-      .catch((err) => {
-        console.error("Error fetching images:", err);
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setImageFiles(data);
+          } else {
+            console.error("Invalid response:", data);
+            setError("Nem sikerült betölteni a képeket");
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching images:", err);
+          setError("Hiba a képek betöltésekor");
+        })
+        .finally(() => setLoading(false));
+    } else {
+      // Ha nincs szűrő
+      fetch("/api/getImages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          module: "mediaPhotos",
+        },
+        body: JSON.stringify({ byName: true }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setImageFiles(data);
+          } else {
+            console.error("Invalid response:", data);
+            setError("Nem sikerült betölteni a képeket");
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching images:", err);
+          setError("Hiba a képek betöltésekor");
+        })
+        .finally(() => setLoading(false));
+    }
   }
 
   useEffect(() => {
     loadImages();
-  }, []);
+  }, [requiredTag, filterTags.join(","), matchAll]);
 
-  useEffect(() => {
-    let mounted = true;
+  const handleNextImage = useCallback(() => {
+    if (!selected || !imageFiles) return;
+    setSelected(null);
+    const currentIndex = imageFiles.findIndex((img) => img.id === selected.id);
+    const nextIndex = (currentIndex + 1) % imageFiles.length;
+    setSelected(imageFiles[nextIndex]);
+    fetch(`/api/media/${imageFiles[nextIndex + 1].id}?size=large`);
+    fetch(`/api/media/${imageFiles[nextIndex + 2].id}?size=large`);
+  }, [selected, imageFiles]);
 
-    const loadGsi = () => {
-      return new Promise<void>((resolve, reject) => {
-        if (window.google?.accounts && mounted) {
-          resolve();
-          return;
-        }
-        const s = document.createElement("script");
-        s.src = "https://accounts.google.com/gsi/client";
-        s.async = true;
-        s.defer = true;
-        s.onload = () => resolve();
-        s.onerror = (e) => reject(new Error("Failed to load GSI script"));
-        document.head.appendChild(s);
-      });
-    };
-
-    const init = async () => {
-      try {
-        await loadGsi();
-
-        if (!mounted) return;
-
-        const client = window.google.accounts.oauth2.initTokenClient({
-          client_id: GOOGLE_CLIENT_ID,
-          scope: "https://www.googleapis.com/auth/drive.readonly",
-          callback: (resp: any) => {
-            if (resp.error) {
-              console.error("Token client callback error:", resp);
-              setError(resp.error_description || resp.error || "Token error");
-              return;
-            }
-            setAccessToken(resp.access_token);
-          },
-        });
-
-        setTokenClient(client);
-        setLoading(false);
-      } catch (err: any) {
-        console.error("Init GIS failed:", err);
-        setError(err.message || String(err));
-        setLoading(false);
-      }
-    };
-
-    init();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const signIn = () => {
-    setError("");
-    if (!tokenClient) {
-      setError("Token client not initialized");
-      return;
-    }
-    try {
-      tokenClient.requestAccessToken({ prompt: "" });
-    } catch (err: any) {
-      console.error("requestAccessToken error:", err);
-      setError(err.message || String(err));
-    }
-  };
-
-  const signOut = () => {
-    setAccessToken(null);
-  };
+  const handlePreviousImage = useCallback(() => {
+    if (!selected || !imageFiles) return;
+    setSelected(null);
+    const currentIndex = imageFiles.findIndex((img) => img.id === selected.id);
+    const previousIndex =
+      (currentIndex - 1 + imageFiles.length) % imageFiles.length;
+    setSelected(imageFiles[previousIndex]);
+    fetch(`/api/media/${imageFiles[previousIndex - 1].id}?size=large`);
+    fetch(`/api/media/${imageFiles[previousIndex - 2].id}?size=large`);
+  }, [selected, imageFiles]);
 
   const closeModal = useCallback(() => setSelected(null), []);
 
@@ -264,7 +247,10 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
       let currentRowWidth = 0;
 
       images.forEach((image, index) => {
-        const aspectRatio = image.compressed_width / image.compressed_height;
+        // Használjuk a small preview méreteit, vagy becsüljük 4:3 arányra
+        const imgWidth = image.small_preview_width || 200;
+        const imgHeight = image.small_preview_height || 150;
+        const aspectRatio = imgWidth / imgHeight;
         const imageHeight = maxRowHeight;
         const imageWidth = imageHeight * aspectRatio;
 
@@ -273,7 +259,7 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
             containerWidth &&
           currentRow.length >= minImagesPerRow
         ) {
-          // Scale the row
+          // Sor méretezése
           const totalGaps = (currentRow.length - 1) * gap;
           const availableWidth = containerWidth - totalGaps;
           const scaleFactor = availableWidth / currentRowWidth;
@@ -295,7 +281,7 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
         });
         currentRowWidth += imageWidth;
 
-        // For the last row
+        // Utolsó sor
         if (index === images.length - 1 && currentRow.length > 0) {
           const totalGaps = (currentRow.length - 1) * gap;
           const availableWidth = containerWidth - totalGaps;
@@ -324,28 +310,25 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
     if (!selected) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeModal();
+      if (e.key === "ArrowRight") handleNextImage();
+      if (e.key === "ArrowLeft") handlePreviousImage();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, closeModal]);
+  }, [selected, closeModal, handleNextImage, handlePreviousImage]);
 
   const downloadOriginal = useCallback(
-    async (fileId: string, suggestedName?: string | null) => {
-      if (!accessToken) return;
+    async (imageId: number, suggestedName?: string | null) => {
       try {
-        const res = await fetch(
-          `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`,
-          { headers: { Authorization: `Bearer ${accessToken}` } },
-        );
+        const res = await fetch(`/api/media/${imageId}?size=full`);
         if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`Download failed: ${res.status} ${text}`);
+          throw new Error(`Download failed: ${res.status}`);
         }
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = suggestedName || "image";
+        a.download = suggestedName || "image.webp";
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -355,55 +338,23 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
         alert("A letöltés nem sikerült.");
       }
     },
-    [accessToken],
+    [],
   );
 
   if (loading) {
-    return <div className="p-8">Loading auth...</div>;
+    return <div className="p-8">Betöltés...</div>;
   }
 
   if (error) {
     return (
-      <div className="mb-4 rounded-3xl border-2 border-red-400 bg-red-100 p-4">
-        <p className="text-red-700">{error}</p>
+      <div className="mb-4 rounded-3xl border-2 border-danger-400 bg-danger-100 p-4">
+        <p className="text-danger-700">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-2 rounded bg-red-500 px-4 py-2 text-white"
+          className="mt-2 rounded bg-danger-500 px-4 py-2 text-foreground"
         >
           Újratöltés
         </button>
-      </div>
-    );
-  }
-
-  if (!accessToken) {
-    return (
-      <div className="mx-auto max-w-2xl p-6">
-        <div className="mb-4 rounded-3xl border-2 border-selfprimary-400 bg-selfprimary-100 p-4">
-          <h3 className="mb-2 font-bold text-selfprimary-800">
-            Helló az Eötvös Média fotói közt!
-          </h3>
-          <p>
-            A média korábbi oldala sajnálatos módon megszűnt, így a médiabrigád
-            fotóit mostantól itt találhatod meg. A jelenlegi szerver és
-            tárhelykapacitások miatt a médiás fotókhoz a Google Drive
-            segítségével lehet hozzáférni, ezért a továbblépéshez bejelentkezés
-            és Google Drive hozzáférés szükséges.
-          </p>
-          <p className="mt-2 text-sm text-selfprimary-700">
-            Győződj meg róla, hogy a böngésző nem blokkolja a popupokat vagy a
-            harmadik fél sütiket (privát mód is okozhat problémát).
-          </p>
-        </div>
-
-        <div className="text-center">
-          <button
-            onClick={signIn}
-            className="rounded-lg bg-selfprimary-500 px-6 py-3 text-selfprimary-50"
-          >
-            Bejelentkezés
-          </button>
-        </div>
       </div>
     );
   }
@@ -412,14 +363,6 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Eötvös Média - Galéria</h1>
-        <div>
-          <button
-            onClick={signOut}
-            className="rounded bg-gray-500 px-4 py-2 text-white"
-          >
-            Kijelentkezés
-          </button>
-        </div>
       </div>
 
       {imageFiles === undefined && (
@@ -430,7 +373,7 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
 
       {imageFiles?.length === 0 ? (
         <div className="p-8 text-center">
-          <p>No images found in the media folder.</p>
+          <p>Nincsenek képek a galériában.</p>
           <button
             onClick={() => loadImages()}
             className="mt-4 rounded bg-selfprimary-500 px-4 py-2 text-selfprimary-50"
@@ -443,22 +386,16 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
           {imageRows.map((row, rowIndex) => (
             <div key={rowIndex} className="flex justify-center gap-2">
               {row.map((image) => (
-                <button
-                  key={image.compressed_drive_id}
-                  type="button"
-                  className="focus:outline-none"
+                <LazyImage
+                  key={image.id}
+                  imageId={image.id}
+                  fileName={image.original_file_name ?? "image"}
+                  bgColor={image.color}
+                  width={Math.round(image.displayWidth)}
+                  height={Math.round(image.displayHeight)}
+                  size="small"
                   onClick={() => setSelected(image)}
-                  title="Megnyitás nagyban"
-                >
-                  <AuthenticatedImage
-                    fileId={image.compressed_drive_id}
-                    fileName={image.compressed_file_name ?? "image"}
-                    accessToken={accessToken}
-                    bgColor={image.color}
-                    width={Math.round(image.displayWidth)}
-                    height={Math.round(image.displayHeight)}
-                  />
-                </button>
+                />
               ))}
             </div>
           ))}
@@ -467,21 +404,13 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
 
       {selected && (
         <ImageModal
+          image={selected}
           onClose={closeModal}
-          accessToken={accessToken}
-          fileId={selected.original_drive_id}
-          fileName={
-            selected.original_file_name ||
-            selected.compressed_file_name ||
-            "image"
-          }
-          bgColor={selected.color}
           onDownload={() =>
-            downloadOriginal(
-              selected.original_drive_id,
-              selected.original_file_name || selected.compressed_file_name,
-            )
+            downloadOriginal(selected.id, selected.original_file_name)
           }
+          handleNextImage={handleNextImage}
+          handlePreviousImage={handlePreviousImage}
         />
       )}
     </div>
@@ -489,23 +418,190 @@ const PhotoGrid = ({ GOOGLE_CLIENT_ID }: { GOOGLE_CLIENT_ID: string }) => {
 };
 
 const ImageModal = ({
+  image,
   onClose,
-  accessToken,
-  fileId,
-  fileName,
-  bgColor,
   onDownload,
+  handleNextImage,
+  handlePreviousImage,
 }: {
+  image: MediaImageType;
   onClose: () => void;
-  accessToken: string | null;
-  fileId: string;
-  fileName: string;
-  bgColor?: string | null;
   onDownload: () => void;
+  handleNextImage: () => void;
+  handlePreviousImage: () => void;
 }) => {
-  const { url, loading, error } = useDriveFileUrl(fileId, accessToken);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [madeByTags, setMadeByTags] = useState<string[]>([]);
 
-  const title = useMemo(() => fileName || "Kép", [fileName]);
+  // Fetch madeBy tags for the image
+  useEffect(() => {
+    const fetchMadeByTags = async () => {
+      try {
+        const res = await fetch(`/api/media/tags?imageId=${image.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.tags && Array.isArray(data.tags)) {
+            const madeBy = data.tags
+              .filter(
+                (t: MediaTagType) =>
+                  t.priority === "madeBy" || t.tag_name.startsWith("Made by:"),
+              )
+              .map((t: { tag_name: string }) =>
+                t.tag_name.replaceAll("Made by:", "").trim(),
+              );
+            setMadeByTags(madeBy);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching tags:", err);
+      }
+    };
+
+    fetchMadeByTags();
+  }, [image.id]);
+
+  const title = image.original_file_name || "Kép";
+  const src = `/api/media/${image.id}?size=large`;
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      await onDownload();
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  // Reseteljük a loaded state-et, amikor új képre vált
+  useEffect(() => {
+    setLoaded(false);
+    setError(false);
+    setMadeByTags([]);
+  }, [image.id]);
+
+  // Fullscreen API kezelése
+  useEffect(() => {
+    if (isFullscreen) {
+      // Belépés natív fullscreen módba
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error("Fullscreen request failed:", err);
+      });
+    } else {
+      // Kilépés fullscreen módból
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => {
+          console.error("Exit fullscreen failed:", err);
+        });
+      }
+    }
+
+    // Figyeljük a fullscreen változásokat (pl. F11 vagy ESC)
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [isFullscreen]);
+
+  // Fullscreen mód
+  if (isFullscreen) {
+    return (
+      <div
+        className="fixed inset-0 z-50 flex justify-center bg-black"
+        onClick={() => setIsFullscreen(false)}
+      >
+        {!loaded && !error && (
+          <div className="p-8 text-sm text-foreground-600">Betöltés…</div>
+        )}
+        {error && (
+          <div className="p-8 text-sm text-danger-600">
+            Hiba a kép betöltésekor
+          </div>
+        )}
+        <img
+          src={src}
+          alt={title}
+          className={`max-h-screen w-auto max-w-full object-contain ${
+            loaded ? "" : "hidden"
+          }`}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+          onClick={(e) => e.stopPropagation()}
+        />
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNextImage();
+          }}
+          className="absolute right-4 h-12 w-12 self-center rounded-full bg-foreground-300 text-center text-2xl opacity-70 hover:opacity-100"
+        >
+          ➜
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePreviousImage();
+          }}
+          className="absolute left-4 h-12 w-12 rotate-180 self-center rounded-full bg-foreground-300 text-center text-2xl opacity-70 hover:opacity-100"
+        >
+          ➜
+        </button>
+
+        <div className="absolute right-4 top-4 flex gap-2">
+          <button
+            className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDownload();
+            }}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <div className="flex items-center gap-2">
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-foreground-50 border-t-transparent" />
+                Letöltés...
+              </div>
+            ) : (
+              "Letöltés"
+            )}
+          </button>
+          <button
+            className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
+            onClick={() => setIsFullscreen(true)}
+          >
+            Fullscreen
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFullscreen(false);
+            }}
+            className="rounded bg-danger-600 px-3 py-2 text-sm text-foreground-50 hover:bg-danger-700"
+          >
+            Kilépés
+          </button>
+        </div>
+
+        {/* Made By Tags - Fullscreen */}
+        {madeByTags.length > 0 && (
+          <div className="absolute bottom-4 right-4 rounded-lg bg-black/70 px-3 py-2">
+            <div className="flex items-center gap-2 text-sm text-white">
+              <span className="text-foreground-400">📷</span>
+              {madeByTags.join(", ")}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -525,13 +621,27 @@ const ImageModal = ({
           </h2>
           <div className="flex gap-2">
             <button
-              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-white"
-              onClick={onDownload}
+              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={handleDownload}
+              disabled={downloading}
             >
-              Letöltés
+              {downloading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-foreground-50 border-t-transparent" />
+                  Letöltés...
+                </div>
+              ) : (
+                "Letöltés"
+              )}
             </button>
             <button
-              className="rounded bg-selfsecondary-600 px-3 py-2 text-sm text-white"
+              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
+              onClick={() => setIsFullscreen(true)}
+            >
+              Fullscreen
+            </button>
+            <button
+              className="rounded bg-selfsecondary-600 px-3 py-2 text-sm text-foreground-50"
               onClick={onClose}
             >
               Bezárás
@@ -541,20 +651,44 @@ const ImageModal = ({
 
         <div
           className="flex max-h-[80vh] items-center justify-center overflow-auto rounded-lg border"
-          style={{ backgroundColor: bgColor ?? "#f3f4f6" }}
+          style={{ backgroundColor: image.color ?? "#f3f4f6" }}
         >
-          {loading && (
-            <div className="p-8 text-sm text-gray-600">Betöltés…</div>
+          {!loaded && !error && (
+            <div className="p-8 text-sm text-foreground-600">Betöltés…</div>
           )}
           {error && (
-            <div className="p-8 text-sm text-red-600">Hiba: {error}</div>
+            <div className="p-8 text-sm text-danger-600">
+              Hiba a kép betöltésekor
+            </div>
           )}
-          {!loading && !error && url && (
-            <img
-              src={url}
-              alt={title}
-              className="max-h-[80vh] w-auto max-w-full object-contain"
-            />
+          <img
+            src={src}
+            alt={title}
+            className={`max-h-[80vh] w-auto max-w-full object-contain ${loaded ? "" : "hidden"}`}
+            onLoad={() => setLoaded(true)}
+            onError={() => setError(true)}
+          />
+          <button
+            onClick={handleNextImage}
+            className="absolute right-0 h-10 w-10 items-center rounded-full bg-foreground-300 text-center text-lg opacity-70 hover:opacity-100"
+          >
+            ➜
+          </button>
+          <button
+            onClick={handlePreviousImage}
+            className="absolute left-0 h-10 w-10 rotate-180 items-center rounded-full bg-foreground-300 text-center text-lg opacity-70 hover:opacity-100"
+          >
+            ➜
+          </button>
+
+          {/* Made By Tags - Normal mode */}
+          {madeByTags.length > 0 && (
+            <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 px-3 py-2">
+              <div className="flex items-center gap-2 text-sm text-white">
+                <span className="text-foreground-400">📷</span>
+                {madeByTags.join(", ")}
+              </div>
+            </div>
           )}
         </div>
       </div>

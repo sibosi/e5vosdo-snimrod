@@ -20,7 +20,6 @@ import {
 } from "@/components/helyettesites/quickteacher";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import ShortDay from "@/components/home/shortDay";
 
 export const metadata: Metadata = {
   robots: {
@@ -126,8 +125,6 @@ export default async function Home() {
         </Section>
       )}
 
-      <ShortDay />
-
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section
           title={"Helyettesítések"}
@@ -163,7 +160,6 @@ export default async function Home() {
         <Footer />
       </Section>
 
-      <p className="hidden text-center italic">„Bömbi a király”</p>
       <div className="hidden">
         {
           "Az oldal a Budapest V. Kerületi Eötvös József Gimnázium (más néven EJG) Diákönkormányzatának (más néven DÖ) tájékoztató oldala."

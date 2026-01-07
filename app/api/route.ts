@@ -141,7 +141,10 @@ async function update() {
         const comment = event[6];
         const day = event[7];
         const period = event[8];
-        const room = event[9];
+        const room =
+          period == "0" && String(event[9]).endsWith(" 0")
+            ? String(event[9]).replaceAll(" 0", "")
+            : event[9];
 
         return {
           date,

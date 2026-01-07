@@ -113,8 +113,8 @@ async function update() {
             nap = "Péntek";
             break;
         }
-        event.push(nap);
         event.push(
+          nap,
           ora_terem.split("/")[0].charAt(ora_terem.split(" ")[0].length - 1),
         );
         if (!napok.includes(nap)) napok.push(nap);
@@ -141,7 +141,10 @@ async function update() {
         const comment = event[6];
         const day = event[7];
         const period = event[8];
-        const room = event[9];
+        const room =
+          period == "0" && String(event[9]).endsWith(" 0")
+            ? String(event[9]).replaceAll(" 0", "")
+            : event[9];
 
         return {
           date,

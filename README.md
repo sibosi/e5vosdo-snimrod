@@ -170,10 +170,11 @@ Külön köszönet mindenkinek, aki hozzájárult a projekt sikeréhez:
 
 ### 💪 Támogatók
 
-- **Domi** - aki "jó fej" (mindenkori motivátor)
+- **Domi** - Aki "jó fej" (mindenkori motivátor)
 - **Zsolt** - Segítség mindenben is
 - **Barnabás** - Tanácsadás és ihletszerzés
 - **Lajos** - Szerverszerzési ötletek
+- **Nikó** - A palánta
 - **Ádám** - A transzfermester
 - **Ábel** - Tanácsadás
 

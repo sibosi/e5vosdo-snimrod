@@ -51,7 +51,8 @@ export const useTimetable = ({
 
     // Day indexes: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     const now = new Date();
-    if (now.getDay() === 0 || now.getDay() === 6) return "Hétfő";
+    if (now.getDay() === 0) return "Hétfő";
+    if (now.getDay() === 6) return "Péntek";
     const todayAt1515 = new Date(
       now.getFullYear(),
       now.getMonth(),

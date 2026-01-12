@@ -75,10 +75,15 @@ const Table = ({
     setSlots(slotsData);
 
     for (const slot of slotsData as PresentationSlotType[]) {
-      if (!(slot.id in selectedBySlot)) {
-        setSelectedBySlot((prev) => ({ ...prev, [slot.id]: null }));
-        setSignupAmounts((prev) => ({ ...prev, [slot.id]: 1 }));
-      }
+      setSelectedBySlot((prev) => {
+        // Only set to null if not already set (preserves signups loaded earlier)
+        if (slot.id in prev) return prev;
+        return { ...prev, [slot.id]: null };
+      });
+      setSignupAmounts((prev) => {
+        if (slot.id in prev) return prev;
+        return { ...prev, [slot.id]: 1 };
+      });
     }
 
     setSelectedSlot(slotsData[0]?.id || null);
@@ -108,14 +113,32 @@ const Table = ({
     const amounts: { [slot_id: number]: number } = {};
     if (Array.isArray(mySignupsData)) {
       for (const signup of mySignupsData as SignupType[]) {
+        console.log("Hi");
+        setSelectedBySlot((prev) => ({
+          ...prev,
+          [signup.slot_id]: signup.presentation_id,
+        }));
         slotSelections[signup.slot_id] = signup.presentation_id;
         amounts[signup.slot_id] = signup.amount;
       }
     }
 
-    setSelectedBySlot((prev) => ({ ...prev, ...slotSelections }));
+    // setSelectedBySlot((prev) => ({ ...prev, ...slotSelections }));
     setSignupAmounts((prev) => ({ ...prev, ...amounts }));
+
+    console.log(JSON.stringify(mySignupsData));
+    console.log(JSON.stringify(slotSelections));
+    console.log(JSON.stringify(selectedBySlot));
   }
+
+  // imételje 5 mp enként
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      console.log(JSON.stringify(selectedBySlot));
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const [evtSource, setEvtSource] = useState<EventSource | null>(null);
 
@@ -557,6 +580,7 @@ const Table = ({
           <div className="flex flex-col rounded-xl bg-selfprimary-200 p-2">
             <p>{presName}sáv:</p>
             <Select
+              aria-label="Előadássáv kiválasztása"
               selectedKeys={selectedSlot ? [selectedSlot.toString()] : []}
               onSelectionChange={(keys) => {
                 const key = Array.from(keys)[0];

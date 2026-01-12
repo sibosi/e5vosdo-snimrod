@@ -4,6 +4,7 @@ import NewNotification from "@/components/account/notification";
 import PageSettings from "@/components/pagesettings";
 import { Section } from "@/components/home/section";
 import PresentationAPIButtons from "./PresentationAPIButtons";
+import AlertManager from "@/components/admin/AlertManager";
 
 const PagePage = async () => {
   const selfUser = await getAuth();
@@ -34,14 +35,26 @@ const PagePage = async () => {
       </Section>
 
       {selfUser.permissions.includes("admin") ? (
-        <Section
-          title="Oldalbeállítások"
-          dropdownable={false}
-          defaultStatus="opened"
-          isCard={true}
-        >
-          <PageSettings />
-        </Section>
+        <>
+          <Section
+            title="Alert kezelése"
+            dropdownable={true}
+            defaultStatus="closed"
+            isCard={true}
+            titleClassName="text-2xl font-semibold text-foreground"
+          >
+            <AlertManager />
+          </Section>
+
+          <Section
+            title="Oldalbeállítások"
+            dropdownable={false}
+            defaultStatus="opened"
+            isCard={true}
+          >
+            <PageSettings />
+          </Section>
+        </>
       ) : (
         <></>
       )}

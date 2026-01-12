@@ -660,11 +660,7 @@ const Table = ({
           >
             <Field className="bg-selfprimary-200 md:col-span-2">
               <div>
-                <div className="text-lg font-bold">
-                  {EXTERNAL_SIGNUPS
-                    ? presentation.title
-                    : presentation.id.toString() + ". " + presentation.title}
-                </div>
+                <div className="text-lg font-bold">{presentation.title}</div>
 
                 {presentation.performer && (
                   <p className="italic">{presentation.performer}</p>

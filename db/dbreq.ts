@@ -800,6 +800,50 @@ export async function getAlerts() {
   return (await dbreq(`SELECT * FROM alerts;`)) as AlertType[];
 }
 
+export async function createAlert(
+  text: string,
+  className?: string,
+  padding: boolean = true,
+  icon: boolean = false,
+) {
+  const selfUser = await getAuth();
+  if (!selfUser?.permissions.includes("admin")) return null;
+
+  addLog("createAlert", text);
+  const result = await dbreq(
+    `INSERT INTO alerts (text, className, padding, icon) VALUES (?, ?, ?, ?);`,
+    [text, className || null, padding ? 1 : 0, icon ? 1 : 0],
+  );
+  return result;
+}
+
+export async function updateAlert(
+  id: number,
+  text: string,
+  className?: string,
+  padding: boolean = true,
+  icon: boolean = false,
+) {
+  const selfUser = await getAuth();
+  if (!selfUser?.permissions.includes("admin")) return null;
+
+  addLog("updateAlert", `id: ${id}, text: ${text}`);
+  const result = await dbreq(
+    `UPDATE alerts SET text = ?, className = ?, padding = ?, icon = ? WHERE id = ?;`,
+    [text, className || null, padding ? 1 : 0, icon ? 1 : 0, id],
+  );
+  return result;
+}
+
+export async function deleteAlert(id: number) {
+  const selfUser = await getAuth();
+  if (!selfUser?.permissions.includes("admin")) return null;
+
+  addLog("deleteAlert", `id: ${id}`);
+  const result = await dbreq(`DELETE FROM alerts WHERE id = ?;`, [id]);
+  return result;
+}
+
 export const apireq = {
   getUsers: { req: getUsers, perm: ["admin"] },
   getUsersName: { req: getUsersName, perm: ["student"] },

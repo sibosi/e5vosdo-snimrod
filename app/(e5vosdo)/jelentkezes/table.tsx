@@ -172,11 +172,11 @@ const Table = ({
     if (lastUpdated === null) return;
 
     const timeoutId = setTimeout(() => {
-      if (Date.now() - lastUpdated > 40000) {
+      if (Date.now() - lastUpdated > 20000) {
         setIsFetchingAutomatically(false);
         console.warn("Automatic fetching seems to have stopped.");
       }
-    }, 40000);
+    }, 20000);
 
     return () => clearTimeout(timeoutId);
   }, [lastUpdated]);

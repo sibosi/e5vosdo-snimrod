@@ -253,7 +253,6 @@ export async function signUpForPresentation(
         // Ha nem NULL, akkor jelentkezünk
 
         if (
-          process.env.EXTERNAL_SIGNUPS === "true" &&
           Number.isInteger(process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) &&
           existingSignups.length + (existingSignupInThatSlot ? 0 : 1) >
             Number(process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT)

@@ -1,12 +1,17 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Progress } from "@heroui/progress";
-import { Chip } from "@heroui/chip";
-import { Divider } from "@heroui/divider";
-import { Tabs, Tab } from "@heroui/tabs";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Progress,
+  Chip,
+  Divider,
+  Tabs,
+  Tab,
+} from "@heroui/react";
 import TagManager from "./components/TagManager";
 import ImageTagger from "./components/ImageTagger";
 import ImageManager from "./components/ImageManager";

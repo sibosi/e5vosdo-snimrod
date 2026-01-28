@@ -1,12 +1,6 @@
 import { getPresentationsCapacity } from "@/db/presentationSignup";
 import { NextRequest } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 interface SSEGlobalState {
   gSignupSseSubscribers: Set<WritableStreamDefaultWriter<Uint8Array>>;
   gSignupPresentationsInterval: ReturnType<typeof setInterval> | null;

@@ -1,19 +1,22 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
 import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Chip,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from "@heroui/modal";
-import { Select, SelectItem } from "@heroui/select";
-import { Checkbox } from "@heroui/checkbox";
-import { Pagination } from "@heroui/pagination";
+  Select,
+  SelectItem,
+  Checkbox,
+  Pagination,
+} from "@heroui/react";
 import { MediaImageType } from "@/db/mediaPhotos";
 
 interface ImageManagerProps {

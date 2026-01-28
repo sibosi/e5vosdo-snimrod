@@ -1,12 +1,7 @@
-import MainLayout, {
-  dynamic,
-  metadata,
-  viewport,
-} from "@/app/mainLayoutWithLogLoginProp";
+import MainLayout from "@/app/mainLayoutWithLogLoginProp";
 import { addLog } from "@/db/dbreq";
 import { headers } from "next/headers";
 
-export { dynamic, metadata, viewport };
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {

@@ -72,14 +72,13 @@ A projekt nemcsak egy eszköz, hanem egy közösségi nyílt forrású kezdemén
 
 ## 🛠️ Technológiai stack
 
-### Frontend
-
 - **[Next.js 15](https://nextjs.org/)** - React framework server-side renderinggel
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe fejlesztés
 - **[HeroUI](https://www.heroui.com/)** - Modern UI komponenskönyvtár
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[Framer Motion](https://www.framer.com/motion/)** - Smooth animációk
 - **[next-themes](https://github.com/pacocoursey/next-themes)** - Téma kezelés
+- **[MySQL](https://www.mysql.com/)** - Relációs adatbázis
 
 ### DevOps
 
@@ -90,37 +89,66 @@ A projekt nemcsak egy eszköz, hanem egy közösségi nyílt forrású kezdemén
 
 ## 🚀 Kezdő lépések
 
-### Előfeltételek
+### Előfeltételek és telepítések
 
-- **Node.js** 18.x vagy újabb
-- **npm** package manager
-- **Git**
+- **[Node.js & npm](https://nodejs.org/en/download/)** 18.x+
+- **[Git](https://git-scm.com/install/)** verziókezelő
+- **[MySQL](https://dev.mysql.com/downloads/mysql/)** 8.4+
+- **[Python](https://www.python.org/downloads/)** 3.8+ (a setup script futtatásához & fejlesztői eszközökhöz)
 
-### Telepítés
-
-1️⃣ **Repo klónozása**
+### 1. Repo klónozása
 
 ```bash
 git clone https://github.com/sibosi/e5vosdo-snimrod.git
 cd e5vosdo-snimrod
 ```
 
-2️⃣ **Függőségek telepítése**
+### 2. Csomagok telepítése
 
 ```bash
 npm install
 ```
 
-3️⃣ **Környezeti változók beállítása**
-
-Hozz létre egy `.env.local` fájlt a projekt gyökérkönyvtárában:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```bash
+pip install -r requirements.txt
 ```
 
-4️⃣ **Fejlesztői szerver indítása**
+### 3. Adatbázis séma letöltése
+
+**FONTOS!** Az első lépésben le kell töltened az adatbázis sémát az admin endpointról:
+
+1. Kérj hozzáférést a fő fejlesztőtől
+2. Nyisd meg: **https://e5vosdo.hu/api/admin/export-schema**
+3. Ez automatikusan letölt egy `db_schema_YYYY-MM-DD.sql` fájlt
+4. Másold a fájlt a projekt gyökérkönyvtárába
+
+### 4. Környezeti változók beállítása
+
+Másold a `.env.example` fájlt `.env` néven:
+
+```bash
+cp .env.example .env
+```
+
+Írd át a `.env` fájlban a MySQL kapcsolati adatokat a saját környezetednek megfelelően.
+
+```env
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_DATABASE=e5info
+MYSQL_USER=your_mysql_user
+MYSQL_PASSWORD=your_mysql_password
+```
+
+### 5. Setup script futtatása
+
+Futtasd az automatizált setup scriptet:
+
+```bash
+python setup.py
+```
+
+## 6. Fejlesztői szerver indítása
 
 ```bash
 npm run dev
@@ -137,22 +165,6 @@ A projekt elérhető lesz a `http://localhost:3000` címen.
 - Google Analytics
 - Google Cloud
 - Supabase Storage
-
-### Projekt struktúra
-
-```
-e5vosdo-snimrod/
-├── app/                   # Next.js App Router
-│   ├── (e5vosdo)/         # Fő alkalmazás route group
-│   ├── api/               # API routes
-│   └── layout.tsx         # Root layout
-├── components/            # React komponensek
-├── db/                    # Database utilities
-├── config/                # Konfiguráció fájlok
-├── hooks/                 # Custom React hooks
-├── types/                 # TypeScript type definitions
-└── public/                # Statikus fájlok
-```
 
 ---
 

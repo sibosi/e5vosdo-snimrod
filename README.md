@@ -89,21 +89,21 @@ A projekt nemcsak egy eszköz, hanem egy közösségi nyílt forrású kezdemén
 
 ## 🚀 Kezdő lépések
 
-### Előfeltételek és telepítések
+### 1. Előfeltételek telepítése
 
-- **[Node.js & npm](https://nodejs.org/en/download/)** 18.x+
-- **[Git](https://git-scm.com/install/)** verziókezelő
-- **[MySQL](https://dev.mysql.com/downloads/mysql/)** 8.4+
-- **[Python](https://www.python.org/downloads/)** 3.8+ (a setup script futtatásához & fejlesztői eszközökhöz)
+- **Node.js & npm 18.x+**: https://nodejs.org/en/download/
+- **Git verziókezelő**: https://git-scm.com/downloads
+- **MySQL 8.4+**: https://dev.mysql.com/downloads/mysql/
+- **Python 3.8+** (a setup script futtatásához & fejlesztői eszközökhöz): https://www.python.org/downloads/
 
-### 1. Repo klónozása
+### 2. Repo klónozása
 
 ```bash
 git clone https://github.com/sibosi/e5vosdo-snimrod.git
 cd e5vosdo-snimrod
 ```
 
-### 2. Csomagok telepítése
+### 3. Csomagok telepítése
 
 ```bash
 npm install
@@ -113,7 +113,7 @@ npm install
 pip install -r requirements.txt
 ```
 
-### 3. Adatbázis séma letöltése
+### 4. Adatbázis séma letöltése
 
 **FONTOS!** Az első lépésben le kell töltened az adatbázis sémát az admin endpointról:
 
@@ -122,7 +122,7 @@ pip install -r requirements.txt
 3. Ez automatikusan letölt egy `db_schema_YYYY-MM-DD.sql` fájlt
 4. Másold a fájlt a projekt gyökérkönyvtárába
 
-### 4. Környezeti változók beállítása
+### 5. Környezeti változók beállítása
 
 Másold a `.env.example` fájlt `.env` néven:
 
@@ -140,7 +140,7 @@ MYSQL_USER=your_mysql_user
 MYSQL_PASSWORD=your_mysql_password
 ```
 
-### 5. Setup script futtatása
+### 6. Setup script futtatása
 
 Futtasd az automatizált setup scriptet:
 
@@ -148,7 +148,7 @@ Futtasd az automatizált setup scriptet:
 python setup.py
 ```
 
-## 6. Fejlesztői szerver indítása
+## 7. Fejlesztői szerver indítása
 
 ```bash
 npm run dev

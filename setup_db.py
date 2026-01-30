@@ -111,7 +111,6 @@ def execute_sql(connection: mysql.connector.MySQLConnection, sql: str, descripti
             
             current.append(line)
             
-            # End of statement
             if line_stripped.endswith(';'):
                 if in_trigger:
                     # Triggers end with END; - check if this is it

@@ -143,7 +143,7 @@ def main():
         existing_values = read_existing_env()
         print('\n⚠ Warning: .env file already exists')
         print('\nOptions:')
-        print('  1. Keep existing values, only generate missing ones')
+        print('  1. Keep existing values, only generate missing ones (RECOMMENDED)')
         print('  2. Backup existing .env and create new one')
         print('  3. Cancel and exit')
         

@@ -12,17 +12,6 @@ on:
         edited,
         ready_for_review,
       ]
-  pull_request_target:
-    types:
-      [
-        opened,
-        reopened,
-        synchronize,
-        labeled,
-        unlabeled,
-        edited,
-        ready_for_review,
-      ]
 
 permissions:
   pull-requests: read

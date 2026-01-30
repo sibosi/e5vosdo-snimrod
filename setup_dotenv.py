@@ -169,14 +169,14 @@ def main():
     # Generate values
     auth_secret = generate_auth_secret()
     if 'AUTH_SECRET' in existing_values and choice == '1':
-        print(f'  ⊘ Keeping existing AUTH_SECRET')
+        print('  ⊘ Keeping existing AUTH_SECRET')
         auth_secret = existing_values['AUTH_SECRET']
     else:
         print(f'  ✓ Generated AUTH_SECRET: {auth_secret[:20]}...')
     
     encryption_password = generate_encryption_password()
     if 'ENCRYPTION_PASSWORD' in existing_values and choice == '1':
-        print(f'  ⊘ Keeping existing ENCRYPTION_PASSWORD')
+        print('  ⊘ Keeping existing ENCRYPTION_PASSWORD')
         encryption_password = existing_values['ENCRYPTION_PASSWORD']
     else:
         print(f'  ✓ Generated ENCRYPTION_PASSWORD: {encryption_password[:20]}...')
@@ -184,13 +184,13 @@ def main():
     public_vapid, private_vapid = generate_vapid_keys()
     if public_vapid and private_vapid:
         if 'PUBLIC_VAPID_KEY' in existing_values and choice == '1':
-            print(f'  ⊘ Keeping existing PUBLIC_VAPID_KEY')
+            print('  ⊘ Keeping existing PUBLIC_VAPID_KEY')
             public_vapid = existing_values['PUBLIC_VAPID_KEY']
         else:
             print(f'  ✓ Generated PUBLIC_VAPID_KEY: {public_vapid[:20]}...')
         
         if 'PRIVATE_VAPID_KEY' in existing_values and choice == '1':
-            print(f'  ⊘ Keeping existing PRIVATE_VAPID_KEY')
+            print('  ⊘ Keeping existing PRIVATE_VAPID_KEY')
             private_vapid = existing_values['PRIVATE_VAPID_KEY']
         else:
             print(f'  ✓ Generated PRIVATE_VAPID_KEY: {private_vapid[:20]}...')

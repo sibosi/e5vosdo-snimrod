@@ -23,8 +23,8 @@ def generate_auth_secret() -> str:
 
 def generate_encryption_password() -> str:
     """Generate a strong ENCRYPTION_PASSWORD (32 characters)."""
-    # Mix of letters, numbers, and symbols
-    alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'
+    # Mix of letters, numbers, and symbols (excluding #)
+    alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*'
     return ''.join(secrets.choice(alphabet) for _ in range(32))
 
 

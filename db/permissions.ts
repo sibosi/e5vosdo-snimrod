@@ -3,6 +3,8 @@ import { PossibleUserType } from "./dbreq";
 export const PERMISSIONS = [
   "user",
   "student",
+  "tester",
+  "developer",
   "admin",
   "organiser",
   "head_of_parlament",
@@ -16,6 +18,8 @@ export const PERMISSIONS = [
 Permissions & access to API endpoints
 user: elementary API access
 student: no value
+tester: can access testing endpoints & features
+developer: can access developer endpoints & features
 admin: access to all API endpoints & permission management
 organiser: E5N system - can view the list of signupers
 head_of_parlament: can manage parlaments

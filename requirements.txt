@@ -1,5 +1,17 @@
+# Environment and Configuration
+python-dotenv
+
+# Database
+mysql-connector-python
+
+# Web Scraping
 requests
-bs4
-cryptography
+beautifulsoup4
+
+# Data Processing
 pandas
 openpyxl
+
+# Cryptography
+cryptography
+py-vapid

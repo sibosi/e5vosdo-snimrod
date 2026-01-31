@@ -190,7 +190,7 @@ export const WaveText = ({ text }: { text: string }) => {
 
       <h1
         ref={titleRef}
-        className={`text-pressure-title bg-gradient-to-l from-selfprimary-200 to-selfprimary-500 bg-clip-text text-transparent ${dynamicClassName}`}
+        className={`text-pressure-title bg-linear-to-l from-selfprimary-200 to-selfprimary-500 bg-clip-text text-transparent ${dynamicClassName}`}
         style={{
           fontFamily,
           textTransform: "uppercase",

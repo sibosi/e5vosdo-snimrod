@@ -112,7 +112,7 @@ const MyPresentations = () => {
               </h3>
               <div className="space-y-3">
                 {preses.map((pres) => (
-                  <Card key={pres.id} className="shadow-sm">
+                  <Card key={pres.id} className="shadow-xs">
                     <CardHeader className="flex-col items-start gap-1 pb-2">
                       <div className="flex w-full items-start justify-between">
                         <h4 className="text-lg font-semibold">{pres.title}</h4>

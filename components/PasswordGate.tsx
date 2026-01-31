@@ -122,7 +122,7 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
                 setError(false);
               }}
               placeholder="Jelszó"
-              className={`w-full rounded-lg border-2 bg-foreground-50 px-4 py-3 text-center text-lg transition focus:outline-none focus:ring-2 ${
+              className={`w-full rounded-lg border-2 bg-foreground-50 px-4 py-3 text-center text-lg transition focus:outline-hidden focus:ring-2 ${
                 error
                   ? "border-danger-500 focus:ring-danger-200"
                   : "border-foreground-200 focus:border-selfprimary-500 focus:ring-selfprimary-200"
@@ -138,7 +138,7 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-selfprimary-600 py-3 font-semibold text-white transition hover:bg-selfprimary-700 focus:outline-none focus:ring-2 focus:ring-selfprimary-500 focus:ring-offset-2"
+            className="w-full rounded-lg bg-selfprimary-600 py-3 font-semibold text-white transition hover:bg-selfprimary-700 focus:outline-hidden focus:ring-2 focus:ring-selfprimary-500 focus:ring-offset-2"
           >
             Belépés
           </button>

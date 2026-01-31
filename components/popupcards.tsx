@@ -215,7 +215,7 @@ const PopupCards = ({
                   />
                 )}
               </div>
-              <div className="overflow-auto fill-overlay px-6 py-6 text-left text-foreground md:max-h-[100%]">
+              <div className="overflow-auto fill-overlay px-6 py-6 text-left text-foreground md:max-h-full">
                 <p className="text-md overflow-auto whitespace-pre-line pb-4">
                   {showingCard?.details}
                 </p>

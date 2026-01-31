@@ -55,11 +55,11 @@ export const NotificationBox = ({
           <h3 className="flex gap-1 font-bold">
             <p className="truncate">{title}</p>
           </h3>
-          <span className="break-words text-sm text-foreground-600">
+          <span className="wrap-break-word text-sm text-foreground-600">
             {body}
           </span>
         </div>
-        <div className="break-words text-end text-sm text-foreground-600">
+        <div className="wrap-break-word text-end text-sm text-foreground-600">
           <p>{sender}</p>
           <p>
             {time &&

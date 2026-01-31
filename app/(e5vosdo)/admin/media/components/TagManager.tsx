@@ -186,7 +186,7 @@ const TagManager: React.FC<TagManagerProps> = ({
           value={newTagName}
           onChange={(e) => setNewTagName(e.target.value)}
           placeholder="Új címke neve..."
-          className="flex-1 rounded-lg border px-4 py-2 focus:border-selfprimary-500 focus:outline-none"
+          className="flex-1 rounded-lg border px-4 py-2 focus:border-selfprimary-500 focus:outline-hidden"
           disabled={isSubmitting}
         />
         <button
@@ -205,7 +205,7 @@ const TagManager: React.FC<TagManagerProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Címke keresése..."
-          className="w-full rounded-lg border px-4 py-2 focus:border-selfprimary-500 focus:outline-none"
+          className="w-full rounded-lg border px-4 py-2 focus:border-selfprimary-500 focus:outline-hidden"
         />
       </div>
 
@@ -231,7 +231,7 @@ const TagManager: React.FC<TagManagerProps> = ({
                       onChange={(e) =>
                         setEditingTag({ ...editingTag, name: e.target.value })
                       }
-                      className="w-full rounded border px-2 py-1"
+                      className="w-full rounded-sm border px-2 py-1"
                       autoFocus
                     />
                   ) : (
@@ -247,7 +247,7 @@ const TagManager: React.FC<TagManagerProps> = ({
                         e.target.value as "madeBy" | "normal" | "high",
                       )
                     }
-                    className={`rounded border px-2 py-1 text-sm focus:border-selfprimary-500 focus:outline-none ${
+                    className={`rounded border px-2 py-1 text-sm focus:border-selfprimary-500 focus:outline-hidden ${
                       tag.priority === "madeBy"
                         ? "border-purple-400 bg-purple-100 text-purple-800"
                         : tag.priority === "high"
@@ -271,13 +271,13 @@ const TagManager: React.FC<TagManagerProps> = ({
                       <button
                         onClick={handleUpdateTag}
                         disabled={isSubmitting}
-                        className="rounded bg-success-600 px-3 py-1 text-sm text-foreground hover:bg-success-700"
+                        className="rounded-sm bg-success-600 px-3 py-1 text-sm text-foreground hover:bg-success-700"
                       >
                         Mentés
                       </button>
                       <button
                         onClick={() => setEditingTag(null)}
-                        className="rounded bg-foreground-500 px-3 py-1 text-sm text-foreground hover:bg-foreground-600"
+                        className="rounded-sm bg-foreground-500 px-3 py-1 text-sm text-foreground hover:bg-foreground-600"
                       >
                         Mégse
                       </button>
@@ -288,7 +288,7 @@ const TagManager: React.FC<TagManagerProps> = ({
                         onClick={() =>
                           setEditingTag({ id: tag.tag_id, name: tag.tag_name })
                         }
-                        className="rounded bg-warning-500 px-3 py-1 text-sm text-foreground hover:bg-warning-600"
+                        className="rounded-sm bg-warning-500 px-3 py-1 text-sm text-foreground hover:bg-warning-600"
                       >
                         Szerkesztés
                       </button>
@@ -297,7 +297,7 @@ const TagManager: React.FC<TagManagerProps> = ({
                           handleDeleteTag(tag.tag_id, tag.tag_name)
                         }
                         disabled={isSubmitting}
-                        className="rounded bg-danger-600 px-3 py-1 text-sm text-foreground hover:bg-danger-700"
+                        className="rounded-sm bg-danger-600 px-3 py-1 text-sm text-foreground hover:bg-danger-700"
                       >
                         Törlés
                       </button>

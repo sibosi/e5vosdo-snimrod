@@ -425,7 +425,7 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
                 {image.tags.slice(0, 3).map((tag) => (
                   <span
                     key={tag.tag_id}
-                    className="group relative inline-flex items-center rounded bg-foreground-200 px-2 py-0.5 text-xs"
+                    className="group relative inline-flex items-center rounded-sm bg-foreground-200 px-2 py-0.5 text-xs"
                   >
                     {tag.tag_name}
                     <button
@@ -441,7 +441,7 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
                   </span>
                 ))}
                 {image.tags.length > 3 && (
-                  <span className="rounded bg-foreground-100 px-2 py-0.5 text-xs text-foreground-500">
+                  <span className="rounded-sm bg-foreground-100 px-2 py-0.5 text-xs text-foreground-500">
                     +{image.tags.length - 3}
                   </span>
                 )}

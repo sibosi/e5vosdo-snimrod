@@ -43,7 +43,7 @@ const EventSpotlight = ({ eventId }: { eventId: number }) => {
             width={350}
             height={100}
           />
-          <h2 className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2 text-center text-xl text-white">
+          <h2 className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black to-transparent p-2 text-center text-xl text-white">
             {event.title}
           </h2>
         </button>

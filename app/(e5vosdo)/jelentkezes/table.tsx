@@ -659,7 +659,7 @@ const Table = ({
         )}
       </div>
 
-      <div className="fixed z-[100]">
+      <div className="fixed z-100">
         <ToastProvider placement="top-center" toastOffset={60} />
       </div>
 

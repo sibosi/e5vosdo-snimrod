@@ -78,7 +78,7 @@ export default async function MainLayout({
             <Cookie />
             <Alerts />
             <main
-              className={`container mx-auto max-w-full flex-grow bg-selfprimary-bg ${needSidebar ? "px-3 pt-4" : ""}`}
+              className={`container mx-auto max-w-full grow bg-selfprimary-bg ${needSidebar ? "px-3 pt-4" : ""}`}
             >
               <OnCSSBug />
               <MaintenanceGate selfUser={selfUser} isActive={false}>

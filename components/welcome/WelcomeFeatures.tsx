@@ -121,7 +121,7 @@ export default function WelcomeFeatures() {
                 className="object-cover"
               />
             </div>
-            <div className="p-6 backdrop-blur-sm md:p-8">
+            <div className="p-6 backdrop-blur-xs md:p-8">
               <div className="mb-4 flex items-center gap-3">
                 <div
                   className="rounded-full p-3 text-foreground"
@@ -206,7 +206,7 @@ export default function WelcomeFeatures() {
           <div className="grid md:grid-cols-2">
             <div className="p-6 md:p-8">
               <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-full bg-gradient-to-br from-green-500 to-teal-600 p-3 text-foreground">
+                <div className="rounded-full bg-linear-to-br from-green-500 to-teal-600 p-3 text-foreground">
                   <NewspaperIcon className="h-6 w-6" />
                 </div>
                 <h4 className="text-2xl font-bold text-selfprimary-900">
@@ -256,7 +256,7 @@ export default function WelcomeFeatures() {
           style={{ backgroundColor: colorPodcast || FALLBACK_PODCAST }}
         >
           <div className="grid md:grid-cols-2">
-            <div className="p-6 backdrop-blur-sm md:p-8">
+            <div className="p-6 backdrop-blur-xs md:p-8">
               <div className="mb-4 flex items-center gap-3">
                 <div
                   className="rounded-full p-3 text-foreground"
@@ -317,7 +317,7 @@ export default function WelcomeFeatures() {
                 <Chip
                   color="primary"
                   variant="flat"
-                  className="cursor-pointer bg-foreground/10 text-foreground backdrop-blur-sm"
+                  className="cursor-pointer bg-foreground/10 text-foreground backdrop-blur-xs"
                 >
                   Összes epizód →
                 </Chip>
@@ -352,7 +352,7 @@ export default function WelcomeFeatures() {
                 className="object-cover"
               />
             </div>
-            <div className="p-6 backdrop-blur-sm md:p-8">
+            <div className="p-6 backdrop-blur-xs md:p-8">
               <div className="mb-4 flex items-center gap-3">
                 <div
                   className="rounded-full p-3 text-foreground opacity-70 shadow-lg"

@@ -87,11 +87,11 @@ export const Notification = ({
           <h3 className="flex gap-1 font-bold">
             <p className="truncate">{notification.title}</p>
           </h3>
-          <span className="break-words text-sm text-foreground-600">
+          <span className="wrap-break-word text-sm text-foreground-600">
             {notification.message}
           </span>
         </div>
-        <div className="break-words text-end text-sm text-foreground-600">
+        <div className="wrap-break-word text-end text-sm text-foreground-600">
           <p>
             {allUsersNameByEmail[notification.sender_email]
               ? allUsersNameByEmail[notification.sender_email]

@@ -351,7 +351,7 @@ const PhotoGrid = ({
         <p className="text-danger-700">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-2 rounded bg-danger-500 px-4 py-2 text-foreground"
+          className="mt-2 rounded-sm bg-danger-500 px-4 py-2 text-foreground"
         >
           Újratöltés
         </button>
@@ -376,7 +376,7 @@ const PhotoGrid = ({
           <p>Nincsenek képek a galériában.</p>
           <button
             onClick={() => loadImages()}
-            className="mt-4 rounded bg-selfprimary-500 px-4 py-2 text-selfprimary-50"
+            className="mt-4 rounded-sm bg-selfprimary-500 px-4 py-2 text-selfprimary-50"
           >
             Újratöltés
           </button>
@@ -557,7 +557,7 @@ const ImageModal = ({
 
         <div className="absolute right-4 top-4 flex gap-2">
           <button
-            className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-sm bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
             onClick={(e) => {
               e.stopPropagation();
               handleDownload();
@@ -574,7 +574,7 @@ const ImageModal = ({
             )}
           </button>
           <button
-            className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
+            className="rounded-sm bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
             onClick={() => setIsFullscreen(true)}
           >
             Fullscreen
@@ -584,7 +584,7 @@ const ImageModal = ({
               e.stopPropagation();
               setIsFullscreen(false);
             }}
-            className="rounded bg-danger-600 px-3 py-2 text-sm text-foreground-50 hover:bg-danger-700"
+            className="rounded-sm bg-danger-600 px-3 py-2 text-sm text-foreground-50 hover:bg-danger-700"
           >
             Kilépés
           </button>
@@ -621,7 +621,7 @@ const ImageModal = ({
           </h2>
           <div className="flex gap-2">
             <button
-              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-sm bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={handleDownload}
               disabled={downloading}
             >
@@ -635,13 +635,13 @@ const ImageModal = ({
               )}
             </button>
             <button
-              className="rounded bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
+              className="rounded-sm bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50"
               onClick={() => setIsFullscreen(true)}
             >
               Fullscreen
             </button>
             <button
-              className="rounded bg-selfsecondary-600 px-3 py-2 text-sm text-foreground-50"
+              className="rounded-sm bg-selfsecondary-600 px-3 py-2 text-sm text-foreground-50"
               onClick={onClose}
             >
               Bezárás

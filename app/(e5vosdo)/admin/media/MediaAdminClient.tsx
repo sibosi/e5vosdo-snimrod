@@ -391,7 +391,7 @@ export default function MediaAdminClient() {
         <h1 className="text-2xl font-bold">Média Admin</h1>
         <a
           href="/media"
-          className="rounded bg-default-200 px-4 py-2 text-default-700 hover:bg-default-300"
+          className="rounded-sm bg-default-200 px-4 py-2 text-default-700 hover:bg-default-300"
         >
           ← Vissza a galériához
         </a>
@@ -421,7 +421,7 @@ export default function MediaAdminClient() {
       </Tabs>
 
       {/* Tab Content */}
-      <div className="rounded-lg border border-default-200 bg-content1 p-4 shadow-sm">
+      <div className="rounded-lg border border-default-200 bg-content1 p-4 shadow-xs">
         {/* Sync Tab */}
         {activeTab === "sync" && (
           <div>

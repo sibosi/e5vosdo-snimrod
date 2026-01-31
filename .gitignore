@@ -65,3 +65,6 @@ localtrash/
 .*service-account*.json
 tmp.sql
 *.ignorethis
+*localfile-*
+.env*copy
+.env.backup

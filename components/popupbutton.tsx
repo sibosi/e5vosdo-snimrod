@@ -33,48 +33,47 @@ export const PopupButton: React.FC<CardProps> = ({
 }: CardProps) => {
   return (
     <Modal
-      size="5xl"
+      size="md"
       isOpen={isModalOpen}
       scrollBehavior="inside"
-      hideCloseButton={true}
       onClose={() => setIsModalOpen(false)}
+      className="relative overflow-hidden"
+      hideCloseButton
     >
-      <ModalContent className="max-h-[95vh] overflow-auto">
+      <ModalContent>
         {(onClose) => (
           <>
+            {typeof image === "string" && (
+              <img
+                src={image}
+                alt={title}
+                className="max-h-60 w-full object-cover"
+              />
+            )}
             <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-foreground">
               {title}
             </ModalHeader>
-            <ModalBody>
-              <div className="overflow-auto">
-                <div className="relative h-56 w-full sm:p-12">
-                  {typeof image === "string" && (
-                    <Image
-                      fill={true}
-                      className="max-h-fit rounded-md object-cover"
-                      src={image}
-                      alt="image"
-                      priority={true}
-                    />
-                  )}
-                </div>
+            <ModalBody className="pb-18 scrollbar-hide">
+              {typeof datetime === "string" && (
+                <p>Időpont: {new Date(datetime).toLocaleString("hu-HU")}</p>
+              )}
 
-                {typeof datetime === "string" && (
-                  <p>Időpont: {new Date(datetime).toLocaleString("hu-HU")}</p>
-                )}
-
-                <div className="overflow-auto fill-overlay py-6 text-left text-foreground md:max-h-full">
-                  <p className="text-md overflow-auto whitespace-pre-line pb-4">
-                    <span>
-                      {makeStringToHTML ? parse(details as string) : details}
-                    </span>
-                  </p>
-                </div>
+              <div className="fill-overlay text-left text-foreground">
+                <p className="text-md whitespace-pre-line">
+                  <span>
+                    {makeStringToHTML ? parse(details as string) : details}
+                  </span>
+                </p>
               </div>
             </ModalBody>
-            <ModalFooter>
-              <Button color="primary" onPress={onClose}>
-                <LikeIcon />
+            <ModalFooter className="absolute bottom-1 w-full">
+              <Button
+                variant="solid"
+                color="default"
+                className="w-full"
+                onPress={onClose}
+              >
+                Bezárás
               </Button>
             </ModalFooter>
           </>

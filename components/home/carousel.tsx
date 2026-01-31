@@ -248,7 +248,7 @@ function MobileCarousel({ data }: Readonly<{ data: EventType[] }>) {
               <ModalFooter className="absolute bottom-1 w-full">
                 <Button
                   variant="solid"
-                  color="default"
+                  color="primary"
                   className="w-full"
                   onPress={onClose}
                 >

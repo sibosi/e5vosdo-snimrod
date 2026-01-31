@@ -1,4 +1,6 @@
 {
+  // Másold át a saját e5vosdo.code-workspace fájlodba
+  // ================================
   "tailwindCSS.experimental.configFile": "styles/globals.css",
   "tailwindCSS.includeLanguages": {
     "html": "html",
@@ -6,6 +8,13 @@
     "typescript": "typescript",
     "css": "css"
   },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  // ================================
+
   "tailwindCSS.validate": true,
   "editor.quickSuggestions": {
     "strings": true
@@ -26,9 +35,6 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
 
   "eslint.validate": [
     "javascript",
@@ -52,9 +58,5 @@
   "editor.wordWrap": "on",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
-  },
-
-  "emmet.includeLanguages": {
-    "javascript": "javascriptreact"
   }
 }

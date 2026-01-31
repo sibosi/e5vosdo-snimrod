@@ -8,7 +8,7 @@ type DigitProps = {
 
 export const CountdownDigit = ({ value }: DigitProps) => {
   return (
-    <div className="relative flex h-[2.5rem] w-14 items-center justify-center overflow-hidden">
+    <div className="relative flex h-10 w-14 items-center justify-center overflow-hidden">
       <AnimatePresence initial={false}>
         <motion.span
           key={value}

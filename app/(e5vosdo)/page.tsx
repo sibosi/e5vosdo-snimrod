@@ -71,7 +71,7 @@ const PageHeadContent = ({
         <Tray className="mx-auto max-w-md">
           <h1 className="mb-2 text-3xl font-bold text-selfprimary-900 md:text-4xl">
             Hiányolsz valamit? <br />
-            <span className="bg-gradient-to-r from-selfprimary-900 to-selfsecondary-300 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-selfprimary-900 to-selfsecondary-300 bg-clip-text text-transparent">
               Netán az órarendedet?
             </span>
           </h1>

@@ -27,7 +27,7 @@ _Tervezte és fejlesztette: [Simon Nimród](https://www.github.com/sibosi)_
 _PWA változat már elérhető a weben, a bal fenti letöltés ikonra kattintva: [e5vosdo.hu](https://e5vosdo.hu)_
 
 </div>
- 
+
 ---
 
 ## 📋 Tartalom
@@ -145,7 +145,7 @@ MYSQL_PASSWORD=your_mysql_password
 Futtasd az automatizált setup scriptet:
 
 ```bash
-python setup.py
+python setup_project.py
 ```
 
 ## 7. Fejlesztői szerver indítása

@@ -220,7 +220,7 @@ const XMLImporter: React.FC<XMLImporterProps> = ({ onImportComplete }) => {
                 accept=".xml" // + ",.xmp"
                 multiple
                 onChange={handleFileUpload}
-                className="block w-full rounded-lg border bg-foreground px-4 py-2 file:mr-4 file:rounded file:border-0 file:bg-selfprimary-600 file:px-4 file:py-2 file:text-foreground hover:file:bg-selfprimary-700"
+                className="block w-full rounded-lg border bg-foreground px-4 py-2 file:mr-4 file:rounded-sm file:border-0 file:bg-selfprimary-600 file:px-4 file:py-2 file:text-foreground hover:file:bg-selfprimary-700"
               />
             </label>
           </div>

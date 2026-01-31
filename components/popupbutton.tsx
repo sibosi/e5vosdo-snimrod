@@ -63,7 +63,7 @@ export const PopupButton: React.FC<CardProps> = ({
                   <p>Időpont: {new Date(datetime).toLocaleString("hu-HU")}</p>
                 )}
 
-                <div className="overflow-auto fill-overlay py-6 text-left text-foreground md:max-h-[100%]">
+                <div className="overflow-auto fill-overlay py-6 text-left text-foreground md:max-h-full">
                   <p className="text-md overflow-auto whitespace-pre-line pb-4">
                     <span>
                       {makeStringToHTML ? parse(details as string) : details}

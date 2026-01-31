@@ -1,19 +1,22 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "@heroui/button";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Chip } from "@heroui/chip";
 import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Chip,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from "@heroui/modal";
-import { Select, SelectItem } from "@heroui/select";
-import { Checkbox } from "@heroui/checkbox";
-import { Pagination } from "@heroui/pagination";
+  Select,
+  SelectItem,
+  Checkbox,
+  Pagination,
+} from "@heroui/react";
 import { MediaImageType } from "@/db/mediaPhotos";
 
 interface ImageManagerProps {
@@ -272,14 +275,14 @@ const ImageManager: React.FC<ImageManagerProps> = ({ onRefresh }) => {
                           <img
                             src={`/api/media/${img.id}?size=small`}
                             alt={`#${img.id}`}
-                            className="h-10 w-10 rounded object-cover"
+                            className="h-10 w-10 rounded-sm object-cover"
                           />
                         )}
                       </td>
                       <td className="px-3 py-2">
                         {img.color && (
                           <div
-                            className="h-5 w-5 rounded border border-default-300"
+                            className="h-5 w-5 rounded-sm border border-default-300"
                             style={{ backgroundColor: img.color }}
                             title={img.color}
                           />

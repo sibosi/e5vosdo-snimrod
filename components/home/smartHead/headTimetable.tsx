@@ -136,7 +136,7 @@ const HeadTimetable = (props: { selfUser: PossibleUserType }) => {
             Object.entries(timetable[selectedDay]).map(
               ([period, lesson]: [string, TimetableLesson]) =>
                 lesson.code !== "-" && (
-                  <div className="flex-grow" key={period}>
+                  <div className="grow" key={period}>
                     {renderLesson(
                       extendLessonWithSubstitutions(lesson, substitutions),
                       Number.parseInt(period),

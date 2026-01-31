@@ -1,12 +1,6 @@
 import { getMatches, Match } from "@/db/matches";
 import { NextRequest, NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 interface SSEMatchGlobalState {
   gLivescoreSseSubscribers: Set<WritableStreamDefaultWriter<string>>;
   gLivescoreSseInterval: ReturnType<typeof setInterval> | null;

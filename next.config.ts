@@ -1,10 +1,5 @@
 import type { NextConfig } from "next";
 
-const fs = require("fs");
-const path = require("path");
-
-const isDev = process.env.NODE_ENV !== "production";
-
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
@@ -12,6 +7,18 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactProductionProfiling: true,
+  webpack: (config, { isServer }) => {
+    // Handle SVG imports as React components
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    });
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+    };
+    return config;
+  },
   env: {
     NEXT_PUBLIC_EXTERNAL_SIGNUPS: process.env.EXTERNAL_SIGNUPS,
   },
@@ -100,13 +107,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: process.env.IGNORE_BUILD_ERRORS === "true",
   },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"],
-    });
-    return config;
-  },
   serverExternalPackages: ["pdfkit"],
   experimental: {
     serverActions: {
@@ -121,4 +121,4 @@ const nextConfig: NextConfig = {
   ],
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+export default withBundleAnalyzer(nextConfig);

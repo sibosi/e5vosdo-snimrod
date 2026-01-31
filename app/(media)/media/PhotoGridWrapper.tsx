@@ -151,7 +151,7 @@ const PhotoGridWrapper = () => {
               placeholder="Tag keresése..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="mb-3 w-full rounded-lg border border-selfprimary-300 bg-transparent px-3 py-2 focus:border-selfprimary-500 focus:outline-none"
+              className="mb-3 w-full rounded-lg border border-selfprimary-300 bg-transparent px-3 py-2 focus:border-selfprimary-500 focus:outline-hidden"
             />
 
             <div className="flex max-h-60 flex-wrap gap-2 overflow-y-auto">

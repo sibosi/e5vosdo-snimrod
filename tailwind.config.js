@@ -61,10 +61,9 @@ module.exports = {
           900: "var(--color-surface-900)",
         },
       },
-    },
-    screens: {
-      xs: "475px",
-      ...require("tailwindcss/defaultConfig").theme.screens,
+      screens: {
+        xs: "475px",
+      },
     },
   },
   darkMode: "class",

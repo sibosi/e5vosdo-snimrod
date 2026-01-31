@@ -53,7 +53,7 @@ export const SideCard = ({
           }}
         >
           {image !== undefined && (
-            <div className="h-28 bg-foreground-100 bg-opacity-10 p-4 dark:bg-opacity-30">
+            <div className="h-28 bg-foreground-100/10 p-4 dark:bg-foreground-100/30">
               <div className="flex justify-end">{children}</div>
               <p className="w-fit rounded-md bg-selfprimary-20 px-2 text-foreground">
                 {description}

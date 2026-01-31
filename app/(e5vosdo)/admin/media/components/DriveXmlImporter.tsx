@@ -338,11 +338,11 @@ const DriveXmlImporter: React.FC<DriveXmlImporterProps> = ({
                     </td>
                     <td className="px-3 py-2 text-center">
                       {file.imported ? (
-                        <span className="rounded bg-success-100 px-2 py-1 text-xs text-success-700">
+                        <span className="rounded-sm bg-success-100 px-2 py-1 text-xs text-success-700">
                           ✓ Importálva
                         </span>
                       ) : (
-                        <span className="rounded bg-warning-100 px-2 py-1 text-xs text-warning-700">
+                        <span className="rounded-sm bg-warning-100 px-2 py-1 text-xs text-warning-700">
                           Új
                         </span>
                       )}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/auth/callback/google")) {
     const host = request.headers.get("host");
     if (host?.includes("e5vosdo.hu") || host?.includes("info.e5vosdo.hu")) {

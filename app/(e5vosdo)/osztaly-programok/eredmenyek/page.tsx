@@ -123,7 +123,7 @@ const VotingResultsPage = async () => {
             {votedUsers.map((user, index) => (
               <div 
                 key={user.email} 
-                className="text-sm text-muted-foreground py-1 px-2 rounded hover:bg-accent/10"
+                className="text-sm text-muted-foreground py-1 px-2 rounded-sm hover:bg-accent/10"
               >
                 {index + 1}. {user.email}
               </div>

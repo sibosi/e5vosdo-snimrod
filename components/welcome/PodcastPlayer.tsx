@@ -66,9 +66,9 @@ export default function PodcastPlayer({
   };
 
   return (
-    <div className="rounded-lg bg-foreground/10 p-4 backdrop-blur-sm">
+    <div className="rounded-lg bg-foreground/10 p-4 backdrop-blur-xs">
       <div className="mb-3 flex items-center gap-3">
-        <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-pink-500 to-rose-600">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-linear-to-br from-pink-500 to-rose-600">
           <img
             src={coverImage}
             alt="Podcast cover"

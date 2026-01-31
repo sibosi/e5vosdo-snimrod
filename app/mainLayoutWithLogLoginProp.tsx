@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Providers } from "@/app/providers";
@@ -17,29 +16,6 @@ import Alerts from "@/components/home/alerts";
 import MaintenanceGate from "@/components/home/maintenanceGate";
 import RunClientSideWrapper from "@/app/runClientSideWrapper";
 import DesktopMenu from "@/components/home/desktopMenu";
-
-export const dynamic = "force-dynamic";
-
-export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  authors: [{ name: "Simon Nimród", url: siteConfig.links.mypage }],
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/icons/512.png",
-    apple: "/icons/1024.png",
-  },
-};
-
-export const viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
-};
 
 export default async function MainLayout({
   children,
@@ -102,7 +78,7 @@ export default async function MainLayout({
             <Cookie />
             <Alerts />
             <main
-              className={`container mx-auto max-w-full flex-grow bg-selfprimary-bg ${needSidebar ? "px-3 pt-4" : ""}`}
+              className={`container mx-auto max-w-full grow bg-selfprimary-bg ${needSidebar ? "px-3 pt-4" : ""}`}
             >
               <OnCSSBug />
               <MaintenanceGate selfUser={selfUser} isActive={false}>

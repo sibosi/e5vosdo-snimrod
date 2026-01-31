@@ -210,7 +210,7 @@
       calc(max(var(--lightness-cont) - 25%, -1 * (var(--lightness-cont) - 25%)))
     );
   }
-}
+
 
 .card__face--front {
   background-color: red;
@@ -259,4 +259,5 @@
   left: 0;
   width: 100%;
   height: 100%;
+}
 }

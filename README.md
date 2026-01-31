@@ -36,7 +36,6 @@ _PWA változat már elérhető a weben, a bal fenti letöltés ikonra kattintva:
 - [🎨 Funkciók](#-funkciók)
 - [🛠️ Technológiai stack](#-technológiai-stack)
 - [🚀 Kezdő lépések](#-kezdő-lépések)
-- [💻 Fejlesztés](#-fejlesztés)
 - [📄 Licenc](#-licenc)
 - [🙏 Köszönetnyilvánítás](#-köszönetnyilvánítás)
 
@@ -84,6 +83,12 @@ A projekt nemcsak egy eszköz, hanem egy közösségi nyílt forrású kezdemén
 
 - **Docker** - Konténerizált deployment
 - **Python** - Segédeszközök és scraping
+
+### Egyéb használt technológiák
+
+- Google Analytics
+- Google Cloud
+- Supabase Storage
 
 ---
 
@@ -155,16 +160,6 @@ npm run dev
 ```
 
 A projekt elérhető lesz a `http://localhost:3000` címen.
-
----
-
-## 💻 Fejlesztés
-
-### Egyéb használt technológiák
-
-- Google Analytics
-- Google Cloud
-- Supabase Storage
 
 ---
 

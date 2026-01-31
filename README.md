@@ -12,7 +12,7 @@
 
 _Tervezte és fejlesztette: [Simon Nimród](https://www.github.com/sibosi)_
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
@@ -50,7 +50,7 @@ A projekt nemcsak egy eszköz, hanem egy közösségi nyílt forrású kezdemén
 
 ### ✨ Miért ez a projekt?
 
-- 🚀 **Modern architektúra**: Next.js 15 alapú, server-side rendering és optimalizált teljesítmény
+- 🚀 **Modern architektúra**: Next.js 16 alapú, server-side rendering és optimalizált teljesítmény
 - 💅 **Elegáns design**: HeroUI komponensek és Tailwind CSS styling
 - 🔒 **Biztonságos**: Google authentikáció (szervezeti szintű) és jogosultságkezelés
 - 📱 **Reszponzív**: Mobil-első megközelítés, minden eszközön tökéletes megjelenés
@@ -72,7 +72,7 @@ A projekt nemcsak egy eszköz, hanem egy közösségi nyílt forrású kezdemén
 
 ## 🛠️ Technológiai stack
 
-- **[Next.js 15](https://nextjs.org/)** - React framework server-side renderinggel
+- **[Next.js 16](https://nextjs.org/)** - React framework server-side renderinggel
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe fejlesztés
 - **[HeroUI](https://www.heroui.com/)** - Modern UI komponenskönyvtár
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework

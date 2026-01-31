@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "eamodio.gitlens",
+    "dsznajder.es7-react-js-snippets",
+    "mikestead.dotenv",
+    "SonarSource.sonarlint-vscode",
+    "PKief.material-icon-theme",
+    "ms-vscode.vscode-typescript-next",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-mysql",
+    "tonybaloney.vscode-pets"
+  ]
+}

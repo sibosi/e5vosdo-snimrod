@@ -1,8 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-.vscode
 hu.e5vosdo.snimrod
 android-settings.json
+*.code-workspace
 com.myapp.pwa.zip
 hu.e5vosdo.snimrod.zip
 
@@ -46,10 +46,6 @@ public/sw.js
 
 # media cache (server-side image cache)
 .media-cache/
-
-.vscode
-
-/.vscode/
 
 .env
 public/sw.js

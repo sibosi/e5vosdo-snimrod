@@ -1,8 +1,17 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import parse from "html-react-parser";
 import { EventType } from "@/db/event";
 import Link from "next/link";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@heroui/react";
 
 const interpolate = (
   value: number,
@@ -145,70 +154,47 @@ const CarouselItem = ({
   );
 };
 
-function PhoneCarousel({ data }: Readonly<{ data: EventType[] }>) {
+function MobileCarousel({ data }: Readonly<{ data: EventType[] }>) {
   const [scrollX, setScrollX] = useState(0);
-  const [clicked, setClicked] = useState<number | null>(null);
+  const [clicked, setClicked] = useState<number>(0);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onScroll = (e: any) => {
     setScrollX(e.target.scrollLeft * 0.1);
   };
 
   return (
-    <div className="mb-2 p-0 transition-all">
-      <div className={clicked === null ? "flex" : ""}>
-        {clicked === null && data.length > 1 && (
-          <button
-            className="bottom-0 top-0 z-10 my-auto -mr-10 ml-2 h-8 w-8 rounded-full bg-selfprimary-50 p-1 text-selfprimary-700 max-md:hidden"
-            title="Vissza"
-            onClick={() => {
-              document.querySelector(".scroll-smooth")?.scrollBy(-200, 0);
-            }}
+    <>
+      <div className="mb-2 p-0 transition-all">
+        <div className="flex">
+          <div
+            onScroll={onScroll}
+            className="flex snap-x overflow-x-auto scroll-smooth scrollbar-hide"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="m-auto h-6 w-6 rotate-90"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
+            {data?.map((item, index: number) => (
+              <CarouselItem
+                key={index.toString()}
+                uri={item.image ?? ""}
+                scrollX={scrollX * 10}
+                index={index}
+                dataLength={data.length}
+                title={item.title}
+                onClick={() => {
+                  if (
+                    data[index].description?.startsWith("http") ||
+                    data[index].description?.startsWith("/")
+                  )
+                    globalThis.location.href =
+                      data[index].description.split("\n")[0];
+                  else {
+                    setClicked(index);
+                    onOpen();
+                  }
+                }}
+                className="mx-auto"
               />
-            </svg>
-          </button>
-        )}
-        <div
-          onScroll={onScroll}
-          className="flex snap-x overflow-x-auto scroll-smooth scrollbar-hide"
-        >
-          {data?.map((item, index: number) => (
-            <CarouselItem
-              key={index.toString()}
-              uri={item.image ?? ""}
-              scrollX={scrollX * 10}
-              index={index}
-              dataLength={data.length}
-              title={item.title}
-              onClick={() => {
-                if (
-                  data[index].description?.startsWith("http") ||
-                  data[index].description?.startsWith("/")
-                )
-                  window.location.href = data[index].description.split("\n")[0];
-                else setClicked(clicked === index ? null : index);
-              }}
-              width={clicked === index ? "95%" : undefined}
-              className={
-                clicked == null || clicked === index ? "mx-auto" : "hidden"
-              }
-            />
-          ))}
-          {clicked !== null ? (
-            <></>
-          ) : (
+            ))}
+
             <Link
               title="add item"
               href="/creator/"
@@ -228,41 +214,52 @@ function PhoneCarousel({ data }: Readonly<{ data: EventType[] }>) {
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-              {data && data.length == 0 && <span>Esemény feltöltése</span>}
+              {data?.length == 0 && <span>Esemény feltöltése</span>}
             </Link>
-          )}
+          </div>
         </div>
-        {clicked === null && data.length > 1 && (
-          <button
-            className="bottom-0 top-0 z-10 my-auto -ml-10 mr-2 h-8 w-8 rounded-full bg-selfprimary-50 p-1 text-selfprimary-700 max-md:hidden"
-            title="Tovább"
-            onClick={() => {
-              document.querySelector(".scroll-smooth")?.scrollBy(200, 0);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="m-auto h-6 w-6 -rotate-90"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-        )}
       </div>
-      {clicked !== null && (
-        <div className="blocked overflow-hidden mt-2 whitespace-pre-wrap rounded-3xl bg-selfprimary-50 p-4 text-foreground">
-          {<span>{parse(String(data[clicked].description))}</span>}
-        </div>
-      )}
-    </div>
+
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        size="sm"
+        scrollBehavior="inside"
+        placement="center"
+        className="relative overflow-hidden"
+        hideCloseButton
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <img
+                src={data[clicked].image ?? ""}
+                alt={
+                  typeof data[clicked].title === "string"
+                    ? data[clicked].title
+                    : data[clicked].title.join(" ")
+                }
+                className="max-h-60 w-full object-cover"
+              />
+              <ModalHeader>{data[clicked].title}</ModalHeader>
+              <ModalBody className="pb-18 whitespace-pre-wrap scrollbar-hide">
+                {parse(String(data[clicked].description))}
+              </ModalBody>
+              <ModalFooter className="absolute bottom-1 w-full">
+                <Button
+                  variant="solid"
+                  color="default"
+                  className="w-full"
+                  onPress={onClose}
+                >
+                  Bezárás
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
 
@@ -552,7 +549,7 @@ export default function Carousel({ data }: Readonly<{ data?: EventType[] }>) {
   };
 
   if (windowInnerWidth < 768)
-    return <PhoneCarousel data={filterCarouselData(carouselData)} />;
+    return <MobileCarousel data={filterCarouselData(carouselData)} />;
   return (
     <DesktopCarousel
       data={[...filterCarouselData(carouselData), uploadContentEvent]}

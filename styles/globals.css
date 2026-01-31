@@ -128,86 +128,88 @@
   --color-surface-900: #e1e2e6;
 }
 
-h1 {
-  font-size: calc(2rem + var(--zoom));
-  font-weight: 600;
-  color: hsl(
-    0,
-    0%,
-    calc(max(var(--lightness-cont) - 5%, -1 * (var(--lightness-cont) - 5%)))
-  );
-}
+@layer base {
+  h1 {
+    font-size: calc(2rem + var(--zoom));
+    font-weight: 600;
+    color: hsl(
+      0,
+      0%,
+      calc(max(var(--lightness-cont) - 5%, -1 * (var(--lightness-cont) - 5%)))
+    );
+  }
 
-h2 {
-  font-size: calc(1.5rem + var(--zoom));
-  line-height: 2rem;
-  font-weight: 500;
-  color: hsl(
-    0,
-    0%,
-    calc(max(var(--lightness-cont) - 10%, -1 * (var(--lightness-cont) - 10%)))
-  );
-}
+  h2 {
+    font-size: calc(1.5rem + var(--zoom));
+    line-height: 2rem;
+    font-weight: 500;
+    color: hsl(
+      0,
+      0%,
+      calc(max(var(--lightness-cont) - 10%, -1 * (var(--lightness-cont) - 10%)))
+    );
+  }
 
-h3 {
-  font-size: calc(1.25rem + var(--zoom));
-  line-height: 1.75rem;
-  font-weight: 500;
-  color: hsl(
-    0,
-    0%,
-    calc(max(var(--lightness-cont) - 5%, -1 * (var(--lightness-cont) - 5%)))
-  );
-}
+  h3 {
+    font-size: calc(1.25rem + var(--zoom));
+    line-height: 1.75rem;
+    font-weight: 500;
+    color: hsl(
+      0,
+      0%,
+      calc(max(var(--lightness-cont) - 5%, -1 * (var(--lightness-cont) - 5%)))
+    );
+  }
 
-h4 {
-  font-size: calc(1.25rem + var(--zoom));
-  font-weight: 300;
-  color: hsl(
-    0,
-    0%,
-    calc(max(var(--lightness-cont) - 10%, -1 * (var(--lightness-cont) - 10%)))
-  );
-}
+  h4 {
+    font-size: calc(1.25rem + var(--zoom));
+    font-weight: 300;
+    color: hsl(
+      0,
+      0%,
+      calc(max(var(--lightness-cont) - 10%, -1 * (var(--lightness-cont) - 10%)))
+    );
+  }
 
-p {
-  font-size: calc(1rem + var(--zoom));
-  font-weight: 300;
-  color: hsl(
-    0,
-    0%,
-    calc(max(var(--lightness-cont) - 10%, -1 * (var(--lightness-cont) - 10%)))
-  );
-}
+  p {
+    font-size: calc(1rem + var(--zoom));
+    font-weight: 300;
+    color: hsl(
+      0,
+      0%,
+      calc(max(var(--lightness-cont) - 10%, -1 * (var(--lightness-cont) - 10%)))
+    );
+  }
 
-h5 {
-  font-size: calc(1rem + var(--zoom));
-  font-weight: 600;
-  color: hsl(
-    0,
-    0%,
-    calc(max(var(--lightness-cont) - 5%, -1 * (var(--lightness-cont) - 5%)))
-  );
-}
+  h5 {
+    font-size: calc(1rem + var(--zoom));
+    font-weight: 600;
+    color: hsl(
+      0,
+      0%,
+      calc(max(var(--lightness-cont) - 5%, -1 * (var(--lightness-cont) - 5%)))
+    );
+  }
 
-h6 {
-  font-size: calc(1rem + var(--zoom));
-  font-weight: 200;
-  color: hsl(
-    0,
-    0%,
-    calc(max(var(--lightness-cont) - 30%, -1 * (var(--lightness-cont) - 30%)))
-  );
-}
+  h6 {
+    font-size: calc(1rem + var(--zoom));
+    font-weight: 200;
+    color: hsl(
+      0,
+      0%,
+      calc(max(var(--lightness-cont) - 30%, -1 * (var(--lightness-cont) - 30%)))
+    );
+  }
 
-.info {
-  font-size: calc(0.875rem + var(--zoom));
-  font-weight: 300;
-  color: hsl(
-    0,
-    0%,
-    calc(max(var(--lightness-cont) - 25%, -1 * (var(--lightness-cont) - 25%)))
-  );
+  .info {
+    font-size: calc(0.875rem + var(--zoom));
+    font-weight: 300;
+    color: hsl(
+      0,
+      0%,
+      calc(max(var(--lightness-cont) - 25%, -1 * (var(--lightness-cont) - 25%)))
+    );
+  }
 }
 
 .card__face--front {

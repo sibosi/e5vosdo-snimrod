@@ -83,8 +83,8 @@ const TxtLiquid: React.FC<TxtLiquidProps> = ({ text }) => {
   return (
     <div
       onClick={handleTextClick}
-      className={`relative inline bg-linear-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent ${
-        fade ? "text-opacity-100" : "text-opacity-0"
+      className={`relative inline bg-linear-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent transition-opacity duration-200 ${
+        fade ? "opacity-0" : "opacity-100"
       }`}
       style={{ fontFamily: currentTextAndFont.font }}
     >

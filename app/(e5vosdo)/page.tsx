@@ -19,6 +19,7 @@ import {
 } from "@/components/helyettesites/quickteacher";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import ShortDay from "@/components/home/shortDay";
 
 export const metadata: Metadata = {
   robots: {
@@ -123,6 +124,8 @@ export default async function Home() {
           </div>
         </Section>
       )}
+
+      <ShortDay />
 
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section

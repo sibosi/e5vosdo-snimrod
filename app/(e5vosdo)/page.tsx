@@ -10,7 +10,6 @@ import { Chip } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
-import MillioLepes from "@/components/home/milliolepes";
 import Footer from "@/components/footer";
 import { gate } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
@@ -141,10 +140,6 @@ export default async function Home() {
       {siteConfig.pageSections["menza"] != "hidden" && (
         <MenuInSection selfUser={selfUser} />
       )}
-
-      <Section title="Millió lépés" dropdownable={true}>
-        <MillioLepes />
-      </Section>
 
       {siteConfig.pageSections["esemenyek"] != "hidden" && (
         <Section

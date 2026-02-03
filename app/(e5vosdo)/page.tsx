@@ -126,7 +126,6 @@ export default async function Home() {
       )}
 
 
-
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section
           title={"Helyettesítések"}

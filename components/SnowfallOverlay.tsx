@@ -7,8 +7,8 @@ export default function SnowfallOverlay() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem("hideSnowfall") === "true") setIsVisible(false);
-    else setIsVisible(true);
+    if (localStorage.getItem("hideSnowfall") === "false") setIsVisible(true);
+    else setIsVisible(false);
   }, []);
 
   if (!isVisible) return null;

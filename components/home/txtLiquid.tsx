@@ -7,11 +7,13 @@ import {
   Playwrite_DE_Grund,
   Matemasie,
 } from "next/font/google";
+import localFont from "next/font/local";
 
 const matemasie = Matemasie({ subsets: ["latin"], weight: "400" });
 const spicyRice = Spicy_Rice({ subsets: ["latin"], weight: "400" });
 const pacifico = Pacifico({ subsets: ["latin"], weight: "400" });
 const playwrite = Playwrite_DE_Grund({ weight: "400" });
+const ndot57 = localFont({ src: "../../public/fonts/Ndot57-Regular.otf" });
 
 interface TextFont {
   font?: string;
@@ -23,6 +25,7 @@ const textsAndFonts: TextFont[] = [
   { font: spicyRice.style.fontFamily },
   { font: pacifico.style.fontFamily },
   { font: playwrite.style.fontFamily },
+  { font: ndot57.style.fontFamily },
 ];
 
 interface TxtLiquidProps {

@@ -423,7 +423,7 @@ export const clubsConfig: Group[] = [
   {
     title: "TársasTár",
     details:
-      "Szeretsz társasozni? Új játékokat szeretnél megismerni? Gyere el a havi rendszerességű TársasDélutánra, garantált a jó társaság, jó játékok!",
+      "Szeretsz társasozni? Új játékokat szeretnél megismerni? Gyere el a heti rendszerességű TársasDélutánra, garantált a jó társaság, jó játékok!",
     image: "/groups/tarsastar.jpg",
     description: "",
     links: [

@@ -3,7 +3,7 @@ name = "e5vosdo-snimrod"
 version = "0.1.0"
 description = "Modern webapplikáció az Eötvös József Gimnázium Diákönkormányzatának"
 authors = [
-    {name = "copilot-swe-agent[bot]",email = "198982749+Copilot@users.noreply.github.com"}
+    {name = "copilot-swe-agent[bot]", email = "198982749+Copilot@users.noreply.github.com"}
 ]
 readme = "README.md"
 requires-python = "^3.10"

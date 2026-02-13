@@ -548,7 +548,7 @@ export async function adminRemoveUserFromPresentation(
 
   return await multipledbreq(async (conn) => {
     // Get the signup information to restore capacity
-    const [signups]: any = await conn.execute(
+    const [signups] = await conn.execute<mysql.RowDataPacket[]>(
       `SELECT amount, presentation_id FROM signups WHERE email = ? AND presentation_id = ? FOR UPDATE`,
       [email, presentation_id],
     );
@@ -556,7 +556,7 @@ export async function adminRemoveUserFromPresentation(
     if (signups.length === 0)
       throw new Error("A felhasználó nincs jelentkezve erre a prezentációra");
 
-    const signup = signups[0];
+    const signup = signups[0] as { amount: number; presentation_id: number };
 
     // Delete the signup
     await conn.execute(
@@ -565,14 +565,14 @@ export async function adminRemoveUserFromPresentation(
     );
 
     // Restore capacity (only if remaining_capacity is not NULL)
-    const [presentationCheck]: any = await conn.execute(
+    const [presentationCheck] = await conn.execute<mysql.RowDataPacket[]>(
       `SELECT remaining_capacity FROM presentations WHERE id = ?`,
       [presentation_id],
     );
 
     if (
       presentationCheck.length > 0 &&
-      presentationCheck[0].remaining_capacity !== null
+      (presentationCheck[0] as { remaining_capacity: number | null }).remaining_capacity !== null
     ) {
       await conn.execute(
         `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,

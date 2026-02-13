@@ -53,7 +53,7 @@ export default function PresentationAttendancePage() {
     "all" | "yes" | "no"
   >("all");
   const [usersNameByEmail, setUsersNameByEmail] = useState<
-    Record<string, string>
+    Record<string, string | { name: string; class: string }>
   >({});
   const [studentSearch, setStudentSearch] =
     useState<StudentPresentations | null>(null);
@@ -226,7 +226,9 @@ export default function PresentationAttendancePage() {
 
       setStudentSearch({
         email,
-        name: usersNameByEmail[email] || email,
+        name: typeof usersNameByEmail[email] === 'string' 
+          ? usersNameByEmail[email] as string
+          : (usersNameByEmail[email] as { name: string; class: string })?.name || email,
         presentations: studentPresentations,
       });
     } catch (error) {

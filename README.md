@@ -99,7 +99,8 @@ A projekt nemcsak egy eszköz, hanem egy közösségi nyílt forrású kezdemén
 - **Node.js & npm 18.x+**: https://nodejs.org/en/download/
 - **Git verziókezelő**: https://git-scm.com/downloads
 - **MySQL 8.4+**: https://dev.mysql.com/downloads/mysql/
-- **Python 3.8+** (a setup script futtatásához & fejlesztői eszközökhöz): https://www.python.org/downloads/
+- **Python 3.10+** (a setup script futtatásához & fejlesztői eszközökhöz): https://www.python.org/downloads/
+- **Poetry** (Python dependency management, ajánlott): https://python-poetry.org/docs/#installation
 
 ### 2. Repo klónozása
 
@@ -114,9 +115,19 @@ cd e5vosdo-snimrod
 npm install
 ```
 
+**Poetry használatával (ajánlott):**
+
+```bash
+poetry install --no-root
+```
+
+**Vagy hagyományos pip-pel:**
+
 ```bash
 pip install -r requirements.txt
 ```
+
+> **Megjegyzés:** A Poetry lockfile (`poetry.lock`) biztosítja a konzisztens és biztonságos dependency verziókat, beleértve a frissített cryptography csomagot is.
 
 ### 4. Adatbázis séma letöltése
 
@@ -148,6 +159,14 @@ MYSQL_PASSWORD=your_mysql_password
 ### 6. Setup script futtatása
 
 Futtasd az automatizált setup scriptet:
+
+**Poetry használatával:**
+
+```bash
+poetry run python setup_project.py
+```
+
+**Vagy hagyományos Python-nal:**
 
 ```bash
 python setup_project.py

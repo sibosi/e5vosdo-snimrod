@@ -22,7 +22,7 @@ interface Props {
   parlamentId: number;
   initialParlament: Parlament;
   initialParticipants: Record<string, string[]>;
-  usersNameByEmail: Record<string, string>;
+  usersNameByEmail: Record<string, string | { name: string; class: string }>;
 }
 
 const ParlamentIDClient = ({

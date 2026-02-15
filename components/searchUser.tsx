@@ -10,7 +10,7 @@ export default function SearchUser({
   size,
   addCustomParticipant = false,
 }: Readonly<{
-  usersNameByEmail: Record<string, string>;
+  usersNameByEmail: Record<string, string | { name: string; class: string }>;
   onSelectEmail: (email: string) => void;
   label?: string;
   placeholder?: string;
@@ -22,13 +22,18 @@ export default function SearchUser({
   const [filteredEmails, setFilteredEmails] = useState<string[]>([]);
   const optionsRef = useRef<HTMLButtonElement[]>([]);
 
+  const getUserName = (email: string) => {
+    const userInfo = usersNameByEmail[email];
+    return typeof userInfo === 'string' ? userInfo : userInfo?.name ?? email;
+  };
+
   const filter = (searchValue: string) => {
     const elements = Object.keys(usersNameByEmail).filter((email) =>
       searchValue
         .toLocaleLowerCase()
         .split(" ")
         .every((input) =>
-          usersNameByEmail[email].toLowerCase().includes(input),
+          getUserName(email).toLowerCase().includes(input),
         ),
     );
 
@@ -103,7 +108,7 @@ export default function SearchUser({
                 highlightedIndex === index ? "bg-selfprimary-200" : ""
               }`}
             >
-              <p className="font-bold">{usersNameByEmail[email] ?? email}</p>
+              <p className="font-bold">{getUserName(email)}</p>
               <p className="text-xs font-thin">{email}</p>
             </button>
           ))}

@@ -421,7 +421,7 @@ export default function MediaAdminClient() {
       </Tabs>
 
       {/* Tab Content */}
-      <div className="rounded-lg border border-default-200 bg-content1 p-4 shadow-xs">
+      <div className="shadow-xs rounded-lg border border-default-200 bg-content1 p-4">
         {/* Sync Tab */}
         {activeTab === "sync" && (
           <div>

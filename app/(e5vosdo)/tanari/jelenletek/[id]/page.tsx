@@ -226,9 +226,11 @@ export default function PresentationAttendancePage() {
 
       setStudentSearch({
         email,
-        name: typeof usersNameByEmail[email] === 'string' 
-          ? usersNameByEmail[email] as string
-          : (usersNameByEmail[email] as { name: string; class: string })?.name || email,
+        name:
+          typeof usersNameByEmail[email] === "string"
+            ? (usersNameByEmail[email] as string)
+            : (usersNameByEmail[email] as { name: string; class: string })
+                ?.name || email,
         presentations: studentPresentations,
       });
     } catch (error) {

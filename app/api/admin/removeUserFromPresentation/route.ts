@@ -24,11 +24,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to remove user from presentation";
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to remove user from presentation";
     console.error("Error removing user from presentation:", error);
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

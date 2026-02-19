@@ -24,7 +24,7 @@ export default function SearchUser({
 
   const getUserName = (email: string) => {
     const userInfo = usersNameByEmail[email];
-    return typeof userInfo === 'string' ? userInfo : userInfo?.name ?? email;
+    return typeof userInfo === "string" ? userInfo : (userInfo?.name ?? email);
   };
 
   const filter = (searchValue: string) => {
@@ -32,9 +32,7 @@ export default function SearchUser({
       searchValue
         .toLocaleLowerCase()
         .split(" ")
-        .every((input) =>
-          getUserName(email).toLowerCase().includes(input),
-        ),
+        .every((input) => getUserName(email).toLowerCase().includes(input)),
     );
 
     return elements.slice(0, 6);

@@ -572,7 +572,8 @@ export async function adminRemoveUserFromPresentation(
 
     if (
       presentationCheck.length > 0 &&
-      (presentationCheck[0] as { remaining_capacity: number | null }).remaining_capacity !== null
+      (presentationCheck[0] as { remaining_capacity: number | null })
+        .remaining_capacity !== null
     ) {
       await conn.execute(
         `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,

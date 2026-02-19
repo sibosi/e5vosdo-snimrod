@@ -110,13 +110,21 @@ export async function getAllUsersNameByEmail() {
     `SELECT COALESCE(full_name, name) AS name, email, coming_year, class_character FROM users;`,
   );
   let users: { [key: string]: { name: string; class: string } } = {};
-  (response as Array<{ name: string; email: string; coming_year: number | null; class_character: string | null }>).map((user) => {
-    const classInfo = user.coming_year && user.class_character 
-      ? `${user.coming_year}.${user.class_character}` 
-      : '';
+  (
+    response as Array<{
+      name: string;
+      email: string;
+      coming_year: number | null;
+      class_character: string | null;
+    }>
+  ).map((user) => {
+    const classInfo =
+      user.coming_year && user.class_character
+        ? `${user.coming_year}.${user.class_character}`
+        : "";
     users[user.email] = {
       name: user.name,
-      class: classInfo
+      class: classInfo,
     };
   });
   return users;

@@ -186,7 +186,7 @@ const TagManager: React.FC<TagManagerProps> = ({
           value={newTagName}
           onChange={(e) => setNewTagName(e.target.value)}
           placeholder="Új címke neve..."
-          className="flex-1 rounded-lg border px-4 py-2 focus:border-selfprimary-500 focus:outline-hidden"
+          className="focus:outline-hidden flex-1 rounded-lg border px-4 py-2 focus:border-selfprimary-500"
           disabled={isSubmitting}
         />
         <button
@@ -205,7 +205,7 @@ const TagManager: React.FC<TagManagerProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Címke keresése..."
-          className="w-full rounded-lg border px-4 py-2 focus:border-selfprimary-500 focus:outline-hidden"
+          className="focus:outline-hidden w-full rounded-lg border px-4 py-2 focus:border-selfprimary-500"
         />
       </div>
 
@@ -247,7 +247,7 @@ const TagManager: React.FC<TagManagerProps> = ({
                         e.target.value as "madeBy" | "normal" | "high",
                       )
                     }
-                    className={`rounded border px-2 py-1 text-sm focus:border-selfprimary-500 focus:outline-hidden ${
+                    className={`focus:outline-hidden rounded border px-2 py-1 text-sm focus:border-selfprimary-500 ${
                       tag.priority === "madeBy"
                         ? "border-purple-400 bg-purple-100 text-purple-800"
                         : tag.priority === "high"

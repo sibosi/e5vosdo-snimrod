@@ -79,12 +79,11 @@ export async function GET() {
           if (!signup) return "";
           const emailStr = signup.email;
           const amountStr = signup.amount > 1 ? ` (${signup.amount} fő)` : "";
-          const userName = typeof namesByEmail[emailStr] === 'string'
-            ? namesByEmail[emailStr]
-            : namesByEmail[emailStr]?.name || emailStr;
-          return type === "email"
-            ? emailStr + amountStr
-            : userName + amountStr;
+          const userName =
+            typeof namesByEmail[emailStr] === "string"
+              ? namesByEmail[emailStr]
+              : namesByEmail[emailStr]?.name || emailStr;
+          return type === "email" ? emailStr + amountStr : userName + amountStr;
         });
         sheet.addRow(row);
       }

@@ -18,8 +18,8 @@ const AdminPresentationsPage = () => {
   const [signupsWithAmounts, setSignupsWithAmounts] = useState<{
     [key: number]: Array<{ email: string; amount: number }>;
   }>({});
-  const [namesByEmail, setNamesByEmail] = useState<{ 
-    [key: string]: { name: string; class: string } 
+  const [namesByEmail, setNamesByEmail] = useState<{
+    [key: string]: { name: string; class: string };
   }>({});
   const [loading, setLoading] = useState(true);
   const [editingPresentation, setEditingPresentation] =
@@ -467,9 +467,7 @@ const AdminPresentationsPage = () => {
         alert("Felhasználó sikeresen eltávolítva a prezentációról");
       } else {
         const error = await response.json();
-        alert(
-          `Hiba: ${error.error || "Ismeretlen hiba történt"}`,
-        );
+        alert(`Hiba: ${error.error || "Ismeretlen hiba történt"}`);
       }
     } catch (error) {
       console.error("Error removing user from presentation:", error);
@@ -974,29 +972,34 @@ const AdminPresentationsPage = () => {
                     {signups[presentation.id]?.length > 0 ? (
                       <div className="grid gap-2 md:grid-cols-2">
                         {signups[presentation.id].map((email, index) => {
-                          const userInfo = namesByEmail[email] || { 
-                            name: "Ismeretlen név", 
-                            class: "" 
+                          const userInfo = namesByEmail[email] || {
+                            name: "Ismeretlen név",
+                            class: "",
                           };
                           return (
-                            <div 
-                              key={index} 
+                            <div
+                              key={index}
                               className="flex items-center justify-between rounded border border-foreground-200 bg-white p-2 text-sm"
                             >
                               <span>
                                 {index + 1}.{" "}
-                                {typeof userInfo === 'string' ? userInfo : userInfo.name}{" "}
-                                {typeof userInfo === 'object' && userInfo.class && (
-                                  <span className="text-foreground-600">
-                                    ({userInfo.class})
-                                  </span>
-                                )}{" "}
+                                {typeof userInfo === "string"
+                                  ? userInfo
+                                  : userInfo.name}{" "}
+                                {typeof userInfo === "object" &&
+                                  userInfo.class && (
+                                    <span className="text-foreground-600">
+                                      ({userInfo.class})
+                                    </span>
+                                  )}{" "}
                                 <span className="text-xs text-foreground-500">
                                   {email}
                                 </span>
                               </span>
                               <button
-                                onClick={() => startRemovingUser(email, presentation.id)}
+                                onClick={() =>
+                                  startRemovingUser(email, presentation.id)
+                                }
                                 className="ml-2 flex h-6 w-6 items-center justify-center rounded-full text-danger hover:bg-danger-50"
                                 title="Felhasználó eltávolítása"
                               >
@@ -1061,8 +1064,8 @@ const AdminPresentationsPage = () => {
               <strong>
                 {(() => {
                   const userInfo = namesByEmail[removingUser.email];
-                  return typeof userInfo === 'string' 
-                    ? userInfo 
+                  return typeof userInfo === "string"
+                    ? userInfo
                     : userInfo?.name || removingUser.email;
                 })()}
               </strong>{" "}
@@ -1076,10 +1079,7 @@ const AdminPresentationsPage = () => {
               >
                 Mégse
               </Button>
-              <Button
-                color="danger"
-                onPress={handleRemoveUserFromPresentation}
-              >
+              <Button color="danger" onPress={handleRemoveUserFromPresentation}>
                 Eltávolítás
               </Button>
             </div>

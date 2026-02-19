@@ -117,43 +117,38 @@ export async function POST(req: Request) {
         setTotal(images.length);
         setCurrentFile(`Found ${images.length} images to process`);
 
-        await processInParallel(
-          images,
-          async (image, index) => {
-            setCurrent(index + 1);
-            setCurrentFile(
-              image.original_file_name || `ID: ${image.id}`,
+        await processInParallel(images, async (image, index) => {
+          setCurrent(index + 1);
+          setCurrentFile(image.original_file_name || `ID: ${image.id}`);
+
+          try {
+            // Letöltés
+            const res: any = await drive.files.get(
+              {
+                fileId: image.original_drive_id,
+                alt: "media",
+                supportsAllDrives: true,
+              } as any,
+              { responseType: "stream" } as any,
             );
+            const buffer = await streamToBuffer(res.data);
+            const datetime = await extractExifDatetime(buffer);
 
-            try {
-              // Letöltés
-              const res: any = await drive.files.get(
-                {
-                  fileId: image.original_drive_id,
-                  alt: "media",
-                  supportsAllDrives: true,
-                } as any,
-                { responseType: "stream" } as any,
-              );
-              const buffer = await streamToBuffer(res.data);
-              const datetime = await extractExifDatetime(buffer);
-
-              if (datetime) {
-                await dbreq("UPDATE media_images SET datetime = ? WHERE id = ?", [
-                  datetime,
-                  image.id,
-                ]);
-                incrementStat("extracted");
-              } else {
-                incrementStat("noExif");
-              }
-            } catch (error: any) {
-              addError(
-                `${image.original_file_name || image.id}: ${error.message}`,
-              );
+            if (datetime) {
+              await dbreq("UPDATE media_images SET datetime = ? WHERE id = ?", [
+                datetime,
+                image.id,
+              ]);
+              incrementStat("extracted");
+            } else {
+              incrementStat("noExif");
             }
-          },
-        );
+          } catch (error: any) {
+            addError(
+              `${image.original_file_name || image.id}: ${error.message}`,
+            );
+          }
+        });
 
         completeOperation("Done!");
       } catch (error: any) {

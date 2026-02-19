@@ -76,7 +76,7 @@ const ProgramBlock = () => {
   return (
     <div className="my-4 space-y-4">
       {/* Header */}
-      <div className="rounded-xl bg-selfprimary-100 bg-linear-to-r p-4 text-foreground shadow-lg md:p-6">
+      <div className="bg-linear-to-r rounded-xl bg-selfprimary-100 p-4 text-foreground shadow-lg md:p-6">
         <h2 className="text-xl font-bold md:text-2xl">
           Programsáv (15:00-18:00)
         </h2>

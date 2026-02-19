@@ -66,9 +66,9 @@ export default function PodcastPlayer({
   };
 
   return (
-    <div className="rounded-lg bg-foreground/10 p-4 backdrop-blur-xs">
+    <div className="backdrop-blur-xs rounded-lg bg-foreground/10 p-4">
       <div className="mb-3 flex items-center gap-3">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-linear-to-br from-pink-500 to-rose-600">
+        <div className="bg-linear-to-br relative h-16 w-16 shrink-0 overflow-hidden rounded-lg from-pink-500 to-rose-600">
           <img
             src={coverImage}
             alt="Podcast cover"
@@ -76,7 +76,9 @@ export default function PodcastPlayer({
           />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-foreground">{title}</p>
+          <p className="truncate text-sm font-semibold text-foreground">
+            {title}
+          </p>
           <p className="text-xs text-foreground/70">{episode}</p>
         </div>
       </div>
@@ -116,7 +118,11 @@ export default function PodcastPlayer({
         <div className="flex items-center justify-between text-xs text-foreground/70">
           <span>{formatTime(currentTime)}</span>
           <span>
-            Teljes részek az <a href="/est" className="underline hover:text-foreground">epizódik</a> oldalon
+            Teljes részek az{" "}
+            <a href="/est" className="underline hover:text-foreground">
+              epizódik
+            </a>{" "}
+            oldalon
           </span>
           <span>{formatTime(duration)}</span>
         </div>

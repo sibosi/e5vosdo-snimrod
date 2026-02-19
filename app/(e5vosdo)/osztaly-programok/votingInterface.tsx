@@ -174,7 +174,7 @@ const VotingInterface = () => {
   return (
     <div className="container mx-auto max-w-4xl p-4">
       {/* Header */}
-      <div className="mb-6 rounded-xl bg-selfprimary-100 bg-linear-to-r p-6 text-foreground shadow-lg">
+      <div className="bg-linear-to-r mb-6 rounded-xl bg-selfprimary-100 p-6 text-foreground shadow-lg">
         <h1 className="text-2xl font-bold md:text-3xl">
           Szavazz kedvenc programjaidra!
         </h1>

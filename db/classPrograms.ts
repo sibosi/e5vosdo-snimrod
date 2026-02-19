@@ -115,12 +115,14 @@ export async function saveUserVotes(
 /**
  * Get weighted voting results (admin only)
  */
-export async function getWeightedVotingResults(): Promise<Array<{
-  name: string;
-  room: string;
-  class: string;
-  weighted_vote_count: number;
-}>> {
+export async function getWeightedVotingResults(): Promise<
+  Array<{
+    name: string;
+    room: string;
+    class: string;
+    weighted_vote_count: number;
+  }>
+> {
   const selfUser = await getAuth();
   if (!selfUser || !selfUser.permissions.includes("admin")) {
     throw new Error("Nincs jogosultságod az eredmények megtekintéséhez");

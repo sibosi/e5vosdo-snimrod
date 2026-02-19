@@ -20,7 +20,6 @@ import {
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-
 export const metadata: Metadata = {
   robots: {
     index: true,
@@ -124,7 +123,6 @@ export default async function Home() {
           </div>
         </Section>
       )}
-
 
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section

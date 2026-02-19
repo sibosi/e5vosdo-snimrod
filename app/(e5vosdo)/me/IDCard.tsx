@@ -34,7 +34,7 @@ const IDCard = ({
     <>
       <button
         onClick={handleGenerate}
-        className="relative box-border inline-flex h-6 min-w-min max-w-fit items-center justify-between whitespace-nowrap rounded-full bg-selfprimary-100 px-1 text-tiny text-foreground-800"
+        className="relative box-border inline-flex h-6 min-w-min max-w-fit items-center justify-between whitespace-nowrap rounded-full bg-selfprimary-100 px-1 text-foreground-800 text-tiny"
       >
         <span className="flex-1 px-1 pl-0.5 font-normal text-inherit">
           {(() => {

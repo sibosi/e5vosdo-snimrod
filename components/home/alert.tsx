@@ -14,14 +14,11 @@ export const Alert = ({
   padding = true,
   icon = true,
 }: Alert) => {
-
   if (className?.includes("hidden")) return <></>;
 
   return (
-    <div className="max-w-full w-full p-2">
-      <HeroUiAlert color="primary">
-        {children}
-      </HeroUiAlert>
+    <div className="w-full max-w-full p-2">
+      <HeroUiAlert color="primary">{children}</HeroUiAlert>
     </div>
   );
 };

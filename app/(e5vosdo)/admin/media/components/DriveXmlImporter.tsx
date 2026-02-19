@@ -54,10 +54,10 @@ const DriveXmlImporter: React.FC<DriveXmlImporterProps> = ({
   const [previews, setPreviews] = useState<XMLImportPreview[]>([]);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [importProgress, setImportProgress] = useState<ImportProgress | null>(
-    null
+    null,
   );
   const [step, setStep] = useState<"list" | "preview" | "importing" | "done">(
-    "list"
+    "list",
   );
   const [summary, setSummary] = useState<{
     total: number;
@@ -238,9 +238,7 @@ const DriveXmlImporter: React.FC<DriveXmlImporterProps> = ({
 
   return (
     <div>
-      <h2 className="mb-4 text-xl font-semibold">
-        📁 XML Import a Drive-ról
-      </h2>
+      <h2 className="mb-4 text-xl font-semibold">📁 XML Import a Drive-ról</h2>
 
       {error && (
         <div className="mb-4 rounded-lg bg-danger-100 p-3 text-danger-700">
@@ -497,7 +495,9 @@ const DriveXmlImporter: React.FC<DriveXmlImporterProps> = ({
       {step === "importing" && importProgress && (
         <div>
           <div className="mb-4 rounded-lg bg-selfprimary-50 p-6">
-            <h3 className="mb-4 text-lg font-semibold">Import folyamatban...</h3>
+            <h3 className="mb-4 text-lg font-semibold">
+              Import folyamatban...
+            </h3>
 
             <div className="mb-2 h-4 overflow-hidden rounded-full bg-foreground-200">
               <div

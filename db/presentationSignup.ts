@@ -536,3 +536,49 @@ export async function updateSignupDetails(
     [amount, details, email, slot_id],
   );
 }
+
+export async function adminRemoveUserFromPresentation(
+  email: string,
+  presentation_id: number,
+): Promise<void> {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  if (!gate(selfUser, "admin", "boolean"))
+    throw new Error("Nincs jogosultságod ehhez");
+
+  return await multipledbreq(async (conn) => {
+    // Get the signup information to restore capacity
+    const [signups] = await conn.execute<mysql.RowDataPacket[]>(
+      `SELECT amount, presentation_id FROM signups WHERE email = ? AND presentation_id = ? FOR UPDATE`,
+      [email, presentation_id],
+    );
+
+    if (signups.length === 0)
+      throw new Error("A felhasználó nincs jelentkezve erre a prezentációra");
+
+    const signup = signups[0] as { amount: number; presentation_id: number };
+
+    // Delete the signup
+    await conn.execute(
+      `DELETE FROM signups WHERE email = ? AND presentation_id = ?`,
+      [email, presentation_id],
+    );
+
+    // Restore capacity (only if remaining_capacity is not NULL)
+    const [presentationCheck] = await conn.execute<mysql.RowDataPacket[]>(
+      `SELECT remaining_capacity FROM presentations WHERE id = ?`,
+      [presentation_id],
+    );
+
+    if (
+      presentationCheck.length > 0 &&
+      (presentationCheck[0] as { remaining_capacity: number | null })
+        .remaining_capacity !== null
+    ) {
+      await conn.execute(
+        `UPDATE presentations SET remaining_capacity = remaining_capacity + ? WHERE id = ?`,
+        [signup.amount, presentation_id],
+      );
+    }
+  });
+}

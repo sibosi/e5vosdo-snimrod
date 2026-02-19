@@ -12,7 +12,7 @@ const Access = ({ name }: { name: string | undefined }) => {
         {typeof name === "string" ? (
           <h1 className="inline text-4xl font-semibold lg:text-5xl">
             Helló{" "}
-            <p className="inline bg-linear-to-l from-[#f89c39] to-[#a74500] bg-clip-text text-transparent">
+            <p className="bg-linear-to-l inline from-[#f89c39] to-[#a74500] bg-clip-text text-transparent">
               {name.split(" ")[0]}
             </p>
             !
@@ -20,7 +20,7 @@ const Access = ({ name }: { name: string | undefined }) => {
         ) : (
           <h1 className="inline text-4xl font-semibold lg:text-5xl">
             Helló{" "}
-            <p className="inline bg-linear-to-l from-[#f89c39] to-[#a74500] bg-clip-text text-transparent">
+            <p className="bg-linear-to-l inline from-[#f89c39] to-[#a74500] bg-clip-text text-transparent">
               Eötvös Népe
             </p>
             !

@@ -88,40 +88,35 @@ export async function POST() {
         setTotal(images.length);
         setCurrentFile(`Found ${images.length} images without color`);
 
-        await processInParallel(
-          images,
-          async (image, index) => {
-            setCurrent(index + 1);
-            setCurrentFile(
-              image.original_file_name || `ID: ${image.id}`,
+        await processInParallel(images, async (image, index) => {
+          setCurrent(index + 1);
+          setCurrentFile(image.original_file_name || `ID: ${image.id}`);
+
+          try {
+            // Letöltés
+            const res: any = await drive.files.get(
+              {
+                fileId: image.original_drive_id,
+                alt: "media",
+                supportsAllDrives: true,
+              } as any,
+              { responseType: "stream" } as any,
             );
+            const buffer = await streamToBuffer(res.data);
+            const color = await averageColorHex(buffer);
 
-            try {
-              // Letöltés
-              const res: any = await drive.files.get(
-                {
-                  fileId: image.original_drive_id,
-                  alt: "media",
-                  supportsAllDrives: true,
-                } as any,
-                { responseType: "stream" } as any,
-              );
-              const buffer = await streamToBuffer(res.data);
-              const color = await averageColorHex(buffer);
-
-              if (color) {
-                await dbreq("UPDATE media_images SET color = ? WHERE id = ?", [
-                  color,
-                  image.id,
-                ]);
-              }
-            } catch (error: any) {
-              addError(
-                `${image.original_file_name || image.id}: ${error.message}`,
-              );
+            if (color) {
+              await dbreq("UPDATE media_images SET color = ? WHERE id = ?", [
+                color,
+                image.id,
+              ]);
             }
-          },
-        );
+          } catch (error: any) {
+            addError(
+              `${image.original_file_name || image.id}: ${error.message}`,
+            );
+          }
+        });
 
         completeOperation("Done!");
       } catch (error: any) {

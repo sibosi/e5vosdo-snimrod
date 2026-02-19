@@ -153,47 +153,44 @@ export async function POST(req: Request) {
         setTotal(newFiles.length);
         setCurrentFile(`Found ${newFiles.length} new images`);
 
-        await processInParallel(
-          newFiles,
-          async (file, index) => {
-            setCurrent(index + 1);
-            setCurrentFile(file.name);
+        await processInParallel(newFiles, async (file, index) => {
+          setCurrent(index + 1);
+          setCurrentFile(file.name);
 
-            try {
-              let color: string | null = null;
-              let datetime: string | null = null;
+          try {
+            let color: string | null = null;
+            let datetime: string | null = null;
 
-              // Mindig letöltjük a képet, hogy kinyerjük az EXIF dátumot
-              const res: any = await drive.files.get(
-                {
-                  fileId: file.id,
-                  alt: "media",
-                  supportsAllDrives: true,
-                } as any,
-                { responseType: "stream" } as any,
-              );
-              const buffer = await streamToBuffer(res.data);
+            // Mindig letöltjük a képet, hogy kinyerjük az EXIF dátumot
+            const res: any = await drive.files.get(
+              {
+                fileId: file.id,
+                alt: "media",
+                supportsAllDrives: true,
+              } as any,
+              { responseType: "stream" } as any,
+            );
+            const buffer = await streamToBuffer(res.data);
 
-              // EXIF datetime kinyerése (kép készítésének időpontja)
-              datetime = await extractExifDatetime(buffer);
+            // EXIF datetime kinyerése (kép készítésének időpontja)
+            datetime = await extractExifDatetime(buffer);
 
-              // Domináns szín számítása (opcionális)
-              if (withColors) {
-                color = await averageColorHex(buffer);
-              }
-
-              await upsertMediaImage(selfUser, {
-                original_drive_id: file.id,
-                original_file_name: file.name,
-                color,
-                datetime, // EXIF capture time
-                upload_datetime: file.createdTime, // Drive upload time
-              });
-            } catch (error: any) {
-              addError(`${file.name}: ${error.message}`);
+            // Domináns szín számítása (opcionális)
+            if (withColors) {
+              color = await averageColorHex(buffer);
             }
-          },
-        );
+
+            await upsertMediaImage(selfUser, {
+              original_drive_id: file.id,
+              original_file_name: file.name,
+              color,
+              datetime, // EXIF capture time
+              upload_datetime: file.createdTime, // Drive upload time
+            });
+          } catch (error: any) {
+            addError(`${file.name}: ${error.message}`);
+          }
+        });
 
         completeOperation("Done!");
       } catch (error: any) {

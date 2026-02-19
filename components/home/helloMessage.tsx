@@ -46,7 +46,7 @@ const HelloMessage = ({
       >
         <div className={"inline font-semibold " + textClass}>
           <span>Helló&nbsp;</span>
-          <span className="inline bg-linear-to-l from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
+          <span className="bg-linear-to-l inline from-selfprimary-300 to-selfprimary-700 bg-clip-text text-transparent">
             Eötvös Népe
           </span>
           <span>!</span>

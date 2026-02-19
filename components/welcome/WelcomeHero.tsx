@@ -115,7 +115,7 @@ export default function WelcomeHero() {
           ></motion.div>
         </div>
 
-        <div className="relative min-h-64 [@media_(min-width:600px)]:min-h-96 [@media_(min-width:850px)]:min-h-128">
+        <div className="[@media_(min-width:850px)]:min-h-128 relative min-h-64 [@media_(min-width:600px)]:min-h-96">
           <motion.div
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -129,7 +129,7 @@ export default function WelcomeHero() {
               className="object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-linear-to-r from-white via-white/50 to-transparent max-lg:hidden md:from-transparent"></div>
+            <div className="bg-linear-to-r absolute inset-0 from-white via-white/50 to-transparent max-lg:hidden md:from-transparent"></div>
           </motion.div>
         </div>
       </div>

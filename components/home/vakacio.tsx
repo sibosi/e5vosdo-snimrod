@@ -19,7 +19,7 @@ export const Vakacio = ({ date }: { date: string }) => {
   const targetDate = new Date(date);
 
   return (
-    <p className="mx-auto max-w-fit bg-linear-to-l from-selfsecondary-200 to-selfsecondary-500 bg-clip-text pt-2 text-center text-5xl font-bold text-transparent transition-all duration-500 ease-in-out">
+    <p className="bg-linear-to-l mx-auto max-w-fit from-selfsecondary-200 to-selfsecondary-500 bg-clip-text pt-2 text-center text-5xl font-bold text-transparent transition-all duration-500 ease-in-out">
       {getVacationText(targetDate)}
     </p>
   );

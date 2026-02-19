@@ -351,10 +351,10 @@ export async function POST(req: Request) {
               if (!img.needsSync && img.needsColor) {
                 const color = await averageColorHex(originalBuffer);
                 if (color && imageId) {
-                  await dbreq("UPDATE media_images SET color = ? WHERE id = ?", [
-                    color,
-                    imageId,
-                  ]);
+                  await dbreq(
+                    "UPDATE media_images SET color = ? WHERE id = ?",
+                    [color, imageId],
+                  );
                   incrementStat("colorsGenerated");
                 }
               }

@@ -107,96 +107,93 @@ export async function POST(req: Request) {
         }[];
 
         setTotal(images.length);
-        setCurrentFile(`Found ${images.length} images without ${size} Drive preview`);
+        setCurrentFile(
+          `Found ${images.length} images without ${size} Drive preview`,
+        );
 
-        await processInParallel(
-          images,
-          async (image, index) => {
-            setCurrent(index + 1);
-            setCurrentFile(
-              image.original_file_name || `ID: ${image.id}`,
-            );
+        await processInParallel(images, async (image, index) => {
+          setCurrent(index + 1);
+          setCurrentFile(image.original_file_name || `ID: ${image.id}`);
 
-            try {
-              let previewBuffer: Buffer;
-              let width: number;
-              let height: number;
+          try {
+            let previewBuffer: Buffer;
+            let width: number;
+            let height: number;
 
-              // Először próbáljuk a lokális cache-ből
-              if (isCached(image.id, size)) {
-                previewBuffer = readCachedFile(image.id, size)!;
-                const meta = await sharp(previewBuffer).metadata();
-                width = meta.width || 0;
-                height = meta.height || 0;
-              } else {
-                // Generálás az eredetiből
-                const res: any = await drive.files.get(
-                  {
-                    fileId: image.original_drive_id,
-                    alt: "media",
-                    supportsAllDrives: true,
-                  } as any,
-                  { responseType: "stream" } as any,
-                );
-                const originalBuffer = await streamToBuffer(res.data);
-
-                let sharpInstance = sharp(originalBuffer).rotate();
-
-                if (size === "small") {
-                  sharpInstance = sharpInstance.resize({
-                    height: PREVIEW_CONFIG.small.height,
-                    withoutEnlargement: true,
-                  });
-                } else {
-                  sharpInstance = sharpInstance.resize({
-                    width: PREVIEW_CONFIG.large.width,
-                    withoutEnlargement: true,
-                  });
-                }
-
-                const quality =
-                  size === "small"
-                    ? PREVIEW_CONFIG.small.quality
-                    : PREVIEW_CONFIG.large.quality;
-                previewBuffer = await sharpInstance.webp({ quality }).toBuffer();
-                const meta = await sharp(previewBuffer).metadata();
-                width = meta.width || 0;
-                height = meta.height || 0;
-              }
-
-              // Feltöltés Drive-ra
-              const previewName = `${(
-                image.original_file_name || "image"
-              ).replace(/\.[^/.]+$/, "")}_${size}.webp`;
-              const mediaStream = Readable.from(previewBuffer);
-
-              const uploadRes: any = await drive.files.create(
+            // Először próbáljuk a lokális cache-ből
+            if (isCached(image.id, size)) {
+              previewBuffer = readCachedFile(image.id, size)!;
+              const meta = await sharp(previewBuffer).metadata();
+              width = meta.width || 0;
+              height = meta.height || 0;
+            } else {
+              // Generálás az eredetiből
+              const res: any = await drive.files.get(
                 {
-                  requestBody: {
-                    name: previewName,
-                    parents: [PREVIEW_FOLDER_ID],
-                    mimeType: "image/webp",
-                  },
-                  media: {
-                    mimeType: "image/webp",
-                    body: mediaStream,
-                  },
+                  fileId: image.original_drive_id,
+                  alt: "media",
                   supportsAllDrives: true,
                 } as any,
-                { fields: "id" } as any,
+                { responseType: "stream" } as any,
               );
+              const originalBuffer = await streamToBuffer(res.data);
 
-              const driveId = uploadRes.data?.id as string | undefined;
-              if (driveId) {
-                await updateImagePreview(image.id, size, driveId, width, height);
+              let sharpInstance = sharp(originalBuffer).rotate();
+
+              if (size === "small") {
+                sharpInstance = sharpInstance.resize({
+                  height: PREVIEW_CONFIG.small.height,
+                  withoutEnlargement: true,
+                });
+              } else {
+                sharpInstance = sharpInstance.resize({
+                  width: PREVIEW_CONFIG.large.width,
+                  withoutEnlargement: true,
+                });
               }
-            } catch (error: any) {
-              addError(
-                `${image.original_file_name || image.id}: ${error.message}`,
-              );
+
+              const quality =
+                size === "small"
+                  ? PREVIEW_CONFIG.small.quality
+                  : PREVIEW_CONFIG.large.quality;
+              previewBuffer = await sharpInstance.webp({ quality }).toBuffer();
+              const meta = await sharp(previewBuffer).metadata();
+              width = meta.width || 0;
+              height = meta.height || 0;
             }
-          },
-        );
+
+            // Feltöltés Drive-ra
+            const previewName = `${(
+              image.original_file_name || "image"
+            ).replace(/\.[^/.]+$/, "")}_${size}.webp`;
+            const mediaStream = Readable.from(previewBuffer);
+
+            const uploadRes: any = await drive.files.create(
+              {
+                requestBody: {
+                  name: previewName,
+                  parents: [PREVIEW_FOLDER_ID],
+                  mimeType: "image/webp",
+                },
+                media: {
+                  mimeType: "image/webp",
+                  body: mediaStream,
+                },
+                supportsAllDrives: true,
+              } as any,
+              { fields: "id" } as any,
+            );
+
+            const driveId = uploadRes.data?.id as string | undefined;
+            if (driveId) {
+              await updateImagePreview(image.id, size, driveId, width, height);
+            }
+          } catch (error: any) {
+            addError(
+              `${image.original_file_name || image.id}: ${error.message}`,
+            );
+          }
+        });
 
         completeOperation("Done!");
       } catch (error: any) {

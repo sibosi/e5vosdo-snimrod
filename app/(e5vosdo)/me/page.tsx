@@ -48,7 +48,9 @@ const MePage = async () => {
     {
       title: "Média admin",
       href: "/admin/media",
-      access: selfUser.permissions.includes("admin") || selfUser.permissions.includes("media_admin"),
+      access:
+        selfUser.permissions.includes("admin") ||
+        selfUser.permissions.includes("media_admin"),
     },
   ];
 

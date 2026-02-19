@@ -18,9 +18,9 @@ const AdminPresentationsPage = () => {
   const [signupsWithAmounts, setSignupsWithAmounts] = useState<{
     [key: number]: Array<{ email: string; amount: number }>;
   }>({});
-  const [namesByEmail, setNamesByEmail] = useState<{ [key: string]: string }>(
-    {},
-  );
+  const [namesByEmail, setNamesByEmail] = useState<{
+    [key: string]: { name: string; class: string };
+  }>({});
   const [loading, setLoading] = useState(true);
   const [editingPresentation, setEditingPresentation] =
     useState<EditingPresentation | null>(null);
@@ -41,6 +41,10 @@ const AdminPresentationsPage = () => {
   const [isManagingSlots, setIsManagingSlots] = useState(false);
   const [newSlotTitle, setNewSlotTitle] = useState("");
   const [newSlotDetails, setNewSlotDetails] = useState("");
+  const [removingUser, setRemovingUser] = useState<{
+    email: string;
+    presentationId: number;
+  } | null>(null);
 
   useEffect(() => {
     if (editingPresentation !== null) {
@@ -440,6 +444,43 @@ const AdminPresentationsPage = () => {
 
   const cancelAddingUser = () => {
     setAddingUserToPresentationId(null);
+  };
+
+  const handleRemoveUserFromPresentation = async () => {
+    if (!removingUser) return;
+
+    try {
+      const response = await fetch(`/api/admin/removeUserFromPresentation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: removingUser.email,
+          presentation_id: removingUser.presentationId,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchPresentations();
+        await fetchSignups();
+        await fetchNamesByEmail();
+        setRemovingUser(null);
+        alert("Felhasználó sikeresen eltávolítva a prezentációról");
+      } else {
+        const error = await response.json();
+        alert(`Hiba: ${error.error || "Ismeretlen hiba történt"}`);
+      }
+    } catch (error) {
+      console.error("Error removing user from presentation:", error);
+      alert("Hiba a felhasználó eltávolítása során");
+    }
+  };
+
+  const startRemovingUser = (email: string, presentationId: number) => {
+    setRemovingUser({ email, presentationId });
+  };
+
+  const cancelRemovingUser = () => {
+    setRemovingUser(null);
   };
 
   if (loading) {
@@ -929,13 +970,45 @@ const AdminPresentationsPage = () => {
                       Jelentkezők ({signups[presentation.id]?.length || 0}):
                     </h4>
                     {signups[presentation.id]?.length > 0 ? (
-                      <div className="grid gap-1 md:grid-cols-2">
-                        {signups[presentation.id].map((email, index) => (
-                          <div key={index} className="text-sm">
-                            {index + 1}.{" "}
-                            {namesByEmail[email] || "Ismeretlen név"} ({email})
-                          </div>
-                        ))}
+                      <div className="grid gap-2 md:grid-cols-2">
+                        {signups[presentation.id].map((email, index) => {
+                          const userInfo = namesByEmail[email] || {
+                            name: "Ismeretlen név",
+                            class: "",
+                          };
+                          return (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between rounded border border-foreground-200 bg-selfprimary-20 p-2 text-sm"
+                            >
+                              <span>
+                                {index + 1}.{" "}
+                                {typeof userInfo === "string"
+                                  ? userInfo
+                                  : userInfo.name}{" "}
+                                {typeof userInfo === "object" &&
+                                  userInfo.class && (
+                                    <span className="text-foreground-600">
+                                      ({userInfo.class})
+                                    </span>
+                                  )}
+                                <br />
+                                <span className="text-xs text-foreground-500">
+                                  {email}
+                                </span>
+                              </span>
+                              <button
+                                onClick={() =>
+                                  startRemovingUser(email, presentation.id)
+                                }
+                                className="ml-2 flex h-6 w-6 items-center justify-center rounded-full text-danger hover:bg-danger-50"
+                                title="Felhasználó eltávolítása"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="text-sm text-foreground-500">
@@ -979,6 +1052,41 @@ const AdminPresentationsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Confirmation Modal for Removing User */}
+      {removingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="mx-4 max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h3 className="mb-4 text-xl font-semibold text-gray-900">
+              Biztos vagy benne?
+            </h3>
+            <p className="mb-6 text-gray-700">
+              Biztosan el szeretnéd távolítani{" "}
+              <strong>
+                {(() => {
+                  const userInfo = namesByEmail[removingUser.email];
+                  return typeof userInfo === "string"
+                    ? userInfo
+                    : userInfo?.name || removingUser.email;
+                })()}
+              </strong>{" "}
+              felhasználót erről a prezentációról?
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button
+                color="primary"
+                variant="bordered"
+                onPress={cancelRemovingUser}
+              >
+                Mégse
+              </Button>
+              <Button color="danger" onPress={handleRemoveUserFromPresentation}>
+                Eltávolítás
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

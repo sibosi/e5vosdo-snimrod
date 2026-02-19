@@ -50,9 +50,7 @@ export async function processInParallel<T>(
           options.onProgress(current, total);
         }
       } catch (error: any) {
-        errors.push(
-          `Item ${task.index}: ${error?.message || "Unknown error"}`,
-        );
+        errors.push(`Item ${task.index}: ${error?.message || "Unknown error"}`);
         current++;
         if (options.onProgress) {
           options.onProgress(current, total);

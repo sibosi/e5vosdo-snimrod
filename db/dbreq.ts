@@ -107,11 +107,25 @@ export async function getUser(email: string | undefined) {
 
 export async function getAllUsersNameByEmail() {
   const response = await dbreq(
-    `SELECT COALESCE(full_name, name) AS name, email FROM users;`,
+    `SELECT COALESCE(full_name, name) AS name, email, coming_year, class_character FROM users;`,
   );
-  let users: { [key: string]: string } = {};
-  (response as []).map((user: User) => {
-    users[user.email] = user.name;
+  let users: { [key: string]: { name: string; class: string } } = {};
+  (
+    response as Array<{
+      name: string;
+      email: string;
+      coming_year: number | null;
+      class_character: string | null;
+    }>
+  ).map((user) => {
+    const classInfo =
+      user.coming_year && user.class_character
+        ? `${user.coming_year}.${user.class_character}`
+        : "";
+    users[user.email] = {
+      name: user.name,
+      class: classInfo,
+    };
   });
   return users;
 }

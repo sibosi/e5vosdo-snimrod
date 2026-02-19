@@ -979,7 +979,7 @@ const AdminPresentationsPage = () => {
                           return (
                             <div
                               key={index}
-                              className="flex items-center justify-between rounded border border-foreground-200 bg-white p-2 text-sm"
+                              className="flex items-center justify-between rounded border border-foreground-200 bg-selfprimary-20 p-2 text-sm"
                             >
                               <span>
                                 {index + 1}.{" "}
@@ -991,7 +991,8 @@ const AdminPresentationsPage = () => {
                                     <span className="text-foreground-600">
                                       ({userInfo.class})
                                     </span>
-                                  )}{" "}
+                                  )}
+                                <br />
                                 <span className="text-xs text-foreground-500">
                                   {email}
                                 </span>
@@ -1073,8 +1074,8 @@ const AdminPresentationsPage = () => {
             </p>
             <div className="flex justify-end gap-3">
               <Button
-                color="default"
-                variant="light"
+                color="primary"
+                variant="bordered"
                 onPress={cancelRemovingUser}
               >
                 Mégse

@@ -117,7 +117,7 @@ export default async function Home() {
           },
           {
             key: "elections",
-            label: "Kampány",
+            label: "Kampány (beta)",
             content: <ElectionsInstagramFeed />,
           },
         ]}

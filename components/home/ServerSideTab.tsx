@@ -22,7 +22,7 @@ export default function ServerSideTab({ tabs, isSecret }: ServerSideTabProps) {
       variant="light"
       aria-label="Options"
       hidden={isSecret}
-      className="pb-2"
+      className="pb-2 pt-0.5"
     >
       {tabs.map((tab) => (
         <Tab key={tab.key} title={tab.label} className="p-0">

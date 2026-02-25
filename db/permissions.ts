@@ -29,24 +29,33 @@ matchOrganiser: can manage matches
 media_admin: can manage media images, tags, and import XML metadata
 */
 
+export function hasPermission(
+  user: PossibleUserType,
+  permission: string | string[],
+) {
+  if (!user) return false;
+  if (user.permissions.includes("super_admin")) return true;
+
+  if (typeof permission === "string") {
+    if (user.permissions.includes(permission)) return true;
+  } else if (permission.some((p) => user.permissions.includes(p))) return true;
+
+  if ("teacher" === permission && !user.is_verified) return true;
+
+  return false;
+}
+
 export function gate(
   user: PossibleUserType,
   permission: string | string[],
   type: "boolean" | "throw" = "throw",
 ) {
-  if (!user) {
-    if (type === "boolean") return false;
-    throw new Error("Permission denied");
+  if (type === "boolean") {
+    console.warn(
+      "Gate check with boolean is deprecated, please use hasPermission directly",
+    );
+    return hasPermission(user, permission);
   }
-  let hasPermission = false;
-  if (user.permissions.includes("super_admin")) hasPermission = true;
-  if (typeof permission === "string") {
-    if (user.permissions.includes(permission)) hasPermission = true;
-  } else if (permission.some((p) => user.permissions.includes(p)))
-    hasPermission = true;
 
-  if ("teacher" === permission && !user.is_verified) hasPermission = true;
-  if (type === "boolean") return hasPermission;
-  if (hasPermission) return;
-  throw new Error("Permission denied");
+  if (!hasPermission(user, permission)) throw new Error("Permission denied");
 }

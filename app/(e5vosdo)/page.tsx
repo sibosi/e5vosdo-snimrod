@@ -11,7 +11,7 @@ import { getCarouselEvents } from "@/db/event";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
 import Footer from "@/components/footer";
-import { gate } from "@/db/permissions";
+import { hasPermission } from "@/db/permissions";
 import HeadTimetable from "@/components/home/smartHead/headTimetable";
 import {
   QuickTeachers,
@@ -19,6 +19,8 @@ import {
 } from "@/components/helyettesites/quickteacher";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import ElectionsInstagramFeed from "@/components/events/ElectionsInstagramFeed";
+import ServerSideTab from "@/components/home/ServerSideTab";
 
 export const metadata: Metadata = {
   robots: {
@@ -105,7 +107,41 @@ export default async function Home() {
     <div>
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
 
-      {gate(selfUser, "user", "boolean") && (
+      <ServerSideTab
+        isSecret={!hasPermission(selfUser, "tester")}
+        tabs={[
+          {
+            key: "home",
+            label: "Főoldal",
+            content: <MainContent selfUser={selfUser} />,
+          },
+          {
+            key: "elections",
+            label: "Kampány",
+            content: <ElectionsInstagramFeed />,
+          },
+        ]}
+      />
+
+      <Section title="Keresel valamit?" dropdownable={false}>
+        <Footer />
+      </Section>
+
+      <div className="hidden">
+        {
+          "Az oldal a Budapest V. Kerületi Eötvös József Gimnázium (más néven EJG) Diákönkormányzatának (más néven DÖ) tájékoztató oldala."
+        }
+      </div>
+    </div>
+  );
+}
+
+function MainContent({
+  selfUser,
+}: Readonly<{ selfUser: UserType | null | undefined }>) {
+  return (
+    <>
+      {hasPermission(selfUser, "user") && (
         <Section
           title="Órarend"
           localStorageKey="Órarend2"
@@ -150,16 +186,6 @@ export default async function Home() {
           <Events />
         </Section>
       )}
-
-      <Section title="Keresel valamit?" dropdownable={false}>
-        <Footer />
-      </Section>
-
-      <div className="hidden">
-        {
-          "Az oldal a Budapest V. Kerületi Eötvös József Gimnázium (más néven EJG) Diákönkormányzatának (más néven DÖ) tájékoztató oldala."
-        }
-      </div>
-    </div>
+    </>
   );
 }

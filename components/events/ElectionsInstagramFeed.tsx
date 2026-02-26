@@ -170,7 +170,7 @@ export default function ElectionsInstagramFeed() {
 
   const emptyState = useMemo(
     () => (
-      <div className="rounded-xl border border-divider bg-content1 p-5 text-sm text-foreground-600">
+      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-200 p-5 text-sm text-foreground-600">
         Jelenleg nincs megjeleníthető poszt.
       </div>
     ),
@@ -179,7 +179,7 @@ export default function ElectionsInstagramFeed() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-divider bg-content1 p-5 text-sm text-foreground-600">
+      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-200 p-5 text-sm text-foreground-600">
         Instagram posztok betöltése...
       </div>
     );
@@ -187,7 +187,7 @@ export default function ElectionsInstagramFeed() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-divider bg-content1 p-5 text-sm text-danger">
+      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-200 p-5 text-sm text-danger">
         {error}
       </div>
     );
@@ -196,11 +196,11 @@ export default function ElectionsInstagramFeed() {
   if (posts.length === 0) return emptyState;
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
       {posts.map((post) => (
         <article
           key={post.id}
-          className="overflow-hidden rounded-2xl border border-divider bg-content1"
+          className="overflow-hidden rounded-2xl border-0 border-selfprimary-200 bg-selfprimary-200"
         >
           <div className="px-4 pb-3 pt-4">
             <div className="flex items-center justify-between">

@@ -66,6 +66,7 @@ export type ElectionsInstagramPost = {
   caption: string;
   mediaType: string;
   displayUrl: string;
+  account: ElectionsInstagramAccount;
   permalink: string;
   timestamp: string;
   likeCount: number;
@@ -84,31 +85,43 @@ export type ElectionsInstagramAccount = {
   profilePictureUrl: string;
 };
 
-const CACHE_DURATION_MS = 20 * 1000; // 20 seconds
+const CACHE_DURATION_MS = 20 * 1000 * 0; // 20 seconds
 
 const globalCache = globalThis as typeof globalThis & {
   __electionsInstagramFeedCache?: {
     timestamp: number;
+    accountIdsKey: string;
     account: ElectionsInstagramAccount;
     posts: ElectionsInstagramPost[];
   };
 };
 
 function getMetaConfig() {
-  const accountId = process.env.META_IG_ACCOUNT_ID;
+  const accountIdRaw = process.env.META_IG_ACCOUNT_ID;
   const accessToken = process.env.META_IG_ACCESS_TOKEN;
   const graphVersion = process.env.META_GRAPH_VERSION ?? "v25.0";
+  const accountIds = Array.from(
+    new Set(
+      (accountIdRaw ?? "")
+        .split(/[\s,;]+/)
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0),
+    ),
+  );
 
-  if (!accountId || !accessToken) {
+  if (accountIds.length === 0 || !accessToken) {
     throw new Error(
       "Missing required Meta API env vars: META_IG_ACCOUNT_ID, META_IG_ACCESS_TOKEN",
     );
   }
 
-  return { accountId, accessToken, graphVersion };
+  return { accountIds, accessToken, graphVersion };
 }
 
-function normalizePost(item: GraphMediaPost): ElectionsInstagramPost | null {
+function normalizePost(
+  item: GraphMediaPost,
+  account: ElectionsInstagramAccount,
+): ElectionsInstagramPost | null {
   const displayUrl = item.media_url ?? item.thumbnail_url ?? "";
   if (!displayUrl) return null;
 
@@ -133,6 +146,7 @@ function normalizePost(item: GraphMediaPost): ElectionsInstagramPost | null {
     caption: item.caption ?? "",
     mediaType: item.media_type,
     displayUrl,
+    account,
     permalink: item.permalink ?? "",
     timestamp: item.timestamp ?? "",
     likeCount: item.like_count ?? 0,
@@ -206,20 +220,12 @@ async function fetchAccount(
   };
 }
 
-export async function fetchElectionsInstagramFeed(): Promise<{
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
-}> {
-  const now = Date.now();
-  const cache = globalCache.__electionsInstagramFeedCache;
-
-  if (cache && now - cache.timestamp < CACHE_DURATION_MS) {
-    return { account: cache.account, posts: cache.posts };
-  }
-
-  const { accountId, accessToken, graphVersion } = getMetaConfig();
-  const account = await fetchAccount(accountId, accessToken, graphVersion);
-
+async function fetchPostsForAccount(
+  accountId: string,
+  account: ElectionsInstagramAccount,
+  accessToken: string,
+  graphVersion: string,
+): Promise<ElectionsInstagramPost[]> {
   const firstUrl = new URL(
     `https://graph.facebook.com/${graphVersion}/${accountId}/media`,
   );
@@ -244,24 +250,70 @@ export async function fetchElectionsInstagramFeed(): Promise<{
       | GraphApiResponse;
 
     if (!response.ok) {
-      throw new Error(
-        payload.error?.message ?? "Meta Graph API request failed",
-      );
+      throw new Error(payload.error?.message ?? "Meta Graph API request failed");
     }
 
     posts.push(
       ...(payload.data ?? [])
-        .map(normalizePost)
+        .map((item) => normalizePost(item, account))
         .filter((item): item is ElectionsInstagramPost => item !== null),
     );
 
     nextUrl = "paging" in payload ? (payload.paging?.next ?? null) : null;
   }
 
+  return posts;
+}
+
+function getTimestampValue(timestamp: string) {
+  if (!timestamp) return 0;
+  const parsed = Date.parse(timestamp);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+export async function fetchElectionsInstagramFeed(): Promise<{
+  account: ElectionsInstagramAccount;
+  posts: ElectionsInstagramPost[];
+}> {
+  const now = Date.now();
+  const cache = globalCache.__electionsInstagramFeedCache;
+  const { accountIds, accessToken, graphVersion } = getMetaConfig();
+  const accountIdsKey = accountIds.join(",");
+
+  if (
+    cache?.accountIdsKey === accountIdsKey &&
+    now - cache.timestamp < CACHE_DURATION_MS
+  ) {
+    return { account: cache.account, posts: cache.posts };
+  }
+
+  const posts: ElectionsInstagramPost[] = [];
+  const accounts: ElectionsInstagramAccount[] = [];
+
+  for (const accountId of accountIds) {
+    try {
+      const account = await fetchAccount(accountId, accessToken, graphVersion);
+      accounts.push(account);
+      const accountPosts = await fetchPostsForAccount(
+        accountId,
+        account,
+        accessToken,
+        graphVersion,
+      );
+      posts.push(...accountPosts);
+    } catch (error) {
+      console.warn(`Failed to fetch Instagram data for account ${accountId}`, error);
+    }
+  }
+
+  if (accounts.length === 0) {
+    throw new Error("Failed to load Instagram data for all configured account IDs");
+  }
+
   for (let index = 0; index < posts.length; index += 1) {
     const post = posts[index];
     const hasNamedComments = post.comments.some(
-      (comment) => !!comment.username,
+      (comment) => !!comment.username && comment.username !== "•",
     );
     if (hasNamedComments || post.commentsCount === 0) continue;
 
@@ -282,8 +334,15 @@ export async function fetchElectionsInstagramFeed(): Promise<{
     }
   }
 
+  posts.sort(
+    (left, right) => getTimestampValue(right.timestamp) - getTimestampValue(left.timestamp),
+  );
+
+  const account = accounts[0];
+
   globalCache.__electionsInstagramFeedCache = {
     timestamp: now,
+    accountIdsKey,
     account,
     posts,
   };

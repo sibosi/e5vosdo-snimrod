@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { InstagramIcon } from "@/components/icons";
+import { HeartFilledIcon, InstagramIcon } from "@/components/icons";
 import type {
   ElectionsInstagramAccount,
   ElectionsInstagramPost,
 } from "@/lib/electionsInstagram";
+import { Chip } from "@heroui/react";
 
 type FeedResponse = {
   account?: ElectionsInstagramAccount;
@@ -170,7 +171,7 @@ export default function ElectionsInstagramFeed() {
 
   const emptyState = useMemo(
     () => (
-      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-200 p-5 text-sm text-foreground-600">
+      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-foreground-600">
         Jelenleg nincs megjeleníthető poszt.
       </div>
     ),
@@ -179,7 +180,7 @@ export default function ElectionsInstagramFeed() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-200 p-5 text-sm text-foreground-600">
+      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-foreground-600">
         Instagram posztok betöltése...
       </div>
     );
@@ -187,7 +188,7 @@ export default function ElectionsInstagramFeed() {
 
   if (error) {
     return (
-      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-200 p-5 text-sm text-danger">
+      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-danger">
         {error}
       </div>
     );
@@ -200,65 +201,74 @@ export default function ElectionsInstagramFeed() {
       {posts.map((post) => (
         <article
           key={post.id}
-          className="overflow-hidden rounded-2xl border-0 border-selfprimary-200 bg-selfprimary-200"
+          className="overflow-hidden rounded-2xl border-0 border-selfprimary-200 bg-selfprimary-100"
         >
           <div className="px-4 pb-3 pt-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {account.profilePictureUrl ? (
+                {post.account.profilePictureUrl ? (
                   <img
-                    src={account.profilePictureUrl}
-                    alt={account.username}
-                    className="h-6 w-6 rounded-full object-cover"
+                    src={post.account.profilePictureUrl}
+                    alt={post.account.username}
+                    className="h-9 w-9 rounded-full border-2 border-selfprimary-400 object-cover"
                     loading="lazy"
                   />
                 ) : (
                   <div className="h-6 w-6 rounded-full bg-foreground-200" />
                 )}
                 <div className="leading-tight">
-                  <p className="text-sm font-semibold text-foreground">
-                    {account.username}
+                  <p className="text-sm font-semibold text-selfprimary-800">
+                    {post.account.username}
                   </p>
-                  <p className="text-xs text-foreground-500">
+                  <p className="text-xs text-selfprimary-600">
                     {formatTimestamp(post.timestamp)}
                   </p>
                 </div>
               </div>
 
-              <Link
-                href={post.permalink}
-                target="_blank"
-                rel="noreferrer"
-                className="text-foreground-600 hover:text-foreground"
-                aria-label="Megnyitás Instagram alkalmazásban"
-              >
-                <InstagramIcon size={18} />
-              </Link>
+              <div className="flex items-center gap-2">
+                <Chip
+                  size="sm"
+                  variant="bordered"
+                  color="primary"
+                  startContent={<HeartFilledIcon size={18} />}
+                >
+                  {post.likeCount}
+                </Chip>
+                <Link
+                  href={post.permalink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-selfprimary-600 hover:text-selfprimary"
+                  aria-label="Megnyitás Instagram alkalmazásban"
+                >
+                  <InstagramIcon size={20} />
+                </Link>
+              </div>
             </div>
           </div>
 
           <PostMedia post={post} />
 
           <div className="space-y-2 px-4 py-3">
-            <div className="text-sm font-semibold text-foreground">
-              {post.likeCount} kedvelés
-            </div>
-
             {post.caption ? (
-              <p className="whitespace-pre-wrap text-sm text-foreground-700">
+              <p className="whitespace-pre-wrap text-sm text-selfprimary-800">
                 {post.caption}
               </p>
             ) : null}
 
-            <p className="text-xs text-foreground-500">
+            <p className="text-xs text-selfprimary-800">
               {post.commentsCount} hozzászólás
             </p>
 
             {post.comments.length > 0 ? (
               <div className="space-y-1">
                 {post.comments.map((comment) => (
-                  <p key={comment.id} className="text-sm text-foreground-700">
-                    <span className="font-semibold text-foreground">
+                  <p
+                    key={comment.id}
+                    className="text-sm italic text-selfprimary-700"
+                  >
+                    <span className="font-semibold not-italic text-selfprimary-800">
                       {comment.username || "@unknown"}
                     </span>{" "}
                     {comment.text}

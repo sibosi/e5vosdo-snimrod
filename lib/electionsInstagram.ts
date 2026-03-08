@@ -92,7 +92,8 @@ function getMetaConfig() {
     ),
   );
 
-  const ownUsername = (process.env.META_IG_OWN_USERNAME ?? "").trim() || undefined;
+  const ownUsername =
+    (process.env.META_IG_OWN_USERNAME ?? "").trim() || undefined;
 
   if (!accountId || !accessToken || usernames.length === 0) {
     throw new Error(
@@ -141,7 +142,7 @@ function normalizePost(
 }
 
 const PAGE_SIZE = 5;
-const CACHE_TTL_MS = 60 * 1000; // 60 seconds
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 type CacheEntry = {
   timestamp: number;

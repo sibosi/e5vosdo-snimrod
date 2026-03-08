@@ -123,6 +123,33 @@ function normalizePost(
 }
 
 const PAGE_SIZE = 5;
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds
+
+type CacheEntry = {
+  timestamp: number;
+  account: ElectionsInstagramAccount;
+  posts: ElectionsInstagramPost[];
+  nextCursors: CursorsMap;
+  hasMore: boolean;
+};
+
+const globalCache = globalThis as typeof globalThis & {
+  __electionsIgCache?: Map<string, CacheEntry>;
+};
+
+function getCache(): Map<string, CacheEntry> {
+  globalCache.__electionsIgCache ??= new Map();
+  return globalCache.__electionsIgCache;
+}
+
+function getCacheKey(cursors?: CursorsMap): string {
+  if (!cursors) return "__initial__";
+  return JSON.stringify(
+    Object.keys(cursors)
+      .sort((a, b) => a.localeCompare(b))
+      .map((k) => [k, cursors[k]]),
+  );
+}
 
 async function fetchBusinessDiscovery(
   accountId: string,
@@ -197,12 +224,27 @@ function getTimestampValue(timestamp: string) {
 
 export type CursorsMap = Record<string, string | null>;
 
-export async function fetchElectionsInstagramFeed(cursors?: CursorsMap): Promise<{
+export async function fetchElectionsInstagramFeed(
+  cursors?: CursorsMap,
+): Promise<{
   account: ElectionsInstagramAccount;
   posts: ElectionsInstagramPost[];
   nextCursors: CursorsMap;
   hasMore: boolean;
 }> {
+  const cache = getCache();
+  const cacheKey = getCacheKey(cursors);
+  const cached = cache.get(cacheKey);
+
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    return {
+      account: cached.account,
+      posts: cached.posts,
+      nextCursors: cached.nextCursors,
+      hasMore: cached.hasMore,
+    };
+  }
+
   const { accountId, accessToken, graphVersion, usernames } = getMetaConfig();
 
   const posts: ElectionsInstagramPost[] = [];
@@ -249,8 +291,19 @@ export async function fetchElectionsInstagramFeed(cursors?: CursorsMap): Promise
       getTimestampValue(right.timestamp) - getTimestampValue(left.timestamp),
   );
 
-  const account = accounts[0] ?? { username: "instagram", profilePictureUrl: "" };
+  const account = accounts[0] ?? {
+    username: "instagram",
+    profilePictureUrl: "",
+  };
   const hasMore = Object.values(nextCursors).some((c) => c !== null);
+
+  cache.set(cacheKey, {
+    timestamp: Date.now(),
+    account,
+    posts,
+    nextCursors,
+    hasMore,
+  });
 
   return { account, posts, nextCursors, hasMore };
 }

@@ -2,12 +2,25 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { HeartFilledIcon, InstagramIcon } from "@/components/icons";
 import type {
+  ElectionsInstagramAccount,
   ElectionsInstagramPost,
   CursorsMap,
 } from "@/lib/electionsInstagram";
 import { Chip } from "@heroui/react";
+
+// ── Custom profile (code-level) ─────────────────────────────────────────────
+const CUSTOM_PROFILE: ElectionsInstagramAccount = {
+  username: "Kampány",
+  profilePictureUrl: "",
+};
+
+const CUSTOM_USERNAMES: string[] = [
+  "e5vos_kampany",
+  "efpp_official_",
+  "alap_dp",
+];
+// ─────────────────────────────────────────────────────────────────────────────
 
 type FeedResponse = {
   posts?: ElectionsInstagramPost[];
@@ -15,6 +28,11 @@ type FeedResponse = {
   hasMore?: boolean;
   error?: string;
   details?: string;
+};
+
+type AccountsResponse = {
+  accounts?: ElectionsInstagramAccount[];
+  error?: string;
 };
 
 function formatTimestamp(timestamp: string) {
@@ -117,7 +135,100 @@ function PostMedia({ post }: Readonly<{ post: ElectionsInstagramPost }>) {
   );
 }
 
+// ── Account selector bar ─────────────────────────────────────────────────────
+
+function AccountTab({
+  label,
+  imageUrl,
+  isActive,
+  onClick,
+}: Readonly<{
+  label: string;
+  imageUrl?: string;
+  isActive: boolean;
+  onClick: () => void;
+}>) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex flex-col items-center gap-1 transition-opacity ${
+        isActive ? "opacity-100" : "opacity-50 hover:opacity-75"
+      }`}
+    >
+      <div
+        className={`flex h-14 w-14 items-center justify-center rounded-full border-2 ${
+          isActive
+            ? "ring-selfprimary/30 border-selfprimary ring-2"
+            : "border-selfprimary-300"
+        } overflow-hidden bg-selfprimary-100`}
+      >
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={label}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <span className="text-xs font-bold text-selfprimary-600">
+            {label.slice(0, 3).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <span
+        className={`max-w-16 truncate text-[10px] leading-tight ${
+          isActive
+            ? "font-semibold text-selfprimary-800"
+            : "text-selfprimary-600"
+        }`}
+      >
+        {label}
+      </span>
+    </button>
+  );
+}
+
+function AccountSelector({
+  accounts,
+  activeTab,
+  onSelect,
+}: Readonly<{
+  accounts: ElectionsInstagramAccount[];
+  activeTab: string;
+  onSelect: (tab: string) => void;
+}>) {
+  return (
+    <div className="flex gap-3 overflow-x-auto px-1 py-2 scrollbar-hide">
+      <AccountTab
+        label="Mix"
+        isActive={activeTab === "mixed"}
+        onClick={() => onSelect("mixed")}
+      />
+      <AccountTab
+        label={CUSTOM_PROFILE.username}
+        imageUrl={CUSTOM_PROFILE.profilePictureUrl || undefined}
+        isActive={activeTab === "custom"}
+        onClick={() => onSelect("custom")}
+      />
+      {accounts.map((acc) => (
+        <AccountTab
+          key={acc.username}
+          label={acc.username}
+          imageUrl={acc.profilePictureUrl || undefined}
+          isActive={activeTab === acc.username}
+          onClick={() => onSelect(acc.username)}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
+
 export default function ElectionsInstagramFeed() {
+  const [accounts, setAccounts] = useState<ElectionsInstagramAccount[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("custom");
   const [posts, setPosts] = useState<ElectionsInstagramPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -126,10 +237,33 @@ export default function ElectionsInstagramFeed() {
   const nextCursorsRef = useRef<CursorsMap | undefined>(undefined);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  // Fetch account list once
+  useEffect(() => {
+    fetch("/api/elections/instagram/accounts")
+      .then((res) => res.json() as Promise<AccountsResponse>)
+      .then((data) => {
+        if (data.accounts) setAccounts(data.accounts);
+      })
+      .catch(() => {});
+  }, []);
+
   const fetchPage = useCallback(
-    async (cursors?: CursorsMap, signal?: AbortSignal) => {
-      const url = cursors
-        ? `/api/elections/instagram?cursors=${encodeURIComponent(JSON.stringify(cursors))}`
+    async (
+      tab: string,
+      cursors?: CursorsMap,
+      signal?: AbortSignal,
+    ): Promise<FeedResponse> => {
+      const params = new URLSearchParams();
+      if (cursors) params.set("cursors", JSON.stringify(cursors));
+      if (tab === "custom" && CUSTOM_USERNAMES.length > 0) {
+        params.set("usernames", CUSTOM_USERNAMES.join(","));
+      } else if (tab !== "mixed" && tab !== "custom") {
+        params.set("usernames", tab);
+      }
+
+      const qs = params.toString();
+      const url = qs
+        ? `/api/elections/instagram?${qs}`
         : "/api/elections/instagram";
 
       const response = await fetch(url, { signal });
@@ -148,7 +282,7 @@ export default function ElectionsInstagramFeed() {
     [],
   );
 
-  // Initial load
+  // Load posts when active tab changes
   useEffect(() => {
     const controller = new AbortController();
 
@@ -156,8 +290,10 @@ export default function ElectionsInstagramFeed() {
       try {
         setIsLoading(true);
         setError(null);
+        setPosts([]);
+        nextCursorsRef.current = undefined;
 
-        const data = await fetchPage(undefined, controller.signal);
+        const data = await fetchPage(activeTab, undefined, controller.signal);
 
         setPosts(data.posts ?? []);
         nextCursorsRef.current = data.nextCursors;
@@ -177,14 +313,14 @@ export default function ElectionsInstagramFeed() {
     load();
 
     return () => controller.abort();
-  }, [fetchPage]);
+  }, [activeTab, fetchPage]);
 
   const loadMore = useCallback(async () => {
     if (isLoadingMore) return;
     setIsLoadingMore(true);
 
     try {
-      const data = await fetchPage(nextCursorsRef.current);
+      const data = await fetchPage(activeTab, nextCursorsRef.current);
       setPosts((prev) => [...prev, ...(data.posts ?? [])]);
       nextCursorsRef.current = data.nextCursors;
       setHasMore(data.hasMore ?? false);
@@ -194,7 +330,7 @@ export default function ElectionsInstagramFeed() {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, fetchPage]);
+  }, [isLoadingMore, activeTab, fetchPage]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -214,101 +350,115 @@ export default function ElectionsInstagramFeed() {
     return () => observer.disconnect();
   }, [hasMore, loadMore]);
 
-  if (isLoading) {
-    return (
-      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-foreground-600">
-        Instagram posztok betöltése...
-      </div>
-    );
-  }
+  function renderContent() {
+    if (isLoading) {
+      return (
+        <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-foreground-600">
+          Instagram posztok betöltése...
+        </div>
+      );
+    }
 
-  if (error) {
-    return (
-      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-danger">
-        {error}
-      </div>
-    );
-  }
+    if (error) {
+      return (
+        <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-danger">
+          {error}
+        </div>
+      );
+    }
 
-  if (posts.length === 0) {
+    if (posts.length === 0) {
+      return (
+        <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-foreground-600">
+          Jelenleg nincs megjeleníthető poszt.
+        </div>
+      );
+    }
+
     return (
-      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-foreground-600">
-        Jelenleg nincs megjeleníthető poszt.
-      </div>
+      <>
+        {posts.map((post) => (
+          <article
+            key={post.id}
+            className="overflow-hidden rounded-2xl border-0 border-selfprimary-200 bg-selfprimary-100"
+          >
+            <div className="px-4 pb-3 pt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {post.account.profilePictureUrl ? (
+                    <img
+                      src={post.account.profilePictureUrl}
+                      alt={post.account.username}
+                      className="h-9 w-9 rounded-full border-2 border-selfprimary-400 object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="h-6 w-6 rounded-full bg-foreground-200" />
+                  )}
+                  <div className="leading-tight">
+                    <p className="text-sm font-semibold text-selfprimary-800">
+                      {post.account.username}
+                    </p>
+                    <p className="text-xs text-selfprimary-600">
+                      {formatTimestamp(post.timestamp)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Chip
+                    size="sm"
+                    variant="bordered"
+                    color="primary"
+                    startContent={<i className="fa-solid fa-heart text-lg"></i>}
+                  >
+                    {post.likeCount}
+                  </Chip>
+                  <Link
+                    href={post.permalink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-2xl text-selfprimary-600 hover:text-selfprimary"
+                    aria-label="Megnyitás Instagram alkalmazásban"
+                  >
+                    <i className="fa-brands fa-instagram"></i>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <PostMedia post={post} />
+
+            <div className="space-y-2 px-4 py-3">
+              {post.caption ? (
+                <p className="whitespace-pre-wrap text-sm text-selfprimary-800">
+                  {post.caption}
+                </p>
+              ) : null}
+            </div>
+          </article>
+        ))}
+
+        <div ref={sentinelRef} className="h-1" />
+
+        {isLoadingMore ? (
+          <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-center text-sm text-foreground-600">
+            További posztok betöltése...
+          </div>
+        ) : null}
+      </>
     );
   }
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
-      {posts.map((post) => (
-        <article
-          key={post.id}
-          className="overflow-hidden rounded-2xl border-0 border-selfprimary-200 bg-selfprimary-100"
-        >
-          <div className="px-4 pb-3 pt-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {post.account.profilePictureUrl ? (
-                  <img
-                    src={post.account.profilePictureUrl}
-                    alt={post.account.username}
-                    className="h-9 w-9 rounded-full border-2 border-selfprimary-400 object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="h-6 w-6 rounded-full bg-foreground-200" />
-                )}
-                <div className="leading-tight">
-                  <p className="text-sm font-semibold text-selfprimary-800">
-                    {post.account.username}
-                  </p>
-                  <p className="text-xs text-selfprimary-600">
-                    {formatTimestamp(post.timestamp)}
-                  </p>
-                </div>
-              </div>
+      <AccountSelector
+        accounts={accounts}
+        activeTab={activeTab}
+        onSelect={setActiveTab}
+      />
 
-              <div className="flex items-center gap-2">
-                <Chip
-                  size="sm"
-                  variant="bordered"
-                  color="primary"
-                  startContent={<i className="fa-solid fa-heart text-lg"></i>}
-                >
-                  {post.likeCount}
-                </Chip>
-                <Link
-                  href={post.permalink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-2xl text-selfprimary-600 hover:text-selfprimary"
-                  aria-label="Megnyitás Instagram alkalmazásban"
-                >
-                  <i className="fa-brands fa-instagram"></i>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <PostMedia post={post} />
-
-          <div className="space-y-2 px-4 py-3">
-            {post.caption ? (
-              <p className="whitespace-pre-wrap text-sm text-selfprimary-800">
-                {post.caption}
-              </p>
-            ) : null}
-          </div>
-        </article>
-      ))}
-
-      <div ref={sentinelRef} className="h-1" />
-
-      {isLoadingMore ? (
-        <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-center text-sm text-foreground-600">
-          További posztok betöltése...
-        </div>
-      ) : null}
+      {renderContent()}
     </div>
   );
 }

@@ -1,24 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { HeartFilledIcon, InstagramIcon } from "@/components/icons";
 import type {
-  ElectionsInstagramAccount,
   ElectionsInstagramPost,
+  CursorsMap,
 } from "@/lib/electionsInstagram";
 import { Chip } from "@heroui/react";
 
 type FeedResponse = {
-  account?: ElectionsInstagramAccount;
   posts?: ElectionsInstagramPost[];
+  nextCursors?: CursorsMap;
+  hasMore?: boolean;
   error?: string;
   details?: string;
-};
-
-const DEFAULT_ACCOUNT: ElectionsInstagramAccount = {
-  username: "instagram",
-  profilePictureUrl: "",
 };
 
 function formatTimestamp(timestamp: string) {
@@ -122,12 +118,37 @@ function PostMedia({ post }: Readonly<{ post: ElectionsInstagramPost }>) {
 }
 
 export default function ElectionsInstagramFeed() {
-  const [account, setAccount] =
-    useState<ElectionsInstagramAccount>(DEFAULT_ACCOUNT);
   const [posts, setPosts] = useState<ElectionsInstagramPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const nextCursorsRef = useRef<CursorsMap | undefined>(undefined);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  const fetchPage = useCallback(
+    async (cursors?: CursorsMap, signal?: AbortSignal) => {
+      const url = cursors
+        ? `/api/elections/instagram?cursors=${encodeURIComponent(JSON.stringify(cursors))}`
+        : "/api/elections/instagram";
+
+      const response = await fetch(url, { signal });
+      const data = (await response.json()) as FeedResponse;
+
+      if (!response.ok || !data.posts) {
+        throw new Error(
+          data.details ??
+            data.error ??
+            "Nem sikerült betölteni az Instagram feedet",
+        );
+      }
+
+      return data;
+    },
+    [],
+  );
+
+  // Initial load
   useEffect(() => {
     const controller = new AbortController();
 
@@ -136,22 +157,11 @@ export default function ElectionsInstagramFeed() {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch("/api/elections/instagram", {
-          signal: controller.signal,
-        });
+        const data = await fetchPage(undefined, controller.signal);
 
-        const data = (await response.json()) as FeedResponse;
-
-        if (!response.ok || !data.posts) {
-          throw new Error(
-            data.details ??
-              data.error ??
-              "Nem sikerült betölteni az Instagram feedet",
-          );
-        }
-
-        setAccount(data.account ?? DEFAULT_ACCOUNT);
-        setPosts(data.posts);
+        setPosts(data.posts ?? []);
+        nextCursorsRef.current = data.nextCursors;
+        setHasMore(data.hasMore ?? false);
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
         setError(
@@ -167,16 +177,42 @@ export default function ElectionsInstagramFeed() {
     load();
 
     return () => controller.abort();
-  }, []);
+  }, [fetchPage]);
 
-  const emptyState = useMemo(
-    () => (
-      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-foreground-600">
-        Jelenleg nincs megjeleníthető poszt.
-      </div>
-    ),
-    [],
-  );
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore) return;
+    setIsLoadingMore(true);
+
+    try {
+      const data = await fetchPage(nextCursorsRef.current);
+      setPosts((prev) => [...prev, ...(data.posts ?? [])]);
+      nextCursorsRef.current = data.nextCursors;
+      setHasMore(data.hasMore ?? false);
+    } catch (err) {
+      console.warn("Failed to load more posts", err);
+      setHasMore(false);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [isLoadingMore, fetchPage]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasMore) {
+          loadMore();
+        }
+      },
+      { rootMargin: "400px" },
+    );
+
+    observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
 
   if (isLoading) {
     return (
@@ -194,7 +230,13 @@ export default function ElectionsInstagramFeed() {
     );
   }
 
-  if (posts.length === 0) return emptyState;
+  if (posts.length === 0) {
+    return (
+      <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-sm text-foreground-600">
+        Jelenleg nincs megjeleníthető poszt.
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col gap-4">
@@ -256,29 +298,17 @@ export default function ElectionsInstagramFeed() {
                 {post.caption}
               </p>
             ) : null}
-
-            <p className="text-xs text-selfprimary-800">
-              {post.commentsCount} hozzászólás
-            </p>
-
-            {post.comments.length > 0 ? (
-              <div className="space-y-1">
-                {post.comments.map((comment) => (
-                  <p
-                    key={comment.id}
-                    className="text-sm italic text-selfprimary-700"
-                  >
-                    <span className="font-semibold not-italic text-selfprimary-800">
-                      {comment.username || "@unknown"}
-                    </span>{" "}
-                    {comment.text}
-                  </p>
-                ))}
-              </div>
-            ) : null}
           </div>
         </article>
       ))}
+
+      <div ref={sentinelRef} className="h-1" />
+
+      {isLoadingMore ? (
+        <div className="rounded-xl border-0 border-selfprimary-200 bg-selfprimary-100 p-5 text-center text-sm text-foreground-600">
+          További posztok betöltése...
+        </div>
+      ) : null}
     </div>
   );
 }

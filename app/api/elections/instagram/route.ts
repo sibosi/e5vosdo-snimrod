@@ -1,9 +1,12 @@
 import { getAuth } from "@/db/dbreq";
 import { hasPermission } from "@/db/permissions";
-import { fetchElectionsInstagramFeed } from "@/lib/electionsInstagram";
-import { NextResponse } from "next/server";
+import {
+  fetchElectionsInstagramFeed,
+  type CursorsMap,
+} from "@/lib/electionsInstagram";
+import { type NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const selfUser = await getAuth();
   if (!selfUser)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,10 +18,18 @@ export async function GET() {
     );
 
   try {
-    const { account, posts } = await fetchElectionsInstagramFeed();
+    const cursorsParam = request.nextUrl.searchParams.get("cursors");
+    const cursors: CursorsMap | undefined = cursorsParam
+      ? (JSON.parse(cursorsParam) as CursorsMap)
+      : undefined;
+
+    const { account, posts, nextCursors, hasMore } =
+      await fetchElectionsInstagramFeed(cursors);
     return NextResponse.json({
       account,
       posts,
+      nextCursors,
+      hasMore,
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {

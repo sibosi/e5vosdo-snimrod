@@ -1,5 +1,3 @@
-import { getAuth } from "@/db/dbreq";
-import { hasPermission } from "@/db/permissions";
 import {
   fetchElectionsInstagramFeed,
   type CursorsMap,
@@ -7,16 +5,6 @@ import {
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const selfUser = await getAuth();
-  if (!selfUser)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  if (!hasPermission(selfUser, "tester"))
-    return NextResponse.json(
-      { error: "This endpoint is only available to testers" },
-      { status: 403 },
-    );
-
   try {
     const cursorsParam = request.nextUrl.searchParams.get("cursors");
     const cursors: CursorsMap | undefined = cursorsParam

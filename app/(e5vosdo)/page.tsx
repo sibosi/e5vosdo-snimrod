@@ -106,27 +106,10 @@ export default async function Home() {
   return (
     <div>
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
-
-      <ServerSideTab
-        isSecret={!hasPermission(selfUser, "tester")}
-        tabs={[
-          {
-            key: "home",
-            label: "Főoldal",
-            content: <MainContent selfUser={selfUser} />,
-          },
-          {
-            key: "elections",
-            label: "Kampány (beta)",
-            content: <ElectionsInstagramFeed />,
-          },
-        ]}
-      />
-
+      <MainContent selfUser={selfUser} />,
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />
       </Section>
-
       <div className="hidden">
         {
           "Az oldal a Budapest V. Kerületi Eötvös József Gimnázium (más néven EJG) Diákönkormányzatának (más néven DÖ) tájékoztató oldala."

@@ -55,11 +55,15 @@ export default async function MainLayout({
           media="(prefers-color-scheme: dark)"
           content="#0b1220"
         />
+        <script
+          src="https://kit.fontawesome.com/0fde957dba.js"
+          crossOrigin="anonymous"
+        />
       </head>
 
       <body
         className={clsx(
-          "min-h-screen bg-background bg-selfprimary-bg font-sans antialiased",
+          "min-h-screen bg-selfprimary-bg font-sans antialiased",
           fontSans.variable,
           "light:bg-white",
         )}

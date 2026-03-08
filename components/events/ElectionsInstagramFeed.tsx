@@ -273,7 +273,7 @@ export default function ElectionsInstagramFeed() {
                   size="sm"
                   variant="bordered"
                   color="primary"
-                  startContent={<HeartFilledIcon size={18} />}
+                  startContent={<i className="fa-solid fa-heart text-lg"></i>}
                 >
                   {post.likeCount}
                 </Chip>
@@ -281,10 +281,10 @@ export default function ElectionsInstagramFeed() {
                   href={post.permalink}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-selfprimary-600 hover:text-selfprimary"
+                  className="text-2xl text-selfprimary-600 hover:text-selfprimary"
                   aria-label="Megnyitás Instagram alkalmazásban"
                 >
-                  <InstagramIcon size={20} />
+                  <i className="fa-brands fa-instagram"></i>
                 </Link>
               </div>
             </div>

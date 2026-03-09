@@ -4,9 +4,11 @@ import "@/styles/globals.css";
 import { fontSans } from "@/config/fonts";
 import { Providers } from "@/app/providers";
 import clsx from "clsx";
-import GoogleAnalytics from "@bradgarropy/next-google-analytics";
+import Analytics from "@/components/analytics/Analytics";
+import { getAuth } from "@/db/dbreq";
 
 export default async function NotFoundPage() {
+  const selfUser = await getAuth();
   return (
     <html lang="hu" suppressHydrationWarning className="bg-selfprimary-bg">
       <head>
@@ -32,7 +34,7 @@ export default async function NotFoundPage() {
 
       <body
         className={clsx(
-          "min-h-screen bg-background bg-selfprimary-bg font-sans antialiased",
+          "min-h-screen bg-selfprimary-bg font-sans antialiased",
           fontSans.variable,
           "light:bg-white",
         )}
@@ -66,7 +68,7 @@ export default async function NotFoundPage() {
             </div>
           </div>
         </Providers>
-        <GoogleAnalytics measurementId="G-P74RJ9THHS" />
+        <Analytics analyticsId={selfUser?.analytics_id ?? undefined} />
       </body>
     </html>
   );

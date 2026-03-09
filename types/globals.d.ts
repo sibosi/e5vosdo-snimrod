@@ -37,3 +37,9 @@ declare module "*.css" {
   const content: any;
   export = content;
 }
+
+interface Window {
+  gtag?: (...args: unknown[]) => void;
+}
+
+declare var gtag: ((...args: unknown[]) => void) | undefined;

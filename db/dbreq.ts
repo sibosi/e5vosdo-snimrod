@@ -34,6 +34,7 @@ export interface User {
   push_about_games: boolean;
   push_about_timetable: boolean;
   is_verified: boolean;
+  analytics_id: string;
 }
 
 export type UserType = User;

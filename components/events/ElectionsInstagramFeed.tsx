@@ -15,9 +15,7 @@ const CUSTOM_PROFILE: ElectionsInstagramAccount = {
   profilePictureUrl: "",
 };
 
-const CUSTOM_USERNAMES: string[] = [
-
-];
+const CUSTOM_USERNAMES: string[] = [];
 // ─────────────────────────────────────────────────────────────────────────────
 
 type FeedResponse = {
@@ -226,7 +224,7 @@ function AccountSelector({
 
 export default function ElectionsInstagramFeed() {
   const [accounts, setAccounts] = useState<ElectionsInstagramAccount[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("custom");
+  const [activeTab, setActiveTab] = useState<string>("mixed");
   const [posts, setPosts] = useState<ElectionsInstagramPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);

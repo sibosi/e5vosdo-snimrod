@@ -11,14 +11,12 @@ import { Chip } from "@heroui/react";
 
 // ── Custom profile (code-level) ─────────────────────────────────────────────
 const CUSTOM_PROFILE: ElectionsInstagramAccount = {
-  username: "Kampány",
+  username: "Hamarosan...",
   profilePictureUrl: "",
 };
 
 const CUSTOM_USERNAMES: string[] = [
-  "e5vos_kampany",
-  "efpp_official_",
-  "alap_dp",
+
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -7,7 +7,6 @@ import { Link } from "@heroui/react";
 import clsx from "clsx";
 import { PageNav } from "@/components/pagenav";
 import { auth } from "@/auth";
-import GoogleAnalytics from "@bradgarropy/next-google-analytics";
 import ServiceWorker from "@/components/PWA/serviceWorkerWithPush";
 import { getAuth, updateUser, User } from "@/db/dbreq";
 import Cookie from "@/components/welcome/cookie";
@@ -16,6 +15,7 @@ import Alerts from "@/components/home/alerts";
 import MaintenanceGate from "@/components/home/maintenanceGate";
 import RunClientSideWrapper from "@/app/runClientSideWrapper";
 import DesktopMenu from "@/components/home/desktopMenu";
+import Analytics from "@/components/analytics/Analytics";
 
 export default async function MainLayout({
   children,
@@ -55,11 +55,15 @@ export default async function MainLayout({
           media="(prefers-color-scheme: dark)"
           content="#0b1220"
         />
+        <script
+          src="https://kit.fontawesome.com/0fde957dba.js"
+          crossOrigin="anonymous"
+        />
       </head>
 
       <body
         className={clsx(
-          "min-h-screen bg-background bg-selfprimary-bg font-sans antialiased",
+          "min-h-screen bg-selfprimary-bg font-sans antialiased",
           fontSans.variable,
           "light:bg-white",
         )}
@@ -104,7 +108,7 @@ export default async function MainLayout({
             </footer>
           </div>
         </Providers>
-        <GoogleAnalytics measurementId="G-P74RJ9THHS" />
+        <Analytics analyticsId={selfUser?.analytics_id ?? undefined} />
       </body>
     </html>
   );

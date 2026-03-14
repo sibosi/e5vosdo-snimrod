@@ -39,6 +39,7 @@ const SZALAGAVATO_GUEST_USER: UserType = {
   push_about_games: false,
   push_about_timetable: false,
   is_verified: false,
+  analytics_id: null,
 };
 
 const modules = {

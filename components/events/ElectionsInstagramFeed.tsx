@@ -201,12 +201,6 @@ function AccountSelector({
         isActive={activeTab === "mixed"}
         onClick={() => onSelect("mixed")}
       />
-      <AccountTab
-        label={CUSTOM_PROFILE.username}
-        imageUrl={CUSTOM_PROFILE.profilePictureUrl || undefined}
-        isActive={activeTab === "custom"}
-        onClick={() => onSelect("custom")}
-      />
       {accounts.map((acc) => (
         <AccountTab
           key={acc.username}

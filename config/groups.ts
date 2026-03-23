@@ -45,7 +45,7 @@ export const clubsOrder: string[] = [
   "Nekünk X",
 
   "Filmklub",
-  "FLC EJG",
+  "Budapest FLC",
   "MUN-Club",
   "EPAS",
 
@@ -570,16 +570,26 @@ export const clubsConfig: Group[] = [
     ],
   },
   {
-    title: "FLC EJG",
+    title: "Budapest FLC",
     image: "/groups/FLC.png",
     description: "",
     details:
       "A Financial Literacy Club lehetőséget biztosít a diákok pénzügyi és gazdasági ismereteinek fejlesztésére. Az FLC keretein belül többek között tanulmányi versenyekre, vendégelőadásokra és céglátogatásokra jelentkezhetnek az Eötvösös diákok, gyakorlati betekintést nyújtva a pénzügyi világba. \n\nA pénzügyi ismereteken túl a klub olyan alapvető készségek fejlesztésére összpontosít, mint a nyilvános beszéd, a vezetés, a prezentációs technikák, a csapatmunka és a kritikai gondolkodás. Ezek a készségek kulcsfontosságúak mind a tanulmányi, mind a szakmai sikerhez.",
     links: [
       {
-        title: "FLC EJG Instagram",
-        value: "https://www.instagram.com/flc_ejg/",
+        title: "Budapest FLC weboldal",
+        value: "https://bflc.hu/",
+        type: "website",
+      },
+      {
+        title: "Budapest FLC Instagram",
+        value: "https://www.instagram.com/budapestflc/",
         type: "instagram",
+      },
+      {
+        title: "Budapest FLC email",
+        value: "bflc@bflc.hu",
+        type: "email",
       },
     ],
   },

@@ -23,6 +23,7 @@ interface Group {
 }
 
 export const clubsOrder: string[] = [
+  "Szerepjáték klub",
   "Geopolitika szakkör",
   "Közéleti vitakör",
   "Horgolás és relax",
@@ -59,6 +60,21 @@ export const clubsOrder: string[] = [
 ];
 
 export const clubsConfig: Group[] = [
+  {
+    title: "Szerepjáték klub",
+    details:
+      "Szeretnél egy erdőben banditákkal párbajozni, a vadnyugaton bankot rabolni, nyomozni Sherlock Holmes világában vagy a galaxis szupergonoszait  legyőzni?  Gyere el a szerepjáték klubba és játsz velünk!",
+    description: "",
+    image: "/groups/szerepjatek-compressed.png",
+    links: [
+      {
+        title: "Ráski-Rieger Simon e-mail",
+        value: "raski.rieger.simon@e5vos.hu",
+        type: "email"
+      }
+    ],
+    new: true
+  },
   {
     title: "Geopolitika szakkör",
     details:

@@ -358,7 +358,7 @@ export async function searchImagesByTags(
       JOIN media_images_to_tags relations ON images.id = relations.media_image_id
       JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
       WHERE tags.tag_name = ?
-      ORDER BY images.datetime DESC
+      ORDER BY images.id DESC
     `;
     const images = (await dbreq(query, [requiredTag])) as any[];
     const result = await batchFetchTagsForImages(images);
@@ -411,7 +411,7 @@ export async function searchImagesByTags(
           AND tags.tag_name IN (${tagPlaceholders})
         GROUP BY images.id
         HAVING COUNT(DISTINCT tags.tag_name) = ?
-        ORDER BY images.datetime DESC
+        ORDER BY images.id DESC
       `;
       params = [...requiredIds, ...tagNames, tagNames.length];
     } else {
@@ -423,7 +423,7 @@ export async function searchImagesByTags(
         JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
         WHERE images.id IN (${idPlaceholders})
           AND tags.tag_name IN (${tagPlaceholders})
-        ORDER BY images.datetime DESC
+        ORDER BY images.id DESC
       `;
       params = [...requiredIds, ...tagNames];
     }
@@ -446,7 +446,7 @@ export async function searchImagesByTags(
       WHERE tags.tag_name IN (${placeholders})
       GROUP BY images.id
       HAVING COUNT(DISTINCT tags.tag_name) = ?
-      ORDER BY images.datetime DESC
+      ORDER BY images.id DESC
     `;
     tagNames.push(String(tagNames.length));
   } else {
@@ -457,7 +457,7 @@ export async function searchImagesByTags(
       JOIN media_images_to_tags relations ON images.id = relations.media_image_id
       JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
       WHERE tags.tag_name IN (${placeholders})
-      ORDER BY images.datetime DESC
+      ORDER BY images.id DESC
     `;
   }
 
@@ -488,7 +488,7 @@ export async function getAllImagesWithTags(
   // Get paginated images - use LIMIT without parameterization for better compatibility
   const query = `
     SELECT * FROM media_images 
-    ORDER BY datetime DESC 
+    ORDER BY id DESC 
     LIMIT ${limit} OFFSET ${offset}
   `;
   const images = (await dbreq(query)) as any[];

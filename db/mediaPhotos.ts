@@ -20,7 +20,7 @@ export interface MediaImageType {
 
 export async function getOriginalImagesFileID() {
   const images: { original_drive_id: string }[] = await dbreq(
-    "SELECT original_drive_id FROM media_images ORDER BY datetime DESC",
+    "SELECT original_drive_id FROM media_images ORDER BY id DESC",
   );
   return images.map((image) => image.original_drive_id);
 }
@@ -30,15 +30,9 @@ export async function getImages(
   byName = false,
 ): Promise<MediaImageType[]> {
   gate(selfUser, "user");
-  if (byName) {
-    return (await dbreq(
-      "SELECT * FROM media_images ORDER BY original_file_name DESC",
-    )) as MediaImageType[];
-  } else {
-    return (await dbreq(
-      "SELECT * FROM media_images ORDER BY datetime DESC",
-    )) as MediaImageType[];
-  }
+  return (await dbreq(
+    "SELECT * FROM media_images ORDER BY id DESC",
+  )) as MediaImageType[];
 }
 
 /**

@@ -67,12 +67,15 @@ export const QuickTeachers = ({
 
   const usedLayout = isNewView ? newViewLayout : oldViewLayout;
 
+  if (!isLoaded) {
+    return (
+      <Skeleton className="max-w-screen h-48 rounded-lg text-foreground" />
+    );
+  }
+
   return (
-    <Skeleton
-      isLoaded={isLoaded}
-      className="h-auto w-auto rounded-lg text-foreground"
-    >
-      {isLoaded && tableData && Object.keys(tableData).length ? (
+    <>
+      {tableData && Object.keys(tableData).length ? (
         Object.keys(tableData).map((date) => (
           <div
             key={date}
@@ -228,7 +231,7 @@ export const QuickTeachers = ({
           </ModalContent>
         </Modal>
       )}
-    </Skeleton>
+    </>
   );
 };
 

@@ -104,7 +104,7 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="max-w-screen rotate-180">
+    <div>
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
       <MainContent selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>

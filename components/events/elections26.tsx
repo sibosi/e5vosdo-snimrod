@@ -30,8 +30,11 @@ const Elections = () => {
           priority
         />
       </div>
-      <h3 className="text-center text-base font-bold text-black line-through">
+      <h3 className="text-center text-base text-black line-through">
         Átadás: április 15. (szerda) 2. nagyszünet, udvar
+      </h3>
+      <h3 className="text-center text-base font-bold text-black">
+        Átadás: Hivatalos időpont hamarosan...
       </h3>
     </div>
   );

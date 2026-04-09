@@ -34,7 +34,7 @@ const Elections = () => {
         Átadás: április 15. (szerda) 2. nagyszünet, udvar
       </h3>
       <h3 className="text-center text-base font-bold text-black">
-        Átadás: Hivatalos időpont hamarosan...
+        Átadás: Átadás: április 14. (kedd) 1. nagyszünet, udvar
       </h3>
     </div>
   );

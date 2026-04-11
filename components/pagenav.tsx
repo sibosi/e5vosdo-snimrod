@@ -104,7 +104,7 @@ export const PageNav = () => {
               key={index}
               href={page.route}
               aria-current={isActive ? "page" : undefined}
-              className="relative inline-flex flex-col items-center justify-center p-3.5"
+              className="relative inline-flex h-12 w-12 flex-col items-center justify-center"
               ref={(el) => {
                 itemRefs.current[index] = el;
               }}

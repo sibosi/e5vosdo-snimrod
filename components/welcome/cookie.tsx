@@ -1,67 +1,74 @@
 "use client";
-import { Button, Modal, ModalContent } from "@heroui/react";
+import { addToast, Button, closeAll } from "@heroui/react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 const checkCookie = () => {
   if (typeof document !== "undefined") {
-    return document.cookie.indexOf("cookieAccepted=true") !== -1;
+    return document.cookie.includes("cookieAccepted=true");
   }
   return false;
 };
 
 const Cookie = () => {
-  const [cookieAccepted, setCookieAccepted] = useState(false);
-  const [showCookie, setShowCookie] = useState(false);
-  const [position, setPosition] = useState<"center" | "bottom">("bottom");
+  const shownRef = useRef(false);
 
   useEffect(() => {
-    const isCookieAccepted = checkCookie();
-    setCookieAccepted(isCookieAccepted);
-    setShowCookie(!isCookieAccepted);
+    if (shownRef.current || checkCookie()) {
+      return;
+    }
+
+    shownRef.current = true;
+
+    addToast({
+      title: "Cookie szabályzat",
+      classNames: {
+        base: "flex flex-col gap-4 bg-selfsecondary-20 text-selfsecondary border-selfsecondary border-2",
+      },
+      hideIcon: true,
+      description: (
+        <Link href="/security">
+          Az oldal használatával elfogadod a{" "}
+          <span className="font-bold underline">
+            Cookie-kal és az adatvédelemmel kapcsolatos irányelveinket.
+          </span>
+        </Link>
+      ),
+      endContent: (
+        <div className="flex w-full gap-x-2">
+          <Button
+            color="secondary"
+            size="sm"
+            variant="bordered"
+            onPress={acceptCookie}
+            className="w-full"
+          >
+            Immel-ámmal elfogadom
+          </Button>
+          <Button
+            color="secondary"
+            size="sm"
+            onPress={acceptCookie}
+            className="w-full"
+          >
+            Elfogadom
+          </Button>
+        </div>
+      ),
+      timeout: 0,
+      hideCloseButton: true,
+    });
   }, []);
 
   const acceptCookie = () => {
     if (typeof document !== "undefined") {
-      document.cookie = "cookieAccepted=true; max-age=31536000";
-      setCookieAccepted(true);
-      setShowCookie(false);
+      document.cookie =
+        "cookieAccepted=true; max-age=31536000; path=/; samesite=lax";
+      closeAll();
     }
   };
 
-  if (!showCookie) {
-    return null;
-  }
-
-  return (
-    <Modal
-      isOpen={showCookie}
-      title="Cookie Policy"
-      placement={position}
-      className="fixed m-16"
-      shouldBlockScroll={false}
-      backdrop="transparent"
-      onClose={() => setPosition("center")}
-      hideCloseButton={true}
-    >
-      <ModalContent className="p-6 text-foreground">
-        <p>
-          Az oldal sütiket használ a felhasználói élmény javítása érdekében. 🍪
-          Az oldal használatával elfogadod a{" "}
-          <Link href="/security" className="text-selfprimary-800">
-            Cookie-kal kapcsolatos irányelveinket
-          </Link>{" "}
-          és az{" "}
-          <Link href="/security" className="text-selfprimary-800">
-            adatvédelmi szabályzatunkat.
-          </Link>
-        </p>
-        <Button color="warning" onPress={acceptCookie}>
-          🍪 Rendben 🍪
-        </Button>
-      </ModalContent>
-    </Modal>
-  );
+  return <></>;
 };
 
 export default Cookie;

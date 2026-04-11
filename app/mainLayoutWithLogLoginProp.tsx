@@ -16,6 +16,7 @@ import MaintenanceGate from "@/components/home/maintenanceGate";
 import RunClientSideWrapper from "@/app/runClientSideWrapper";
 import DesktopMenu from "@/components/home/desktopMenu";
 import Analytics from "@/components/analytics/Analytics";
+import FontAwesomeConfig from "@/components/FontAwesomeConfig";
 
 export default async function MainLayout({
   children,
@@ -55,10 +56,6 @@ export default async function MainLayout({
           media="(prefers-color-scheme: dark)"
           content="#0b1220"
         />
-        <script
-          src="https://kit.fontawesome.com/0fde957dba.js"
-          crossOrigin="anonymous"
-        />
       </head>
 
       <body
@@ -73,6 +70,7 @@ export default async function MainLayout({
       >
         <RunClientSideWrapper />
         <ServiceWorker />
+        <FontAwesomeConfig />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="relative flex h-screen flex-col bg-selfprimary-bg">
             {needSidebar ? (

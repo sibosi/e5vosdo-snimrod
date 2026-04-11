@@ -4,41 +4,42 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { getCookie } from "@/lib/clientCookies";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const pages = {
   home: {
     route: "/",
-    icon: <i className="fa-solid fa-house"></i>,
+    icon: <FontAwesomeIcon icon={["fas", "house"]} />,
     label: "Home",
   },
   clubs: {
     route: "/clubs",
-    icon: <i className="fa-solid fa-people-roof"></i>,
+    icon: <FontAwesomeIcon icon={["fas", "people-roof"]} />,
     label: "Clubs",
   },
   events: {
     route: "/events",
-    icon: <i className="fa-solid fa-calendar-day"></i>,
+    icon: <FontAwesomeIcon icon={["fas", "calendar-day"]} />,
     label: "Groups",
   },
   users: {
     route: "/admin/users",
-    icon: <i className="fa-solid fa-user-shield"></i>,
+    icon: <FontAwesomeIcon icon={["fas", "user-shield"]} />,
     label: "Users",
   },
   me: {
     route: "/me",
-    icon: <i className="fa-solid fa-user"></i>,
+    icon: <FontAwesomeIcon icon={["fas", "user"]} />,
     label: "Me",
   },
   podcast: {
     route: "/est",
-    icon: <i className="fa-solid fa-microphone-lines"></i>,
+    icon: <FontAwesomeIcon icon={["fas", "microphone-lines"]} />,
     label: "Podcast",
   },
   feed: {
     route: "/elections",
-    icon: <i className="fa-solid fa-people-line"></i>,
+    icon: <FontAwesomeIcon icon={["fas", "people-line"]} />,
     label: "Elections",
   },
 };
@@ -103,7 +104,7 @@ export const PageNav = () => {
               key={index}
               href={page.route}
               aria-current={isActive ? "page" : undefined}
-              className="relative inline-flex flex-col items-center justify-center p-3.5"
+              className="relative inline-flex h-12 w-12 flex-col items-center justify-center"
               ref={(el) => {
                 itemRefs.current[index] = el;
               }}

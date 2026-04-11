@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const pages = {
   home: {
     route: "/",
-    icon: <FontAwesomeIcon icon={["fas", "dog"]} />,
+    icon: <FontAwesomeIcon icon={["fas", "house"]} />,
     label: "Home",
   },
   clubs: {

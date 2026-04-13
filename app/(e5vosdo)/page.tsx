@@ -19,7 +19,6 @@ import {
 } from "@/components/helyettesites/quickteacher";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import Elections from "@/components/events/elections26";
 
 export const metadata: Metadata = {
   robots: {
@@ -104,8 +103,7 @@ export default async function Home() {
 
   return (
     <div>
-      {/*<PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />*/}
-      <Elections />
+      <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
       <MainContent selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />

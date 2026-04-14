@@ -12,6 +12,7 @@ import {
   SZALAGAVATO_COOKIE_NAME,
   verifySzalagavatoToken,
 } from "@/lib/szalagavatoAuth";
+import { BIMUN_COOKIE_NAME, verifyBimunToken } from "@/lib/bimunAuth";
 
 type Params = {
   db: string;
@@ -24,6 +25,30 @@ const SZALAGAVATO_GUEST_USER: UserType = {
   username: "szalagavato_guest",
   nickname: "Szalagavató Vendég",
   email: "szalagavato@guest",
+  image: "",
+  last_login: "",
+  permissions: ["media_view"],
+  EJG_code: null,
+  OM: null,
+  OM5: null,
+  food_menu: "",
+  coming_year: 0,
+  class_character: "",
+  order_number: 0,
+  tickets: [],
+  push_permission: false,
+  push_about_games: false,
+  push_about_timetable: false,
+  is_verified: false,
+  analytics_id: null,
+};
+
+const BIMUN_GUEST_USER: UserType = {
+  name: "BIMUN Vendég",
+  full_name: "BIMUN Vendég",
+  username: "bimun_guest",
+  nickname: "BIMUN Vendég",
+  email: "bimun@guest",
   image: "",
   last_login: "",
   permissions: ["media_view"],
@@ -64,8 +89,12 @@ export const GET = async (
   if (!selfUser) {
     const cookieStore = await cookies();
     const szalagavatoCookie = cookieStore.get(SZALAGAVATO_COOKIE_NAME);
+    const bimunCookie = cookieStore.get(BIMUN_COOKIE_NAME);
     if (verifySzalagavatoToken(szalagavatoCookie?.value || "")) {
       selfUser = SZALAGAVATO_GUEST_USER as any;
+    }
+    if (verifyBimunToken(bimunCookie?.value || "")) {
+      selfUser = BIMUN_GUEST_USER as any;
     }
   }
 

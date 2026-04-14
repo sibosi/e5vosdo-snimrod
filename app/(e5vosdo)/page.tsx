@@ -82,20 +82,6 @@ const PageHeadContent = ({
 };
 
 export default async function Home() {
-  const skipWelcome = (await cookies()).get("skipWelcome")?.value === "true";
-
-  if (!skipWelcome) {
-    const pageHeaders = await headers();
-    const userAgent = pageHeaders.get("user-agent")?.toLowerCase() ?? "";
-    const isBot =
-      userAgent.toLowerCase().includes("google.com/bot.html") ||
-      /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandex|semrush|ahrefs|mj12bot|seznambot|facebookexternalhit|twitterbot|linkedinbot|embedly|crawler|spider|\bbot\b/i.test(
-        userAgent,
-      );
-
-    if (!isBot) redirect("/welcome");
-  }
-
   const [selfUser, carouselEvents] = await Promise.all([
     getAuth(),
     getCarouselEvents(),

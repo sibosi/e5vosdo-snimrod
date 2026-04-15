@@ -56,7 +56,7 @@ export interface TagAttachment {
 export async function getAllTags(selfUser: UserType): Promise<MediaTagType[]> {
   gate(selfUser, ["user", "media_view"]);
   return (await dbreq(
-    "SELECT * FROM media_images_tags ORDER BY tag_name ASC",
+    "SELECT * FROM media_images_tags ORDER BY priority = 'high' DESC, priority = 'normal' DESC, tag_name ASC",
   )) as MediaTagType[];
 }
 
@@ -134,13 +134,13 @@ export async function getTagsForImage(
 > {
   gate(selfUser, ["user", "media_view"]);
   return (await dbreq(
-    `SELECT 
-      tags.id as tag_id, 
-      tags.tag_name, 
+    `SELECT
+      tags.id as tag_id,
+      tags.tag_name,
       tags.priority,
-      relatons.coordinate1_x, 
-      relatons.coordinate1_y, 
-      relatons.coordinate2_x, 
+      relatons.coordinate1_x,
+      relatons.coordinate1_y,
+      relatons.coordinate2_x,
       relatons.coordinate2_y
     FROM media_images_to_tags relatons
     JOIN media_images_tags tags ON relatons.media_image_tag_id = tags.id
@@ -169,10 +169,10 @@ export async function attachTagToImage(
     coordinates || {};
 
   await dbreq(
-    `INSERT INTO media_images_to_tags 
-      (media_image_id, media_image_tag_id, coordinate1_x, coordinate1_y, coordinate2_x, coordinate2_y) 
+    `INSERT INTO media_images_to_tags
+      (media_image_id, media_image_tag_id, coordinate1_x, coordinate1_y, coordinate2_x, coordinate2_y)
     VALUES (?, ?, ?, ?, ?, ?)
-    ON DUPLICATE KEY UPDATE 
+    ON DUPLICATE KEY UPDATE
       coordinate1_x = VALUES(coordinate1_x),
       coordinate1_y = VALUES(coordinate1_y),
       coordinate2_x = VALUES(coordinate2_x),
@@ -281,13 +281,13 @@ async function batchFetchTagsForImages(
   const placeholders = imageIds.map(() => "?").join(",");
 
   const allTags = (await dbreq(
-    `SELECT 
+    `SELECT
       relatons.media_image_id,
-      tags.id as tag_id, 
-      tags.tag_name, 
-      relatons.coordinate1_x, 
-      relatons.coordinate1_y, 
-      relatons.coordinate2_x, 
+      tags.id as tag_id,
+      tags.tag_name,
+      relatons.coordinate1_x,
+      relatons.coordinate1_y,
+      relatons.coordinate2_x,
       relatons.coordinate2_y
     FROM media_images_to_tags relatons
     JOIN media_images_tags tags ON relatons.media_image_tag_id = tags.id
@@ -353,7 +353,7 @@ export async function searchImagesByTags(
   // Ha csak requiredTag van, azt keressük
   if (requiredTag && tagNames.length === 0) {
     const query = `
-      SELECT DISTINCT images.* 
+      SELECT DISTINCT images.*
       FROM media_images images
       JOIN media_images_to_tags relations ON images.id = relations.media_image_id
       JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
@@ -403,7 +403,7 @@ export async function searchImagesByTags(
     if (matchAll) {
       // Minden filterTag-nek meg kell egyeznie
       query = `
-        SELECT DISTINCT images.* 
+        SELECT DISTINCT images.*
         FROM media_images images
         JOIN media_images_to_tags relations ON images.id = relations.media_image_id
         JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
@@ -417,7 +417,7 @@ export async function searchImagesByTags(
     } else {
       // Bármelyik filterTag egyezhet (VAGY)
       query = `
-        SELECT DISTINCT images.* 
+        SELECT DISTINCT images.*
         FROM media_images images
         JOIN media_images_to_tags relations ON images.id = relations.media_image_id
         JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
@@ -439,7 +439,7 @@ export async function searchImagesByTags(
   if (matchAll) {
     // All tags must match
     query = `
-      SELECT DISTINCT images.* 
+      SELECT DISTINCT images.*
       FROM media_images images
       JOIN media_images_to_tags relations ON images.id = relations.media_image_id
       JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
@@ -452,7 +452,7 @@ export async function searchImagesByTags(
   } else {
     // Any tag matches
     query = `
-      SELECT DISTINCT images.* 
+      SELECT DISTINCT images.*
       FROM media_images images
       JOIN media_images_to_tags relations ON images.id = relations.media_image_id
       JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
@@ -487,8 +487,8 @@ export async function getAllImagesWithTags(
 
   // Get paginated images - use LIMIT without parameterization for better compatibility
   const query = `
-    SELECT * FROM media_images 
-    ORDER BY id DESC 
+    SELECT * FROM media_images
+    ORDER BY id DESC
     LIMIT ${limit} OFFSET ${offset}
   `;
   const images = (await dbreq(query)) as any[];
@@ -500,13 +500,13 @@ export async function getAllImagesWithTags(
   const placeholders = imageIds.map(() => "?").join(",");
 
   const allTags = (await dbreq(
-    `SELECT 
+    `SELECT
       relatons.media_image_id,
-      tags.id as tag_id, 
-      tags.tag_name, 
-      relatons.coordinate1_x, 
-      relatons.coordinate1_y, 
-      relatons.coordinate2_x, 
+      tags.id as tag_id,
+      tags.tag_name,
+      relatons.coordinate1_x,
+      relatons.coordinate1_y,
+      relatons.coordinate2_x,
       relatons.coordinate2_y
     FROM media_images_to_tags relatons
     JOIN media_images_tags tags ON relatons.media_image_tag_id = tags.id
@@ -557,7 +557,7 @@ export async function getImageByOriginalFileName(
   const baseFileName = fileName.replace(/\.[^.]+$/, "");
 
   const images = (await dbreq(
-    `SELECT id, original_file_name FROM media_images 
+    `SELECT id, original_file_name FROM media_images
      WHERE original_file_name LIKE ? OR original_file_name LIKE ?`,
     [`${baseFileName}.%`, baseFileName],
   )) as { id: number; original_file_name: string }[];
@@ -579,9 +579,9 @@ export async function getTagStats(selfUser: UserType): Promise<
   gate(selfUser, ["admin", "media_admin"]);
 
   return (await dbreq(`
-    SELECT 
-      tags.id as tag_id, 
-      tags.tag_name, 
+    SELECT
+      tags.id as tag_id,
+      tags.tag_name,
       tags.priority,
       COUNT(relatons.id) as usage_count
     FROM media_images_tags tags

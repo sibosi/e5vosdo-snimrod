@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:lts-alpine AS builder
+FROM node:20.11-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --silent
@@ -30,7 +30,7 @@ ARG SZALAGAVATO_SECRET
 RUN npm run build
 
 # Stage 2: Production
-FROM node:lts-alpine
+FROM node:20.11-alpine
 RUN apk add --no-cache mysql-client
 WORKDIR /app
 COPY --from=builder /app .

@@ -1,8 +1,10 @@
+"use client";
 import { siteConfig } from "@/config/site";
 import React from "react";
 import E5vosST from "@/public/groups/e5vosst.svg";
 import E5Media from "@/public/groups/media.jpg";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type ElementType = {
   title: string;
@@ -27,7 +29,7 @@ const Footer = () => {
 
   return (
     <div className="mb-2 max-h-fit rounded-2xl bg-selfprimary-100 p-2">
-      <div className="grid grid-flow-col grid-cols-4 grid-rows-5 justify-center gap-2">
+      <div className="grid grid-flow-col grid-cols-4 grid-rows-6 justify-center gap-2">
         <a
           href={siteConfig.links.mediaGallery}
           className={STYLES + " col-span-4 row-span-1 flex"}
@@ -73,9 +75,22 @@ const Footer = () => {
               Küldj visszajelzést a DÖ-nek vagy a fejlesztőnek! (hibák, ötletek,
               stb.)
             </p>
-            <h5 className="mt-1 rounded-xl bg-selfsecondary-200 px-3 py-1">
-              Irány az űrlap!
-            </h5>
+          </div>
+        </a>
+
+        <a
+          href="https://forms.gle/QgmD6NSFVgyxqZ2L6"
+          className={STYLES + " col-span-4 row-span-1 flex"}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <FontAwesomeIcon
+              icon={["fas", "school-circle-exclamation"]}
+              className="min-w-7.5 min-h-7.5"
+            />
+            <p>
+              Probléma az épületben? Jelentsd itt iskolánk
+              létesítményfelelősének!
+            </p>
           </div>
         </a>
 

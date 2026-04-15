@@ -79,6 +79,7 @@ jobs:
             PUBLIC_VAPID_KEY=${{ secrets.PUBLIC_VAPID_KEY }}
             PRIVATE_VAPID_KEY=${{ secrets.PRIVATE_VAPID_KEY }}
             SZALAGAVATO_SECRET=${{ secrets.SZALAGAVATO_SECRET }}
+            BIMUN_SECRET=${{ secrets.BIMUN_SECRET }}
 
       - name: Log out from GHCR
         run: docker logout ghcr.io

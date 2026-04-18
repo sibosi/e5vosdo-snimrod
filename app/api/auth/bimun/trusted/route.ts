@@ -23,7 +23,15 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // Redirect back to the gallery page, the cookie will be sent
-  const redirectUrl = new URL("/media/bimun", req.url);
+  const forwardedProto = req.headers.get("x-forwarded-proto");
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const forwardedOrigin =
+    forwardedProto && forwardedHost
+      ? `${forwardedProto}://${forwardedHost}`
+      : null;
+  const baseUrl =
+    process.env.NEXTAUTH_URL ?? forwardedOrigin ?? req.nextUrl.origin;
+
+  const redirectUrl = new URL("/media/bimun", baseUrl);
   return NextResponse.redirect(redirectUrl);
 }

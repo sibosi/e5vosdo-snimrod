@@ -35,6 +35,7 @@ jobs:
       PRIVATE_VAPID_KEY: ${{ secrets.PRIVATE_VAPID_KEY }}
       SZALAGAVATO_SECRET: ${{ secrets.SZALAGAVATO_SECRET }}
       BIMUN_SECRET: ${{ secrets.BIMUN_SECRET }}
+      BIMUN_TRUSTED_URL_TOKEN: ${{ secrets.BIMUN_TRUSTED_URL_TOKEN }}
 
     steps:
       - name: Checkout code

@@ -41,6 +41,7 @@ services:
       - PRIVATE_VAPID_KEY
       - SZALAGAVATO_SECRET
       - BIMUN_SECRET
+      - BIMUN_TRUSTED_URL_TOKEN
     environment:
       AUTH_SECRET: ${AUTH_SECRET}
       AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
@@ -64,6 +65,7 @@ services:
       PRIVATE_VAPID_KEY: ${PRIVATE_VAPID_KEY}
       SZALAGAVATO_SECRET: ${SZALAGAVATO_SECRET}
       BIMUN_SECRET: ${BIMUN_SECRET}
+      BIMUN_TRUSTED_URL_TOKEN: ${BIMUN_TRUSTED_URL_TOKEN}
 
 secrets:
   AUTH_SECRET:
@@ -107,4 +109,6 @@ secrets:
   SZALAGAVATO_SECRET:
     external: true
   BIMUN_SECRET:
+    external: true
+  BIMUN_TRUSTED_URL_TOKEN:
     external: true

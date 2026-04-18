@@ -14,17 +14,18 @@ export const metadata = {
 };
 
 interface BimunPageProps {
-  searchParams?: {
-    trustedToken?: string | string[];
-  };
+  searchParams: Promise<{
+    trustedToken?: string | string[] | undefined;
+  }>;
 }
 
 const BimunPage = async ({
   searchParams,
 }: BimunPageProps) => {
-  const trustedToken = Array.isArray(searchParams?.trustedToken)
-    ? searchParams.trustedToken[0]
-    : searchParams?.trustedToken;
+  const params = await searchParams;
+  const trustedToken = Array.isArray(params?.trustedToken)
+    ? params.trustedToken[0]
+    : params?.trustedToken;
 
   let initialAuthenticated = false;
 

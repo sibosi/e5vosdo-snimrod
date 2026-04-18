@@ -30,24 +30,44 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
   const [matchAll, setMatchAll] = useState(false);
   const [filteredTags, setFilteredTags] = useState<MediaTagType[]>([]);
 
-  useEffect(() => {
-    fetch("/api/getAllTags", {
+  const fetchRelevantTags = () => {
+    fetch("/api/getAllBimunRelevantTags", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         module: "mediaTags",
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          return [];
+        }
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
-          // Filter out the main BIMUN tag since it's always applied
-          setAvailableTags(data.filter((t) => t.tag_name !== BIMUN_TAG));
+          setAvailableTags(data);
         }
       })
       .catch((err) => {
         console.error("Error fetching tags:", err);
       });
+  };
+
+  useEffect(() => {
+    fetchRelevantTags();
+
+    const onAuthenticated = () => {
+      fetchRelevantTags();
+    };
+
+    globalThis.addEventListener("password-gate-authenticated", onAuthenticated);
+    return () => {
+      globalThis.removeEventListener(
+        "password-gate-authenticated",
+        onAuthenticated,
+      );
+    };
   }, []);
 
   useEffect(() => {

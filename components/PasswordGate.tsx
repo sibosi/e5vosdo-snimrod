@@ -26,6 +26,12 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(!initialAuthenticated);
 
+  const notifyAuthenticated = () => {
+    if (globalThis.window !== undefined) {
+      globalThis.dispatchEvent(new Event("password-gate-authenticated"));
+    }
+  };
+
   useEffect(() => {
     const trustedToken = globalThis.window
       ? new URL(globalThis.window.location.href).searchParams.get(
@@ -45,6 +51,7 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
     // If we already know the user is authenticated (server-side), skip loading gate
     // but still ping the endpoint in the background to set cookie if needed.
     if (initialAuthenticated) {
+      notifyAuthenticated();
       // Fire-and-forget, don't toggle loading
       fetch(authUrl, { method: "GET", credentials: "include" })
         .then(() => {})
@@ -58,38 +65,42 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
       .then((data) => {
         if (data.authenticated) {
           setIsAuthenticated(true);
+          notifyAuthenticated();
         }
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
   }, [authEndpoint, initialAuthenticated]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const res = await fetch(authEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ password: inputPassword }),
-      });
+    void (async () => {
+      try {
+        const res = await fetch(authEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ password: inputPassword }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (data.success) {
-        setIsAuthenticated(true);
-        setError(false);
-      } else {
+        if (data.success) {
+          setIsAuthenticated(true);
+          setError(false);
+          notifyAuthenticated();
+        } else {
+          setError(true);
+          setInputPassword("");
+        }
+      } catch {
         setError(true);
-        setInputPassword("");
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      setError(true);
-    } finally {
-      setIsLoading(false);
-    }
+    })();
   };
 
   if (isLoading) {

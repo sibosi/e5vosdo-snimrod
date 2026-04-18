@@ -3,10 +3,9 @@ import { auth } from "@/auth";
 import { cookies } from "next/headers";
 import {
   BIMUN_COOKIE_NAME,
-  BIMUN_COOKIE_MAX_AGE,
-  generateBimunToken,
-  verifyBimunTrustedToken,
+  verifyBimunSession,
 } from "@/lib/bimunAuth";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "BIMUN 2026 - Galéria",
@@ -25,25 +24,22 @@ const BimunPage = async ({ searchParams }: BimunPageProps) => {
     ? resolvedSearchParams.trustedToken[0]
     : resolvedSearchParams?.trustedToken;
 
-  let initialAuthenticated = false;
-
-  if (verifyBimunTrustedToken(trustedToken)) {
-    const cookieStore = await cookies();
-    const token = generateBimunToken();
-
-    cookieStore.set(BIMUN_COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: BIMUN_COOKIE_MAX_AGE,
-      path: "/",
-    });
-
-    initialAuthenticated = true;
-  } else {
-    const session = await auth();
-    initialAuthenticated = Boolean(session?.user?.email);
+  // If a trusted token is provided, redirect to the API route to set the cookie
+  if (trustedToken) {
+    redirect(`/api/auth/bimun/trusted?token=${trustedToken}`);
   }
+
+  // Check for existing session (either from trusted token cookie or regular auth)
+  const cookieStore = await cookies();
+  const bimunCookie = cookieStore.get(BIMUN_COOKIE_NAME)?.value;
+  const hasBimunSession = bimunCookie
+    ? verifyBimunSession(bimunCookie)
+    : false;
+
+  const session = await auth();
+  const hasRegularSession = Boolean(session?.user?.email);
+
+  const initialAuthenticated = hasBimunSession || hasRegularSession;
 
   return <BimunGallery initialAuthenticated={initialAuthenticated} />;
 };

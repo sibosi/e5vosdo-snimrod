@@ -65,6 +65,11 @@ export function verifyBimunToken(token: string): boolean {
   }
 }
 
+/**
+ * Alias for verifyBimunToken for session checking clarity.
+ */
+export const verifyBimunSession = verifyBimunToken;
+
 const TRUSTED_URL_TOKEN = process.env.BIMUN_TRUSTED_URL_TOKEN;
 
 export function verifyBimunTrustedToken(token: string | undefined): boolean {

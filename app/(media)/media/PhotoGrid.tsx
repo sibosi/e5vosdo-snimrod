@@ -503,6 +503,149 @@ const PhotoGrid = ({
   );
 };
 
+async function getMadeByTagsForImage(imageId: number): Promise<string[]> {
+  try {
+    const res = await fetch(`/api/media/tags?imageId=${imageId}`);
+    if (!res.ok) return [];
+
+    const data = await res.json();
+    if (!Array.isArray(data?.tags)) return [];
+
+    return data.tags
+      .filter(
+        (t: MediaTagType) =>
+          t.priority === "madeBy" || t.tag_name.startsWith("Made by:"),
+      )
+      .map((t: { tag_name: string }) =>
+        t.tag_name.replaceAll("Made by:", "").trim(),
+      );
+  } catch (err) {
+    console.error("Error fetching tags:", err);
+    return [];
+  }
+}
+
+function MediaLoadState({
+  loaded,
+  error,
+  fullscreen,
+}: Readonly<{
+  loaded: boolean;
+  error: boolean;
+  fullscreen: boolean;
+}>) {
+  if (loaded || error) {
+    return error ? (
+      <div
+        className={
+          fullscreen
+            ? "z-10 p-8 text-sm text-danger-600"
+            : "p-8 text-sm text-danger-600"
+        }
+      >
+        Hiba a betolteseikor
+      </div>
+    ) : null;
+  }
+
+  return (
+    <div
+      className={
+        fullscreen
+          ? "z-10 p-8 text-sm text-foreground-600"
+          : "p-8 text-sm text-foreground-600"
+      }
+    >
+      Betoltes...
+    </div>
+  );
+}
+
+function MediaViewer({
+  isVideo,
+  videoEmbedSrc,
+  imageSrc,
+  title,
+  loaded,
+  fullscreen,
+  onLoaded,
+  onError,
+}: Readonly<{
+  isVideo: boolean;
+  videoEmbedSrc: string | null;
+  imageSrc: string;
+  title: string;
+  loaded: boolean;
+  fullscreen: boolean;
+  onLoaded: () => void;
+  onError: () => void;
+}>) {
+  const hiddenClass = loaded ? "" : "hidden";
+  const videoClass = fullscreen
+    ? `z-10 aspect-video w-full max-w-[96vw] ${hiddenClass}`
+    : `aspect-video w-full ${hiddenClass}`;
+  const imageClass = fullscreen
+    ? `z-10 max-h-[92vh] w-auto max-w-[96vw] object-contain ${hiddenClass}`
+    : `max-h-[80vh] w-auto max-w-full object-contain ${hiddenClass}`;
+
+  if (isVideo && videoEmbedSrc) {
+    return (
+      <iframe
+        src={videoEmbedSrc}
+        className={videoClass}
+        onLoad={onLoaded}
+        onError={onError}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        title={title}
+      ></iframe>
+    );
+  }
+
+  return (
+    <img
+      src={imageSrc}
+      alt={title}
+      className={imageClass}
+      onLoad={onLoaded}
+      onError={onError}
+    />
+  );
+}
+
+function MadeByBadge({
+  isImage,
+  madeByTags,
+  fullscreen,
+}: Readonly<{
+  isImage: boolean;
+  madeByTags: string[];
+  fullscreen: boolean;
+}>) {
+  if (!isImage || madeByTags.length === 0) return null;
+
+  return (
+    <div
+      className={
+        fullscreen
+          ? "absolute bottom-4 right-4 rounded-lg bg-black/70 px-3 py-2"
+          : "absolute bottom-2 right-2 rounded-lg bg-black/70 px-2 py-1"
+      }
+    >
+      <div
+        className={
+          fullscreen
+            ? "flex items-center gap-2 text-sm text-white"
+            : "flex items-center gap-2 text-xs text-white"
+        }
+      >
+        <p>Keszitette:</p>
+        <p className="font-semibold">{madeByTags.join(", ")}</p>
+      </div>
+    </div>
+  );
+}
+
 const MediaModal = ({
   media,
   onClose,
@@ -526,30 +669,12 @@ const MediaModal = ({
 
   // Fetch madeBy tags for the image
   useEffect(() => {
-    if (media.media_type === "video") return;
-    const fetchMadeByTags = async () => {
-      try {
-        const res = await fetch(`/api/media/tags?imageId=${media.id}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.tags && Array.isArray(data.tags)) {
-            const madeBy = data.tags
-              .filter(
-                (t: MediaTagType) =>
-                  t.priority === "madeBy" || t.tag_name.startsWith("Made by:"),
-              )
-              .map((t: { tag_name: string }) =>
-                t.tag_name.replaceAll("Made by:", "").trim(),
-              );
-            setMadeByTags(madeBy);
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching tags:", err);
-      }
-    };
+    if (media.media_type === "video") {
+      setMadeByTags([]);
+      return;
+    }
 
-    fetchMadeByTags();
+    getMadeByTagsForImage(media.id).then((tags) => setMadeByTags(tags));
   }, [media.id, media.media_type]);
 
   const title = media.original_file_name || "Kép";
@@ -582,35 +707,17 @@ const MediaModal = ({
           className="absolute inset-0"
           onClick={() => setIsFullscreen(false)}
         />
-        {!loaded && !error && (
-          <div className="z-10 p-8 text-sm text-foreground-600">Betöltés…</div>
-        )}
-        {error && (
-          <div className="z-10 p-8 text-sm text-danger-600">
-            Hiba a betöltésekor
-          </div>
-        )}
-        {isVideo && videoEmbedSrc ? (
-          <iframe
-            src={videoEmbedSrc}
-            className={`z-10 aspect-video w-full max-w-[96vw] ${loaded ? "" : "hidden"}`}
-            onLoad={() => setLoaded(true)}
-            onError={() => setError(true)}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            title={title}
-          ></iframe>
-        ) : (
-          <img
-            src={imageSrc}
-            alt={title}
-            className={`z-10 max-h-[92vh] w-auto max-w-[96vw] object-contain ${
-              loaded ? "" : "hidden"
-            }`}
-            onLoad={() => setLoaded(true)}
-            onError={() => setError(true)}
-          />
-        )}
+        <MediaLoadState loaded={loaded} error={error} fullscreen={true} />
+        <MediaViewer
+          isVideo={isVideo}
+          videoEmbedSrc={videoEmbedSrc}
+          imageSrc={imageSrc}
+          title={title}
+          loaded={loaded}
+          fullscreen={true}
+          onLoaded={() => setLoaded(true)}
+          onError={() => setError(true)}
+        />
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -658,14 +765,11 @@ const MediaModal = ({
         </div>
 
         {/* Made By Tags - Fullscreen */}
-        {isImage && madeByTags.length > 0 && (
-          <div className="absolute bottom-4 right-4 rounded-lg bg-black/70 px-3 py-2">
-            <div className="flex items-center gap-2 text-sm text-white">
-              <p>Készítette:</p>
-              <p className="font-semibold">{madeByTags.join(", ")}</p>
-            </div>
-          </div>
-        )}
+        <MadeByBadge
+          isImage={isImage}
+          madeByTags={madeByTags}
+          fullscreen={true}
+        />
       </div>
     );
   }
@@ -716,35 +820,17 @@ const MediaModal = ({
           className="relative flex max-h-[80vh] items-center justify-center overflow-auto rounded-lg border"
           style={{ backgroundColor: media.color ?? "#f3f4f6" }}
         >
-          {!loaded && !error && (
-            <div className="p-8 text-sm text-foreground-600">Betöltés…</div>
-          )}
-          {error && (
-            <div className="p-8 text-sm text-danger-600">
-              Hiba a betöltésekor
-            </div>
-          )}
-          {isVideo && videoEmbedSrc ? (
-            <iframe
-              src={videoEmbedSrc}
-              className={`aspect-video w-full ${loaded ? "" : "hidden"}`}
-              onLoad={() => setLoaded(true)}
-              onError={() => setError(true)}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              title={title}
-            ></iframe>
-          ) : (
-            <img
-              src={imageSrc}
-              alt={title}
-              className={`max-h-[80vh] w-auto max-w-full object-contain ${
-                loaded ? "" : "hidden"
-              }`}
-              onLoad={() => setLoaded(true)}
-              onError={() => setError(true)}
-            />
-          )}
+          <MediaLoadState loaded={loaded} error={error} fullscreen={false} />
+          <MediaViewer
+            isVideo={isVideo}
+            videoEmbedSrc={videoEmbedSrc}
+            imageSrc={imageSrc}
+            title={title}
+            loaded={loaded}
+            fullscreen={false}
+            onLoaded={() => setLoaded(true)}
+            onError={() => setError(true)}
+          />
           <button
             onClick={handleNextImage}
             className="absolute right-0 h-10 w-10 items-center rounded-full bg-foreground-300 text-center text-lg opacity-70 hover:opacity-100"
@@ -759,14 +845,11 @@ const MediaModal = ({
           </button>
 
           {/* Made By Tags */}
-          {isImage && madeByTags.length > 0 && (
-            <div className="absolute bottom-2 right-2 rounded-lg bg-black/70 px-2 py-1">
-              <div className="flex items-center gap-2 text-xs text-white">
-                <p>Készítette:</p>
-                <p className="font-semibold">{madeByTags.join(", ")}</p>
-              </div>
-            </div>
-          )}
+          <MadeByBadge
+            isImage={isImage}
+            madeByTags={madeByTags}
+            fullscreen={false}
+          />
         </div>
       </div>
     </div>

@@ -119,9 +119,9 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
                 <button
                   onClick={() => setMatchAll(false)}
                   className={`rounded-md px-3 py-1 text-sm transition ${
-                    !matchAll
-                      ? "bg-selfprimary-600 text-white"
-                      : "text-foreground-600 hover:bg-foreground-200"
+                    matchAll
+                      ? "text-foreground-600 hover:bg-foreground-200"
+                      : "bg-selfprimary-600 text-white"
                   }`}
                 >
                   VAGY

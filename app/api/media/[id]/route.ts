@@ -283,6 +283,13 @@ export async function GET(
     return NextResponse.json({ error: "Image not found" }, { status: 404 });
   }
 
+  if ((image.media_type ?? "image") === "video") {
+    return NextResponse.json(
+      { error: "This endpoint serves image files only" },
+      { status: 400 },
+    );
+  }
+
   // === 1. HELYI CACHE ELLENŐRZÉS ===
   if (isCached(imageId, size)) {
     const cachedBuffer = readCachedFile(imageId, size);

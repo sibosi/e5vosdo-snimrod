@@ -99,7 +99,7 @@ export async function POST(req: Request) {
             ? "small_preview_drive_id"
             : "large_preview_drive_id";
         const images = (await dbreq(
-          `SELECT id, original_drive_id, original_file_name FROM media_images WHERE ${column} IS NULL`,
+          `SELECT id, original_drive_id, original_file_name FROM media_images WHERE ${column} IS NULL AND COALESCE(media_type, 'image') = 'image'`,
         )) as {
           id: number;
           original_drive_id: string;

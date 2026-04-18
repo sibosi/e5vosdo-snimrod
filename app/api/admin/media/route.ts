@@ -16,27 +16,27 @@ export async function GET() {
 
     // Adatbázis statisztikák
     const [totalResult] = (await dbreq(
-      "SELECT COUNT(*) as count FROM media_images",
+      "SELECT COUNT(*) as count FROM media_images WHERE COALESCE(media_type, 'image') = 'image'",
     )) as { count: number }[];
     const total = totalResult?.count ?? 0;
 
     const [withColorResult] = (await dbreq(
-      "SELECT COUNT(*) as count FROM media_images WHERE color IS NOT NULL",
+      "SELECT COUNT(*) as count FROM media_images WHERE color IS NOT NULL AND COALESCE(media_type, 'image') = 'image'",
     )) as { count: number }[];
     const withColor = withColorResult?.count ?? 0;
 
     const [withSmallPreviewResult] = (await dbreq(
-      "SELECT COUNT(*) as count FROM media_images WHERE small_preview_drive_id IS NOT NULL",
+      "SELECT COUNT(*) as count FROM media_images WHERE small_preview_drive_id IS NOT NULL AND COALESCE(media_type, 'image') = 'image'",
     )) as { count: number }[];
     const withSmallPreview = withSmallPreviewResult?.count ?? 0;
 
     const [withLargePreviewResult] = (await dbreq(
-      "SELECT COUNT(*) as count FROM media_images WHERE large_preview_drive_id IS NOT NULL",
+      "SELECT COUNT(*) as count FROM media_images WHERE large_preview_drive_id IS NOT NULL AND COALESCE(media_type, 'image') = 'image'",
     )) as { count: number }[];
     const withLargePreview = withLargePreviewResult?.count ?? 0;
 
     const [withDatetimeResult] = (await dbreq(
-      "SELECT COUNT(*) as count FROM media_images WHERE datetime IS NOT NULL",
+      "SELECT COUNT(*) as count FROM media_images WHERE datetime IS NOT NULL AND COALESCE(media_type, 'image') = 'image'",
     )) as { count: number }[];
     const withDatetime = withDatetimeResult?.count ?? 0;
 

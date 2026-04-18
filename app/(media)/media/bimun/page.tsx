@@ -19,9 +19,7 @@ interface BimunPageProps {
   };
 }
 
-const BimunPage = async ({
-  searchParams,
-}: BimunPageProps) => {
+const BimunPage = async ({ searchParams }: BimunPageProps) => {
   const trustedToken = Array.isArray(searchParams?.trustedToken)
     ? searchParams.trustedToken[0]
     : searchParams?.trustedToken;

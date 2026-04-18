@@ -64,3 +64,10 @@ export function verifyBimunToken(token: string): boolean {
     return false;
   }
 }
+
+const TRUSTED_URL_TOKEN = process.env.BIMUN_TRUSTED_URL_TOKEN;
+
+export function verifyBimunTrustedToken(token: string | undefined): boolean {
+  if (!token || !TRUSTED_URL_TOKEN) return false;
+  return token === TRUSTED_URL_TOKEN;
+}

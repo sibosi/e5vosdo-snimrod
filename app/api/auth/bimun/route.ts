@@ -5,6 +5,7 @@ import {
   BIMUN_COOKIE_MAX_AGE,
   generateBimunToken,
   verifyBimunToken,
+  verifyBimunTrustedToken,
 } from "@/lib/bimunAuth";
 import { auth } from "@/auth";
 
@@ -42,8 +43,26 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   console.log("[bimun GET] Starting auth check...");
+
+  const url = new URL(request.url);
+  const trustedToken = url.searchParams.get("trustedToken");
+  if (verifyBimunTrustedToken(trustedToken || undefined)) {
+    const cookieStore = await cookies();
+    const token = generateBimunToken();
+
+    cookieStore.set(BIMUN_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: BIMUN_COOKIE_MAX_AGE,
+      path: "/",
+    });
+
+    console.log("[bimun GET] Trusted URL token valid, granting access");
+    return NextResponse.json({ authenticated: true });
+  }
 
   const cookieStore = await cookies();
   const authCookie = cookieStore.get(BIMUN_COOKIE_NAME);

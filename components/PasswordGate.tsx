@@ -27,18 +27,33 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
   const [isLoading, setIsLoading] = useState(!initialAuthenticated);
 
   useEffect(() => {
+    const trustedToken = globalThis.window
+      ? new URL(globalThis.window.location.href).searchParams.get(
+          "trustedToken",
+        )
+      : null;
+    const authUrl = trustedToken
+      ? `${authEndpoint}?trustedToken=${encodeURIComponent(trustedToken)}`
+      : authEndpoint;
+
+    if (trustedToken && globalThis.window) {
+      const cleanUrl = new URL(globalThis.window.location.href);
+      cleanUrl.searchParams.delete("trustedToken");
+      globalThis.window.history.replaceState({}, "", cleanUrl.toString());
+    }
+
     // If we already know the user is authenticated (server-side), skip loading gate
     // but still ping the endpoint in the background to set cookie if needed.
     if (initialAuthenticated) {
       // Fire-and-forget, don't toggle loading
-      fetch(authEndpoint, { method: "GET", credentials: "include" })
+      fetch(authUrl, { method: "GET", credentials: "include" })
         .then(() => {})
         .catch(() => {});
       return;
     }
 
     // Otherwise, check via API (cookie/session check)
-    fetch(authEndpoint, { method: "GET", credentials: "include" })
+    fetch(authUrl, { method: "GET", credentials: "include" })
       .then((res) => res.json())
       .then((data) => {
         if (data.authenticated) {
@@ -49,7 +64,7 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
       .finally(() => setIsLoading(false));
   }, [authEndpoint, initialAuthenticated]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 

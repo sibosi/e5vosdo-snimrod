@@ -105,8 +105,8 @@ export async function POST(req: Request) {
 
         // Képek datetime nélkül (vagy mindegyik ha forceAll)
         const query = forceAll
-          ? "SELECT id, original_drive_id, original_file_name FROM media_images"
-          : "SELECT id, original_drive_id, original_file_name FROM media_images WHERE datetime IS NULL";
+          ? "SELECT id, original_drive_id, original_file_name FROM media_images WHERE COALESCE(media_type, 'image') = 'image'"
+          : "SELECT id, original_drive_id, original_file_name FROM media_images WHERE datetime IS NULL AND COALESCE(media_type, 'image') = 'image'";
 
         const images = (await dbreq(query)) as {
           id: number;

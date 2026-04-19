@@ -12,6 +12,10 @@ interface PasswordGateProps {
    * We'll still ping the auth endpoint in the background to ensure the cookie is set.
    */
   initialAuthenticated?: boolean;
+  /**
+   * Fully bypasses auth checks and avoids any auth endpoint call.
+   */
+  skipAuthCheck?: boolean;
 }
 
 const PasswordGate: React.FC<PasswordGateProps> = ({
@@ -20,13 +24,31 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
   title = "Jelszó szükséges",
   description = "Kérjük, add meg a jelszót a hozzáféréshez.",
   initialAuthenticated = false,
+  skipAuthCheck = false,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(initialAuthenticated);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    initialAuthenticated || skipAuthCheck,
+  );
   const [inputPassword, setInputPassword] = useState("");
   const [error, setError] = useState(false);
-  const [isLoading, setIsLoading] = useState(!initialAuthenticated);
+  const [isLoading, setIsLoading] = useState(
+    !initialAuthenticated && !skipAuthCheck,
+  );
+
+  const notifyAuthenticated = () => {
+    if (globalThis.window !== undefined) {
+      globalThis.dispatchEvent(new Event("password-gate-authenticated"));
+    }
+  };
 
   useEffect(() => {
+    if (skipAuthCheck) {
+      setIsAuthenticated(true);
+      setIsLoading(false);
+      notifyAuthenticated();
+      return;
+    }
+
     const trustedToken = globalThis.window
       ? new URL(globalThis.window.location.href).searchParams.get(
           "trustedToken",
@@ -45,6 +67,7 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
     // If we already know the user is authenticated (server-side), skip loading gate
     // but still ping the endpoint in the background to set cookie if needed.
     if (initialAuthenticated) {
+      notifyAuthenticated();
       // Fire-and-forget, don't toggle loading
       fetch(authUrl, { method: "GET", credentials: "include" })
         .then(() => {})
@@ -58,38 +81,42 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
       .then((data) => {
         if (data.authenticated) {
           setIsAuthenticated(true);
+          notifyAuthenticated();
         }
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, [authEndpoint, initialAuthenticated]);
+  }, [authEndpoint, initialAuthenticated, skipAuthCheck]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const res = await fetch(authEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ password: inputPassword }),
-      });
+    void (async () => {
+      try {
+        const res = await fetch(authEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ password: inputPassword }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (data.success) {
-        setIsAuthenticated(true);
-        setError(false);
-      } else {
+        if (data.success) {
+          setIsAuthenticated(true);
+          setError(false);
+          notifyAuthenticated();
+        } else {
+          setError(true);
+          setInputPassword("");
+        }
+      } catch {
         setError(true);
-        setInputPassword("");
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      setError(true);
-    } finally {
-      setIsLoading(false);
-    }
+    })();
   };
 
   if (isLoading) {

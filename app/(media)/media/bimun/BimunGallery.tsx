@@ -18,10 +18,12 @@ const BIMUN_TAG = "BIMUN";
 
 interface BimunGalleryProps {
   initialAuthenticated?: boolean;
+  skipAuth?: boolean;
 }
 
 const BimunGallery: React.FC<BimunGalleryProps> = ({
   initialAuthenticated = false,
+  skipAuth = false,
 }) => {
   const [availableTags, setAvailableTags] = useState<MediaTagType[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -30,24 +32,44 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
   const [matchAll, setMatchAll] = useState(false);
   const [filteredTags, setFilteredTags] = useState<MediaTagType[]>([]);
 
-  useEffect(() => {
-    fetch("/api/getAllTags", {
+  const fetchRelevantTags = () => {
+    fetch("/api/getAllBimunRelevantTags", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         module: "mediaTags",
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          return [];
+        }
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
-          // Filter out the main BIMUN tag since it's always applied
-          setAvailableTags(data.filter((t) => t.tag_name !== BIMUN_TAG));
+          setAvailableTags(data);
         }
       })
       .catch((err) => {
         console.error("Error fetching tags:", err);
       });
+  };
+
+  useEffect(() => {
+    fetchRelevantTags();
+
+    const onAuthenticated = () => {
+      fetchRelevantTags();
+    };
+
+    globalThis.addEventListener("password-gate-authenticated", onAuthenticated);
+    return () => {
+      globalThis.removeEventListener(
+        "password-gate-authenticated",
+        onAuthenticated,
+      );
+    };
   }, []);
 
   useEffect(() => {
@@ -78,6 +100,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
     <PasswordGate
       authEndpoint="/api/auth/bimun"
       initialAuthenticated={initialAuthenticated}
+      skipAuthCheck={skipAuth}
       title="BIMUN 2026"
       description="Add meg a jelszót a galéria megtekintéséhez"
     >
@@ -119,9 +142,9 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
                 <button
                   onClick={() => setMatchAll(false)}
                   className={`rounded-md px-3 py-1 text-sm transition ${
-                    !matchAll
-                      ? "bg-selfprimary-600 text-white"
-                      : "text-foreground-600 hover:bg-foreground-200"
+                    matchAll
+                      ? "text-foreground-600 hover:bg-foreground-200"
+                      : "bg-selfprimary-600 text-white"
                   }`}
                 >
                   VAGY

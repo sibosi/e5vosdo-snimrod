@@ -8,6 +8,8 @@ export interface MediaImageType {
   original_drive_id: string;
   original_file_name?: string;
   color?: string;
+  media_type?: "image" | "video" | null;
+  video_url?: string;
   // Kis preview (thumbnail) - Drive-on tárolva
   small_preview_drive_id?: string;
   small_preview_width?: number;
@@ -27,12 +29,21 @@ export async function getOriginalImagesFileID() {
 
 export async function getImages(
   selfUser: UserType,
-  byName = false,
+  options: { byName?: boolean; includeVideos?: boolean } = {},
 ): Promise<MediaImageType[]> {
   gate(selfUser, "user");
-  return (await dbreq(
-    "SELECT * FROM media_images ORDER BY id DESC",
-  )) as MediaImageType[];
+  const { includeVideos = false } = options;
+
+  let query = "SELECT * FROM media_images";
+  const params: any[] = [];
+
+  if (!includeVideos) {
+    query += " WHERE COALESCE(media_type, 'image') = 'image'";
+  }
+
+  query += " ORDER BY id DESC";
+
+  return (await dbreq(query, params)) as MediaImageType[];
 }
 
 /**
@@ -224,12 +235,12 @@ export async function resetImagePreviews(
   if (image.large_preview_drive_id) driveIds.push(image.large_preview_drive_id);
 
   await dbreq(
-    `UPDATE media_images SET 
-      small_preview_drive_id = NULL, 
-      small_preview_width = NULL, 
+    `UPDATE media_images SET
+      small_preview_drive_id = NULL,
+      small_preview_width = NULL,
       small_preview_height = NULL,
-      large_preview_drive_id = NULL, 
-      large_preview_width = NULL, 
+      large_preview_drive_id = NULL,
+      large_preview_width = NULL,
       large_preview_height = NULL
     WHERE id = ?`,
     [imageId],

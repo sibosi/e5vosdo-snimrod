@@ -61,6 +61,42 @@ export async function getAllTags(selfUser: UserType): Promise<MediaTagType[]> {
 }
 
 /**
+ * Get tags that are relevant for BIMUN:
+ * only tags that appear on at least one image that also has the BIMUN tag.
+ */
+export async function getAllBimunRelevantTags(
+  selfUser: UserType,
+): Promise<MediaTagType[]> {
+  gate(selfUser, ["user", "media_view"]);
+
+  const BIMUN_TAG = "BIMUN";
+
+  return (await dbreq(
+    `SELECT relevant_tags.id, relevant_tags.tag_name, relevant_tags.priority
+     FROM (
+       SELECT DISTINCT tags.id, tags.tag_name, tags.priority
+       FROM media_images_tags tags
+       JOIN media_images_to_tags relations
+         ON relations.media_image_tag_id = tags.id
+       WHERE EXISTS (
+         SELECT 1
+         FROM media_images_to_tags bimun_rel
+         JOIN media_images_tags bimun_tag
+           ON bimun_tag.id = bimun_rel.media_image_tag_id
+         WHERE bimun_rel.media_image_id = relations.media_image_id
+           AND UPPER(TRIM(bimun_tag.tag_name)) = UPPER(TRIM(?))
+       )
+         AND UPPER(TRIM(tags.tag_name)) <> UPPER(TRIM(?))
+     ) AS relevant_tags
+     ORDER BY
+       relevant_tags.priority = 'high' DESC,
+       relevant_tags.priority = 'normal' DESC,
+       relevant_tags.tag_name ASC`,
+    [BIMUN_TAG, BIMUN_TAG],
+  )) as MediaTagType[];
+}
+
+/**
  * Create a new tag (media_admin only)
  */
 export async function createTag(

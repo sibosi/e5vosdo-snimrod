@@ -14,6 +14,8 @@ import {
 } from "@/lib/szalagavatoAuth";
 import { BIMUN_COOKIE_NAME, verifyBimunToken } from "@/lib/bimunAuth";
 
+const BIMUN_SKIP_AUTH = process.env.BIMUN_SKIP_AUTH === "true";
+
 type Params = {
   db: string;
 };
@@ -84,6 +86,10 @@ export const GET = async (
   context: { params: Promise<Params> },
 ) => {
   let selfUser = await getAuth();
+
+  if (!selfUser && BIMUN_SKIP_AUTH) {
+    selfUser = BIMUN_GUEST_USER as any;
+  }
 
   // Check for szalagavato cookie auth if not logged in
   if (!selfUser) {

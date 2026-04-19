@@ -70,10 +70,10 @@ export const clubsConfig: Group[] = [
       {
         title: "Ráski-Rieger Simon e-mail",
         value: "raski.rieger.simon@e5vos.hu",
-        type: "email"
-      }
+        type: "email",
+      },
     ],
-    new: true
+    new: true,
   },
   {
     title: "Geopolitika szakkör",

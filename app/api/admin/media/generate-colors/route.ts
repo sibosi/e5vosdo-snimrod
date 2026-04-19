@@ -78,7 +78,7 @@ export async function POST() {
 
         // Képek szín nélkül
         const images = (await dbreq(
-          "SELECT id, original_drive_id, original_file_name FROM media_images WHERE color IS NULL",
+          "SELECT id, original_drive_id, original_file_name FROM media_images WHERE color IS NULL AND COALESCE(media_type, 'image') = 'image'",
         )) as {
           id: number;
           original_drive_id: string;

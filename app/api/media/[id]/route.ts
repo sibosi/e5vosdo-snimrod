@@ -23,8 +23,11 @@ import {
   SZALAGAVATO_COOKIE_NAME,
   verifySzalagavatoToken,
 } from "@/lib/szalagavatoAuth";
+import { BIMUN_COOKIE_NAME, verifyBimunToken } from "@/lib/bimunAuth";
 import sharp from "sharp";
 import { Readable } from "stream";
+
+const BIMUN_SKIP_AUTH = process.env.BIMUN_SKIP_AUTH === "true";
 
 /** Segéd: stream -> Buffer */
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -190,6 +193,10 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (BIMUN_SKIP_AUTH) {
+    return await serveMedia(request, params);
+  }
+
   // Auth ellenőrzés - bejelentkezett user VAGY szalagavatós cookie
   let isAuthenticated = false;
   const selfUser = await getAuth();
@@ -197,10 +204,14 @@ export async function GET(
   if (selfUser) {
     isAuthenticated = true;
   } else {
-    // Check szalagavato cookie
+    // Check szalagavato / bimun cookie
     const cookieStore = await cookies();
     const szalagavatoCookie = cookieStore.get(SZALAGAVATO_COOKIE_NAME);
+    const bimunCookie = cookieStore.get(BIMUN_COOKIE_NAME);
     if (verifySzalagavatoToken(szalagavatoCookie?.value || "")) {
+      isAuthenticated = true;
+    }
+    if (verifyBimunToken(bimunCookie?.value || "")) {
       isAuthenticated = true;
     }
   }
@@ -208,6 +219,14 @@ export async function GET(
   if (!isAuthenticated) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  return await serveMedia(request, params);
+}
+
+async function serveMedia(
+  request: Request,
+  params: Promise<{ id: string }>,
+) {
 
   const { id } = await params;
   const imageId = Number.parseInt(id, 10);
@@ -281,6 +300,13 @@ export async function GET(
   const image = await getImageById(imageId);
   if (!image) {
     return NextResponse.json({ error: "Image not found" }, { status: 404 });
+  }
+
+  if ((image.media_type ?? "image") === "video") {
+    return NextResponse.json(
+      { error: "This endpoint serves image files only" },
+      { status: 400 },
+    );
   }
 
   // === 1. HELYI CACHE ELLENŐRZÉS ===

@@ -18,10 +18,12 @@ const BIMUN_TAG = "BIMUN";
 
 interface BimunGalleryProps {
   initialAuthenticated?: boolean;
+  skipAuth?: boolean;
 }
 
 const BimunGallery: React.FC<BimunGalleryProps> = ({
   initialAuthenticated = false,
+  skipAuth = false,
 }) => {
   const [availableTags, setAvailableTags] = useState<MediaTagType[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -98,6 +100,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
     <PasswordGate
       authEndpoint="/api/auth/bimun"
       initialAuthenticated={initialAuthenticated}
+      skipAuthCheck={skipAuth}
       title="BIMUN 2026"
       description="Add meg a jelszót a galéria megtekintéséhez"
     >

@@ -12,6 +12,10 @@ interface PasswordGateProps {
    * We'll still ping the auth endpoint in the background to ensure the cookie is set.
    */
   initialAuthenticated?: boolean;
+  /**
+   * Fully bypasses auth checks and avoids any auth endpoint call.
+   */
+  skipAuthCheck?: boolean;
 }
 
 const PasswordGate: React.FC<PasswordGateProps> = ({
@@ -20,11 +24,16 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
   title = "Jelszó szükséges",
   description = "Kérjük, add meg a jelszót a hozzáféréshez.",
   initialAuthenticated = false,
+  skipAuthCheck = false,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(initialAuthenticated);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    initialAuthenticated || skipAuthCheck,
+  );
   const [inputPassword, setInputPassword] = useState("");
   const [error, setError] = useState(false);
-  const [isLoading, setIsLoading] = useState(!initialAuthenticated);
+  const [isLoading, setIsLoading] = useState(
+    !initialAuthenticated && !skipAuthCheck,
+  );
 
   const notifyAuthenticated = () => {
     if (globalThis.window !== undefined) {
@@ -33,6 +42,13 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
   };
 
   useEffect(() => {
+    if (skipAuthCheck) {
+      setIsAuthenticated(true);
+      setIsLoading(false);
+      notifyAuthenticated();
+      return;
+    }
+
     const trustedToken = globalThis.window
       ? new URL(globalThis.window.location.href).searchParams.get(
           "trustedToken",
@@ -70,7 +86,7 @@ const PasswordGate: React.FC<PasswordGateProps> = ({
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, [authEndpoint, initialAuthenticated]);
+  }, [authEndpoint, initialAuthenticated, skipAuthCheck]);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();

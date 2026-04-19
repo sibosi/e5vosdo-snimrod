@@ -7,6 +7,8 @@ import {
 } from "@/lib/bimunAuth";
 import { redirect } from "next/navigation";
 
+const BIMUN_SKIP_AUTH = process.env.BIMUN_SKIP_AUTH === "true";
+
 export const metadata = {
   title: "BIMUN 2026 - Galéria",
   description: "BIMUN 2026 fotógaléria",
@@ -19,6 +21,10 @@ interface BimunPageProps {
 }
 
 const BimunPage = async ({ searchParams }: BimunPageProps) => {
+  if (BIMUN_SKIP_AUTH) {
+    return <BimunGallery initialAuthenticated skipAuth />;
+  }
+
   const resolvedSearchParams = await searchParams;
   const trustedToken = Array.isArray(resolvedSearchParams?.trustedToken)
     ? resolvedSearchParams.trustedToken[0]
@@ -41,7 +47,12 @@ const BimunPage = async ({ searchParams }: BimunPageProps) => {
 
   const initialAuthenticated = hasBimunSession || hasRegularSession;
 
-  return <BimunGallery initialAuthenticated={initialAuthenticated} />;
+  return (
+    <BimunGallery
+      initialAuthenticated={initialAuthenticated}
+      skipAuth={BIMUN_SKIP_AUTH}
+    />
+  );
 };
 
 export default BimunPage;

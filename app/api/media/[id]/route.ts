@@ -26,6 +26,8 @@ import {
 import sharp from "sharp";
 import { Readable } from "stream";
 
+const BIMUN_SKIP_AUTH = process.env.BIMUN_SKIP_AUTH === "true";
+
 /** Segéd: stream -> Buffer */
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -190,6 +192,10 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (BIMUN_SKIP_AUTH) {
+    return await serveMedia(request, params);
+  }
+
   // Auth ellenőrzés - bejelentkezett user VAGY szalagavatós cookie
   let isAuthenticated = false;
   const selfUser = await getAuth();
@@ -208,6 +214,14 @@ export async function GET(
   if (!isAuthenticated) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  return await serveMedia(request, params);
+}
+
+async function serveMedia(
+  request: Request,
+  params: Promise<{ id: string }>,
+) {
 
   const { id } = await params;
   const imageId = Number.parseInt(id, 10);

@@ -23,6 +23,7 @@ import {
   SZALAGAVATO_COOKIE_NAME,
   verifySzalagavatoToken,
 } from "@/lib/szalagavatoAuth";
+import { BIMUN_COOKIE_NAME, verifyBimunToken } from "@/lib/bimunAuth";
 import sharp from "sharp";
 import { Readable } from "stream";
 
@@ -203,10 +204,14 @@ export async function GET(
   if (selfUser) {
     isAuthenticated = true;
   } else {
-    // Check szalagavato cookie
+    // Check szalagavato / bimun cookie
     const cookieStore = await cookies();
     const szalagavatoCookie = cookieStore.get(SZALAGAVATO_COOKIE_NAME);
+    const bimunCookie = cookieStore.get(BIMUN_COOKIE_NAME);
     if (verifySzalagavatoToken(szalagavatoCookie?.value || "")) {
+      isAuthenticated = true;
+    }
+    if (verifyBimunToken(bimunCookie?.value || "")) {
       isAuthenticated = true;
     }
   }

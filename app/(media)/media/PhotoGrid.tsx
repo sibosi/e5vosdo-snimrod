@@ -120,7 +120,7 @@ const LazyMedia = ({
         style={{ width, height }}
         className="flex items-center justify-center bg-red-100 text-sm text-red-500"
       >
-        <p>Hiba</p>
+        <p>Error</p>
       </div>
     );
   } else {
@@ -149,13 +149,13 @@ const LazyMedia = ({
             style={{ width, height }}
             className="flex items-center justify-center bg-red-100 text-sm text-red-500"
           >
-            <p>Hibás videó URL</p>
+            <p>Invalid video URL</p>
           </div>
         )}
         {media.media_type === "video" && loaded && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="rounded-full bg-black/55 px-3 py-1 text-sm text-white">
-              Lejátszás
+              Play
             </div>
           </div>
         )}
@@ -170,7 +170,7 @@ const LazyMedia = ({
       style={{ width, height, backgroundColor: bgColor ?? "gray" }}
       className="relative block cursor-pointer overflow-hidden border-0 p-0 text-left align-top"
       onClick={onClick}
-      aria-label={media.original_file_name ?? "Média megnyitása"}
+      aria-label={media.original_file_name ?? "Open media"}
     >
       {content}
     </button>
@@ -237,12 +237,12 @@ const PhotoGrid = ({
             setImageFiles(data);
           } else {
             console.error("Invalid response:", data);
-            setError("Nem sikerült betölteni a képeket");
+            setError("Failed to load images");
           }
         })
         .catch((err) => {
           console.error("Error fetching images:", err);
-          setError("Hiba a képek betöltésekor");
+          setError("Error loading images");
         })
         .finally(() => setLoading(false));
     } else {
@@ -263,12 +263,12 @@ const PhotoGrid = ({
             setImageFiles(data);
           } else {
             console.error("Invalid response:", data);
-            setError("Nem sikerült betölteni a képeket");
+            setError("Failed to load images");
           }
         })
         .catch((err) => {
           console.error("Error fetching images:", err);
-          setError("Hiba a képek betöltésekor");
+          setError("Error loading images");
         })
         .finally(() => setLoading(false));
     }
@@ -422,14 +422,14 @@ const PhotoGrid = ({
         URL.revokeObjectURL(url);
       } catch (e) {
         console.error(e);
-        alert("A letöltés nem sikerült.");
+        alert("Download failed.");
       }
     },
     [],
   );
 
   if (loading) {
-    return <div className="p-8">Betöltés...</div>;
+    return <div className="p-8">Loading...</div>;
   }
 
   if (error) {
@@ -440,7 +440,7 @@ const PhotoGrid = ({
           onClick={() => globalThis.location.reload()}
           className="mt-2 rounded-sm bg-danger-500 px-4 py-2 text-foreground"
         >
-          Újratöltés
+          Reload
         </button>
       </div>
     );
@@ -449,23 +449,23 @@ const PhotoGrid = ({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Eötvös Média - Galéria</h1>
+        <h1 className="text-2xl font-bold">Eötvös Média - Gallery</h1>
       </div>
 
       {imageFiles === undefined && (
         <div className="p-8 text-center">
-          <p>Képek betöltése...</p>
+          <p>Loading images...</p>
         </div>
       )}
 
       {imageFiles?.length === 0 ? (
         <div className="p-8 text-center">
-          <p>Nincsenek képek a galériában.</p>
+          <p>No images in the gallery.</p>
           <button
             onClick={() => loadImages()}
             className="mt-4 rounded-sm bg-selfprimary-500 px-4 py-2 text-selfprimary-50"
           >
-            Újratöltés
+            Reload
           </button>
         </div>
       ) : (
@@ -543,7 +543,7 @@ function MediaLoadState({
             : "p-8 text-sm text-danger-600"
         }
       >
-        Hiba a betolteseikor
+        Error loading media
       </div>
     ) : null;
   }
@@ -556,7 +556,7 @@ function MediaLoadState({
           : "p-8 text-sm text-foreground-600"
       }
     >
-      Betoltes...
+      Loading...
     </div>
   );
 }
@@ -677,7 +677,7 @@ const MediaModal = ({
     getMadeByTagsForImage(media.id).then((tags) => setMadeByTags(tags));
   }, [media.id, media.media_type]);
 
-  const title = media.original_file_name || "Kép";
+  const title = media.original_file_name || "Image";
   const videoEmbedSrc = getYouTubeEmbedUrl(media.video_url);
   const imageSrc = `/api/media/${media.id}?size=large`;
 
@@ -703,7 +703,7 @@ const MediaModal = ({
       <div className="z-60 fixed inset-0 flex items-center justify-center bg-black p-4">
         <button
           type="button"
-          aria-label="Kilépés"
+          aria-label="Exit"
           className="absolute inset-0"
           onClick={() => setIsFullscreen(false)}
         />
@@ -747,7 +747,7 @@ const MediaModal = ({
               }}
               disabled={downloading}
             >
-              {downloading ? "Letöltés..." : "Letöltés"}
+              {downloading ? "Downloading..." : "Download"}
             </button>
           )}
           <button
@@ -760,7 +760,7 @@ const MediaModal = ({
             className="rounded-sm bg-selfsecondary-600 px-3 py-2 text-sm text-foreground-50"
             onClick={onClose}
           >
-            Kilépés
+            Exit
           </button>
         </div>
 
@@ -778,7 +778,7 @@ const MediaModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button
         type="button"
-        aria-label="Bezárás"
+        aria-label="Close"
         className="absolute inset-0 bg-black/60"
         onClick={onClose}
       />
@@ -798,7 +798,7 @@ const MediaModal = ({
                 onClick={handleDownload}
                 disabled={downloading}
               >
-                {downloading ? "Letöltés..." : "Letöltés"}
+                {downloading ? "Downloading..." : "Download"}
               </button>
             )}
             <button
@@ -811,7 +811,7 @@ const MediaModal = ({
               className="rounded-sm bg-selfsecondary-600 px-3 py-2 text-sm text-foreground-50"
               onClick={onClose}
             >
-              Bezárás
+              Close
             </button>
           </div>
         </div>

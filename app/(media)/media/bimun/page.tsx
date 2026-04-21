@@ -10,8 +10,8 @@ import { redirect } from "next/navigation";
 const BIMUN_SKIP_AUTH = process.env.BIMUN_SKIP_AUTH === "true";
 
 export const metadata = {
-  title: "BIMUN 2026 - Galéria",
-  description: "BIMUN 2026 fotógaléria",
+  title: "BIMUN 2026 - Gallery",
+  description: "BIMUN 2026 photo gallery",
 };
 
 interface BimunPageProps {

@@ -244,7 +244,8 @@ export async function POST(req: Request) {
         const existingImages = (await dbreq(
           `SELECT id, original_drive_id, original_file_name, color,
                   small_preview_drive_id, large_preview_drive_id
-           FROM media_images`,
+           FROM media_images
+           WHERE COALESCE(media_type, 'image') = 'image'`,
         )) as {
           id: number;
           original_drive_id: string;

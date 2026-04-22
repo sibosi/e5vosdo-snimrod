@@ -32,13 +32,13 @@ export async function GET(request: NextRequest) {
     const filter = searchParams.get("filter") || "all";
     const offset = (page - 1) * limit;
 
-    let whereClause = "";
+    let whereClause = "WHERE COALESCE(media_type, 'image') = 'image'";
     if (filter === "with-preview") {
       whereClause =
-        "WHERE small_preview_drive_id IS NOT NULL OR large_preview_drive_id IS NOT NULL";
+        "WHERE COALESCE(media_type, 'image') = 'image' AND (small_preview_drive_id IS NOT NULL OR large_preview_drive_id IS NOT NULL)";
     } else if (filter === "no-preview") {
       whereClause =
-        "WHERE small_preview_drive_id IS NULL AND large_preview_drive_id IS NULL";
+        "WHERE COALESCE(media_type, 'image') = 'image' AND small_preview_drive_id IS NULL AND large_preview_drive_id IS NULL";
     }
 
     const [countResult] = (await dbreq(

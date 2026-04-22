@@ -15,13 +15,16 @@ CREATE TABLE
         -- Nagy preview (modal) ~1200px szélesség
         large_preview_drive_id VARCHAR(255),
         large_preview_width INT,
-        large_preview_height INT
+        large_preview_height INT,
+        media_type VARCHAR(10) DEFAULT 'image',
+        video_url VARCHAR(255) NULL
     );
 
 CREATE TABLE
     IF NOT EXISTS media_images_tags (
         id INT AUTO_INCREMENT PRIMARY KEY,
         tag_name VARCHAR(100) NOT NULL,
+        priority VARCHAR(10) DEFAULT 'normal' CHECK (priority IN ('madeBy', 'normal', 'high')),
         UNIQUE KEY unique_tag_name (tag_name)
     );
 
@@ -41,10 +44,10 @@ CREATE TABLE
 
 --@block - Migration (átmenet)
 --@block
-SELECT
-    *
-FROM
-    media_images
-    --@block
 ALTER TABLE media_images_tags
 ADD COLUMN priority VARCHAR(10) DEFAULT 'normal' CHECK (priority IN ('madeBy', 'normal', 'high'));
+
+--@block
+ALTER TABLE media_images
+ADD COLUMN media_type VARCHAR(10) DEFAULT 'image',
+ADD COLUMN video_url VARCHAR(255) NULL;

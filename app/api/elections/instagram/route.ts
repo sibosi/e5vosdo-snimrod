@@ -9,7 +9,10 @@ export async function GET(request: NextRequest) {
     const cursorsParam = request.nextUrl.searchParams.get("cursors");
     const usernamesParam = request.nextUrl.searchParams.get("usernames");
     const filterUsernames = usernamesParam
-      ? usernamesParam.split(",").map((u) => u.trim()).filter(Boolean)
+      ? usernamesParam
+          .split(",")
+          .map((u) => u.trim())
+          .filter(Boolean)
       : undefined;
     const cursors: CursorsMap | undefined = cursorsParam
       ? (JSON.parse(cursorsParam) as CursorsMap)

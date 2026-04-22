@@ -9,7 +9,7 @@ const PhotoGrid = dynamic(() => import("../PhotoGrid"), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center p-8">
-      <div>Galéria betöltése...</div>
+      <div>Loading gallery...</div>
     </div>
   ),
 });
@@ -18,10 +18,12 @@ const BIMUN_TAG = "BIMUN";
 
 interface BimunGalleryProps {
   initialAuthenticated?: boolean;
+  skipAuth?: boolean;
 }
 
 const BimunGallery: React.FC<BimunGalleryProps> = ({
   initialAuthenticated = false,
+  skipAuth = false,
 }) => {
   const [availableTags, setAvailableTags] = useState<MediaTagType[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -30,24 +32,44 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
   const [matchAll, setMatchAll] = useState(false);
   const [filteredTags, setFilteredTags] = useState<MediaTagType[]>([]);
 
-  useEffect(() => {
-    fetch("/api/getAllTags", {
+  const fetchRelevantTags = () => {
+    fetch("/api/getAllBimunRelevantTags", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         module: "mediaTags",
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          return [];
+        }
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
-          // Filter out the main BIMUN tag since it's always applied
-          setAvailableTags(data.filter((t) => t.tag_name !== BIMUN_TAG));
+          setAvailableTags(data);
         }
       })
       .catch((err) => {
         console.error("Error fetching tags:", err);
       });
+  };
+
+  useEffect(() => {
+    fetchRelevantTags();
+
+    const onAuthenticated = () => {
+      fetchRelevantTags();
+    };
+
+    globalThis.addEventListener("password-gate-authenticated", onAuthenticated);
+    return () => {
+      globalThis.removeEventListener(
+        "password-gate-authenticated",
+        onAuthenticated,
+      );
+    };
   }, []);
 
   useEffect(() => {
@@ -78,8 +100,9 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
     <PasswordGate
       authEndpoint="/api/auth/bimun"
       initialAuthenticated={initialAuthenticated}
+      skipAuthCheck={skipAuth}
       title="BIMUN 2026"
-      description="Add meg a jelszót a galéria megtekintéséhez"
+      description="Enter the password to view the gallery"
     >
       <div className="py-8">
         <div className="mb-6 text-center">
@@ -106,7 +129,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
                   d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
                 />
               </svg>
-              Szűrés tag alapján
+              Filter by tag
               {selectedTags.length > 0 && (
                 <span className="ml-1 rounded-full bg-selfprimary-600 px-2 py-0.5 text-xs text-white">
                   {selectedTags.length}
@@ -119,12 +142,12 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
                 <button
                   onClick={() => setMatchAll(false)}
                   className={`rounded-md px-3 py-1 text-sm transition ${
-                    !matchAll
-                      ? "bg-selfprimary-600 text-white"
-                      : "text-foreground-600 hover:bg-foreground-200"
+                    matchAll
+                      ? "text-foreground-600 hover:bg-foreground-200"
+                      : "bg-selfprimary-600 text-white"
                   }`}
                 >
-                  VAGY
+                  OR
                 </button>
                 <button
                   onClick={() => setMatchAll(true)}
@@ -134,7 +157,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
                       : "text-foreground-600 hover:bg-foreground-200"
                   }`}
                 >
-                  ÉS
+                  AND
                 </button>
               </div>
             )}
@@ -169,7 +192,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
                 onClick={clearAllTags}
                 className="text-sm text-danger-600 hover:text-danger-700"
               >
-                Összes törlése
+                Clear all
               </button>
             )}
           </div>
@@ -178,7 +201,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
             <div className="mt-2 rounded-lg border bg-selfprimary-bg p-4 shadow-lg">
               <input
                 type="text"
-                placeholder="Tag keresése..."
+                placeholder="Search tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="focus:outline-hidden mb-3 w-full rounded-lg border border-selfprimary-300 bg-transparent px-3 py-2 focus:border-selfprimary-500"
@@ -187,7 +210,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
               <div className="flex max-h-60 flex-wrap gap-2 overflow-y-auto">
                 {filteredTags.length === 0 ? (
                   <p className="text-sm text-foreground-500">
-                    {searchQuery ? "Nincs találat" : "Nincsenek további tagek"}
+                    {searchQuery ? "No results" : "No more tags"}
                   </p>
                 ) : (
                   filteredTags.map((tag) => (
@@ -210,7 +233,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
                 onClick={() => setIsTagMenuOpen(false)}
                 className="mt-3 text-sm text-foreground-500 hover:text-foreground-700"
               >
-                Bezárás
+                Close
               </button>
             </div>
           )}

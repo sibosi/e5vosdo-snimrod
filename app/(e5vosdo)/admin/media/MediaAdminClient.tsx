@@ -15,8 +15,9 @@ import {
 import TagManager from "./components/TagManager";
 import ImageTagger from "./components/ImageTagger";
 import ImageManager from "./components/ImageManager";
-import XMLImporter from "./components/XMLImporter";
 import DriveXmlImporter from "./components/DriveXmlImporter";
+import XMLImporter from "./components/XMLImporter";
+import VideoUploader from "./VideoUploader";
 import type { OperationType } from "@/lib/globalProgress";
 
 // Local UI-specific progress state - standalone interface (not extending GlobalProgressState)
@@ -168,7 +169,8 @@ type TabKey =
   | "manage"
   | "tags"
   | "xml-upload"
-  | "xml-drive";
+  | "xml-drive"
+  | "video-upload";
 
 export default function MediaAdminClient() {
   const [activeTab, setActiveTab] = useState<TabKey>("sync");
@@ -418,6 +420,7 @@ export default function MediaAdminClient() {
         <Tab key="tags" title="🏷️ Címkék kezelése" />
         <Tab key="xml-drive" title="📁 XML Import (Drive)" />
         <Tab key="xml-upload" title="📥 XML Import (Feltöltés)" />
+        <Tab key="video-upload" title="🎬 Videó feltöltés" />
       </Tabs>
 
       {/* Tab Content */}
@@ -815,6 +818,9 @@ export default function MediaAdminClient() {
         {activeTab === "xml-upload" && (
           <XMLImporter onImportComplete={fetchTags} />
         )}
+
+        {/* Video Upload Tab */}
+        {activeTab === "video-upload" && <VideoUploader />}
       </div>
     </div>
   );

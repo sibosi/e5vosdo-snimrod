@@ -271,7 +271,7 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
           />
           <datalist id="tag-suggestions">
             {tags.map((tag) => (
-              <option key={tag.tag_id} value={tag.tag_name} />
+              <option key={`searchtag-${tag.tag_id}`} value={tag.tag_name} />
             ))}
           </datalist>
           <button
@@ -331,7 +331,7 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
           <div className="mt-2 flex flex-wrap gap-2">
             {newTagsToAdd.map((tag) => (
               <span
-                key={tag}
+                key={`newtag-${tag}`}
                 className="flex items-center gap-1 rounded-full bg-success-100 px-3 py-1 text-sm text-success-800"
               >
                 {tag}
@@ -385,8 +385,8 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {images.map((image) => (
             <div
-              key={image.id}
-              className={`relative cursor-pointer rounded-lg border-2 text-left transition-all ${
+              key={`media-image-${image.id}`}
+              className={`relative rounded-lg border-2 text-left transition-all ${
                 selectedImages.has(image.id)
                   ? "border-selfprimary-500 ring-2 ring-selfprimary-300"
                   : "border-transparent hover:border-foreground-300"
@@ -394,9 +394,8 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
             >
               {/* Selection Checkbox */}
               <button
-                type="button"
                 onClick={() => toggleImageSelection(image.id)}
-                className={`absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded border-2 ${
+                className={`absolute left-2 top-2 z-10 flex h-6 w-6 cursor-pointer items-center justify-center rounded border-2 ${
                   selectedImages.has(image.id)
                     ? "border-selfprimary-500 bg-selfprimary-500 text-foreground"
                     : "border-foreground bg-foreground/80"
@@ -409,7 +408,7 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
               <button
                 type="button"
                 onClick={() => toggleImageSelection(image.id)}
-                className="aspect-square w-full overflow-hidden rounded-lg"
+                className="aspect-square w-full cursor-pointer overflow-hidden rounded-lg"
                 style={{ backgroundColor: image.color || "#foreground" }}
               >
                 <img
@@ -422,10 +421,10 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
 
               {/* Tags */}
               <div className="mt-2 flex flex-wrap gap-1">
-                {image.tags.slice(0, 3).map((tag) => (
+                {image.tags.map((tag) => (
                   <span
-                    key={tag.tag_id}
-                    className="group relative inline-flex items-center rounded-sm bg-foreground-200 px-2 py-0.5 text-xs"
+                    key={`image-${image.id}-tag-${tag.tag_id}`}
+                    className="relative inline-flex items-center rounded-sm bg-foreground-200 px-2 py-0.5 text-xs"
                   >
                     {tag.tag_name}
                     <button
@@ -434,17 +433,12 @@ const ImageTagger: React.FC<ImageTaggerProps> = ({ tags, onTagsChange }) => {
                         e.stopPropagation();
                         handleRemoveTagFromImage(image.id, tag.tag_id);
                       }}
-                      className="ml-1 hidden text-danger-500 hover:text-danger-700 group-hover:inline"
+                      className="ml-1 cursor-pointer text-foreground hover:bg-danger-100 hover:text-danger-500"
                     >
-                      x
+                      ✗
                     </button>
                   </span>
                 ))}
-                {image.tags.length > 3 && (
-                  <span className="rounded-sm bg-foreground-100 px-2 py-0.5 text-xs text-foreground-500">
-                    +{image.tags.length - 3}
-                  </span>
-                )}
               </div>
 
               {/* File name */}

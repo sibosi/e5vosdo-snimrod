@@ -11,7 +11,7 @@ export default function Analytics({
   useEffect(() => {
     if (!analyticsId || !globalThis.gtag) return;
     globalThis.gtag("config", MEASUREMENT_ID, {
-      user_id: analyticsId,
+      e5_user_id: analyticsId,
     });
   }, [analyticsId]);
 

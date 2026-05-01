@@ -1,7 +1,4 @@
-import {
-  fetchElectionsInstagramFeed,
-  type CursorsMap,
-} from "@/lib/electionsInstagram";
+import { fetchFeedInstagramFeed, type CursorsMap } from "@/lib/feedInstagram";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -19,7 +16,7 @@ export async function GET(request: NextRequest) {
       : undefined;
 
     const { account, posts, nextCursors, hasMore } =
-      await fetchElectionsInstagramFeed(cursors, filterUsernames);
+      await fetchFeedInstagramFeed(cursors, filterUsernames);
     return NextResponse.json({
       account,
       posts,

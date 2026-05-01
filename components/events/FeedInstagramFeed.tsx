@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type {
-  ElectionsInstagramAccount,
-  ElectionsInstagramPost,
+  FeedInstagramAccount,
+  FeedInstagramPost,
   CursorsMap,
-} from "@/lib/electionsInstagram";
+} from "@/lib/feedInstagram";
 import { Chip } from "@heroui/react";
 
 // ── Custom profile (code-level) ─────────────────────────────────────────────
-const CUSTOM_PROFILE: ElectionsInstagramAccount = {
+const CUSTOM_PROFILE: FeedInstagramAccount = {
   username: "Hamarosan...",
   profilePictureUrl: "",
 };
@@ -19,7 +19,7 @@ const CUSTOM_USERNAMES: string[] = [];
 // ─────────────────────────────────────────────────────────────────────────────
 
 type FeedResponse = {
-  posts?: ElectionsInstagramPost[];
+  posts?: FeedInstagramPost[];
   nextCursors?: CursorsMap;
   hasMore?: boolean;
   error?: string;
@@ -27,7 +27,7 @@ type FeedResponse = {
 };
 
 type AccountsResponse = {
-  accounts?: ElectionsInstagramAccount[];
+  accounts?: FeedInstagramAccount[];
   error?: string;
 };
 
@@ -74,7 +74,7 @@ function MediaItem({
   );
 }
 
-function PostMedia({ post }: Readonly<{ post: ElectionsInstagramPost }>) {
+function PostMedia({ post }: Readonly<{ post: FeedInstagramPost }>) {
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
@@ -190,7 +190,7 @@ function AccountSelector({
   activeTab,
   onSelect,
 }: Readonly<{
-  accounts: ElectionsInstagramAccount[];
+  accounts: FeedInstagramAccount[];
   activeTab: string;
   onSelect: (tab: string) => void;
 }>) {
@@ -217,9 +217,9 @@ function AccountSelector({
 // ── Main component ───────────────────────────────────────────────────────────
 
 export default function FeedInstagramFeed() {
-  const [accounts, setAccounts] = useState<ElectionsInstagramAccount[]>([]);
+  const [accounts, setAccounts] = useState<FeedInstagramAccount[]>([]);
   const [activeTab, setActiveTab] = useState<string>("mixed");
-  const [posts, setPosts] = useState<ElectionsInstagramPost[]>([]);
+  const [posts, setPosts] = useState<FeedInstagramPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);

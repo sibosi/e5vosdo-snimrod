@@ -1,9 +1,9 @@
-import { fetchElectionsAccounts } from "@/lib/electionsInstagram";
+import { fetchFeedAccounts } from "@/lib/feedInstagram";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const accounts = await fetchElectionsAccounts();
+    const accounts = await fetchFeedAccounts();
     return NextResponse.json({ accounts });
   } catch (error) {
     console.error("Failed to fetch feed Instagram accounts:", error);

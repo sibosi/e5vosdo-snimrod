@@ -55,26 +55,26 @@ type OwnProfileResponse = {
   error?: { message?: string };
 };
 
-export type ElectionsInstagramMedia = {
+export type FeedInstagramMedia = {
   id: string;
   mediaType: string;
   displayUrl: string;
 };
 
-export type ElectionsInstagramPost = {
+export type FeedInstagramPost = {
   id: string;
   caption: string;
   mediaType: string;
   displayUrl: string;
-  account: ElectionsInstagramAccount;
+  account: FeedInstagramAccount;
   permalink: string;
   timestamp: string;
   likeCount: number;
   commentsCount: number;
-  carouselItems: ElectionsInstagramMedia[];
+  carouselItems: FeedInstagramMedia[];
 };
 
-export type ElectionsInstagramAccount = {
+export type FeedInstagramAccount = {
   username: string;
   profilePictureUrl: string;
 };
@@ -106,12 +106,12 @@ function getMetaConfig() {
 
 function normalizePost(
   item: GraphMediaPost,
-  account: ElectionsInstagramAccount,
-): ElectionsInstagramPost | null {
+  account: FeedInstagramAccount,
+): FeedInstagramPost | null {
   const displayUrl = item.media_url ?? item.thumbnail_url ?? "";
   if (!displayUrl) return null;
 
-  const carouselItems: ElectionsInstagramMedia[] =
+  const carouselItems: FeedInstagramMedia[] =
     item.media_type === "CAROUSEL_ALBUM"
       ? (item.children?.data ?? [])
           .map((child) => {
@@ -124,7 +124,7 @@ function normalizePost(
               displayUrl: childDisplayUrl,
             };
           })
-          .filter((child): child is ElectionsInstagramMedia => child !== null)
+          .filter((child): child is FeedInstagramMedia => child !== null)
       : [];
 
   return {
@@ -146,25 +146,25 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 type CacheEntry = {
   timestamp: number;
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
+  account: FeedInstagramAccount;
+  posts: FeedInstagramPost[];
   nextCursors: CursorsMap;
   hasMore: boolean;
 };
 
 type AccountsCacheEntry = {
   timestamp: number;
-  accounts: ElectionsInstagramAccount[];
+  accounts: FeedInstagramAccount[];
 };
 
 const globalCache = globalThis as typeof globalThis & {
-  __electionsIgCache?: Map<string, CacheEntry>;
-  __electionsIgAccountsCache?: AccountsCacheEntry;
+  __feedIgCache?: Map<string, CacheEntry>;
+  __feedIgAccountsCache?: AccountsCacheEntry;
 };
 
 function getCache(): Map<string, CacheEntry> {
-  globalCache.__electionsIgCache ??= new Map();
-  return globalCache.__electionsIgCache;
+  globalCache.__feedIgCache ??= new Map();
+  return globalCache.__feedIgCache;
 }
 
 function getCacheKey(cursors?: CursorsMap, filterUsernames?: string[]): string {
@@ -186,8 +186,8 @@ async function fetchBusinessDiscovery(
   graphVersion: string,
   afterCursor?: string,
 ): Promise<{
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
+  account: FeedInstagramAccount;
+  posts: FeedInstagramPost[];
   nextCursor: string | null;
 }> {
   const mediaField = afterCursor
@@ -230,14 +230,14 @@ async function fetchBusinessDiscovery(
     );
   }
 
-  const account: ElectionsInstagramAccount = {
+  const account: FeedInstagramAccount = {
     username: discovery.username ?? targetUsername,
     profilePictureUrl: discovery.profile_picture_url ?? "",
   };
 
   const posts = (discovery.media?.data ?? [])
     .map((item) => normalizePost(item, account))
-    .filter((item): item is ElectionsInstagramPost => item !== null);
+    .filter((item): item is FeedInstagramPost => item !== null);
 
   const nextCursor = discovery.media?.paging?.cursors?.after ?? null;
 
@@ -251,8 +251,8 @@ async function fetchOwnAccountMedia(
   ownUsername: string,
   afterCursor?: string,
 ): Promise<{
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
+  account: FeedInstagramAccount;
+  posts: FeedInstagramPost[];
   nextCursor: string | null;
 }> {
   // Fetch profile info
@@ -268,7 +268,7 @@ async function fetchOwnAccountMedia(
   });
   const profileData = (await profileRes.json()) as OwnProfileResponse;
 
-  const account: ElectionsInstagramAccount = {
+  const account: FeedInstagramAccount = {
     username: profileData.username ?? ownUsername,
     profilePictureUrl: profileData.profile_picture_url ?? "",
   };
@@ -299,7 +299,7 @@ async function fetchOwnAccountMedia(
 
   const posts = (mediaData.data ?? [])
     .map((item) => normalizePost(item, account))
-    .filter((item): item is ElectionsInstagramPost => item !== null);
+    .filter((item): item is FeedInstagramPost => item !== null);
 
   const nextCursor = mediaData.paging?.cursors?.after ?? null;
 
@@ -320,7 +320,7 @@ async function fetchAccountProfile(
   accessToken: string,
   graphVersion: string,
   ownUsername?: string,
-): Promise<ElectionsInstagramAccount | null> {
+): Promise<FeedInstagramAccount | null> {
   if (ownUsername && username === ownUsername) {
     const profileUrl = new URL(
       `https://graph.facebook.com/${graphVersion}/${accountId}`,
@@ -361,17 +361,15 @@ async function fetchAccountProfile(
   };
 }
 
-export async function fetchElectionsAccounts(): Promise<
-  ElectionsInstagramAccount[]
-> {
-  const cached = globalCache.__electionsIgAccountsCache;
+export async function fetchFeedAccounts(): Promise<FeedInstagramAccount[]> {
+  const cached = globalCache.__feedIgAccountsCache;
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.accounts;
   }
 
   const { accountId, accessToken, graphVersion, usernames, ownUsername } =
     getMetaConfig();
-  const accounts: ElectionsInstagramAccount[] = [];
+  const accounts: FeedInstagramAccount[] = [];
 
   for (const username of usernames) {
     try {
@@ -388,7 +386,7 @@ export async function fetchElectionsAccounts(): Promise<
     }
   }
 
-  globalCache.__electionsIgAccountsCache = {
+  globalCache.__feedIgAccountsCache = {
     timestamp: Date.now(),
     accounts,
   };
@@ -396,12 +394,12 @@ export async function fetchElectionsAccounts(): Promise<
   return accounts;
 }
 
-export async function fetchElectionsInstagramFeed(
+export async function fetchFeedInstagramFeed(
   cursors?: CursorsMap,
   filterUsernames?: string[],
 ): Promise<{
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
+  account: FeedInstagramAccount;
+  posts: FeedInstagramPost[];
   nextCursors: CursorsMap;
   hasMore: boolean;
 }> {
@@ -424,8 +422,8 @@ export async function fetchElectionsInstagramFeed(
     ? usernames.filter((u) => filterUsernames.includes(u))
     : usernames;
 
-  const posts: ElectionsInstagramPost[] = [];
-  const accounts: ElectionsInstagramAccount[] = [];
+  const posts: FeedInstagramPost[] = [];
+  const accounts: FeedInstagramAccount[] = [];
   const nextCursors: CursorsMap = {};
 
   for (const username of targetUsernames) {

@@ -216,7 +216,7 @@ function AccountSelector({
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function ElectionsInstagramFeed() {
+export default function FeedInstagramFeed() {
   const [accounts, setAccounts] = useState<ElectionsInstagramAccount[]>([]);
   const [activeTab, setActiveTab] = useState<string>("mixed");
   const [posts, setPosts] = useState<ElectionsInstagramPost[]>([]);
@@ -229,7 +229,7 @@ export default function ElectionsInstagramFeed() {
 
   // Fetch account list once
   useEffect(() => {
-    fetch("/api/elections/instagram/accounts")
+    fetch("/api/feed/instagram/accounts")
       .then((res) => res.json() as Promise<AccountsResponse>)
       .then((data) => {
         if (data.accounts) setAccounts(data.accounts);
@@ -252,9 +252,7 @@ export default function ElectionsInstagramFeed() {
       }
 
       const qs = params.toString();
-      const url = qs
-        ? `/api/elections/instagram?${qs}`
-        : "/api/elections/instagram";
+      const url = qs ? `/api/feed/instagram?${qs}` : "/api/feed/instagram";
 
       const response = await fetch(url, { signal });
       const data = (await response.json()) as FeedResponse;

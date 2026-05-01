@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Failed to fetch elections Instagram posts:", error);
+    console.error("Failed to fetch feed Instagram posts:", error);
     const message =
       error instanceof Error
         ? error.message

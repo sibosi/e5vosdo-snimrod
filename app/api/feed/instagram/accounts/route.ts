@@ -6,7 +6,7 @@ export async function GET() {
     const accounts = await fetchElectionsAccounts();
     return NextResponse.json({ accounts });
   } catch (error) {
-    console.error("Failed to fetch elections Instagram accounts:", error);
+    console.error("Failed to fetch feed Instagram accounts:", error);
     const message =
       error instanceof Error
         ? error.message

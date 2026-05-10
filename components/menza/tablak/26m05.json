@@ -1,0 +1,512 @@
+[
+  {
+    "1": null,
+    "2": null,
+    "KinderF.ésK.Kft.": "Hartyán konyha",
+    "": null
+  },
+  {
+    "1": null,
+    "2": "2026.05.04.-05.08.",
+    "KinderF.ésK.Kft.": null,
+    "": "Gimnázium"
+  },
+  {
+    "1": "B menü",
+    "2": null,
+    "KinderF.ésK.Kft.": "19.hét",
+    "": "A menü"
+  },
+  {
+    "1": "Tarhonyaleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Hétfő",
+    "": "Tarhonyaleves"
+  },
+  {
+    "1": "Székelykáposzta",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Zöldbabfőzelék"
+  },
+  {
+    "1": "Tk.kenyér",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Sertéspörkölt"
+  },
+  {
+    "1": null,
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Tk,kenyér"
+  },
+  {
+    "1": "100%-os gyümölcslé",
+    "2": null,
+    "KinderF.ésK.Kft.": "Kedd",
+    "": "100%-os gyümölcslé"
+  },
+  {
+    "1": "Grillfűszeres csirkemellfilé",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Rántott halporció"
+  },
+  {
+    "1": "Rizi-bizi",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Rizi-bizi"
+  },
+  {
+    "1": "Csemege uborka",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Remulád mártás"
+  },
+  {
+    "1": "Brokkolikrémleves levesgyöngy",
+    "2": null,
+    "KinderF.ésK.Kft.": "Szerda",
+    "": "Brokkolikrémleves levesgyöngy"
+  },
+  {
+    "1": "Párizsi sertésborda",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Ananászos csirkeragu"
+  },
+  {
+    "1": "Burgonyapüré",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Bulgur"
+  },
+  {
+    "1": "Daragaluskaleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Csütörtök",
+    "": "Daragaluskaleves"
+  },
+  {
+    "1": "Kínai édes-savanyú csirkemell",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Rakott kelkáposzta kölessel"
+  },
+  {
+    "1": "Jázmin rizs",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Gyümölcs"
+  },
+  {
+    "1": "Vöröslencseleves zöldségekkel",
+    "2": null,
+    "KinderF.ésK.Kft.": "Péntek",
+    "": "Vöröslencseleves zöldségekkel"
+  },
+  {
+    "1": "Kókuszos aranygaluska",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Mac and cheese"
+  },
+  {
+    "1": "Vanilia öntet",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Gyümölcs"
+  },
+  {
+    "1": "Gyümölcs",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": null
+  },
+  {
+    "1": null,
+    "2": "2026.05.11.-05.15.",
+    "KinderF.ésK.Kft.": null,
+    "": "Gimnázium"
+  },
+  {
+    "1": "B menü",
+    "2": null,
+    "KinderF.ésK.Kft.": "20.hét",
+    "": "A menü"
+  },
+  {
+    "1": "Alföldi gulyásleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Hétfő",
+    "": "Alföldi gulyásleves"
+  },
+  {
+    "1": "Piskóta kocka",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Túró töltelékes nudli"
+  },
+  {
+    "1": "Csoki öntet",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Vanilia öntet"
+  },
+  {
+    "1": "Gyümölcs",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Gyümölcs"
+  },
+  {
+    "1": "Csontleves csigatésztával",
+    "2": null,
+    "KinderF.ésK.Kft.": "Kedd",
+    "": "Csontleves csigatésztával"
+  },
+  {
+    "1": "Vadas csirkemell",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Főtt sertésszelet"
+  },
+  {
+    "1": "Főtt tészta",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Almamártás"
+  },
+  {
+    "1": null,
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Pirított dara"
+  },
+  {
+    "1": "Zöldséges gombaleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Szerda",
+    "": "Zöldséges gombaleves"
+  },
+  {
+    "1": "Rántott tonhalszelet",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Lecsós pulykatokány"
+  },
+  {
+    "1": "Jázmin rizs",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Szarvacska tészta"
+  },
+  {
+    "1": "Remulád mártás",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": null
+  },
+  {
+    "1": "Sütőtökkrémleves pir.tökmag",
+    "2": null,
+    "KinderF.ésK.Kft.": "Csütörtök",
+    "": "Sütőtökkrémleves pir.tökmag"
+  },
+  {
+    "1": "Brassói aprópecsenye",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Tavaszi rizseshús"
+  },
+  {
+    "1": "Cékla saláta",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Cékla saláta"
+  },
+  {
+    "1": "Csurgatott tojásleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Péntek",
+    "": "Csurgatott tojásleves"
+  },
+  {
+    "1": "Olaszos paradicsomos Gnocci",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Vega zöldséggyolyó"
+  },
+  {
+    "1": "Sajtszórás",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Vajas törtburgonya"
+  },
+  {
+    "1": "Kinder tejszelet",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Barnamártás"
+  },
+  {
+    "1": null,
+    "2": "2026.05.18.-05.22.",
+    "KinderF.ésK.Kft.": "Gimnázium",
+    "": null
+  },
+  {
+    "1": "B menü",
+    "2": null,
+    "KinderF.ésK.Kft.": "21.hét",
+    "": "A menü"
+  },
+  {
+    "1": "Zöldséges brokkolileves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Hétfő",
+    "": "Zöldséges brokkolileves"
+  },
+  {
+    "1": "Burgonyafőzelék",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Tarhonyáshús"
+  },
+  {
+    "1": "Sajttal töltött pulykatallér",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Vegyes vágott savanyúság"
+  },
+  {
+    "1": "Tk.kenyér",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": null
+  },
+  {
+    "1": "Paradicsomleves betűtésztával",
+    "2": null,
+    "KinderF.ésK.Kft.": "Kedd",
+    "": "Paradicsomleves betűtésztával"
+  },
+  {
+    "1": "Gyros csirkecombcsíkok",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Du barry sertésszelet"
+  },
+  {
+    "1": "Kevert saláta",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Jázmin rizs"
+  },
+  {
+    "1": "Joghurt öntet",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": null
+  },
+  {
+    "1": "Pita",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": null
+  },
+  {
+    "1": "Hamis gulyásleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Szerda",
+    "": "Hamis gulyásleves"
+  },
+  {
+    "1": "Paprikás csirkemell",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Tökfőzelék"
+  },
+  {
+    "1": "Galuska",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Pulykafasírt"
+  },
+  {
+    "1": "Túró Rudi",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Túró Rudi"
+  },
+  {
+    "1": null,
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Tk.kenyér"
+  },
+  {
+    "1": "Zöldborsóleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Csütörtök",
+    "": "Zöldborsóleves"
+  },
+  {
+    "1": "Cigánypecsenye",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Harcsapaprikás"
+  },
+  {
+    "1": "Burgonyapüré",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Tk. orsótészta"
+  },
+  {
+    "1": "Tárkonyos zöldségleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Péntek",
+    "": "Tárkonyos zöldségleves"
+  },
+  {
+    "1": "Sajtos makaróni",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Panírozott sajtgolyó"
+  },
+  {
+    "1": "Gyümölcs",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Burgonyapüré"
+  },
+  {
+    "1": null,
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Gyümölcs"
+  },
+  {
+    "1": null,
+    "2": "2026.05.25.-05.29.",
+    "KinderF.ésK.Kft.": null,
+    "": "Gimnázium"
+  },
+  {
+    "1": "B menü",
+    "2": null,
+    "KinderF.ésK.Kft.": "22.hét",
+    "": "A menü"
+  },
+  {
+    "1": "Ünnep",
+    "2": null,
+    "KinderF.ésK.Kft.": "Hétfő",
+    "": "Ünnep"
+  },
+  {
+    "1": "Lebbencsleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Kedd",
+    "": "Lebbencsleves"
+  },
+  {
+    "1": "Bácskai rizseshús",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Fejtett babfőzelék"
+  },
+  {
+    "1": "Csemege uborka",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Sült virsli"
+  },
+  {
+    "1": null,
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Tk.kenyér"
+  },
+  {
+    "1": "Karottakrémleves napraforgómag",
+    "2": null,
+    "KinderF.ésK.Kft.": "Szerda",
+    "": "Karottakrémleves napraforgómag"
+  },
+  {
+    "1": "Sült csirkecomb",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Rántott csirkemell"
+  },
+  {
+    "1": "Párolt rizs",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Párolt rizs"
+  },
+  {
+    "1": "Csalamádé",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Csalamádé"
+  },
+  {
+    "1": "Erdei gyümölcsleves",
+    "2": null,
+    "KinderF.ésK.Kft.": "Csütörtök",
+    "": "Erdei gyümölcsleves"
+  },
+  {
+    "1": "Sertés flekken",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Hentes sertéstokány"
+  },
+  {
+    "1": "Hagymás törtburgonya",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Bulgur"
+  },
+  {
+    "1": "Uborka saláta",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": null
+  },
+  {
+    "1": "Zöldségleves vajasgaluskával",
+    "2": null,
+    "KinderF.ésK.Kft.": "Péntek",
+    "": "Zöldségleves vajasgaluskával"
+  },
+  {
+    "1": "Rántott karfiol",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Lencsés bolognai spagetti"
+  },
+  {
+    "1": "Jázmin rizs",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Reszelt sajt"
+  },
+  {
+    "1": "Tartár mártás",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": "Gyümölcs"
+  },
+  {
+    "1": "Gyümölcs",
+    "2": null,
+    "KinderF.ésK.Kft.": null,
+    "": null
+  }
+]

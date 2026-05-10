@@ -141,7 +141,7 @@ function normalizePost(
   };
 }
 
-const PAGE_SIZE = 5;
+export const FEED_IG_PAGE_SIZE = 5;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 type CacheEntry = {
@@ -191,8 +191,8 @@ async function fetchBusinessDiscovery(
   nextCursor: string | null;
 }> {
   const mediaField = afterCursor
-    ? `media.limit(${PAGE_SIZE}).after(${afterCursor})`
-    : `media.limit(${PAGE_SIZE})`;
+    ? `media.limit(${FEED_IG_PAGE_SIZE}).after(${afterCursor})`
+    : `media.limit(${FEED_IG_PAGE_SIZE})`;
 
   const fields =
     `business_discovery.username(${targetUsername}){` +
@@ -281,7 +281,7 @@ async function fetchOwnAccountMedia(
     "fields",
     "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count,children{id,media_type,media_url,thumbnail_url}",
   );
-  mediaUrl.searchParams.set("limit", String(PAGE_SIZE));
+  mediaUrl.searchParams.set("limit", String(FEED_IG_PAGE_SIZE));
   mediaUrl.searchParams.set("access_token", accessToken);
   if (afterCursor) mediaUrl.searchParams.set("after", afterCursor);
 
@@ -313,6 +313,7 @@ function getTimestampValue(timestamp: string) {
 }
 
 export type CursorsMap = Record<string, string | null>;
+// username, afterCursor
 
 async function fetchAccountProfile(
   username: string,

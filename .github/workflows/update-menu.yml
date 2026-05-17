@@ -1,0 +1,105 @@
+name: Update monthly menu
+
+on:
+  # Run on the 28th of every month at 06:00 UTC
+  # (next month's PDF is usually published before month-end)
+  schedule:
+    - cron: "0 6 28 * *"
+
+  # Allow manual runs — optionally pass a local PDF already in the repo
+  workflow_dispatch:
+    inputs:
+      pdf_path:
+        description: "Repo-relative path to a local PDF (leave blank to scrape the website)"
+        required: false
+        default: ""
+
+jobs:
+  update-menu:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # push the branch
+      pull-requests: write # open the PR
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────────────────────
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          ref: master # always start from master
+
+      # ── 2. Python ──────────────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: pip install pdfplumber requests beautifulsoup4 lxml
+
+      # ── 3. Node (for Prettier) ─────────────────────────────────────────────
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Prettier
+        run: npm install --global prettier
+
+      # ── 4. Run the pipeline ────────────────────────────────────────────────
+      - name: Run pipeline (scrape website)
+        if: github.event.inputs.pdf_path == '' || github.event_name == 'schedule'
+        run: python menu_pipeline.py
+
+      - name: Run pipeline (local PDF)
+        if: github.event.inputs.pdf_path != '' && github.event_name == 'workflow_dispatch'
+        run: python menu_pipeline.py "${{ github.event.inputs.pdf_path }}"
+
+      # ── 5. Prettier ────────────────────────────────────────────────────────
+      - name: Format JSON files with Prettier
+        run: |
+          prettier --write "public/storage/mindenkorimenu.json"
+          # Also format the monthly file that was just written
+          prettier --write "components/menza/tablak/*.json"
+
+      # ── 6. Check for changes ───────────────────────────────────────────────
+      - name: Check for changes
+        id: changes
+        run: |
+          git add \
+            public/storage/mindenkorimenu.json \
+            components/menza/tablak/
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No changes detected - month already up to date."
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Changes detected - will open a PR."
+          fi
+
+      # ── 7. Commit + open PR (only when there are changes) ─────────────────
+      - name: Create pull request
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: master
+          branch: "menu/update-${{ github.run_id }}"
+          commit-message: "chore: add menu for ${{ github.run_id }}"
+          title: "Menu update - ${{ steps.date.outputs.date || 'monthly run' }}"
+          body: |
+            Automated monthly menu update.
+
+            - Parsed new month's PDF from the school website
+            - Updated `public/storage/mindenkorimenu.json`
+            - Added / updated `components/menza/tablak/*.json`
+            - Formatted with Prettier
+            - Downloaded PDF deleted
+
+            > Triggered by: `${{ github.event_name }}`
+          labels: "automated, menu"
+          add-paths: |
+            public/storage/mindenkorimenu.json
+            components/menza/tablak/

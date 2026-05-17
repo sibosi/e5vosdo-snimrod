@@ -60,9 +60,8 @@ jobs:
       # ── 5. Prettier ────────────────────────────────────────────────────────
       - name: Format JSON files with Prettier
         run: |
-          prettier --write "public/storage/mindenkorimenu.json"
-          # Also format the monthly file that was just written
-          prettier --write "components/menza/tablak/*.json"
+          prettier --no-config --write "public/storage/mindenkorimenu.json"
+          prettier --no-config --write "components/menza/tablak/*.json"
 
       # ── 6. Check for changes ───────────────────────────────────────────────
       - name: Check for changes

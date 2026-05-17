@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Created backup's drive ID: ${data}`,
+        message: `Created backup's drive ID: ${JSON.stringify(data)}`,
       }),
       {
         status: 200,

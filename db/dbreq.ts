@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
-import { backup } from "./autobackup";
 import { OAuth2Client } from "google-auth-library";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
@@ -887,7 +886,6 @@ export const apireq = {
   deleteTicket: { req: deleteTicket, perm: ["admin"] },
   getFreeRooms: { req: getFreeRooms, perm: ["user"] },
   getUserLogs: { req: getUserLogs, perm: ["admin"] },
-  backup: { req: backup, perm: ["admin", "backup"] },
 } as const;
 
 export const apioptions = Object.keys(apireq) as (keyof typeof apireq)[];
@@ -954,7 +952,5 @@ export const defaultApiReq = async (req: string, body: any) => {
   if (req === "getUserLogs") {
     const { email } = body;
     return await getUserLogs(email);
-  } else if (req === "backup") {
-    return await backup();
   } else return "No such request";
 };

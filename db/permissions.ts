@@ -12,6 +12,7 @@ export const PERMISSIONS = [
   "delegate_counter",
   "matchOrganiser",
   "media_admin",
+  "backup",
 ];
 
 /**
@@ -27,6 +28,7 @@ delegate: can see the list of parlaments
 delegate_counter: can register delegates to parlaments
 matchOrganiser: can manage matches
 media_admin: can manage media images, tags, and import XML metadata
+backup: can create backup
 */
 
 export function hasPermission(

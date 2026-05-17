@@ -12,7 +12,7 @@ const PhotoGrid = dynamic(() => import("./PhotoGrid"), {
   ),
 });
 
-const PhotoGridWrapper = () => {
+const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
   const [availableTags, setAvailableTags] = useState<MediaTagType[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -186,7 +186,11 @@ const PhotoGridWrapper = () => {
         )}
       </div>
 
-      <PhotoGrid filterTags={selectedTags} matchAll={matchAll} />
+      <PhotoGrid
+        requiredTag={requiredTag}
+        filterTags={selectedTags}
+        matchAll={matchAll}
+      />
     </div>
   );
 };

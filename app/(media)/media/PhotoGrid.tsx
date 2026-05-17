@@ -177,15 +177,17 @@ const LazyMedia = ({
   );
 };
 
+export interface PhotoGridProps {
+  requiredTag?: string;
+  filterTags?: string[];
+  matchAll?: boolean;
+}
+
 const PhotoGrid = ({
   requiredTag,
   filterTags = [],
   matchAll = false,
-}: {
-  requiredTag?: string;
-  filterTags?: string[];
-  matchAll?: boolean;
-}) => {
+}: PhotoGridProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<MediaImageType[]>();

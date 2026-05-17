@@ -2150,5 +2150,166 @@
       "Túró Rudi"
     ],
     "nap": "Friday"
+  },
+  "2026.06.01": {
+    "A": [
+      "Zöldséges fejtettbableves fst.hússal",
+      "Mákos metélt",
+      "Gyümölcs",
+      "Tk.kenyér"
+    ],
+    "B": [
+      "Zöldséges fejtettbableves fst.hússal",
+      "Császármorzsa",
+      "Sárgabaracklekvár",
+      "Gyümölcs",
+      "Tk.kenyér"
+    ],
+    "nap": "Monday"
+  },
+  "2026.06.02": {
+    "A": ["Csontleves finommetélttel", "Zöldborsófőzelék", "Rántott halrúd"],
+    "B": [
+      "Csontleves finommetélttel",
+      "Marhapörkölt",
+      "Galuska",
+      "Csemege uborka"
+    ],
+    "nap": "Tuesday"
+  },
+  "2026.06.03": {
+    "A": [
+      "100%-os gyümölcslé",
+      "Gyros csirkecombcsíkok",
+      "Friss kevert saláta",
+      "Joghurt öntet",
+      "Pita"
+    ],
+    "B": [
+      "100%-os gyümölcslé",
+      "Tavaszi rizseshús",
+      "Vitamin saláta",
+      "Sütemény"
+    ],
+    "nap": "Wednesday"
+  },
+  "2026.06.04": {
+    "A": ["Magyaros gombaleves", "Vadas pulykatokány", "Rövidcső tészta"],
+    "B": ["Magyaros gombaleves", "Párizsi csirkemellfilé", "Burgonyapüré"],
+    "nap": "Thursday"
+  },
+  "2026.06.05": {
+    "A": [
+      "Csurgatott tojásleves",
+      "Brokkolis sajtos nuggets",
+      "Párolt rizs",
+      "Sajtmártás"
+    ],
+    "B": [
+      "Csurgatott tojásleves",
+      "Rántott sajt",
+      "Párolt rizs",
+      "Tartár mártás"
+    ],
+    "nap": "Friday"
+  },
+  "2026.06.08": {
+    "A": [
+      "Reszelttészta leves",
+      "Paradicsomos káposztafőzelék",
+      "Fokhagymás sertéscsíkok",
+      "Tk.kenyér"
+    ],
+    "B": [
+      "Reszelttészta leves",
+      "Mustáros lazac",
+      "Jázmin rizs",
+      "Remulád mártás"
+    ],
+    "nap": "Monday"
+  },
+  "2026.06.09": {
+    "A": ["Tejfölös karfiolleves", "Sült csirkecomb", "Zöldséges currys rizs"],
+    "B": ["Tejfölös karfiolleves", "Tarhonyáshús", "Csemege uborka"],
+    "nap": "Tuesday"
+  },
+  "2026.06.10": {
+    "A": ["Trópusi gyümölcsleves", "Marokkói pulykaragu", "Bulgur"],
+    "B": ["Trópusi gyümölcsleves", "Rántott csirkemell", "Burgonyapüré"],
+    "nap": "Wednesday"
+  },
+  "2026.06.11": {
+    "A": [
+      "Francia hagymaleves zsemlekocka",
+      "Vasi sertésborda",
+      "Vajas burgonya",
+      "Uborka saláta"
+    ],
+    "B": [
+      "Francia hagymaleves zsemlekocka",
+      "Kacsamájas aprópecsenye",
+      "Vajas burgonya",
+      "Uborka saláta"
+    ],
+    "nap": "Thursday"
+  },
+  "2026.06.12": {
+    "A": [
+      "Zöldséges lencseleves",
+      "Spenótos tészta",
+      "Füstölt sajt",
+      "Gyümölcs"
+    ],
+    "B": ["Zöldséges lencseleves", "Piskóta kocka", "Csoki öntet", "Gyümölcs"],
+    "nap": "Friday"
+  },
+  "2026.06.15": {
+    "A": [
+      "Lebbencsleves",
+      "Sárgaborsófőzelék",
+      "Sertéspörkölt",
+      "Gyümölcs",
+      "Tk.kenyér"
+    ],
+    "B": ["Lebbencsleves", "Szerb rizseshús", "Csemege uborka", "Gyümölcs"],
+    "nap": "Monday"
+  },
+  "2026.06.16": {
+    "A": [
+      "Fahéjas almaleves",
+      "Rántott halszelet",
+      "Párolt rizs 1/2adag",
+      "Magvas friss saláta 1/2adag"
+    ],
+    "B": ["Fahéjas almaleves", "Grillezett sertésborda", "Burgonyapüré"],
+    "nap": "Tuesday"
+  },
+  "2026.06.17": {
+    "A": [
+      "Daragaluskaleves",
+      "Paprikás burgonya (virslivel)",
+      "Kovászos uborka"
+    ],
+    "B": [
+      "Daragaluskaleves",
+      "Sült csirkecomb",
+      "Rizi-bizi",
+      "Kovászos uborka"
+    ],
+    "nap": "Wednesday"
+  },
+  "2026.06.18": {
+    "A": ["Bazsalikomos paradicsomleves", "Mexikói csirkeragu", "Bulgur"],
+    "B": [
+      "Bazsalikomos paradicsomleves",
+      "Brassói aprópecsenye",
+      "Káposzta saláta"
+    ],
+    "nap": "Thursday"
+  },
+  "2026.06.19": {
+    "A": ["Sajtkrémleves levesgyöngy", "Darás metélt", "Sárgabarack lekvár"],
+    "B": ["Sajtkrémleves levesgyöngy", "Mákkrémmel töltött nudli"],
+    "nap": "Friday"
   }
 }

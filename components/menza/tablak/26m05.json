@@ -1,16 +1,7 @@
 {
   "2026.05.04": {
-    "A": [
-      "Tarhonyaleves",
-      "Zöldbabfőzelék",
-      "Sertéspörkölt",
-      "Tk,kenyér"
-    ],
-    "B": [
-      "Tarhonyaleves",
-      "Székelykáposzta",
-      "Tk.kenyér"
-    ],
+    "A": ["Tarhonyaleves", "Zöldbabfőzelék", "Sertéspörkölt", "Tk,kenyér"],
+    "B": ["Tarhonyaleves", "Székelykáposzta", "Tk.kenyér"],
     "nap": "Monday"
   },
   "2026.05.05": {
@@ -29,11 +20,7 @@
     "nap": "Tuesday"
   },
   "2026.05.06": {
-    "A": [
-      "Brokkolikrémleves levesgyöngy",
-      "Ananászos csirkeragu",
-      "Bulgur"
-    ],
+    "A": ["Brokkolikrémleves levesgyöngy", "Ananászos csirkeragu", "Bulgur"],
     "B": [
       "Brokkolikrémleves levesgyöngy",
       "Párizsi sertésborda",
@@ -42,24 +29,12 @@
     "nap": "Wednesday"
   },
   "2026.05.07": {
-    "A": [
-      "Daragaluskaleves",
-      "Rakott kelkáposzta kölessel",
-      "Gyümölcs"
-    ],
-    "B": [
-      "Daragaluskaleves",
-      "Kínai édes-savanyú csirkemell",
-      "Jázmin rizs"
-    ],
+    "A": ["Daragaluskaleves", "Rakott kelkáposzta kölessel", "Gyümölcs"],
+    "B": ["Daragaluskaleves", "Kínai édes-savanyú csirkemell", "Jázmin rizs"],
     "nap": "Thursday"
   },
   "2026.05.08": {
-    "A": [
-      "Vöröslencseleves zöldségekkel",
-      "Mac and cheese",
-      "Gyümölcs"
-    ],
+    "A": ["Vöröslencseleves zöldségekkel", "Mac and cheese", "Gyümölcs"],
     "B": [
       "Vöröslencseleves zöldségekkel",
       "Kókuszos aranygaluska",
@@ -75,12 +50,7 @@
       "Vanilia öntet",
       "Gyümölcs"
     ],
-    "B": [
-      "Alföldi gulyásleves",
-      "Piskóta kocka",
-      "Csoki öntet",
-      "Gyümölcs"
-    ],
+    "B": ["Alföldi gulyásleves", "Piskóta kocka", "Csoki öntet", "Gyümölcs"],
     "nap": "Monday"
   },
   "2026.05.12": {
@@ -90,19 +60,11 @@
       "Almamártás",
       "Pirított dara"
     ],
-    "B": [
-      "Csontleves csigatésztával",
-      "Vadas csirkemell",
-      "Főtt tészta"
-    ],
+    "B": ["Csontleves csigatésztával", "Vadas csirkemell", "Főtt tészta"],
     "nap": "Tuesday"
   },
   "2026.05.13": {
-    "A": [
-      "Zöldséges gombaleves",
-      "Lecsós pulykatokány",
-      "Szarvacska tészta"
-    ],
+    "A": ["Zöldséges gombaleves", "Lecsós pulykatokány", "Szarvacska tészta"],
     "B": [
       "Zöldséges gombaleves",
       "Rántott tonhalszelet",
@@ -112,11 +74,7 @@
     "nap": "Wednesday"
   },
   "2026.05.14": {
-    "A": [
-      "Sütőtökkrémleves pir.tökmag",
-      "Tavaszi rizseshús",
-      "Cékla saláta"
-    ],
+    "A": ["Sütőtökkrémleves pir.tökmag", "Tavaszi rizseshús", "Cékla saláta"],
     "B": [
       "Sütőtökkrémleves pir.tökmag",
       "Brassói aprópecsenye",
@@ -176,25 +134,12 @@
       "Túró Rudi",
       "Tk.kenyér"
     ],
-    "B": [
-      "Hamis gulyásleves",
-      "Paprikás csirkemell",
-      "Galuska",
-      "Túró Rudi"
-    ],
+    "B": ["Hamis gulyásleves", "Paprikás csirkemell", "Galuska", "Túró Rudi"],
     "nap": "Wednesday"
   },
   "2026.05.21": {
-    "A": [
-      "Zöldborsóleves",
-      "Harcsapaprikás",
-      "Tk. orsótészta"
-    ],
-    "B": [
-      "Zöldborsóleves",
-      "Cigánypecsenye",
-      "Burgonyapüré"
-    ],
+    "A": ["Zöldborsóleves", "Harcsapaprikás", "Tk. orsótészta"],
+    "B": ["Zöldborsóleves", "Cigánypecsenye", "Burgonyapüré"],
     "nap": "Thursday"
   },
   "2026.05.22": {
@@ -204,34 +149,17 @@
       "Burgonyapüré",
       "Gyümölcs"
     ],
-    "B": [
-      "Tárkonyos zöldségleves",
-      "Sajtos makaróni",
-      "Gyümölcs"
-    ],
+    "B": ["Tárkonyos zöldségleves", "Sajtos makaróni", "Gyümölcs"],
     "nap": "Friday"
   },
   "2026.05.25": {
-    "A": [
-      "Ünnep"
-    ],
-    "B": [
-      "Ünnep"
-    ],
+    "A": ["Ünnep"],
+    "B": ["Ünnep"],
     "nap": "Monday"
   },
   "2026.05.26": {
-    "A": [
-      "Lebbencsleves",
-      "Fejtett babfőzelék",
-      "Sült virsli",
-      "Tk.kenyér"
-    ],
-    "B": [
-      "Lebbencsleves",
-      "Bácskai rizseshús",
-      "Csemege uborka"
-    ],
+    "A": ["Lebbencsleves", "Fejtett babfőzelék", "Sült virsli", "Tk.kenyér"],
+    "B": ["Lebbencsleves", "Bácskai rizseshús", "Csemege uborka"],
     "nap": "Tuesday"
   },
   "2026.05.27": {
@@ -250,11 +178,7 @@
     "nap": "Wednesday"
   },
   "2026.05.28": {
-    "A": [
-      "Erdei gyümölcsleves",
-      "Hentes sertéstokány",
-      "Bulgur"
-    ],
+    "A": ["Erdei gyümölcsleves", "Hentes sertéstokány", "Bulgur"],
     "B": [
       "Erdei gyümölcsleves",
       "Sertés flekken",

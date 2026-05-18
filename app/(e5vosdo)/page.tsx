@@ -19,6 +19,7 @@ import {
 } from "@/components/helyettesites/quickteacher";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import ShortDay from "@/components/home/shortDay";
 
 export const metadata: Metadata = {
   robots: {
@@ -126,6 +127,8 @@ function MainContent({
           </div>
         </Section>
       )}
+
+      <ShortDay without7thLesson={true} />
 
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section

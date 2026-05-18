@@ -10,10 +10,11 @@ const timetable = [
   ["13:15", "13:55"],
 ];
 
-const ShortDay = () => {
+const ShortDay = ({without7thLesson = false} : {without7thLesson?: boolean}) => {
   return (
     <div className="my-4 max-w-md space-y-2 rounded-xl bg-selfprimary-100 p-4">
       <h2 className="text-lg font-bold">Rövidített órák csengetési rendje</h2>
+      {without7thLesson ? <p className="text-semibold">A 7. órák nem lesznek megtartva</P> : <></>}
       <div className="text-sm">
         <div className="grid grid-cols-3 gap-4 py-2 font-semibold">
           <span />

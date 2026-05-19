@@ -128,8 +128,6 @@ function MainContent({
         </Section>
       )}
 
-      <ShortDay without7thLesson={true} />
-
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section
           title={"Helyettesítések"}

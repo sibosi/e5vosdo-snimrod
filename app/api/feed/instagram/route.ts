@@ -1,5 +1,3 @@
-// TODO: Review & refactor
-
 import { NextResponse, type NextRequest } from "next/server";
 import {
   FEED_IG_PAGE_SIZE,

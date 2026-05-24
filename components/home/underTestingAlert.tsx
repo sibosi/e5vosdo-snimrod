@@ -5,7 +5,7 @@ import { Alert } from "./alert";
 const UnderTestingAlert = () => {
   return (
     <Alert
-      icon={false}
+      hideIcon={true}
       className="border-selfsecondary-300 bg-selfsecondary-100"
     >
       Figyelem! Ez a funkció még tesztelés alatt áll. Kérjük, hogy

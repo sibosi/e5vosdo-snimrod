@@ -73,6 +73,8 @@ jobs:
             MYSQL_USER=${{ secrets.MYSQL_USER }}
             MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
             ENCRYPTION_PASSWORD=${{ secrets.ENCRYPTION_PASSWORD }}
+            BACKUP_API_TOKEN=${{ secrets.BACKUP_API_TOKEN }}
+            PRODUCTION_BACKUP_API_URL=${{ secrets.PRODUCTION_BACKUP_API_URL }}
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

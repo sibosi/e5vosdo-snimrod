@@ -27,12 +27,13 @@ const Alerts = () => {
 
   if (!alerts) return;
 
+  console.log(JSON.stringify(alerts));
+
   return alerts.map((alert, index) => (
     <Alert
       key={index}
       className={"whitespace-pre-line " + alert.className}
-      icon={alert.icon}
-      padding={alert.padding}
+      hideIcon={!alert.icon}
     >
       <span>{parse(alert.text)}</span>
     </Alert>

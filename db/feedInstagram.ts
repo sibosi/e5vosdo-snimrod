@@ -115,6 +115,10 @@ export async function getFeedPostsPage(options: {
   after?: { timestampEpoch: number; id: string } | null;
   limit: number;
 }): Promise<FeedDbPageResult> {
+  const parsedLimit = Number(options.limit);
+  const limit = Number.isFinite(parsedLimit)
+    ? Math.max(1, Math.floor(parsedLimit))
+    : 20;
   const params: Array<string | number> = [];
   const where: string[] = [];
 
@@ -137,12 +141,12 @@ export async function getFeedPostsPage(options: {
   }
 
   const whereSql = where.length > 0 ? `WHERE ${where.join(" AND ")}` : "";
-  const query = `SELECT p.*, a.profile_picture_url FROM feed_instagram_posts p LEFT JOIN feed_instagram_accounts a ON a.username = p.account_username ${whereSql} ORDER BY COALESCE(p.timestamp_epoch, 0) DESC, p.id DESC LIMIT ?`;
-  params.push(options.limit + 1);
+  // Use literal LIMIT for compatibility with some MySQL servers and prepared statements.
+  const query = `SELECT p.*, a.profile_picture_url FROM feed_instagram_posts p LEFT JOIN feed_instagram_accounts a ON a.username = p.account_username ${whereSql} ORDER BY COALESCE(p.timestamp_epoch, 0) DESC, p.id DESC LIMIT ${limit + 1}`;
 
   const rows = (await dbreq(query, params)) as FeedDbPostRow[];
-  const hasMore = rows.length > options.limit;
-  const posts = hasMore ? rows.slice(0, options.limit) : rows;
+  const hasMore = rows.length > limit;
+  const posts = hasMore ? rows.slice(0, limit) : rows;
 
   let mediaItems: FeedDbMediaRow[] = [];
   if (posts.length > 0) {
@@ -182,7 +186,8 @@ export async function getFeedAccountCursors(
   filterUsernames?: string[],
 ): Promise<Record<string, string | null>> {
   const params: Array<string | number> = [];
-  let query = "SELECT username, next_cursor FROM feed_instagram_accounts";
+  let query =
+    "SELECT username, next_cursor, has_more FROM feed_instagram_accounts";
 
   if (filterUsernames && filterUsernames.length > 0) {
     query += ` WHERE username IN (${buildInPlaceholders(filterUsernames)})`;
@@ -192,10 +197,13 @@ export async function getFeedAccountCursors(
   const rows = (await dbreq(query, params)) as Array<{
     username: string;
     next_cursor: string | null;
+    has_more: number | null;
   }>;
 
   return rows.reduce<Record<string, string | null>>((acc, row) => {
-    acc[row.username] = row.next_cursor ?? null;
+    const hasMore = row.has_more !== 0;
+    // When we have no cursor yet but has_more is true, treat it as initial fetch.
+    acc[row.username] = hasMore ? (row.next_cursor ?? "") : null;
     return acc;
   }, {});
 }

@@ -157,6 +157,10 @@ type AccountsCacheEntry = {
   accounts: FeedInstagramAccount[];
 };
 
+type FetchFeedInstagramOptions = {
+  skipCache?: boolean;
+};
+
 const globalCache = globalThis as typeof globalThis & {
   __feedIgCache?: Map<string, CacheEntry>;
   __feedIgAccountsCache?: AccountsCacheEntry;
@@ -398,6 +402,7 @@ export async function fetchFeedAccounts(): Promise<FeedInstagramAccount[]> {
 export async function fetchFeedInstagramFeed(
   cursors?: CursorsMap,
   filterUsernames?: string[],
+  options?: FetchFeedInstagramOptions,
 ): Promise<{
   account: FeedInstagramAccount;
   posts: FeedInstagramPost[];
@@ -408,7 +413,7 @@ export async function fetchFeedInstagramFeed(
   const cacheKey = getCacheKey(cursors, filterUsernames);
   const cached = cache.get(cacheKey);
 
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+  if (!options?.skipCache && cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return {
       account: cached.account,
       posts: cached.posts,

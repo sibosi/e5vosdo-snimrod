@@ -26,6 +26,12 @@ import {
 
 const DB_CURSOR_KEY = "__db_after";
 
+function isRefreshRequested(value: string | null) {
+  if (!value) return false;
+  const normalized = value.toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes";
+}
+
 function decodeDbAfterToken(cursors?: CursorsMap) {
   const token = cursors?.[DB_CURSOR_KEY];
   if (!token) return null;
@@ -104,43 +110,7 @@ async function fetchAndStoreFromMeta(filterUsernames?: string[]) {
     filterUsernames,
   );
 
-  if (posts.length > 0) {
-    const accounts = collectAccounts(posts);
-    await upsertFeedAccounts(accounts);
-    await upsertFeedPosts(posts);
-
-    const mediaRecords = buildMediaRecords(posts);
-    const existingMedia = await getFeedMediaDriveInfoByIds(
-      mediaRecords.map((record) => record.id),
-    );
-
-    if (isFeedMediaDriveEnabled()) {
-      const allowVideos = shouldStoreFeedVideos();
-      for (const record of mediaRecords) {
-        const existing = existingMedia.get(record.id);
-        if (existing?.driveFileId) {
-          continue;
-        }
-        if (record.mediaType === "VIDEO" && !allowVideos) {
-          continue;
-        }
-
-        try {
-          const driveInfo = await uploadFeedMediaToDrive({
-            mediaUrl: record.displayUrl,
-            fileNameBase: record.id,
-          });
-          record.driveFileId = driveInfo.driveFileId;
-          record.driveMimeType = driveInfo.driveMimeType;
-          record.driveMd5 = driveInfo.driveMd5;
-        } catch (error) {
-          console.warn("Failed to upload feed media", record.id, error);
-        }
-      }
-    }
-
-    await upsertFeedMediaItems(mediaRecords);
-  }
+  await upsertFeedData(posts);
 
   const usernamesWithPosts = new Set(
     posts.map((post) => post.account.username),
@@ -158,10 +128,60 @@ async function fetchAndStoreFromMeta(filterUsernames?: string[]) {
   }
 }
 
+async function upsertFeedData(posts: FeedInstagramPost[]) {
+  if (posts.length === 0) return;
+
+  const accounts = collectAccounts(posts);
+  await upsertFeedAccounts(accounts);
+  await upsertFeedPosts(posts);
+
+  const mediaRecords = buildMediaRecords(posts);
+  const existingMedia = await getFeedMediaDriveInfoByIds(
+    mediaRecords.map((record) => record.id),
+  );
+
+  if (isFeedMediaDriveEnabled()) {
+    const allowVideos = shouldStoreFeedVideos();
+    for (const record of mediaRecords) {
+      const existing = existingMedia.get(record.id);
+      if (existing?.driveFileId) {
+        continue;
+      }
+      if (record.mediaType === "VIDEO" && !allowVideos) {
+        continue;
+      }
+
+      try {
+        const driveInfo = await uploadFeedMediaToDrive({
+          mediaUrl: record.displayUrl,
+          fileNameBase: record.id,
+        });
+        record.driveFileId = driveInfo.driveFileId;
+        record.driveMimeType = driveInfo.driveMimeType;
+        record.driveMd5 = driveInfo.driveMd5;
+      } catch (error) {
+        console.warn("Failed to upload feed media", record.id, error);
+      }
+    }
+  }
+
+  await upsertFeedMediaItems(mediaRecords);
+}
+
+async function fetchAndStoreLatestFromMeta(filterUsernames?: string[]) {
+  const { posts } = await fetchFeedInstagramFeed(undefined, filterUsernames, {
+    skipCache: true,
+  });
+
+  await upsertFeedData(posts);
+  return posts.length;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const cursorsParam = request.nextUrl.searchParams.get("cursors");
     const usernamesParam = request.nextUrl.searchParams.get("usernames");
+    const refreshParam = request.nextUrl.searchParams.get("refresh");
     const filterUsernames = usernamesParam
       ? usernamesParam
           .split(",")
@@ -171,6 +191,18 @@ export async function GET(request: NextRequest) {
     const cursors: CursorsMap | undefined = cursorsParam
       ? (JSON.parse(cursorsParam) as CursorsMap)
       : undefined;
+    const shouldRefresh = isRefreshRequested(refreshParam);
+
+    if (shouldRefresh) {
+      console.info("Feed refresh requested");
+      try {
+        const refreshedCount = await fetchAndStoreLatestFromMeta(filterUsernames);
+        console.info(`Feed refresh completed. Posts: ${refreshedCount}`);
+      } catch (error) {
+        console.warn("Feed refresh failed", error);
+      }
+    }
+
     const dbAfter = decodeDbAfterToken(cursors ?? undefined);
 
     let page = await getFeedPostsPage({

@@ -158,6 +158,18 @@ export async function getFeedPostsPage(options: {
   return { posts, mediaItems, hasMore };
 }
 
+export async function getFeedPostIdsByIds(postIds: string[]) {
+  if (postIds.length === 0) return new Set<string>();
+
+  const query = `SELECT id FROM feed_instagram_posts WHERE id IN (${buildInPlaceholders(postIds)})`;
+  const rows = (await dbreq(query, postIds)) as Array<{ id: string }>;
+
+  return rows.reduce((acc, row) => {
+    acc.add(row.id);
+    return acc;
+  }, new Set<string>());
+}
+
 export async function getFeedAccountsFromDb(
   filterUsernames?: string[],
 ): Promise<FeedInstagramAccount[]> {
@@ -179,45 +191,6 @@ export async function getFeedAccountsFromDb(
     username: row.username,
     profilePictureUrl: row.profile_picture_url ?? "",
   }));
-}
-
-// Cursor: A string that indicates where to continue fetching the feed for a given account. It can be a timestamp, an ID, or any opaque value that the Instagram API uses for pagination.
-export async function getFeedAccountCursors(
-  filterUsernames?: string[],
-): Promise<Record<string, string | null>> {
-  const params: Array<string | number> = [];
-  let query =
-    "SELECT username, next_cursor, has_more FROM feed_instagram_accounts";
-
-  if (filterUsernames && filterUsernames.length > 0) {
-    query += ` WHERE username IN (${buildInPlaceholders(filterUsernames)})`;
-    params.push(...filterUsernames);
-  }
-
-  const rows = (await dbreq(query, params)) as Array<{
-    username: string;
-    next_cursor: string | null;
-    has_more: number | null;
-  }>;
-
-  return rows.reduce<Record<string, string | null>>((acc, row) => {
-    const hasMore = row.has_more !== 0;
-    // When we have no cursor yet but has_more is true, treat it as initial fetch.
-    acc[row.username] = hasMore ? (row.next_cursor ?? "") : null;
-    return acc;
-  }, {});
-}
-
-export async function updateFeedAccountCursors(
-  nextCursors: Record<string, string | null>,
-) {
-  const entries = Object.entries(nextCursors);
-  for (const [username, cursor] of entries) {
-    await dbreq(
-      "INSERT INTO feed_instagram_accounts (username, next_cursor, has_more, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE next_cursor = VALUES(next_cursor), has_more = VALUES(has_more), updated_at = CURRENT_TIMESTAMP",
-      [username, cursor, cursor ? 1 : 0],
-    );
-  }
 }
 
 export async function getFeedMediaDriveInfoByIds(mediaIds: string[]) {

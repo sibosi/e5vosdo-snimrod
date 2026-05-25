@@ -2,8 +2,6 @@ CREATE TABLE
   IF NOT EXISTS feed_instagram_accounts (
     username VARCHAR(255) PRIMARY KEY,
     profile_picture_url TEXT,
-    next_cursor VARCHAR(255) DEFAULT NULL,
-    has_more TINYINT (1) DEFAULT 1,
     updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
 

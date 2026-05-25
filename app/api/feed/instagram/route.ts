@@ -1,85 +1,23 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { FEED_IG_PAGE_SIZE, type FeedInstagramPost } from "@/lib/feedInstagram";
+import { isFeedMediaDriveEnabled } from "@/lib/feedInstagramStorage";
 import {
-  FEED_IG_PAGE_SIZE,
-  fetchFeedInstagramFeed,
-  type CursorsMap,
-  type FeedInstagramAccount,
-  type FeedInstagramPost,
-} from "@/lib/feedInstagram";
-import {
-  isFeedMediaDriveEnabled,
-  shouldStoreFeedVideos,
-  uploadFeedMediaToDrive,
-} from "@/lib/feedInstagramStorage";
-import {
-  getFeedAccountCursors,
-  getFeedMediaDriveInfoByIds,
   getFeedPostsPage,
-  updateFeedAccountCursors,
-  upsertFeedAccounts,
-  upsertFeedMediaItems,
-  upsertFeedPosts,
   type FeedDbMediaRow,
   type FeedDbPostRow,
-  type FeedMediaRecord,
 } from "@/db/feedInstagram";
 
-const DB_CURSOR_KEY = "__db_after";
-
-function isRefreshRequested(value: string | null) {
-  if (!value) return false;
-  const normalized = value.toLowerCase();
-  return normalized === "1" || normalized === "true" || normalized === "yes";
-}
-
-function decodeDbAfterToken(cursors?: CursorsMap) {
-  const token = cursors?.[DB_CURSOR_KEY];
-  if (!token) return null;
-  const [timestampRaw, id] = token.split(":");
+function decodeAfterToken(after?: string | null) {
+  if (!after) return null;
+  const [timestampRaw, id] = after.split(":");
   const timestampEpoch = Number(timestampRaw);
   if (!Number.isFinite(timestampEpoch) || !id) return null;
   return { timestampEpoch, id };
 }
 
-function encodeDbAfterToken(post: FeedDbPostRow) {
+function encodeAfterToken(post: FeedDbPostRow) {
   const timestampEpoch = post.timestamp_epoch ?? 0;
   return `${timestampEpoch}:${post.id}`;
-}
-
-function collectAccounts(posts: FeedInstagramPost[]): FeedInstagramAccount[] {
-  const unique = new Map<string, FeedInstagramAccount>();
-  for (const post of posts) {
-    unique.set(post.account.username, post.account);
-  }
-  return Array.from(unique.values());
-}
-
-function buildMediaRecords(posts: FeedInstagramPost[]): FeedMediaRecord[] {
-  const items: FeedMediaRecord[] = [];
-
-  for (const post of posts) {
-    if (post.mediaType === "CAROUSEL_ALBUM" && post.carouselItems.length > 0) {
-      post.carouselItems.forEach((item, index) => {
-        items.push({
-          id: item.id,
-          postId: post.id,
-          mediaType: item.mediaType,
-          displayUrl: item.displayUrl,
-          position: index,
-        });
-      });
-    } else {
-      items.push({
-        id: post.id,
-        postId: post.id,
-        mediaType: post.mediaType,
-        displayUrl: post.displayUrl,
-        position: 0,
-      });
-    }
-  }
-
-  return items;
 }
 
 function mapMediaToPosts(posts: FeedDbPostRow[], mediaItems: FeedDbMediaRow[]) {
@@ -103,141 +41,23 @@ function resolveMediaUrl(
   return displayUrl ?? "";
 }
 
-async function fetchAndStoreFromMeta(filterUsernames?: string[]) {
-  const cursorsFromDb = await getFeedAccountCursors(filterUsernames);
-  const { posts, nextCursors } = await fetchFeedInstagramFeed(
-    cursorsFromDb,
-    filterUsernames,
-  );
-
-  await upsertFeedData(posts);
-
-  const usernamesWithPosts = new Set(
-    posts.map((post) => post.account.username),
-  );
-  const nextCursorsToUpdate: CursorsMap = {};
-  for (const [username, nextCursor] of Object.entries(nextCursors)) {
-    const previousCursor = cursorsFromDb[username];
-    if (usernamesWithPosts.has(username) || previousCursor === null) {
-      nextCursorsToUpdate[username] = nextCursor ?? null;
-    }
-  }
-
-  if (Object.keys(nextCursorsToUpdate).length > 0) {
-    await updateFeedAccountCursors(nextCursorsToUpdate);
-  }
-}
-
-async function upsertFeedData(posts: FeedInstagramPost[]) {
-  if (posts.length === 0) return;
-
-  const accounts = collectAccounts(posts);
-  await upsertFeedAccounts(accounts);
-  await upsertFeedPosts(posts);
-
-  const mediaRecords = buildMediaRecords(posts);
-  const existingMedia = await getFeedMediaDriveInfoByIds(
-    mediaRecords.map((record) => record.id),
-  );
-
-  if (isFeedMediaDriveEnabled()) {
-    const allowVideos = shouldStoreFeedVideos();
-    for (const record of mediaRecords) {
-      const existing = existingMedia.get(record.id);
-      if (existing?.driveFileId) {
-        continue;
-      }
-      if (record.mediaType === "VIDEO" && !allowVideos) {
-        continue;
-      }
-
-      try {
-        const driveInfo = await uploadFeedMediaToDrive({
-          mediaUrl: record.displayUrl,
-          fileNameBase: record.id,
-        });
-        record.driveFileId = driveInfo.driveFileId;
-        record.driveMimeType = driveInfo.driveMimeType;
-        record.driveMd5 = driveInfo.driveMd5;
-      } catch (error) {
-        console.warn("Failed to upload feed media", record.id, error);
-      }
-    }
-  }
-
-  await upsertFeedMediaItems(mediaRecords);
-}
-
-async function fetchAndStoreLatestFromMeta(filterUsernames?: string[]) {
-  const { posts } = await fetchFeedInstagramFeed(undefined, filterUsernames, {
-    skipCache: true,
-  });
-
-  await upsertFeedData(posts);
-  return posts.length;
-}
-
 export async function GET(request: NextRequest) {
   try {
-    const cursorsParam = request.nextUrl.searchParams.get("cursors");
+    const afterParam = request.nextUrl.searchParams.get("after");
     const usernamesParam = request.nextUrl.searchParams.get("usernames");
-    const refreshParam = request.nextUrl.searchParams.get("refresh");
     const filterUsernames = usernamesParam
       ? usernamesParam
           .split(",")
           .map((u) => u.trim())
           .filter(Boolean)
       : undefined;
-    const cursors: CursorsMap | undefined = cursorsParam
-      ? (JSON.parse(cursorsParam) as CursorsMap)
-      : undefined;
-    const shouldRefresh = isRefreshRequested(refreshParam);
+    const dbAfter = decodeAfterToken(afterParam);
 
-    if (shouldRefresh) {
-      console.info("Feed refresh requested");
-      try {
-        const refreshedCount = await fetchAndStoreLatestFromMeta(filterUsernames);
-        console.info(`Feed refresh completed. Posts: ${refreshedCount}`);
-      } catch (error) {
-        console.warn("Feed refresh failed", error);
-      }
-    }
-
-    const dbAfter = decodeDbAfterToken(cursors ?? undefined);
-
-    let page = await getFeedPostsPage({
+    const page = await getFeedPostsPage({
       filterUsernames,
       after: dbAfter,
       limit: FEED_IG_PAGE_SIZE,
     });
-
-    let accountCursors = await getFeedAccountCursors(filterUsernames);
-    let hasMoreMeta = Object.values(accountCursors).some(
-      (cursor) => cursor !== null,
-    );
-
-    const shouldBackfill =
-      page.posts.length < FEED_IG_PAGE_SIZE &&
-      (hasMoreMeta || Object.keys(accountCursors).length === 0);
-
-    if (shouldBackfill) {
-      try {
-        await fetchAndStoreFromMeta(filterUsernames);
-      } catch (error) {
-        console.warn("Feed backfill failed", error);
-      }
-
-      page = await getFeedPostsPage({
-        filterUsernames,
-        after: dbAfter,
-        limit: FEED_IG_PAGE_SIZE,
-      });
-
-      accountCursors = await getFeedAccountCursors(filterUsernames);
-      hasMoreMeta = Object.values(accountCursors).some(
-        (cursor) => cursor !== null,
-      );
-    }
 
     const { mediaByPost } = mapMediaToPosts(page.posts, page.mediaItems);
 
@@ -271,12 +91,10 @@ export async function GET(request: NextRequest) {
       } satisfies FeedInstagramPost;
     });
 
-    const hasMore = posts.length > 0 && (page.hasMore || hasMoreMeta);
-    const nextCursors =
+    const hasMore = posts.length > 0 && page.hasMore;
+    const nextAfter =
       hasMore && page.posts.length > 0
-        ? ({
-            [DB_CURSOR_KEY]: encodeDbAfterToken(page.posts.at(-1)!),
-          } as CursorsMap)
+        ? encodeAfterToken(page.posts.at(-1)!)
         : undefined;
 
     const account = posts[0]?.account ?? {
@@ -287,7 +105,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       account,
       posts,
-      nextCursors,
+      nextAfter,
       hasMore,
       fetchedAt: new Date().toISOString(),
     });

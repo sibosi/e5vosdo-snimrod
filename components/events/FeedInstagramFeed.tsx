@@ -5,7 +5,6 @@ import Link from "next/link";
 import type {
   FeedInstagramAccount,
   FeedInstagramPost,
-  CursorsMap,
 } from "@/lib/feedInstagram";
 import { Chip } from "@heroui/react";
 
@@ -20,7 +19,7 @@ const CUSTOM_USERNAMES: string[] = [];
 
 type FeedResponse = {
   posts?: FeedInstagramPost[];
-  nextCursors?: CursorsMap;
+  nextAfter?: string;
   hasMore?: boolean;
   error?: string;
   details?: string;
@@ -224,7 +223,7 @@ export default function FeedInstagramFeed() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
-  const nextCursorsRef = useRef<CursorsMap | undefined>(undefined);
+  const nextAfterRef = useRef<string | undefined>(undefined);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch account list once
@@ -240,11 +239,11 @@ export default function FeedInstagramFeed() {
   const fetchPage = useCallback(
     async (
       tab: string,
-      cursors?: CursorsMap,
+      after?: string,
       signal?: AbortSignal,
     ): Promise<FeedResponse> => {
       const params = new URLSearchParams();
-      if (cursors) params.set("cursors", JSON.stringify(cursors));
+      if (after) params.set("after", after);
       if (tab === "custom" && CUSTOM_USERNAMES.length > 0) {
         params.set("usernames", CUSTOM_USERNAMES.join(","));
       } else if (tab !== "mixed" && tab !== "custom") {
@@ -279,12 +278,12 @@ export default function FeedInstagramFeed() {
         setIsLoading(true);
         setError(null);
         setPosts([]);
-        nextCursorsRef.current = undefined;
+        nextAfterRef.current = undefined;
 
         const data = await fetchPage(activeTab, undefined, controller.signal);
 
         setPosts(data.posts ?? []);
-        nextCursorsRef.current = data.nextCursors;
+        nextAfterRef.current = data.nextAfter;
         setHasMore(data.hasMore ?? false);
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
@@ -308,9 +307,9 @@ export default function FeedInstagramFeed() {
     setIsLoadingMore(true);
 
     try {
-      const data = await fetchPage(activeTab, nextCursorsRef.current);
+      const data = await fetchPage(activeTab, nextAfterRef.current);
       setPosts((prev) => [...prev, ...(data.posts ?? [])]);
-      nextCursorsRef.current = data.nextCursors;
+      nextAfterRef.current = data.nextAfter;
       setHasMore(data.hasMore ?? false);
     } catch (err) {
       console.warn("Failed to load more posts", err);

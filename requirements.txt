@@ -16,6 +16,11 @@ openpyxl
 cryptography
 py-vapid
 
+# Google APIs
+google-api-python-client
+google-auth
+google-auth-httplib2
+
 pdfplumber>=0.11
 requests>=2.31
 beautifulsoup4>=4.12

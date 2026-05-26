@@ -24,33 +24,32 @@ import {
 const REFRESH_PAGE_LIMIT = 5;
 const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "::1"]);
 
+function normalizeIp(value: string) {
+  if (value.startsWith("::ffff:")) return value.slice(7);
+  return value;
+}
+
+function isLocalIp(value: string) {
+  return LOCAL_HOSTS.has(normalizeIp(value));
+}
+
 function isLocalRequest(request: NextRequest) {
   const forwardedFor = request.headers.get("x-forwarded-for");
-  const realIp = request.headers.get("x-real-ip");
-
-  const ipCandidates: string[] = [];
   if (forwardedFor) {
-    forwardedFor
-      .split(",")
-      .map((entry) => entry.trim())
-      .filter(Boolean)
-      .forEach((entry) => ipCandidates.push(entry));
-  }
-  if (realIp) {
-    ipCandidates.push(realIp.trim());
+    const clientIp = forwardedFor.split(",")[0]?.trim();
+    return clientIp ? isLocalIp(clientIp) : false;
   }
 
-  if (ipCandidates.some((ip) => LOCAL_HOSTS.has(ip))) {
-    return true;
+  const realIp = request.headers.get("x-real-ip");
+  if (realIp) {
+    return isLocalIp(realIp.trim());
   }
 
   const hostHeader = request.headers.get("host");
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const hostCandidates = [request.nextUrl.hostname, hostHeader, forwardedHost]
-    .filter(Boolean)
-    .map((host) => (host ?? "").split(":")[0]);
+  if (!hostHeader) return false;
 
-  return hostCandidates.some((host) => LOCAL_HOSTS.has(host));
+  const host = hostHeader.split(":")[0];
+  return LOCAL_HOSTS.has(host);
 }
 
 function buildMediaRecords(posts: FeedInstagramPost[]): FeedMediaRecord[] {

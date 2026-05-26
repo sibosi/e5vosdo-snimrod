@@ -1,4 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getAuth } from "@/db/dbreq";
+import { hasPermission } from "@/db/permissions";
 import {
   fetchFeedInstagramAccountPage,
   getFeedInstagramUsernames,
@@ -19,6 +21,36 @@ import {
 } from "@/lib/feedInstagramStorage";
 
 const REFRESH_PAGE_LIMIT = 5;
+const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "::1"]);
+
+function isLocalRequest(request: NextRequest) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const realIp = request.headers.get("x-real-ip");
+
+  const ipCandidates: string[] = [];
+  if (forwardedFor) {
+    forwardedFor
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .forEach((entry) => ipCandidates.push(entry));
+  }
+  if (realIp) {
+    ipCandidates.push(realIp.trim());
+  }
+
+  if (ipCandidates.some((ip) => LOCAL_HOSTS.has(ip))) {
+    return true;
+  }
+
+  const hostHeader = request.headers.get("host");
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const hostCandidates = [request.nextUrl.hostname, hostHeader, forwardedHost]
+    .filter(Boolean)
+    .map((host) => (host ?? "").split(":")[0]);
+
+  return hostCandidates.some((host) => LOCAL_HOSTS.has(host));
+}
 
 function buildMediaRecords(posts: FeedInstagramPost[]): FeedMediaRecord[] {
   const items: FeedMediaRecord[] = [];
@@ -97,6 +129,14 @@ async function upsertFeedData(posts: FeedInstagramPost[]) {
 
 export async function GET(request: NextRequest) {
   try {
+    const selfUser = await getAuth();
+    const isAdmin = hasPermission(selfUser, "admin");
+    const isLocal = isLocalRequest(request);
+
+    if (!isAdmin && !isLocal) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const usernamesParam = request.nextUrl.searchParams.get("usernames");
     const filterUsernames = usernamesParam
       ? usernamesParam

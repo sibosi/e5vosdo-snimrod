@@ -48,6 +48,34 @@ type OwnMediaResponse = {
   error?: { message?: string };
 };
 
+type GraphMediaIdOnly = {
+  id: string;
+};
+
+type BusinessDiscoveryIdsResponse = {
+  business_discovery?: {
+    media?: {
+      data?: GraphMediaIdOnly[];
+      paging?: {
+        cursors?: { before?: string; after?: string };
+        next?: string;
+      };
+    };
+  };
+  error?: {
+    message?: string;
+  };
+};
+
+type OwnMediaIdsResponse = {
+  data?: GraphMediaIdOnly[];
+  paging?: {
+    cursors?: { before?: string; after?: string };
+    next?: string;
+  };
+  error?: { message?: string };
+};
+
 type OwnProfileResponse = {
   username?: string;
   profile_picture_url?: string;
@@ -291,6 +319,95 @@ async function fetchOwnAccountMedia(
   return { account, posts, nextCursor };
 }
 
+async function fetchBusinessDiscoveryIds(
+  accountId: string,
+  targetUsername: string,
+  accessToken: string,
+  graphVersion: string,
+  afterCursor?: string,
+  limit = FEED_IG_PAGE_SIZE,
+): Promise<{ postIds: string[]; nextCursor: string | null }> {
+  const pageSize = clampPageSize(limit);
+  const mediaField = afterCursor
+    ? `media.limit(${pageSize}).after(${afterCursor})`
+    : `media.limit(${pageSize})`;
+
+  const fields =
+    `business_discovery.username(${targetUsername}){` +
+    `${mediaField}{id}` +
+    "}";
+
+  const url = new URL(
+    `https://graph.facebook.com/${graphVersion}/${accountId}`,
+  );
+  url.searchParams.set("fields", fields);
+  url.searchParams.set("access_token", accessToken);
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const payload = (await response.json()) as BusinessDiscoveryIdsResponse;
+
+  if (!response.ok) {
+    throw new Error(
+      payload.error?.message ?? "Business Discovery API request failed",
+    );
+  }
+
+  const discovery = payload.business_discovery;
+  if (!discovery) {
+    throw new Error(
+      `No business_discovery data returned for @${targetUsername}`,
+    );
+  }
+
+  const postIds = (discovery.media?.data ?? [])
+    .map((item) => item.id)
+    .filter((id) => id.length > 0);
+
+  const nextCursor = discovery.media?.paging?.cursors?.after ?? null;
+
+  return { postIds, nextCursor };
+}
+
+async function fetchOwnAccountIds(
+  accountId: string,
+  accessToken: string,
+  graphVersion: string,
+  afterCursor?: string,
+  limit = FEED_IG_PAGE_SIZE,
+): Promise<{ postIds: string[]; nextCursor: string | null }> {
+  const pageSize = clampPageSize(limit);
+  const mediaUrl = new URL(
+    `https://graph.facebook.com/${graphVersion}/${accountId}/media`,
+  );
+  mediaUrl.searchParams.set("fields", "id");
+  mediaUrl.searchParams.set("limit", String(pageSize));
+  mediaUrl.searchParams.set("access_token", accessToken);
+  if (afterCursor) mediaUrl.searchParams.set("after", afterCursor);
+
+  const mediaRes = await fetch(mediaUrl.toString(), {
+    method: "GET",
+    cache: "no-store",
+  });
+  const mediaData = (await mediaRes.json()) as OwnMediaIdsResponse;
+
+  if (!mediaRes.ok) {
+    throw new Error(
+      mediaData.error?.message ?? "Own account media request failed",
+    );
+  }
+
+  const postIds = (mediaData.data ?? [])
+    .map((item) => item.id)
+    .filter((id) => id.length > 0);
+  const nextCursor = mediaData.paging?.cursors?.after ?? null;
+
+  return { postIds, nextCursor };
+}
+
 export function getFeedInstagramUsernames(filterUsernames?: string[]) {
   const { usernames } = getMetaConfig();
   if (!filterUsernames || filterUsernames.length === 0) return usernames;
@@ -321,6 +438,34 @@ export async function fetchFeedInstagramAccountPage(options: {
   }
 
   return fetchBusinessDiscovery(
+    accountId,
+    options.username,
+    accessToken,
+    graphVersion,
+    options.afterCursor ?? undefined,
+    options.limit,
+  );
+}
+
+export async function fetchFeedInstagramAccountIdPage(options: {
+  username: string;
+  afterCursor?: string | null;
+  limit?: number;
+}): Promise<{ postIds: string[]; nextCursor: string | null }> {
+  const { accountId, accessToken, graphVersion, ownUsername } = getMetaConfig();
+  const isOwnAccount = Boolean(ownUsername && options.username === ownUsername);
+
+  if (isOwnAccount && ownUsername) {
+    return fetchOwnAccountIds(
+      accountId,
+      accessToken,
+      graphVersion,
+      options.afterCursor ?? undefined,
+      options.limit,
+    );
+  }
+
+  return fetchBusinessDiscoveryIds(
     accountId,
     options.username,
     accessToken,

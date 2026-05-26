@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getAuth } from "@/db/dbreq";
 import { hasPermission } from "@/db/permissions";
 import {
+  fetchFeedInstagramAccountIdPage,
   fetchFeedInstagramAccountPage,
   getFeedInstagramUsernames,
   type FeedInstagramPost,
@@ -95,11 +96,10 @@ async function upsertFeedData(posts: FeedInstagramPost[]) {
   await upsertFeedPosts(posts);
 
   const mediaRecords = buildMediaRecords(posts);
-  const existingMedia = await getFeedMediaDriveInfoByIds(
-    mediaRecords.map((record) => record.id),
-  );
-
   if (isFeedMediaDriveEnabled()) {
+    const existingMedia = await getFeedMediaDriveInfoByIds(
+      mediaRecords.map((record) => record.id),
+    );
     const allowVideos = shouldStoreFeedVideos();
     for (const record of mediaRecords) {
       const existing = existingMedia.get(record.id);
@@ -164,8 +164,7 @@ export async function GET(request: NextRequest) {
 
     for (const username of targetUsernames) {
       let afterCursor: string | null | undefined = undefined;
-      let duplicateSeen = false;
-      let extraPageFetched = false;
+      let stoppedByDuplicate = false;
       let pagesFetched = 0;
       let fetchedPosts = 0;
       let newPosts = 0;
@@ -174,8 +173,7 @@ export async function GET(request: NextRequest) {
 
       try {
         while (true) {
-          const hadDuplicateBeforePage = duplicateSeen;
-          const page = await fetchFeedInstagramAccountPage({
+          const idPage = await fetchFeedInstagramAccountIdPage({
             username,
             afterCursor,
             limit: REFRESH_PAGE_LIMIT,
@@ -183,40 +181,49 @@ export async function GET(request: NextRequest) {
 
           pagesFetched += 1;
 
-          if (page.posts.length === 0) {
+          if (idPage.postIds.length === 0) {
             break;
           }
 
-          const existingIds = await getFeedPostIdsByIds(
-            page.posts.map((post) => post.id),
-          );
+          const existingIds = await getFeedPostIdsByIds(idPage.postIds);
           const hasDuplicate = existingIds.size > 0;
-
-          if (!duplicateSeen && hasDuplicate) {
-            duplicateSeen = true;
-          }
-
-          fetchedPosts += page.posts.length;
-          newPosts += page.posts.reduce(
-            (count, post) => count + (existingIds.has(post.id) ? 0 : 1),
+          const newPostsCount = idPage.postIds.reduce(
+            (count, postId) => count + (existingIds.has(postId) ? 0 : 1),
             0,
           );
 
-          await upsertFeedData(page.posts);
-
-          if (hadDuplicateBeforePage) {
-            extraPageFetched = true;
+          if (hasDuplicate) {
+            stoppedByDuplicate = true;
           }
 
-          if (extraPageFetched) {
+          fetchedPosts += idPage.postIds.length;
+          newPosts += newPostsCount;
+
+          if (newPostsCount > 0) {
+            const page = await fetchFeedInstagramAccountPage({
+              username,
+              afterCursor,
+              limit: REFRESH_PAGE_LIMIT,
+            });
+
+            if (page.posts.length === 0) {
+              break;
+            }
+
+            await upsertFeedData(page.posts);
+
+            afterCursor = page.nextCursor;
+          } else {
+            afterCursor = idPage.nextCursor;
+          }
+
+          if (hasDuplicate) {
             break;
           }
 
-          if (!page.nextCursor) {
+          if (!afterCursor) {
             break;
           }
-
-          afterCursor = page.nextCursor;
         }
 
         console.info(
@@ -228,7 +235,7 @@ export async function GET(request: NextRequest) {
           pagesFetched,
           fetchedPosts,
           newPosts,
-          stoppedByDuplicate: duplicateSeen,
+          stoppedByDuplicate,
         });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -238,7 +245,7 @@ export async function GET(request: NextRequest) {
           pagesFetched,
           fetchedPosts,
           newPosts,
-          stoppedByDuplicate: duplicateSeen,
+          stoppedByDuplicate,
           error: message,
         });
       }

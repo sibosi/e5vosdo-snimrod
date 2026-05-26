@@ -123,8 +123,8 @@ export default function WelcomeHero() {
             className="absolute inset-0"
           >
             <Image
-              src="/governments/2526/szombat-edited.jpeg"
-              alt="Diákönkormányzat 2025/26"
+              src="/governments/2627/alap_coll1_5-4.jpg"
+              alt="Diákönkormányzat 2026/27"
               fill
               className="object-cover"
               priority

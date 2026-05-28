@@ -48,6 +48,34 @@ type OwnMediaResponse = {
   error?: { message?: string };
 };
 
+type GraphMediaIdOnly = {
+  id: string;
+};
+
+type BusinessDiscoveryIdsResponse = {
+  business_discovery?: {
+    media?: {
+      data?: GraphMediaIdOnly[];
+      paging?: {
+        cursors?: { before?: string; after?: string };
+        next?: string;
+      };
+    };
+  };
+  error?: {
+    message?: string;
+  };
+};
+
+type OwnMediaIdsResponse = {
+  data?: GraphMediaIdOnly[];
+  paging?: {
+    cursors?: { before?: string; after?: string };
+    next?: string;
+  };
+  error?: { message?: string };
+};
+
 type OwnProfileResponse = {
   username?: string;
   profile_picture_url?: string;
@@ -55,26 +83,26 @@ type OwnProfileResponse = {
   error?: { message?: string };
 };
 
-export type ElectionsInstagramMedia = {
+export type FeedInstagramMedia = {
   id: string;
   mediaType: string;
   displayUrl: string;
 };
 
-export type ElectionsInstagramPost = {
+export type FeedInstagramPost = {
   id: string;
   caption: string;
   mediaType: string;
   displayUrl: string;
-  account: ElectionsInstagramAccount;
+  account: FeedInstagramAccount;
   permalink: string;
   timestamp: string;
   likeCount: number;
   commentsCount: number;
-  carouselItems: ElectionsInstagramMedia[];
+  carouselItems: FeedInstagramMedia[];
 };
 
-export type ElectionsInstagramAccount = {
+export type FeedInstagramAccount = {
   username: string;
   profilePictureUrl: string;
 };
@@ -106,12 +134,12 @@ function getMetaConfig() {
 
 function normalizePost(
   item: GraphMediaPost,
-  account: ElectionsInstagramAccount,
-): ElectionsInstagramPost | null {
+  account: FeedInstagramAccount,
+): FeedInstagramPost | null {
   const displayUrl = item.media_url ?? item.thumbnail_url ?? "";
   if (!displayUrl) return null;
 
-  const carouselItems: ElectionsInstagramMedia[] =
+  const carouselItems: FeedInstagramMedia[] =
     item.media_type === "CAROUSEL_ALBUM"
       ? (item.children?.data ?? [])
           .map((child) => {
@@ -124,7 +152,7 @@ function normalizePost(
               displayUrl: childDisplayUrl,
             };
           })
-          .filter((child): child is ElectionsInstagramMedia => child !== null)
+          .filter((child): child is FeedInstagramMedia => child !== null)
       : [];
 
   return {
@@ -141,42 +169,23 @@ function normalizePost(
   };
 }
 
-const PAGE_SIZE = 5;
+export const FEED_IG_PAGE_SIZE = 5;
+const MAX_FEED_IG_PAGE_SIZE = 10;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-
-type CacheEntry = {
-  timestamp: number;
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
-  nextCursors: CursorsMap;
-  hasMore: boolean;
-};
 
 type AccountsCacheEntry = {
   timestamp: number;
-  accounts: ElectionsInstagramAccount[];
+  accounts: FeedInstagramAccount[];
 };
 
 const globalCache = globalThis as typeof globalThis & {
-  __electionsIgCache?: Map<string, CacheEntry>;
-  __electionsIgAccountsCache?: AccountsCacheEntry;
+  __feedIgAccountsCache?: AccountsCacheEntry;
 };
 
-function getCache(): Map<string, CacheEntry> {
-  globalCache.__electionsIgCache ??= new Map();
-  return globalCache.__electionsIgCache;
-}
-
-function getCacheKey(cursors?: CursorsMap, filterUsernames?: string[]): string {
-  const prefix = filterUsernames
-    ? filterUsernames.toSorted((a, b) => a.localeCompare(b)).join("+")
-    : "__mixed__";
-  if (!cursors) return `${prefix}:__initial__`;
-  return `${prefix}:${JSON.stringify(
-    Object.keys(cursors)
-      .sort((a, b) => a.localeCompare(b))
-      .map((k) => [k, cursors[k]]),
-  )}`;
+function clampPageSize(value?: number) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return FEED_IG_PAGE_SIZE;
+  return Math.max(1, Math.min(Math.floor(parsed), MAX_FEED_IG_PAGE_SIZE));
 }
 
 async function fetchBusinessDiscovery(
@@ -185,14 +194,16 @@ async function fetchBusinessDiscovery(
   accessToken: string,
   graphVersion: string,
   afterCursor?: string,
+  limit = FEED_IG_PAGE_SIZE,
 ): Promise<{
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
+  account: FeedInstagramAccount;
+  posts: FeedInstagramPost[];
   nextCursor: string | null;
 }> {
+  const pageSize = clampPageSize(limit);
   const mediaField = afterCursor
-    ? `media.limit(${PAGE_SIZE}).after(${afterCursor})`
-    : `media.limit(${PAGE_SIZE})`;
+    ? `media.limit(${pageSize}).after(${afterCursor})`
+    : `media.limit(${pageSize})`;
 
   const fields =
     `business_discovery.username(${targetUsername}){` +
@@ -230,14 +241,14 @@ async function fetchBusinessDiscovery(
     );
   }
 
-  const account: ElectionsInstagramAccount = {
+  const account: FeedInstagramAccount = {
     username: discovery.username ?? targetUsername,
     profilePictureUrl: discovery.profile_picture_url ?? "",
   };
 
   const posts = (discovery.media?.data ?? [])
     .map((item) => normalizePost(item, account))
-    .filter((item): item is ElectionsInstagramPost => item !== null);
+    .filter((item): item is FeedInstagramPost => item !== null);
 
   const nextCursor = discovery.media?.paging?.cursors?.after ?? null;
 
@@ -250,11 +261,13 @@ async function fetchOwnAccountMedia(
   graphVersion: string,
   ownUsername: string,
   afterCursor?: string,
+  limit = FEED_IG_PAGE_SIZE,
 ): Promise<{
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
+  account: FeedInstagramAccount;
+  posts: FeedInstagramPost[];
   nextCursor: string | null;
 }> {
+  const pageSize = clampPageSize(limit);
   // Fetch profile info
   const profileUrl = new URL(
     `https://graph.facebook.com/${graphVersion}/${accountId}`,
@@ -268,7 +281,7 @@ async function fetchOwnAccountMedia(
   });
   const profileData = (await profileRes.json()) as OwnProfileResponse;
 
-  const account: ElectionsInstagramAccount = {
+  const account: FeedInstagramAccount = {
     username: profileData.username ?? ownUsername,
     profilePictureUrl: profileData.profile_picture_url ?? "",
   };
@@ -281,7 +294,7 @@ async function fetchOwnAccountMedia(
     "fields",
     "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count,children{id,media_type,media_url,thumbnail_url}",
   );
-  mediaUrl.searchParams.set("limit", String(PAGE_SIZE));
+  mediaUrl.searchParams.set("limit", String(pageSize));
   mediaUrl.searchParams.set("access_token", accessToken);
   if (afterCursor) mediaUrl.searchParams.set("after", afterCursor);
 
@@ -299,20 +312,168 @@ async function fetchOwnAccountMedia(
 
   const posts = (mediaData.data ?? [])
     .map((item) => normalizePost(item, account))
-    .filter((item): item is ElectionsInstagramPost => item !== null);
+    .filter((item): item is FeedInstagramPost => item !== null);
 
   const nextCursor = mediaData.paging?.cursors?.after ?? null;
 
   return { account, posts, nextCursor };
 }
 
-function getTimestampValue(timestamp: string) {
-  if (!timestamp) return 0;
-  const parsed = Date.parse(timestamp);
-  return Number.isNaN(parsed) ? 0 : parsed;
+async function fetchBusinessDiscoveryIds(
+  accountId: string,
+  targetUsername: string,
+  accessToken: string,
+  graphVersion: string,
+  afterCursor?: string,
+  limit = FEED_IG_PAGE_SIZE,
+): Promise<{ postIds: string[]; nextCursor: string | null }> {
+  const pageSize = clampPageSize(limit);
+  const mediaField = afterCursor
+    ? `media.limit(${pageSize}).after(${afterCursor})`
+    : `media.limit(${pageSize})`;
+
+  const fields =
+    `business_discovery.username(${targetUsername}){` +
+    `${mediaField}{id}` +
+    "}";
+
+  const url = new URL(
+    `https://graph.facebook.com/${graphVersion}/${accountId}`,
+  );
+  url.searchParams.set("fields", fields);
+  url.searchParams.set("access_token", accessToken);
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  const payload = (await response.json()) as BusinessDiscoveryIdsResponse;
+
+  if (!response.ok) {
+    throw new Error(
+      payload.error?.message ?? "Business Discovery API request failed",
+    );
+  }
+
+  const discovery = payload.business_discovery;
+  if (!discovery) {
+    throw new Error(
+      `No business_discovery data returned for @${targetUsername}`,
+    );
+  }
+
+  const postIds = (discovery.media?.data ?? [])
+    .map((item) => item.id)
+    .filter((id) => id.length > 0);
+
+  const nextCursor = discovery.media?.paging?.cursors?.after ?? null;
+
+  return { postIds, nextCursor };
 }
 
-export type CursorsMap = Record<string, string | null>;
+async function fetchOwnAccountIds(
+  accountId: string,
+  accessToken: string,
+  graphVersion: string,
+  afterCursor?: string,
+  limit = FEED_IG_PAGE_SIZE,
+): Promise<{ postIds: string[]; nextCursor: string | null }> {
+  const pageSize = clampPageSize(limit);
+  const mediaUrl = new URL(
+    `https://graph.facebook.com/${graphVersion}/${accountId}/media`,
+  );
+  mediaUrl.searchParams.set("fields", "id");
+  mediaUrl.searchParams.set("limit", String(pageSize));
+  mediaUrl.searchParams.set("access_token", accessToken);
+  if (afterCursor) mediaUrl.searchParams.set("after", afterCursor);
+
+  const mediaRes = await fetch(mediaUrl.toString(), {
+    method: "GET",
+    cache: "no-store",
+  });
+  const mediaData = (await mediaRes.json()) as OwnMediaIdsResponse;
+
+  if (!mediaRes.ok) {
+    throw new Error(
+      mediaData.error?.message ?? "Own account media request failed",
+    );
+  }
+
+  const postIds = (mediaData.data ?? [])
+    .map((item) => item.id)
+    .filter((id) => id.length > 0);
+  const nextCursor = mediaData.paging?.cursors?.after ?? null;
+
+  return { postIds, nextCursor };
+}
+
+export function getFeedInstagramUsernames(filterUsernames?: string[]) {
+  const { usernames } = getMetaConfig();
+  if (!filterUsernames || filterUsernames.length === 0) return usernames;
+  return usernames.filter((username) => filterUsernames.includes(username));
+}
+
+export async function fetchFeedInstagramAccountPage(options: {
+  username: string;
+  afterCursor?: string | null;
+  limit?: number;
+}): Promise<{
+  account: FeedInstagramAccount;
+  posts: FeedInstagramPost[];
+  nextCursor: string | null;
+}> {
+  const { accountId, accessToken, graphVersion, ownUsername } = getMetaConfig();
+  const isOwnAccount = Boolean(ownUsername && options.username === ownUsername);
+
+  if (isOwnAccount && ownUsername) {
+    return fetchOwnAccountMedia(
+      accountId,
+      accessToken,
+      graphVersion,
+      ownUsername,
+      options.afterCursor ?? undefined,
+      options.limit,
+    );
+  }
+
+  return fetchBusinessDiscovery(
+    accountId,
+    options.username,
+    accessToken,
+    graphVersion,
+    options.afterCursor ?? undefined,
+    options.limit,
+  );
+}
+
+export async function fetchFeedInstagramAccountIdPage(options: {
+  username: string;
+  afterCursor?: string | null;
+  limit?: number;
+}): Promise<{ postIds: string[]; nextCursor: string | null }> {
+  const { accountId, accessToken, graphVersion, ownUsername } = getMetaConfig();
+  const isOwnAccount = Boolean(ownUsername && options.username === ownUsername);
+
+  if (isOwnAccount && ownUsername) {
+    return fetchOwnAccountIds(
+      accountId,
+      accessToken,
+      graphVersion,
+      options.afterCursor ?? undefined,
+      options.limit,
+    );
+  }
+
+  return fetchBusinessDiscoveryIds(
+    accountId,
+    options.username,
+    accessToken,
+    graphVersion,
+    options.afterCursor ?? undefined,
+    options.limit,
+  );
+}
 
 async function fetchAccountProfile(
   username: string,
@@ -320,7 +481,7 @@ async function fetchAccountProfile(
   accessToken: string,
   graphVersion: string,
   ownUsername?: string,
-): Promise<ElectionsInstagramAccount | null> {
+): Promise<FeedInstagramAccount | null> {
   if (ownUsername && username === ownUsername) {
     const profileUrl = new URL(
       `https://graph.facebook.com/${graphVersion}/${accountId}`,
@@ -361,17 +522,15 @@ async function fetchAccountProfile(
   };
 }
 
-export async function fetchElectionsAccounts(): Promise<
-  ElectionsInstagramAccount[]
-> {
-  const cached = globalCache.__electionsIgAccountsCache;
+export async function fetchFeedAccounts(): Promise<FeedInstagramAccount[]> {
+  const cached = globalCache.__feedIgAccountsCache;
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.accounts;
   }
 
   const { accountId, accessToken, graphVersion, usernames, ownUsername } =
     getMetaConfig();
-  const accounts: ElectionsInstagramAccount[] = [];
+  const accounts: FeedInstagramAccount[] = [];
 
   for (const username of usernames) {
     try {
@@ -388,108 +547,10 @@ export async function fetchElectionsAccounts(): Promise<
     }
   }
 
-  globalCache.__electionsIgAccountsCache = {
+  globalCache.__feedIgAccountsCache = {
     timestamp: Date.now(),
     accounts,
   };
 
   return accounts;
-}
-
-export async function fetchElectionsInstagramFeed(
-  cursors?: CursorsMap,
-  filterUsernames?: string[],
-): Promise<{
-  account: ElectionsInstagramAccount;
-  posts: ElectionsInstagramPost[];
-  nextCursors: CursorsMap;
-  hasMore: boolean;
-}> {
-  const cache = getCache();
-  const cacheKey = getCacheKey(cursors, filterUsernames);
-  const cached = cache.get(cacheKey);
-
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-    return {
-      account: cached.account,
-      posts: cached.posts,
-      nextCursors: cached.nextCursors,
-      hasMore: cached.hasMore,
-    };
-  }
-
-  const { accountId, accessToken, graphVersion, usernames, ownUsername } =
-    getMetaConfig();
-  const targetUsernames = filterUsernames
-    ? usernames.filter((u) => filterUsernames.includes(u))
-    : usernames;
-
-  const posts: ElectionsInstagramPost[] = [];
-  const accounts: ElectionsInstagramAccount[] = [];
-  const nextCursors: CursorsMap = {};
-
-  for (const username of targetUsernames) {
-    const cursor = cursors?.[username];
-    if (cursor === null) {
-      // This account has no more pages
-      nextCursors[username] = null;
-      continue;
-    }
-
-    try {
-      const isOwnAccount = ownUsername && username === ownUsername;
-      const {
-        account,
-        posts: accountPosts,
-        nextCursor,
-      } = isOwnAccount
-        ? await fetchOwnAccountMedia(
-            accountId,
-            accessToken,
-            graphVersion,
-            ownUsername,
-            cursor,
-          )
-        : await fetchBusinessDiscovery(
-            accountId,
-            username,
-            accessToken,
-            graphVersion,
-            cursor,
-          );
-      accounts.push(account);
-      posts.push(...accountPosts);
-      nextCursors[username] = nextCursor;
-    } catch (error) {
-      console.warn(`Failed to fetch Instagram data for @${username}`, error);
-      nextCursors[username] = null;
-    }
-  }
-
-  if (accounts.length === 0 && !cursors) {
-    throw new Error(
-      "Failed to load Instagram data for all configured usernames",
-    );
-  }
-
-  posts.sort(
-    (left, right) =>
-      getTimestampValue(right.timestamp) - getTimestampValue(left.timestamp),
-  );
-
-  const account = accounts[0] ?? {
-    username: "instagram",
-    profilePictureUrl: "",
-  };
-  const hasMore = Object.values(nextCursors).some((c) => c !== null);
-
-  cache.set(cacheKey, {
-    timestamp: Date.now(),
-    account,
-    posts,
-    nextCursors,
-    hasMore,
-  });
-
-  return { account, posts, nextCursors, hasMore };
 }

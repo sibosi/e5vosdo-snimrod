@@ -46,6 +46,7 @@ public/sw.js
 
 # media cache (server-side image cache)
 .media-cache/
+.feed-cache/
 
 .env
 public/sw.js

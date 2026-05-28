@@ -38,9 +38,9 @@ const pages = {
     label: "Podcast",
   },
   feed: {
-    route: "/elections",
+    route: "/feed",
     icon: <FontAwesomeIcon icon={["fas", "people-line"]} />,
-    label: "Elections",
+    label: "Feed",
   },
 };
 

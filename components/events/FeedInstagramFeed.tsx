@@ -3,14 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type {
-  ElectionsInstagramAccount,
-  ElectionsInstagramPost,
-  CursorsMap,
-} from "@/lib/electionsInstagram";
+  FeedInstagramAccount,
+  FeedInstagramPost,
+} from "@/lib/feedInstagram";
 import { Chip } from "@heroui/react";
 
 // ── Custom profile (code-level) ─────────────────────────────────────────────
-const CUSTOM_PROFILE: ElectionsInstagramAccount = {
+const CUSTOM_PROFILE: FeedInstagramAccount = {
   username: "Hamarosan...",
   profilePictureUrl: "",
 };
@@ -19,15 +18,15 @@ const CUSTOM_USERNAMES: string[] = [];
 // ─────────────────────────────────────────────────────────────────────────────
 
 type FeedResponse = {
-  posts?: ElectionsInstagramPost[];
-  nextCursors?: CursorsMap;
+  posts?: FeedInstagramPost[];
+  nextAfter?: string;
   hasMore?: boolean;
   error?: string;
   details?: string;
 };
 
 type AccountsResponse = {
-  accounts?: ElectionsInstagramAccount[];
+  accounts?: FeedInstagramAccount[];
   error?: string;
 };
 
@@ -74,7 +73,7 @@ function MediaItem({
   );
 }
 
-function PostMedia({ post }: Readonly<{ post: ElectionsInstagramPost }>) {
+function PostMedia({ post }: Readonly<{ post: FeedInstagramPost }>) {
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
@@ -190,7 +189,7 @@ function AccountSelector({
   activeTab,
   onSelect,
 }: Readonly<{
-  accounts: ElectionsInstagramAccount[];
+  accounts: FeedInstagramAccount[];
   activeTab: string;
   onSelect: (tab: string) => void;
 }>) {
@@ -216,20 +215,20 @@ function AccountSelector({
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export default function ElectionsInstagramFeed() {
-  const [accounts, setAccounts] = useState<ElectionsInstagramAccount[]>([]);
+export default function FeedInstagramFeed() {
+  const [accounts, setAccounts] = useState<FeedInstagramAccount[]>([]);
   const [activeTab, setActiveTab] = useState<string>("mixed");
-  const [posts, setPosts] = useState<ElectionsInstagramPost[]>([]);
+  const [posts, setPosts] = useState<FeedInstagramPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
-  const nextCursorsRef = useRef<CursorsMap | undefined>(undefined);
+  const nextAfterRef = useRef<string | undefined>(undefined);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch account list once
   useEffect(() => {
-    fetch("/api/elections/instagram/accounts")
+    fetch("/api/feed/instagram/accounts")
       .then((res) => res.json() as Promise<AccountsResponse>)
       .then((data) => {
         if (data.accounts) setAccounts(data.accounts);
@@ -240,11 +239,11 @@ export default function ElectionsInstagramFeed() {
   const fetchPage = useCallback(
     async (
       tab: string,
-      cursors?: CursorsMap,
+      after?: string,
       signal?: AbortSignal,
     ): Promise<FeedResponse> => {
       const params = new URLSearchParams();
-      if (cursors) params.set("cursors", JSON.stringify(cursors));
+      if (after) params.set("after", after);
       if (tab === "custom" && CUSTOM_USERNAMES.length > 0) {
         params.set("usernames", CUSTOM_USERNAMES.join(","));
       } else if (tab !== "mixed" && tab !== "custom") {
@@ -252,9 +251,7 @@ export default function ElectionsInstagramFeed() {
       }
 
       const qs = params.toString();
-      const url = qs
-        ? `/api/elections/instagram?${qs}`
-        : "/api/elections/instagram";
+      const url = qs ? `/api/feed/instagram?${qs}` : "/api/feed/instagram";
 
       const response = await fetch(url, { signal });
       const data = (await response.json()) as FeedResponse;
@@ -281,12 +278,12 @@ export default function ElectionsInstagramFeed() {
         setIsLoading(true);
         setError(null);
         setPosts([]);
-        nextCursorsRef.current = undefined;
+        nextAfterRef.current = undefined;
 
         const data = await fetchPage(activeTab, undefined, controller.signal);
 
         setPosts(data.posts ?? []);
-        nextCursorsRef.current = data.nextCursors;
+        nextAfterRef.current = data.nextAfter;
         setHasMore(data.hasMore ?? false);
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
@@ -310,9 +307,9 @@ export default function ElectionsInstagramFeed() {
     setIsLoadingMore(true);
 
     try {
-      const data = await fetchPage(activeTab, nextCursorsRef.current);
+      const data = await fetchPage(activeTab, nextAfterRef.current);
       setPosts((prev) => [...prev, ...(data.posts ?? [])]);
-      nextCursorsRef.current = data.nextCursors;
+      nextAfterRef.current = data.nextAfter;
       setHasMore(data.hasMore ?? false);
     } catch (err) {
       console.warn("Failed to load more posts", err);

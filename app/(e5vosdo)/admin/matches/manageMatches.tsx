@@ -64,26 +64,34 @@ const ManageMatches = ({
   const [currentMatch, setCurrentMatch] = useState<Match | undefined>();
 
   useEffect(() => {
-    let eventSource: EventSource;
+    let eventSource: EventSource | null = null;
     let retryCount = 0;
     const maxRetryCount = 5;
     const baseRetryDelay = 1000;
-    let reconnectTimeout: NodeJS.Timeout | null = null;
+    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const closeSSE = () => {
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+    };
 
     const connectToSSE = () => {
-      // Clear any pending reconnect timeout
       if (reconnectTimeout) {
         clearTimeout(reconnectTimeout);
         reconnectTimeout = null;
       }
 
-      eventSource = new EventSource("/api/livescore");
+      closeSSE();
+      const nextEventSource = new EventSource("/api/livescore");
+      eventSource = nextEventSource;
 
-      eventSource.onopen = () => {
-        retryCount = 0; // Reset retry count on successful connection
+      nextEventSource.onopen = () => {
+        retryCount = 0;
       };
 
-      eventSource.onmessage = (event) => {
+      nextEventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
 
@@ -148,12 +156,14 @@ const ManageMatches = ({
         }
       };
 
-      eventSource.onerror = (error) => {
+      nextEventSource.onerror = (error) => {
         console.error("SSE Error:", error);
-        eventSource.close();
+        if (eventSource !== nextEventSource) {
+          return;
+        }
+        closeSSE();
 
         if (retryCount < maxRetryCount) {
-          // Calculate exponential backoff delay with jitter
           const delay = Math.min(
             baseRetryDelay * Math.pow(2, retryCount) + Math.random() * 1000,
             30000,
@@ -170,38 +180,42 @@ const ManageMatches = ({
       };
     };
 
-    // Handle visibility change - reconnect when tab becomes visible
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        console.log("Page became visible, resetting retry count and reconnecting SSE...");
-        retryCount = 0; // Reset retry count to allow new connection attempts
-        connectToSSE();
+    const reconnectOnResume = () => {
+      if (document.visibilityState === "hidden") {
+        return;
       }
-    };
-
-    // Handle focus event - reconnect when window gets focus
-    const handleWindowFocus = () => {
-      console.log("Window got focus, resetting retry count and reconnecting SSE...");
-      retryCount = 0; // Reset retry count to allow new connection attempts
+      retryCount = 0;
       connectToSSE();
     };
 
-    // Initial connection
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        reconnectOnResume();
+      }
+    };
+
+    const handleWindowFocus = () => {
+      reconnectOnResume();
+    };
+
+    const handlePageShow = () => {
+      reconnectOnResume();
+    };
+
     connectToSSE();
 
-    // Add event listeners for visibility and focus changes
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener("pageshow", handlePageShow);
 
     return () => {
-      if (eventSource) {
-        eventSource.close();
-      }
+      closeSSE();
       if (reconnectTimeout) {
         clearTimeout(reconnectTimeout);
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleWindowFocus);
+      window.removeEventListener("pageshow", handlePageShow);
     };
   }, []);
 

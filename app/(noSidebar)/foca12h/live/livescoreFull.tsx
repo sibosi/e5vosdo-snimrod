@@ -9,7 +9,6 @@ const LiveScore = () => {
   const [match, setMatch] = React.useState<Match>();
   const [currentTime, setCurrentTime] = useState<Date>();
   const [teams, setTeams] = useState<Team[]>();
-  const [isConnected, setIsConnected] = useState(false);
   const [allMatches, setAllMatches] = useState<Match[]>([]);
   useEffect(() => {
     fetch("/api/getTeams", {
@@ -96,27 +95,30 @@ const LiveScore = () => {
 
     // Set up SSE connection with reconnect capability
     let eventSource: EventSource | null = null;
-    let reconnectTimeout: NodeJS.Timeout | null = null;
+    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const closeSSE = () => {
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+    };
 
     const connectSSE = () => {
-      // Clear any pending reconnect timeout
       if (reconnectTimeout) {
         clearTimeout(reconnectTimeout);
         reconnectTimeout = null;
       }
 
-      if (eventSource) {
-        eventSource.close();
-      }
+      closeSSE();
+      const nextEventSource = new EventSource("/api/livescore");
+      eventSource = nextEventSource;
 
-      eventSource = new EventSource("/api/livescore");
-
-      eventSource.onopen = () => {
-        setIsConnected(true);
+      nextEventSource.onopen = () => {
         console.log("SSE connection established");
       };
 
-      eventSource.onmessage = (event) => {
+      nextEventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
 
@@ -181,17 +183,13 @@ const LiveScore = () => {
         }
       };
 
-      eventSource.onerror = (error) => {
+      nextEventSource.onerror = (error) => {
         console.error("SSE Error:", error);
-        setIsConnected(false);
-
-        // Close the current connection
-        if (eventSource) {
-          eventSource.close();
-          eventSource = null;
+        if (eventSource !== nextEventSource) {
+          return;
         }
+        closeSSE();
 
-        // Attempt to reconnect after a delay
         reconnectTimeout = setTimeout(() => {
           console.log("Attempting to reconnect SSE...");
           connectSSE();
@@ -199,40 +197,41 @@ const LiveScore = () => {
       };
     };
 
-    // Handle visibility change - reconnect when tab becomes visible
+    const reconnectOnResume = () => {
+      if (document.visibilityState === "hidden") {
+        return;
+      }
+      connectSSE();
+    };
+
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        console.log("Page became visible, reconnecting SSE...");
-        if (!isConnected) {
-          connectSSE();
-        }
+        reconnectOnResume();
       }
     };
 
-    // Handle focus event - reconnect when window gets focus
     const handleWindowFocus = () => {
-      console.log("Window got focus, checking SSE connection...");
-      if (!isConnected) {
-        connectSSE();
-      }
+      reconnectOnResume();
     };
 
-    // Initial connection
+    const handlePageShow = () => {
+      reconnectOnResume();
+    };
+
     connectSSE();
 
-    // Add event listeners for visibility and focus changes
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener("pageshow", handlePageShow);
 
     return () => {
-      if (eventSource) {
-        eventSource.close();
-      }
+      closeSSE();
       if (reconnectTimeout) {
         clearTimeout(reconnectTimeout);
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleWindowFocus);
+      window.removeEventListener("pageshow", handlePageShow);
     };
   }, []);
 

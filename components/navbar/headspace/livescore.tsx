@@ -91,8 +91,15 @@ const LiveScoreContent = () => {
       });
 
     let eventSource: EventSource | null = null;
+    let reconnectTimeout: NodeJS.Timeout | null = null;
 
     const connectSSE = () => {
+      // Clear any pending reconnect timeout
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = null;
+      }
+
       if (eventSource) {
         eventSource.close();
       }
@@ -175,19 +182,46 @@ const LiveScoreContent = () => {
           eventSource = null;
         }
 
-        setTimeout(() => {
+        reconnectTimeout = setTimeout(() => {
           console.log("Attempting to reconnect SSE...");
           connectSSE();
         }, 5000);
       };
     };
 
+    // Handle visibility change - reconnect when tab becomes visible
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        console.log("Page became visible, reconnecting SSE...");
+        if (!isConnected) {
+          connectSSE();
+        }
+      }
+    };
+
+    // Handle focus event - reconnect when window gets focus
+    const handleWindowFocus = () => {
+      console.log("Window got focus, checking SSE connection...");
+      if (!isConnected) {
+        connectSSE();
+      }
+    };
+
     connectSSE();
+
+    // Add event listeners for visibility and focus changes
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleWindowFocus);
 
     return () => {
       if (eventSource) {
         eventSource.close();
       }
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleWindowFocus);
     };
   }, []);
 

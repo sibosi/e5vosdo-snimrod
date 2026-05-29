@@ -12,7 +12,7 @@ const MatchesPage = async () => {
   return (
     <div>
       <h1 className="pb-8 text-center text-4xl font-semibold text-foreground lg:text-5xl">
-        Mérkőzések kezelése
+        Csapatok és mérkőzések
       </h1>
 
       <Section
@@ -25,7 +25,7 @@ const MatchesPage = async () => {
       </Section>
 
       <Section
-        title="Mérkőzések kezelése"
+        title="Mérkőzések megtekintése"
         defaultStatus="opened"
         savable={false}
         dropdownable={true}

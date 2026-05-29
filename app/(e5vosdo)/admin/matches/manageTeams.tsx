@@ -287,7 +287,7 @@ const ManageTeams = () => {
                 {category.name}
               </h3>
             )}
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-2">
               {categoryTeams.map((team) => (
                 <div
                   key={team.id}

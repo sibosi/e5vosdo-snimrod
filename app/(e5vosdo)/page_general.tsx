@@ -20,7 +20,7 @@ import {
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import ShortDay from "@/components/home/shortDay";
-import PromoBeforeEvent from "./foca12h/promoBeforeEvent";
+import PromoBeforeEvent from "../(noSidebar)/foca12h/promoBeforeEvent";
 
 export const metadata: Metadata = {
   robots: {

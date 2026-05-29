@@ -6,7 +6,7 @@ import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import { Section } from "@/components/home/section";
 import Footer from "@/components/footer";
-import ManageTeams from "./foca12h/promoBeforeEvent";
+import PromoBeforeEvent from "../(noSidebar)/foca12h/promoBeforeEvent";
 
 export const metadata: Metadata = {
   robots: {
@@ -61,7 +61,7 @@ export default async function Home() {
 
   return (
     <div>
-      <ManageTeams areMultipleGroups={false} />
+      <PromoBeforeEvent areMultipleGroups={false} />
 
       <ConditionalLogin selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>

@@ -6,10 +6,9 @@ import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import { Section } from "@/components/home/section";
 import Footer from "@/components/footer";
-import PromoBeforeEvent from "../(noSidebar)/foca12h/promoBeforeEvent";
 import ManageTeams from "./admin/matches/manageTeams";
 import ManageMatches from "./admin/matches/manageMatches";
-import { gate, hasPermission } from "@/db/permissions";
+import { hasPermission } from "@/db/permissions";
 
 export const metadata: Metadata = {
   robots: {

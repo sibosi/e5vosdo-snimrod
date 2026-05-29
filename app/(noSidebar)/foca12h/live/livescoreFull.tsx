@@ -294,7 +294,7 @@ const LiveScoreContent = ({
                   : match.team1_score + " - " + match.team2_score}
               </p>
               {match.status === "pending" && (
-                <p className="text-3xl font-semibold">
+                <p className="text-8xl font-semibold">
                   {new Date(match.datetime).toLocaleTimeString(["hu"], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -410,7 +410,7 @@ const UpcomingMatches = ({
         <div key={match.id} className="w-full">
           <div
             className={
-              "grid grid-cols-3 items-center justify-between gap-2 rounded-lg p-2 text-center text-lg font-semibold " +
+              "grid grid-cols-3 items-center justify-between gap-2 rounded-lg p-2 text-center text-2xl font-semibold " +
               getColorClass(match.group_letter)
             }
           >
@@ -429,8 +429,8 @@ const UpcomingMatches = ({
             <div>
               <div className="">
                 {getMatchStage(match)}
-                <p className="text-3xl font-bold">vs</p>
-                <p className="text-2xl">
+                <p className="text-4xl">vs</p>
+                <p className="text-4xl font-bold">
                   {new Date(match.datetime).toLocaleTimeString("hu-HU", {
                     hour: "2-digit",
                     minute: "2-digit",

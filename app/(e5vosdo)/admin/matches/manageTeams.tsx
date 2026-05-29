@@ -31,7 +31,38 @@ function getCategoryById(
   return categories.find((cat) => cat.id === categoryId);
 }
 
+function calculateTeamPoints(matches: Match[], teams?: Team[]): TeamPoints {
+  const points: TeamPoints = {};
+
+  if (teams) {
+    for (const team of teams) {
+      points[team.id] = 0;
+    }
+  }
+
+  const finishedMatches = matches.filter(
+    (match) => match.status === "finished",
+  );
+
+  for (const match of finishedMatches) {
+    if (match.team1_score > match.team2_score) {
+      points[match.team1_id] = (points[match.team1_id] || 0) + 3;
+    } else if (match.team1_score === match.team2_score) {
+      points[match.team1_id] = (points[match.team1_id] || 0) + 1;
+    }
+
+    if (match.team2_score > match.team1_score) {
+      points[match.team2_id] = (points[match.team2_id] || 0) + 3;
+    } else if (match.team1_score === match.team2_score) {
+      points[match.team2_id] = (points[match.team2_id] || 0) + 1;
+    }
+  }
+
+  return points;
+}
+
 const ManageTeams = () => {
+  const [matches, setMatches] = React.useState<Match[]>([]);
   const [teams, setTeams] = React.useState<Team[]>();
   const [teamPoints, setTeamPoints] = React.useState<TeamPoints>({});
   const [teamCategories, setTeamCategories] = React.useState<TeamCategory[]>(
@@ -39,7 +70,106 @@ const ManageTeams = () => {
   );
 
   React.useEffect(() => {
-    // Fetch all matches
+    let eventSource: EventSource;
+    let retryCount = 0;
+    const maxRetryCount = 5;
+    const baseRetryDelay = 1000;
+
+    const connectToSSE = () => {
+      eventSource = new EventSource("/api/livescore");
+
+      eventSource.onopen = () => {
+        retryCount = 0;
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          if (
+            data.message &&
+            data.message === "Match score SSE connection established"
+          ) {
+            return;
+          }
+
+          if (data.initialData) {
+            setMatches(
+              (data.initialData as Match[]).toSorted((a, b) =>
+                a.datetime.localeCompare(b.datetime),
+              ),
+            );
+            return;
+          }
+
+          if (data.changed || data.added || data.removed) {
+            setMatches((currentMatches) => {
+              let updatedMatches = [...currentMatches];
+
+              if (data.removed && data.removed.length > 0) {
+                const removedIds = new Set(data.removed);
+                updatedMatches = updatedMatches.filter(
+                  (match) => !removedIds.has(match.id),
+                );
+              }
+
+              if (data.added && data.added.length > 0) {
+                updatedMatches = [...updatedMatches, ...data.added];
+              }
+
+              if (data.changed && data.changed.length > 0) {
+                const matchMap = new Map(
+                  updatedMatches.map((match) => [match.id, match]),
+                );
+
+                for (const changedMatch of data.changed) {
+                  matchMap.set(changedMatch.id, changedMatch);
+                }
+
+                updatedMatches = Array.from(matchMap.values());
+              }
+
+              return updatedMatches.toSorted((a, b) =>
+                a.datetime.localeCompare(b.datetime),
+              );
+            });
+          }
+        } catch (error) {
+          console.error("Error parsing SSE data:", error);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("SSE Error:", error);
+        eventSource.close();
+
+        if (retryCount < maxRetryCount) {
+          const delay = Math.min(
+            baseRetryDelay * Math.pow(2, retryCount) + Math.random() * 1000,
+            30000,
+          );
+          retryCount++;
+
+          console.log(
+            `Attempting to reconnect (${retryCount}/${maxRetryCount}) after ${Math.round(delay / 1000)}s`,
+          );
+          setTimeout(connectToSSE, delay);
+        } else {
+          console.error("Max retry attempts reached. Please refresh the page.");
+        }
+      };
+    };
+
+    connectToSSE();
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
+  }, []);
+
+  React.useEffect(() => {
     fetch("/api/getMatches", {
       method: "GET",
       headers: {
@@ -48,42 +178,18 @@ const ManageTeams = () => {
     })
       .then((res) => res.json())
       .then((data: Match[]) => {
-        // Calculate points for each team
-        const points: TeamPoints = {};
-
-        // Initialize all teams with 0 points
-        if (teams) {
-          for (const team of teams) {
-            points[team.id] = 0;
-          }
-        }
-
-        // Calculate points from finished matches
-        const finishedMatches = data.filter(
-          (match) => match.status === "finished",
+        setMatches(
+          data.toSorted((a, b) => a.datetime.localeCompare(b.datetime)),
         );
-        for (const match of finishedMatches) {
-          // Home team (team1) points
-          if (match.team1_score > match.team2_score) {
-            points[match.team1_id] = (points[match.team1_id] || 0) + 3;
-          } else if (match.team1_score === match.team2_score) {
-            points[match.team1_id] = (points[match.team1_id] || 0) + 1;
-          }
-
-          // Away team (team2) points
-          if (match.team2_score > match.team1_score) {
-            points[match.team2_id] = (points[match.team2_id] || 0) + 3;
-          } else if (match.team1_score === match.team2_score) {
-            points[match.team2_id] = (points[match.team2_id] || 0) + 1;
-          }
-        }
-
-        setTeamPoints(points);
       })
       .catch((err) => {
         console.error("Error fetching matches:", err);
       });
-  }, [teams]);
+  }, []);
+
+  React.useEffect(() => {
+    setTeamPoints(calculateTeamPoints(matches, teams));
+  }, [matches, teams]);
 
   React.useEffect(() => {
     fetch("/api/getTeamCategories", {

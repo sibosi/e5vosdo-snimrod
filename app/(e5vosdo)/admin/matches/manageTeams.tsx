@@ -31,7 +31,38 @@ function getCategoryById(
   return categories.find((cat) => cat.id === categoryId);
 }
 
+function calculateTeamPoints(matches: Match[], teams?: Team[]): TeamPoints {
+  const points: TeamPoints = {};
+
+  if (teams) {
+    for (const team of teams) {
+      points[team.id] = 0;
+    }
+  }
+
+  const finishedMatches = matches.filter(
+    (match) => match.status === "finished",
+  );
+
+  for (const match of finishedMatches) {
+    if (match.team1_score > match.team2_score) {
+      points[match.team1_id] = (points[match.team1_id] || 0) + 3;
+    } else if (match.team1_score === match.team2_score) {
+      points[match.team1_id] = (points[match.team1_id] || 0) + 1;
+    }
+
+    if (match.team2_score > match.team1_score) {
+      points[match.team2_id] = (points[match.team2_id] || 0) + 3;
+    } else if (match.team1_score === match.team2_score) {
+      points[match.team2_id] = (points[match.team2_id] || 0) + 1;
+    }
+  }
+
+  return points;
+}
+
 const ManageTeams = () => {
+  const [matches, setMatches] = React.useState<Match[]>([]);
   const [teams, setTeams] = React.useState<Team[]>();
   const [teamPoints, setTeamPoints] = React.useState<TeamPoints>({});
   const [teamCategories, setTeamCategories] = React.useState<TeamCategory[]>(
@@ -39,7 +70,106 @@ const ManageTeams = () => {
   );
 
   React.useEffect(() => {
-    // Fetch all matches
+    let eventSource: EventSource;
+    let retryCount = 0;
+    const maxRetryCount = 5;
+    const baseRetryDelay = 1000;
+
+    const connectToSSE = () => {
+      eventSource = new EventSource("/api/livescore");
+
+      eventSource.onopen = () => {
+        retryCount = 0;
+      };
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          if (
+            data.message &&
+            data.message === "Match score SSE connection established"
+          ) {
+            return;
+          }
+
+          if (data.initialData) {
+            setMatches(
+              (data.initialData as Match[]).toSorted((a, b) =>
+                a.datetime.localeCompare(b.datetime),
+              ),
+            );
+            return;
+          }
+
+          if (data.changed || data.added || data.removed) {
+            setMatches((currentMatches) => {
+              let updatedMatches = [...currentMatches];
+
+              if (data.removed && data.removed.length > 0) {
+                const removedIds = new Set(data.removed);
+                updatedMatches = updatedMatches.filter(
+                  (match) => !removedIds.has(match.id),
+                );
+              }
+
+              if (data.added && data.added.length > 0) {
+                updatedMatches = [...updatedMatches, ...data.added];
+              }
+
+              if (data.changed && data.changed.length > 0) {
+                const matchMap = new Map(
+                  updatedMatches.map((match) => [match.id, match]),
+                );
+
+                for (const changedMatch of data.changed) {
+                  matchMap.set(changedMatch.id, changedMatch);
+                }
+
+                updatedMatches = Array.from(matchMap.values());
+              }
+
+              return updatedMatches.toSorted((a, b) =>
+                a.datetime.localeCompare(b.datetime),
+              );
+            });
+          }
+        } catch (error) {
+          console.error("Error parsing SSE data:", error);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("SSE Error:", error);
+        eventSource.close();
+
+        if (retryCount < maxRetryCount) {
+          const delay = Math.min(
+            baseRetryDelay * Math.pow(2, retryCount) + Math.random() * 1000,
+            30000,
+          );
+          retryCount++;
+
+          console.log(
+            `Attempting to reconnect (${retryCount}/${maxRetryCount}) after ${Math.round(delay / 1000)}s`,
+          );
+          setTimeout(connectToSSE, delay);
+        } else {
+          console.error("Max retry attempts reached. Please refresh the page.");
+        }
+      };
+    };
+
+    connectToSSE();
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
+  }, []);
+
+  React.useEffect(() => {
     fetch("/api/getMatches", {
       method: "GET",
       headers: {
@@ -48,42 +178,18 @@ const ManageTeams = () => {
     })
       .then((res) => res.json())
       .then((data: Match[]) => {
-        // Calculate points for each team
-        const points: TeamPoints = {};
-
-        // Initialize all teams with 0 points
-        if (teams) {
-          for (const team of teams) {
-            points[team.id] = 0;
-          }
-        }
-
-        // Calculate points from finished matches
-        const finishedMatches = data.filter(
-          (match) => match.status === "finished",
+        setMatches(
+          data.toSorted((a, b) => a.datetime.localeCompare(b.datetime)),
         );
-        for (const match of finishedMatches) {
-          // Home team (team1) points
-          if (match.team1_score > match.team2_score) {
-            points[match.team1_id] = (points[match.team1_id] || 0) + 3;
-          } else if (match.team1_score === match.team2_score) {
-            points[match.team1_id] = (points[match.team1_id] || 0) + 1;
-          }
-
-          // Away team (team2) points
-          if (match.team2_score > match.team1_score) {
-            points[match.team2_id] = (points[match.team2_id] || 0) + 3;
-          } else if (match.team1_score === match.team2_score) {
-            points[match.team2_id] = (points[match.team2_id] || 0) + 1;
-          }
-        }
-
-        setTeamPoints(points);
       })
       .catch((err) => {
         console.error("Error fetching matches:", err);
       });
-  }, [teams]);
+  }, []);
+
+  React.useEffect(() => {
+    setTeamPoints(calculateTeamPoints(matches, teams));
+  }, [matches, teams]);
 
   React.useEffect(() => {
     fetch("/api/getTeamCategories", {
@@ -152,18 +258,20 @@ const ManageTeams = () => {
   return (
     <div className="space-y-6 text-center">
       {/* Category tabs */}
-      <div className="flex gap-2 overflow-x-auto">
-        {teamCategories.map((category) => (
-          <div
-            key={category.id}
-            className={`min-w-[100px] flex-1 rounded-lg p-2 text-sm font-bold text-white md:text-xl ${getCategoryColorClass(
-              category.color_code,
-            )} `}
-          >
-            {category.short_name}
-          </div>
-        ))}
-      </div>
+      {teamCategories.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto">
+          {teamCategories.map((category) => (
+            <div
+              key={category.id}
+              className={`min-w-[100px] flex-1 rounded-lg p-2 text-sm font-bold text-white md:text-xl ${getCategoryColorClass(
+                category.color_code,
+              )} `}
+            >
+              {category.short_name}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Teams grouped by category */}
       {teamCategories.map((category) => {
@@ -172,12 +280,14 @@ const ManageTeams = () => {
 
         return (
           <div key={category.id} className="space-y-3">
-            <h3
-              className={`inline-block rounded-lg px-4 py-2 text-xl font-bold text-white bg-${category.color_code}-300`}
-            >
-              {category.name}
-            </h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {teamCategories.length > 1 && (
+              <h3
+                className={`inline-block rounded-lg px-4 py-2 text-xl font-bold text-white bg-${category.color_code}-300`}
+              >
+                {category.name}
+              </h3>
+            )}
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-2">
               {categoryTeams.map((team) => (
                 <div
                   key={team.id}
@@ -187,11 +297,11 @@ const ManageTeams = () => {
                     <img
                       className="h-12 w-12 rounded-lg object-cover"
                       src={team.image_url}
-                      alt={team.name}
+                      alt={team.full_name}
                     />
                   )}
                   <div className="flex-1 text-left max-sm:text-center">
-                    <p className="text-lg font-semibold">{team.name}</p>
+                    <p className="text-lg font-semibold">{team.full_name}</p>
                     {team.team_leader && (
                       <p className="text-sm text-gray-600 dark:text-gray-400">
                         {team.team_leader}

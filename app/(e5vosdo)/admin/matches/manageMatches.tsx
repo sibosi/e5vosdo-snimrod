@@ -6,7 +6,7 @@ import { Button } from "@heroui/react";
 import "@/components/navbar/headspace/timer.css";
 import CreateEditMatch from "./createEditMatch";
 import { Section } from "@/components/home/section";
-import { getMatchStage } from "@/app/(e5vosdo)/foca12h/live/livescoreFull";
+import { getMatchStage } from "@/app/(noSidebar)/foca12h/live/livescoreFull";
 
 function getBetweenContent(match: Match) {
   switch (match.status) {
@@ -297,37 +297,41 @@ const ManageMatches = ({
       )}
 
       {/* Category Filter */}
-      <div className="flex gap-2 overflow-auto overflow-x-auto">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="currentColor"
-          className="m-auto min-w-fit"
-          viewBox="0 0 16 16"
-        >
-          <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z" />
-        </svg>
-        {categories?.map((category) => (
-          <button
-            key={category.id}
-            className={
-              "min-w-fit rounded-lg px-3 py-1 text-sm font-bold " +
-              getColorClass(category.color_code) +
-              (categoryFilter.includes(category) ? "" : " opacity-15")
-            }
-            onClick={() => {
-              if (categoryFilter.includes(category)) {
-                setCategoryFilter(categoryFilter.filter((c) => c !== category));
-              } else {
-                setCategoryFilter([...categoryFilter, category]);
-              }
-            }}
+      {categories.length > 1 && (
+        <div className="flex gap-2 overflow-auto overflow-x-auto">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            className="m-auto min-w-fit"
+            viewBox="0 0 16 16"
           >
-            {category.short_name}
-          </button>
-        ))}
-      </div>
+            <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z" />
+          </svg>
+          {categories?.map((category) => (
+            <button
+              key={category.id}
+              className={
+                "min-w-fit rounded-lg px-3 py-1 text-sm font-bold " +
+                getColorClass(category.color_code) +
+                (categoryFilter.includes(category) ? "" : " opacity-20")
+              }
+              onClick={() => {
+                if (categoryFilter.includes(category)) {
+                  setCategoryFilter(
+                    categoryFilter.filter((c) => c !== category),
+                  );
+                } else {
+                  setCategoryFilter([...categoryFilter, category]);
+                }
+              }}
+            >
+              {category.short_name}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Team Filter */}
       <div className="flex gap-2 overflow-auto overflow-x-auto">
@@ -350,7 +354,7 @@ const ManageMatches = ({
                 categories.find((cat) => cat.id === team.category_id)
                   ?.color_code || "",
               ) +
-              (matchFilter.includes(team) ? "" : " opacity-15")
+              (matchFilter.includes(team) ? "" : " opacity-30")
             }
             onClick={() => {
               if (matchFilter.includes(team)) {
@@ -597,6 +601,24 @@ const ManageMatches = ({
                   </span>
                 </div>
                 <div>{getBetweenContent(match)}</div>
+                <div className="flex flex-col items-center justify-center">
+                  {teams?.find((team) => team.id === match.team2_id)
+                    ?.image_url && (
+                    <img
+                      className="mx-1 h-9 w-9 rounded-lg border-gray-500"
+                      src={
+                        teams?.find((team) => team.id === match.team2_id)
+                          ?.image_url
+                      }
+                      alt={
+                        teams?.find((team) => team.id === match.team2_id)?.name
+                      }
+                    />
+                  )}
+                  <span>
+                    {teams?.find((team) => team.id === match.team2_id)?.name}
+                  </span>
+                </div>
               </div>
               {isOrganiser && (
                 <div className="mt-1 flex flex-wrap justify-between gap-y-1">

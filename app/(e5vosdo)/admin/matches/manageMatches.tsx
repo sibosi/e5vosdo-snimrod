@@ -68,8 +68,15 @@ const ManageMatches = ({
     let retryCount = 0;
     const maxRetryCount = 5;
     const baseRetryDelay = 1000;
+    let reconnectTimeout: NodeJS.Timeout | null = null;
 
     const connectToSSE = () => {
+      // Clear any pending reconnect timeout
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = null;
+      }
+
       eventSource = new EventSource("/api/livescore");
 
       eventSource.onopen = () => {
@@ -156,20 +163,45 @@ const ManageMatches = ({
           console.log(
             `Attempting to reconnect (${retryCount}/${maxRetryCount}) after ${Math.round(delay / 1000)}s`,
           );
-          setTimeout(connectToSSE, delay);
+          reconnectTimeout = setTimeout(connectToSSE, delay);
         } else {
           console.error("Max retry attempts reached. Please refresh the page.");
         }
       };
     };
 
+    // Handle visibility change - reconnect when tab becomes visible
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        console.log("Page became visible, resetting retry count and reconnecting SSE...");
+        retryCount = 0; // Reset retry count to allow new connection attempts
+        connectToSSE();
+      }
+    };
+
+    // Handle focus event - reconnect when window gets focus
+    const handleWindowFocus = () => {
+      console.log("Window got focus, resetting retry count and reconnecting SSE...");
+      retryCount = 0; // Reset retry count to allow new connection attempts
+      connectToSSE();
+    };
+
     // Initial connection
     connectToSSE();
+
+    // Add event listeners for visibility and focus changes
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleWindowFocus);
 
     return () => {
       if (eventSource) {
         eventSource.close();
       }
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleWindowFocus);
     };
   }, []);
 

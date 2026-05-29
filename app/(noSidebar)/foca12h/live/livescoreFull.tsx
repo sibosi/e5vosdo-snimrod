@@ -273,7 +273,7 @@ const LiveScoreContent = ({
                     <div className="animate-grow-line-x h-full bg-green-500"></div>
                   </div>
 
-                  <p className="text-3xl font-semibold">
+                  <p className="text-8xl font-semibold">
                     {currentTime?.toLocaleTimeString([], {
                       minute: "2-digit",
                       second: "2-digit",

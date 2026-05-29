@@ -39,7 +39,7 @@
     "eslint": "^9.20.1",
     "eslint-config-next": "16.1.6",
     "exceljs": "^4.4.0",
-    "exifreader": "^4.33.1",
+    "exifreader": "^4.39.0",
     "express": "^4.22.2",
     "extract-colors": "^4.1.1",
     "fontawesome-free": "^1.0.4",

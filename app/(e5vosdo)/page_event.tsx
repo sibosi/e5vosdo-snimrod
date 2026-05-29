@@ -7,6 +7,9 @@ import LoginButton from "@/components/LoginButton";
 import { Section } from "@/components/home/section";
 import Footer from "@/components/footer";
 import PromoBeforeEvent from "../(noSidebar)/foca12h/promoBeforeEvent";
+import ManageTeams from "./admin/matches/manageTeams";
+import ManageMatches from "./admin/matches/manageMatches";
+import { gate, hasPermission } from "@/db/permissions";
 
 export const metadata: Metadata = {
   robots: {
@@ -58,12 +61,29 @@ const ConditionalLogin = ({
 
 export default async function Home() {
   const selfUser = await getAuth();
+  const isOrganiser = hasPermission(selfUser, "matchOrganiser");
 
   return (
     <div>
-      <PromoBeforeEvent areMultipleGroups={false} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-8">
+        <Section
+          title="Csapatok megtekintése"
+          defaultStatus="opened"
+          savable={true}
+          dropdownable={true}
+        >
+          <ManageTeams />
+        </Section>
 
-      <ConditionalLogin selfUser={selfUser} />
+        <Section
+          title="Mérkőzések megtekintése"
+          defaultStatus="opened"
+          savable={true}
+          dropdownable={true}
+        >
+          <ManageMatches isOrganiser={isOrganiser} />
+        </Section>
+      </div>
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />
       </Section>

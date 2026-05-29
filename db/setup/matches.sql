@@ -32,6 +32,7 @@ CREATE TABLE
   IF NOT EXISTS teams (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
     image_url VARCHAR(255),
     team_leader VARCHAR(255),
     category_id INT NOT NULL,
@@ -40,108 +41,143 @@ CREATE TABLE
 
 -- Albánia, Bulgária, Ciprus, Csehország, Dánia, Franciaország, Görögország, Hollandia, Horvátország, Lengyelország, Magyarország, Németország, Olaszország, Portugália, Románia, Spanyolország, Svédország, Szlovákia, Szlovénia
 INSERT INTO
-  teams (name, category_id, image_url, team_leader)
+  teams (
+    name,
+    full_name,
+    category_id,
+    image_url,
+    team_leader
+  )
 VALUES
-  ('Albánia', 1, "/flags/1x1/al.svg", 'Benkő Zétény'),
+  (
+    'Albánia',
+    'Albánia - Micceretnel',
+    1,
+    "/flags/1x1/al.svg",
+    'Benkő Zétény'
+  ),
   (
     'Bulgária',
+    'Bulgária - King Gellért',
     1,
     "/flags/1x1/bg.svg",
     'Balogh Gergely'
   ),
   (
     'Ciprus',
+    'Ciprus - Ciprus FC',
     1,
     "/flags/1x1/cy.svg",
     'Hoklics Benedek'
   ),
   (
     'Csehország',
+    'Csehország - Ásók',
     1,
     "/flags/1x1/cz.svg",
     'Szilágyi Dániel Áron'
   ),
-  ('Dánia', 1, "/flags/1x1/dk.svg", 'Hunya Ákos'),
+  (
+    'Dánia',
+    'Dánia - Aviátor Gladiátorok',
+    1,
+    "/flags/1x1/dk.svg",
+    'Hunya Ákos'
+  ),
   (
     'Franciaország',
+    'Franciaország - Kárpátaljai brazilok',
     1,
     "/flags/1x1/fr.svg",
     'Okolicsányi Huba'
   ),
   (
     'Görögország',
+    'Görögország - godry',
     1,
     "/flags/1x1/gr.svg",
     'Lefánti Bálint'
   ),
   (
     'Hollandia',
+    'Hollandia - Erik a Verőember',
     1,
     "/flags/1x1/nl.svg",
     'Terényi András'
   ),
   (
     'Horvátország',
+    'Horvátország - Tsapat',
     1,
     "/flags/1x1/hr.svg",
     'Mauritz Ádám'
   ),
   (
     'Lengyelország',
+    'Lengyelország - La Masia FC',
     1,
     "/flags/1x1/pl.svg",
     'Bognár István Ádám'
   ),
   (
     'Magyarország',
+    'Magyarország - Sumi',
     1,
     "/flags/1x1/hu.svg",
     'Csajági Áron Boldizsár'
   ),
   (
     'Németország',
+    'Németország - Baranyai beton hátvédei',
     1,
     "/flags/1x1/de.svg",
     'Trautzsch Hannah Elly'
   ),
   (
     'Olaszország',
+    'Olaszország - Favágók',
     1,
     "/flags/1x1/it.svg",
     'Oláh Zoltán'
   ),
   (
     'Portugália',
+    'Portugália - 11.C',
     1,
     "/flags/1x1/pt.svg",
     'Gayerhosz Kristóf'
   ),
   (
     'Románia',
+    'Románia - Tarhaló gibbonok',
     1,
     "/flags/1x1/ro.svg",
     'Horváth-Cziczka Nándor'
   ),
   (
     'Spanyolország',
+    'Spanyolország - Sztróker FC',
     1,
     "/flags/1x1/es.svg",
     'Medveczky Márk'
   ),
   (
     'Svédország',
+    'Svédország - Horti Gábor Katonái',
     1,
     "/flags/1x1/se.svg",
     'Jusztin Roland'
   ),
   (
     'Szlovákia',
+    'Szlovákia - Vodkacsák SE',
     1,
     "/flags/1x1/sk.svg",
     'Vörös Dániel'
   ),
   (
     'Szlovénia',
+    'Szlovénia - Duzmi',
     1,
     "/flags/1x1/si.svg",
     'Molnár Zétény'

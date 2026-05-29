@@ -152,18 +152,20 @@ const ManageTeams = () => {
   return (
     <div className="space-y-6 text-center">
       {/* Category tabs */}
-      <div className="flex gap-2 overflow-x-auto">
-        {teamCategories.map((category) => (
-          <div
-            key={category.id}
-            className={`min-w-[100px] flex-1 rounded-lg p-2 text-sm font-bold text-white md:text-xl ${getCategoryColorClass(
-              category.color_code,
-            )} `}
-          >
-            {category.short_name}
-          </div>
-        ))}
-      </div>
+      {teamCategories.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto">
+          {teamCategories.map((category) => (
+            <div
+              key={category.id}
+              className={`min-w-[100px] flex-1 rounded-lg p-2 text-sm font-bold text-white md:text-xl ${getCategoryColorClass(
+                category.color_code,
+              )} `}
+            >
+              {category.short_name}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Teams grouped by category */}
       {teamCategories.map((category) => {
@@ -172,11 +174,13 @@ const ManageTeams = () => {
 
         return (
           <div key={category.id} className="space-y-3">
-            <h3
-              className={`inline-block rounded-lg px-4 py-2 text-xl font-bold text-white bg-${category.color_code}-300`}
-            >
-              {category.name}
-            </h3>
+            {teamCategories.length > 1 && (
+              <h3
+                className={`inline-block rounded-lg px-4 py-2 text-xl font-bold text-white bg-${category.color_code}-300`}
+              >
+                {category.name}
+              </h3>
+            )}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {categoryTeams.map((team) => (
                 <div
@@ -187,11 +191,11 @@ const ManageTeams = () => {
                     <img
                       className="h-12 w-12 rounded-lg object-cover"
                       src={team.image_url}
-                      alt={team.name}
+                      alt={team.full_name}
                     />
                   )}
                   <div className="flex-1 text-left max-sm:text-center">
-                    <p className="text-lg font-semibold">{team.name}</p>
+                    <p className="text-lg font-semibold">{team.full_name}</p>
                     {team.team_leader && (
                       <p className="text-sm text-gray-600 dark:text-gray-400">
                         {team.team_leader}

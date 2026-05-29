@@ -12,6 +12,7 @@ export interface TeamCategory {
 export interface Team {
   id: number;
   name: string;
+  full_name: string;
   image_url?: string;
   team_leader?: string;
   category_id: number;
@@ -52,13 +53,13 @@ export const getTeam = async (selfUser: UserType, id: number) => {
 
 export const createTeam = async (selfUser: UserType, team: Team) => {
   gate(selfUser, "admin");
-  const query = `INSERT INTO teams (name, image_url, team_leader, category_id) VALUES ('${team.name}', '${team.image_url || ""}', '${team.team_leader || ""}', ${team.category_id})`;
+  const query = `INSERT INTO teams (name, full_name, image_url, team_leader, category_id) VALUES ('${team.name}', '${team.full_name}', '${team.image_url || ""}', '${team.team_leader || ""}', ${team.category_id})`;
   return await dbreq(query);
 };
 
 export const editTeam = async (selfUser: UserType, team: Team) => {
   gate(selfUser, "admin");
-  const query = `UPDATE teams SET name = '${team.name}', image_url = '${team.image_url || ""}', team_leader = '${team.team_leader || ""}', category_id = ${team.category_id} WHERE id = ${team.id}`;
+  const query = `UPDATE teams SET name = '${team.name}', full_name = '${team.full_name}', image_url = '${team.image_url || ""}', team_leader = '${team.team_leader || ""}', category_id = ${team.category_id} WHERE id = ${team.id}`;
   return await dbreq(query);
 };
 

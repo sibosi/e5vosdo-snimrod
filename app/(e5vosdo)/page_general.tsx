@@ -92,7 +92,6 @@ export default async function Home() {
   return (
     <div>
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
-      <PromoBeforeEvent areMultipleGroups={false} />
       <MainContent selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />

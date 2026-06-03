@@ -19,10 +19,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return (
-    <>
-      <PromoAfterEvent />
-      <HomeGeneral/>
-    </>
-  );
+  return <HomeGeneral/>;
 }

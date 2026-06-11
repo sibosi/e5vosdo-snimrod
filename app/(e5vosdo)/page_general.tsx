@@ -93,7 +93,7 @@ export default async function Home() {
   return (
     <div>
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
-       <FinalCountdown date="2025-06-19T09:00:00Z" />
+       <FinalCountdown date="2026-06-19T09:00:00Z" />
       <MainContent selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />

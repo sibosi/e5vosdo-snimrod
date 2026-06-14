@@ -95,10 +95,11 @@ export const WaveText = ({ text }: { text: string }) => {
     setSize();
     window.addEventListener("resize", setSize);
     return () => window.removeEventListener("resize", setSize);
-    // eslint-disable-next-line
   }, [scale, text]);
 
   useEffect(() => {
+    spansRef.current = spansRef.current.slice(0, chars.length);
+
     let rafId: number;
     const animate = () => {
       timeRef.current += speed;
@@ -111,7 +112,7 @@ export const WaveText = ({ text }: { text: string }) => {
           if (!span) return;
 
           // compute a 0–maxDist oscillation per letter
-          const phase = (i / spansRef.current.length) * Math.PI * 2;
+          const phase = (i / chars.length) * Math.PI * 2;
           const wave = Math.sin(timeRef.current + phase); // –1..1
           const d = ((wave + 1) / 2) * maxDist; // 0..maxDist
 
@@ -131,7 +132,7 @@ export const WaveText = ({ text }: { text: string }) => {
           const alphaVal = alpha ? getAttr(d, 0, 1).toFixed(2) : "1";
 
           span.style.opacity = alphaVal;
-          span.style.fontVariationSettings = `\'wght\' ${wght}, \'wdth\' ${wdth}, \'ital\' ${italVal}`;
+          span.style.fontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${italVal}`;
         });
       }
 
@@ -140,7 +141,7 @@ export const WaveText = ({ text }: { text: string }) => {
 
     animate();
     return () => cancelAnimationFrame(rafId);
-  }, [width, weight, italic, alpha, chars.length]);
+  }, [width, weight, italic, alpha, text]);
 
   const dynamicClassName = [
     className,

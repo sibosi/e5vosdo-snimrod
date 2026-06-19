@@ -28,7 +28,7 @@ export default function WelcomeHero() {
                 </span>
               </h1>
               <h2 className="text-2xl font-semibold text-selfprimary-700 md:text-3xl">
-                2025/26-os diákönkormányzat
+                2026/27-os diákönkormányzat
               </h2>
             </motion.div>
 

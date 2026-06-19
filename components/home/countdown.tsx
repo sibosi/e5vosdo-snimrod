@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Confetti from "react-confetti-boom";
 
 type DigitProps = {
   value: string;
@@ -32,9 +33,14 @@ export const Countdown = ({ date }: { date: string }) => {
     minutes: "#",
     seconds: "#",
   });
+  const [isOver, setIsOver] = useState(false);
 
   useEffect(() => {
     const update = () => {
+      const difference = +new Date(date) - +new Date();
+      if (difference <= 0) {
+        setIsOver(true);
+      }
       setTimeLeft(calculateTimeLeft(date));
     };
     update();
@@ -73,23 +79,30 @@ export const Countdown = ({ date }: { date: string }) => {
   };
 
   return (
-    <div className="grid auto-cols-max grid-flow-col gap-5 text-center text-foreground">
-      <div className="flex flex-col items-center">
-        <CountdownDigit value={timeLeft.days} />
-        <span>nap</span>
+    <>
+      {isOver && (
+        <>
+          <Confetti mode="fall" particleCount={50} />
+        </>
+      )}
+      <div className="grid auto-cols-max grid-flow-col gap-5 text-center text-foreground">
+        <div className="flex flex-col items-center">
+          <CountdownDigit value={timeLeft.days} />
+          <span>nap</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <CountdownDigit value={timeLeft.hours} />
+          <span>óra</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <CountdownDigit value={timeLeft.minutes} />
+          <span>perc</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <CountdownDigit value={timeLeft.seconds} />
+          <span>mp.</span>
+        </div>
       </div>
-      <div className="flex flex-col items-center">
-        <CountdownDigit value={timeLeft.hours} />
-        <span>óra</span>
-      </div>
-      <div className="flex flex-col items-center">
-        <CountdownDigit value={timeLeft.minutes} />
-        <span>perc</span>
-      </div>
-      <div className="flex flex-col items-center">
-        <CountdownDigit value={timeLeft.seconds} />
-        <span>mp.</span>
-      </div>
-    </div>
+    </>
   );
 };

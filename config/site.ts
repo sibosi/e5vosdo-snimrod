@@ -53,7 +53,7 @@ export const siteConfig = {
     home: "https://e5vosdo.hu",
     alternative: "https://info.e5vosdo.hu",
     github: "https://github.com/sibosi",
-    mypage: "https://linktr.ee/snimrod",
+    mypage: "https://yoursit.ee/snimrod",
     instagram: "https://instagram.com/e5vosdo/",
     mediaGallery: "/media",
     gdrive:

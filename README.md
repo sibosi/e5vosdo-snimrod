@@ -16,14 +16,6 @@ _Tervezte és fejlesztette: [Simon Nimród](https://www.github.com/sibosi)_
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
----
-
-### 📱 Hamarosan Android alkalmazás!
-
-<a href="https://play.google.com/store/apps/details?id=hu.e5vosdo.snimrod">
-  <img src="https://play.google.com/intl/hu_hu/badges/static/images/badges/hu_badge_web_generic.png" alt="Szerezd be: Google Play" height="80"/>
-</a>
-
 _PWA változat már elérhető a weben, a bal fenti letöltés ikonra kattintva: [e5vosdo.hu](https://e5vosdo.hu)_
 
 </div>
@@ -195,7 +187,7 @@ Külön köszönet mindenkinek, aki hozzájárult a projekt sikeréhez:
 
 <div align="center">
 
-**Készítette Simon Nimród**
+**Készítette: Simon Nimród**
 
 _Az Eötvös József Gimnázium Diákönkormányzatának_
 

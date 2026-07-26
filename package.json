@@ -94,7 +94,7 @@
     "tailwindcss": "^4.1.18",
     "ts-node": "^10.9.2",
     "tsx": "^4.22.4",
-    "typescript": "^5.7.3"
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "ajv": "^8.17.1",

@@ -99,7 +99,7 @@ export default async function MainLayout({
               >
                 <span className="text-default-600">Fejlesztette</span>
                 <p className="text-selfprimary">Simon Nimród</p>
-                <span className="text-default-600">11.C</span>
+                <span className="text-default-600">12.C</span>
               </Link>
               <br />
               <PageNav />

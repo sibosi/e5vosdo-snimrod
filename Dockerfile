@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:20.11-alpine AS builder
+FROM node:20.11-bookworm-slim AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --silent
@@ -34,8 +34,10 @@ ARG BIMUN_TRUSTED_URL_TOKEN
 RUN npm run build
 
 # Stage 2: Production
-FROM node:20.11-alpine
-RUN apk add --no-cache mysql-client
+FROM node:20.11-bookworm-slim
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends default-mysql-client \
+	&& rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=builder /app .
 EXPOSE 3000

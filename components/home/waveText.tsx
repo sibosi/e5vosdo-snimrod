@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 export const WaveText = ({ text }: { text: string }) => {
   const fontFamily = "Compressa VF";
-  const fontUrl =
-    "https://res.cloudinary.com/dr6lvwubh/raw/upload/v1529908256/CompressaPRO-GX.woff2";
+  const fontUrl = "/fonts/CompressaPRO-GX.woff2";
 
   const width = true;
   const weight = true;

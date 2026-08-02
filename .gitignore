@@ -65,3 +65,4 @@ tmp.sql
 *localfile-*
 .env*copy
 .env.backup
+.venv

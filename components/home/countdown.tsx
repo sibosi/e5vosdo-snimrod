@@ -33,13 +33,14 @@ export const Countdown = ({ date }: { date: string }) => {
     minutes: "#",
     seconds: "#",
   });
-  const [isOver, setIsOver] = useState(false);
+  const [isConfetti, setIsConfetti] = useState(false);
+  const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
   useEffect(() => {
     const update = () => {
       const difference = +new Date(date) - +new Date();
-      if (difference <= 0) {
-        setIsOver(true);
+      if (-ONE_WEEK_IN_MS <= difference && difference <= 0) {
+        setIsConfetti(true);
       }
       setTimeLeft(calculateTimeLeft(date));
     };
@@ -80,7 +81,7 @@ export const Countdown = ({ date }: { date: string }) => {
 
   return (
     <>
-      {isOver && (
+      {isConfetti && (
         <>
           <Confetti mode="fall" particleCount={50} />
         </>

@@ -66,3 +66,4 @@ tmp.sql
 .env*copy
 .env.backup
 .venv
+*.session.sql

@@ -21,7 +21,8 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import ShortDay from "@/components/home/shortDay";
 import PromoBeforeEvent from "../(noSidebar)/foca12h/promoBeforeEvent";
- import FinalCountdown from "@/components/home/finalCountdown";
+import FinalCountdown from "@/components/home/finalCountdown";
+import { Alert } from "@/components/home/alert";
 
 export const metadata: Metadata = {
   robots: {
@@ -93,7 +94,7 @@ export default async function Home() {
   return (
     <div>
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
-       <FinalCountdown date="2026-06-19T09:00:00Z" />
+      <FinalCountdown date="2026-06-19T09:00:00Z" />
       <MainContent selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />
@@ -126,7 +127,13 @@ function MainContent({
           }
         >
           <div className="max-w-md">
-            <HeadTimetable selfUser={selfUser} />
+            {selfUser?.permissions.includes("tester") ? (
+              <HeadTimetable selfUser={selfUser} />
+            ) : (
+              <Alert className="border-selfprimary-300 bg-selfprimary-50">
+                Hamarosan
+              </Alert>
+            )}
           </div>
         </Section>
       )}

@@ -107,9 +107,12 @@ export function useDominantColors(
     img.crossOrigin = "anonymous";
 
     // For external URLs, use our proxy
+    /*
     const finalSrc = isExternalUrl(imageSrc)
       ? `/api/image-proxy?url=${encodeURIComponent(imageSrc)}`
       : imageSrc;
+    */
+    const finalSrc = imageSrc;
 
     img.onerror = () => {
       if (!mounted) return;

@@ -1,3 +1,5 @@
+import "server-only";
+
 export default async function proxyFetch(
   input: string | Request | URL,
   init?: RequestInit,
@@ -7,7 +9,9 @@ export default async function proxyFetch(
 
   const PROXY_TOKEN = process.env.PROXY_TOKEN;
   if (!PROXY_TOKEN) {
-    throw new Error("PROXY_URL is set but PROXY_TOKEN is missing; set PROXY_TOKEN to enable proxying");
+    throw new Error(
+      "PROXY_URL is set but PROXY_TOKEN is missing; set PROXY_TOKEN to enable proxying",
+    );
   }
 
   let targetUrl: string;

@@ -4,6 +4,40 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 
+function remotePatternFromEnvUrl(
+  envUrl: string | undefined,
+  fallbackHostname: string,
+) {
+  if (!envUrl) {
+    return { protocol: "https" as const, hostname: fallbackHostname };
+  }
+  try {
+    const parsed = new URL(envUrl);
+    return {
+      protocol: parsed.protocol.replace(":", "") as "http" | "https",
+      hostname: parsed.hostname,
+      ...(parsed.port ? { port: parsed.port } : {}),
+    };
+  } catch {
+    console.warn(
+      `Invalid URL in env var, falling back to "${fallbackHostname}": ${envUrl}`,
+    );
+    return { protocol: "https" as const, hostname: fallbackHostname };
+  }
+}
+
+function originFromEnvUrl(envUrl: string | undefined): string[] {
+  if (!envUrl) return [];
+  try {
+    return [new URL(envUrl).origin];
+  } catch {
+    console.warn(
+      `Invalid NEXTAUTH_URL, skipping allowedOrigins entry: ${envUrl}`,
+    );
+    return [];
+  }
+}
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactProductionProfiling: true,
@@ -54,10 +88,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: process.env.PROXY_URL?.replace("https://", "") ?? "localhost",
-      },
+      remotePatternFromEnvUrl(process.env.PROXY_URL, "localhost"),
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
@@ -80,12 +111,10 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "d3t3ozftmdmh3i.cloudfront.net",
       },
-      {
-        hostname:
-          process.env.NEXT_PUBLIC_SUPABASE_URL?.replace("https://", "") ??
-          "localhost",
-        protocol: "https",
-      },
+      remotePatternFromEnvUrl(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        "localhost",
+      ),
       {
         hostname: "picsum.photos",
         protocol: "https",
@@ -114,7 +143,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["pdfkit"],
   experimental: {
     serverActions: {
-      allowedOrigins: [process.env.NEXTAUTH_URL + "/api/upload"],
+      allowedOrigins: originFromEnvUrl(process.env.NEXTAUTH_URL),
       bodySizeLimit: 1024 * 1024 * 10, // 10MB
     },
   },

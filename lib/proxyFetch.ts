@@ -34,7 +34,10 @@ export default async function cloudflareProxyFetch(
   }
   headers.set("Authorization", `Bearer ${PROXY_TOKEN}`);
 
-  return fetch(`${PROXY_URL}?url=${encodeURIComponent(targetUrl)}`, {
+  const proxyRequestUrl = new URL(PROXY_URL);
+  proxyRequestUrl.searchParams.set("url", targetUrl);
+
+  return fetch(proxyRequestUrl.toString(), {
     ...init,
     method,
     headers,

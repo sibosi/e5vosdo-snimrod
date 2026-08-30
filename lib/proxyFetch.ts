@@ -1,4 +1,4 @@
-export default async function cloudflareProxyFetch(
+export default async function proxyFetch(
   input: string | Request | URL,
   init?: RequestInit,
 ): Promise<Response> {

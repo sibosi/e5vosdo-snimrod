@@ -7,7 +7,7 @@ export default async function cloudflareProxyFetch(
 
   const PROXY_TOKEN = process.env.PROXY_TOKEN;
   if (!PROXY_TOKEN) {
-    throw new Error("PROXY_TOKEN is not defined in environment variables");
+    throw new Error("PROXY_URL is set but PROXY_TOKEN is missing; set PROXY_TOKEN to enable proxying");
   }
 
   let targetUrl: string;

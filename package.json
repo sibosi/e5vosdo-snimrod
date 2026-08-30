@@ -31,7 +31,6 @@
     "@types/react": "19.2.10",
     "@vercel/analytics": "^1.4.1",
     "ajv": "^8.17.1",
-    "axios": "^1.18.0",
     "chart.js": "^4.4.7",
     "cheerio": "^1.0.0",
     "clsx": "^2.1.1",

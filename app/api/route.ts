@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
 import { load } from "cheerio";
 const iconv = require("iconv-lite");
 import teacherDataByNames from "@/public/storage/teacherDataByNames.json";
@@ -41,8 +40,16 @@ async function update() {
   const url = "https://suli.ejg.hu/intranet/helyettes/refresh.php";
 
   try {
-    const response = await axios.get(url, { responseType: "arraybuffer" });
-    const html_content = iconv.decode(response.data, "iso-8859-1");
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch refresh.php: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const html_content = iconv.decode(Buffer.from(arrayBuffer), "iso-8859-1");
 
     const $ = load(html_content);
 

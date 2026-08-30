@@ -1,5 +1,4 @@
 import { parseStringPromise } from "xml2js";
-import axios from "axios";
 import { PodcastChannel } from "@/types/podcast";
 import { NextResponse } from "next/server";
 
@@ -7,8 +6,15 @@ const RSS_FEED_URL = process.env.RSS_FEED_URL as string;
 
 export async function GET() {
   try {
-    const response = await axios.get(RSS_FEED_URL);
-    const xmlData = response.data;
+    const response = await fetch(RSS_FEED_URL);
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch RSS feed: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const xmlData = await response.text();
 
     const result = await parseStringPromise(xmlData, {
       explicitArray: false,

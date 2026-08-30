@@ -36,46 +36,24 @@ async function readResponseWithLimit(response: Response, limit: number) {
 }
 
 async function fetchWithValidation(initialUrl: URL) {
-  let currentUrl = initialUrl;
+  await validateUrl(initialUrl, { allowedHosts: config.allowedHosts });
 
-  for (
-    let redirectCount = 0;
-    redirectCount <= config.maxRedirects;
-    redirectCount++
-  ) {
-    await validateUrl(currentUrl, { allowedHosts: config.allowedHosts });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), config.timeoutMs);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), config.timeoutMs);
-
-    let response: Response;
-    try {
-      response = await fetch(currentUrl.toString(), {
-        redirect: "manual",
-        signal: controller.signal,
-      });
-    } catch (error) {
-      if ((error as Error).name === "AbortError") {
-        throw new ProxyError("Upstream request timed out", 504);
-      }
-      throw new ProxyError("Failed to fetch image", 502);
-    } finally {
-      clearTimeout(timeoutId);
+  try {
+    return await fetch(initialUrl.toString(), {
+      redirect: "error",
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if ((error as Error).name === "AbortError") {
+      throw new ProxyError("Upstream request timed out", 504);
     }
-
-    if (response.status >= 300 && response.status < 400) {
-      const location = response.headers.get("location");
-      if (!location) {
-        throw new ProxyError("Redirect without location", 502);
-      }
-      currentUrl = new URL(location, currentUrl);
-      continue;
-    }
-
-    return response;
+    throw new ProxyError("Failed to fetch image", 502);
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  throw new ProxyError("Too many redirects", 508);
 }
 
 function buildCorsHeaders(request: Request) {

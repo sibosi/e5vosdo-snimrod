@@ -127,13 +127,7 @@ function MainContent({
           }
         >
           <div className="max-w-md">
-            {selfUser?.permissions.includes("tester") ? (
-              <HeadTimetable selfUser={selfUser} />
-            ) : (
-              <Alert className="border-selfprimary-300 bg-selfprimary-50">
-                Hamarosan
-              </Alert>
-            )}
+            <HeadTimetable selfUser={selfUser} />
           </div>
         </Section>
       )}

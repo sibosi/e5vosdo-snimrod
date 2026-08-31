@@ -170,7 +170,9 @@ const ManageTeams = () => {
     // Handle visibility change - reconnect when tab becomes visible
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        console.log("Page became visible, resetting retry count and reconnecting SSE...");
+        console.log(
+          "Page became visible, resetting retry count and reconnecting SSE...",
+        );
         retryCount = 0; // Reset retry count to allow new connection attempts
         connectToSSE();
       }
@@ -178,7 +180,9 @@ const ManageTeams = () => {
 
     // Handle focus event - reconnect when window gets focus
     const handleWindowFocus = () => {
-      console.log("Window got focus, resetting retry count and reconnecting SSE...");
+      console.log(
+        "Window got focus, resetting retry count and reconnecting SSE...",
+      );
       retryCount = 0; // Reset retry count to allow new connection attempts
       connectToSSE();
     };

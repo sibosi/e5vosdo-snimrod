@@ -6,7 +6,7 @@ import { getAuth, UserType } from "@/db/dbreq";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Carousel from "@/components/home/carousel";
-import { Chip } from "@heroui/react";
+import { Chip, Link } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
@@ -126,6 +126,31 @@ function MainContent({
           }
         >
           <div className="max-w-md">
+            <Alert
+              className="border-selfprimary-300 bg-selfprimary-50 text-selfprimary-900"
+              hideIcon={true}
+            >
+              <Link
+                href="https://drive.google.com/file/d/1QEtyyWPyAqtZRNDjczbkTzjdWJUtzxq0/view?usp=drive_link"
+                className="font-semibold underline"
+              >
+                Osztály
+              </Link>
+              &nbps;
+              <Link
+                href="https://drive.google.com/file/d/131aWAUTgm99EL7a-cFT5Cx8fYRLInesh/view?usp=drive_link"
+                className="font-semibold underline"
+              >
+                Termek
+              </Link>
+              &nbps;
+              <Link
+                href="https://drive.google.com/file/d/18e_H5lOvJQK3LrGIpN8BCQXEzeZLcBF3/view?usp=drive_link"
+                className="font-semibold underline"
+              >
+                Tanárok
+              </Link>
+            </Alert>
             <HeadTimetable selfUser={selfUser} />
           </div>
         </Section>

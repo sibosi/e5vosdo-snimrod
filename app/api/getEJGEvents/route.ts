@@ -27,15 +27,24 @@ export async function GET() {
 }
 
 async function updater() {
-  try {
-    const httpsAgent = new https.Agent({
-      rejectUnauthorized: false, // Disables SSL certificate verification
-    });
+  const url = "https://www.ejg.hu/utemterv-aktualis/";
 
+  try {
     console.log("Fetching events from EJG website...");
-    const response = await fetch("https://www.ejg.hu/utemterv-aktualis/", {
-      agent: httpsAgent,
-    });
+    
+    let response: Awaited<ReturnType<typeof fetch>>;
+
+    try {
+      response = await fetch(url);
+    } catch (sslError: any) {
+      console.warn("Standard fetch failed (likely SSL issue). Retrying without certificate validation...");
+      
+      const httpsAgent = new https.Agent({
+        rejectUnauthorized: false,
+      });
+      
+      response = await fetch(url, { agent: httpsAgent });
+    }
 
     if (!response.ok) {
       console.error(`Failed to fetch from EJG: Status ${response.status}`);
@@ -51,7 +60,7 @@ async function updater() {
     console.error("Error fetching external events:", error);
     return NextResponse.json(
       { error: "Failed to fetch external events", details: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

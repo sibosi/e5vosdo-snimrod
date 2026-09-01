@@ -206,6 +206,13 @@ async function importMyCodes() {
     }
   });
   addLog("importMyCodes", email);
+
+  try {
+    removeTicket("EJG_code_edit");
+  } catch {}
+  try {
+    removeTicket("OM5_code_edit");
+  } catch {}
 }
 
 export async function getAuth(): Promise<User | null | undefined> {
@@ -333,7 +340,7 @@ export async function updateUser(user: User | undefined, isLogin = false) {
     date,
     JSON.stringify(["user"]),
     JSON.stringify({ new: [1], read: [], sent: [] }),
-    JSON.stringify([]),
+    JSON.stringify(["EJG_code_edit", "OM5_code_edit"]),
   ]);
   return null;
 }

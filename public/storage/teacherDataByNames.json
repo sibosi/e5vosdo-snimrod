@@ -1,12 +1,4 @@
 {
-  "Acosta-Varga Sára": {
-    "Name": "Acosta-Varga Sára",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Acosta-Varga_Sara24-scaled.jpg",
-    "Subjects": "történelem, etika",
-    "Head": "11. F",
-    "Others": "",
-    "Mail": "mailto:acosta.varga.sara@e5vos.hu"
-  },
   "Ábel Anna": {
     "Name": "Ábel Anna",
     "Photo": "https://www.ejg.hu/wp-content/uploads/Abel_Anna-scaled.jpg",
@@ -14,6 +6,14 @@
     "Head": "",
     "Others": "",
     "Mail": "mailto:abel.anna@e5vos.hu"
+  },
+  "Acosta-Varga Sára": {
+    "Name": "Acosta-Varga Sára",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Acosta-Varga_Sara24-scaled.jpg",
+    "Subjects": "történelem, etika",
+    "Head": "11. F",
+    "Others": "",
+    "Mail": "mailto:acosta.varga.sara@e5vos.hu"
   },
   "Antal Erzsébet": {
     "Name": "Antal Erzsébet",
@@ -87,14 +87,6 @@
     "Others": "",
     "Mail": "mailto:barko.ferenc@e5vos.hu"
   },
-  "Dr. Bárdosné Páhy Judit": {
-    "Name": "Dr. Bárdosné Páhy Judit",
-    "Photo": "",
-    "Subjects": "matematika, digitális kultúra",
-    "Head": "",
-    "Others": "",
-    "Mail": "mailto:bardosne.pahy.judit@e5vos.hu"
-  },
   "Bazsika Eszter": {
     "Name": "Bazsika Eszter",
     "Photo": "https://www.ejg.hu/wp-content/uploads/Bazsika_Eszter_2025-scaled.jpg",
@@ -135,14 +127,6 @@
     "Others": "",
     "Mail": "mailto:boldizsar.gergely@e5vos.hu"
   },
-  "Csekő Ildikó": {
-    "Name": "Csekő Ildikó",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Cseko_Ildiko.jpg",
-    "Subjects": "könyvtáros",
-    "Head": "",
-    "Others": "",
-    "Mail": "mailto:cseko.ildiko@e5vos.hu"
-  },
   "Czirók Adrienn": {
     "Name": "Czirók Adrienn",
     "Photo": "https://www.ejg.hu/wp-content/uploads/Czirok_Adrienn24-scaled.jpg",
@@ -158,6 +142,14 @@
     "Head": "9. Ny",
     "Others": "",
     "Mail": "mailto:czovekne.vereb.judit@e5vos.hu"
+  },
+  "Csekő Ildikó": {
+    "Name": "Csekő Ildikó",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Cseko_Ildiko.jpg",
+    "Subjects": "könyvtáros",
+    "Head": "",
+    "Others": "",
+    "Mail": "mailto:cseko.ildiko@e5vos.hu"
   },
   "Deák Anna": {
     "Name": "Deák Anna",
@@ -182,6 +174,54 @@
     "Head": "",
     "Others": "",
     "Mail": "mailto:demeter.katalin@e5vos.hu"
+  },
+  "Dr. Bárdosné Páhy Judit": {
+    "Name": "Dr. Bárdosné Páhy Judit",
+    "Photo": "",
+    "Subjects": "matematika, digitális kultúra",
+    "Head": "",
+    "Others": "",
+    "Mail": "mailto:bardosne.pahy.judit@e5vos.hu"
+  },
+  "dr. Herber Attila": {
+    "Name": "dr. Herber Attila",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Herber_Attila.jpg",
+    "Subjects": "magyar, történelem",
+    "Head": "9. E",
+    "Others": "",
+    "Mail": "mailto:herber.attila@e5vos.hu"
+  },
+  "dr. Imre Flóra": {
+    "Name": "dr. Imre Flóra",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Imre_Flora.jpg",
+    "Subjects": "magyar, latin",
+    "Head": "",
+    "Others": "",
+    "Mail": "mailto:imre.flora@e5vos.hu"
+  },
+  "dr. Lakatos István": {
+    "Name": "dr. Lakatos István",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Lakatos_Istvan_2025-scaled.jpg",
+    "Subjects": "magyar, filozófia, etika",
+    "Head": "10. C",
+    "Others": "",
+    "Mail": "mailto:lakatos.istvan@e5vos.hu"
+  },
+  "dr. Miléné Papp Ágota": {
+    "Name": "dr. Miléné Papp Ágota",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Papp_Agota.jpg",
+    "Subjects": "testnevelés",
+    "Head": "",
+    "Others": "",
+    "Mail": "mailto:milene.papp.agota@e5vos.hu"
+  },
+  "dr. Tima Renáta": {
+    "Name": "dr. Tima Renáta",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Tima_Renata24-scaled.jpg",
+    "Subjects": "történelem, olasz nyelv, dráma",
+    "Head": "11. C",
+    "Others": "történelem mkvez.",
+    "Mail": "mailto:tima.renata@e5vos.hu"
   },
   "Dudás Judit": {
     "Name": "Dudás Judit",
@@ -279,14 +319,6 @@
     "Others": "",
     "Mail": "mailto:hegyi.zsofia@e5vos.hu"
   },
-  "dr. Herber Attila": {
-    "Name": "dr. Herber Attila",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Herber_Attila.jpg",
-    "Subjects": "magyar, történelem",
-    "Head": "9. E",
-    "Others": "",
-    "Mail": "mailto:herber.attila@e5vos.hu"
-  },
   "Hofmeisterné Kertész Annamária": {
     "Name": "Hofmeisterné Kertész Annamária",
     "Photo": "https://www.ejg.hu/wp-content/uploads/hofmeisterne_kertesz_annamaria-e1697098100949.jpg",
@@ -335,14 +367,6 @@
     "Others": "német mkvez.",
     "Mail": "mailto:hunfalvine.bognar.aniko@e5vos.hu"
   },
-  "dr. Imre Flóra": {
-    "Name": "dr. Imre Flóra",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Imre_Flora.jpg",
-    "Subjects": "magyar, latin",
-    "Head": "",
-    "Others": "",
-    "Mail": "mailto:imre.flora@e5vos.hu"
-  },
   "Jakab Bence": {
     "Name": "Jakab Bence",
     "Photo": "",
@@ -359,14 +383,6 @@
     "Others": "",
     "Mail": "mailto:jega.szabo.krisztina@e5vos.hu"
   },
-  "Kampós András": {
-    "Name": "Kampós András",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Kampos-Andras24-scaled.jpg",
-    "Subjects": "történelem",
-    "Head": "",
-    "Others": "igazgató",
-    "Mail": "mailto:kampos.andras@e5vos.hu"
-  },
   "Kámán Ildikó": {
     "Name": "Kámán Ildikó",
     "Photo": "https://www.ejg.hu/wp-content/uploads/Kaman_Ildiko.jpg",
@@ -374,6 +390,14 @@
     "Head": "9. A",
     "Others": "",
     "Mail": "mailto:kaman.ildiko@e5vos.hu"
+  },
+  "Kampós András": {
+    "Name": "Kampós András",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Kampos-Andras24-scaled.jpg",
+    "Subjects": "történelem",
+    "Head": "",
+    "Others": "igazgató",
+    "Mail": "mailto:kampos.andras@e5vos.hu"
   },
   "Kelemen Ferenc": {
     "Name": "Kelemen Ferenc",
@@ -415,14 +439,6 @@
     "Others": "magyar mkvez.",
     "Mail": "mailto:kriston.attila@e5vos.hu"
   },
-  "dr. Lakatos István": {
-    "Name": "dr. Lakatos István",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Lakatos_Istvan_2025-scaled.jpg",
-    "Subjects": "magyar, filozófia, etika",
-    "Head": "10. C",
-    "Others": "",
-    "Mail": "mailto:lakatos.istvan@e5vos.hu"
-  },
   "Laczik István": {
     "Name": "Laczik István",
     "Photo": "",
@@ -463,13 +479,13 @@
     "Others": "",
     "Mail": "mailto:miklos.bence@e5vos.hu"
   },
-  "dr. Miléné Papp Ágota": {
-    "Name": "dr. Miléné Papp Ágota",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Papp_Agota.jpg",
-    "Subjects": "testnevelés",
+  "Molnár Ágnes": {
+    "Name": "Molnár Ágnes",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Molnar_Agnes.jpg",
+    "Subjects": "magyar, német, pszihológia",
     "Head": "",
     "Others": "",
-    "Mail": "mailto:milene.papp.agota@e5vos.hu"
+    "Mail": "mailto:molnar.agnes@e5vos.hu"
   },
   "Molnár Annamária": {
     "Name": "Molnár Annamária",
@@ -478,14 +494,6 @@
     "Head": "",
     "Others": "",
     "Mail": "mailto:molnar.annamaria@e5vos.hu"
-  },
-  "Molnár Ágnes": {
-    "Name": "Molnár Ágnes",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Molnar_Agnes.jpg",
-    "Subjects": "magyar, német, pszihológia",
-    "Head": "",
-    "Others": "",
-    "Mail": "mailto:molnar.agnes@e5vos.hu"
   },
   "Molnár Boglárka": {
     "Name": "Molnár Boglárka",
@@ -535,14 +543,6 @@
     "Others": "",
     "Mail": "mailto:nemeth.katalin@e5vos.hu"
   },
-  "Némethné Tudja Éva": {
-    "Name": "Némethné Tudja Éva",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Tudja_Eva_23-scaled.jpg",
-    "Subjects": "matematika, fizika",
-    "Head": "",
-    "Others": "",
-    "Mail": "mailto:nemethne.tudja.eva@e5vos.hu"
-  },
   "Németh Zoltán": {
     "Name": "Németh Zoltán",
     "Photo": "https://www.ejg.hu/wp-content/uploads/Nemeth-Zoltan-scaled.jpg",
@@ -550,6 +550,14 @@
     "Head": "",
     "Others": "",
     "Mail": "mailto:nemeth.zoltan@e5vos.hu"
+  },
+  "Némethné Tudja Éva": {
+    "Name": "Némethné Tudja Éva",
+    "Photo": "https://www.ejg.hu/wp-content/uploads/Tudja_Eva_23-scaled.jpg",
+    "Subjects": "matematika, fizika",
+    "Head": "",
+    "Others": "",
+    "Mail": "mailto:nemethne.tudja.eva@e5vos.hu"
   },
   "Oláh Katalin": {
     "Name": "Oláh Katalin",
@@ -702,14 +710,6 @@
     "Head": "",
     "Others": "",
     "Mail": "mailto:tar.imre@e5vos.hu"
-  },
-  "dr. Tima Renáta": {
-    "Name": "dr. Tima Renáta",
-    "Photo": "https://www.ejg.hu/wp-content/uploads/Tima_Renata24-scaled.jpg",
-    "Subjects": "történelem, olasz nyelv, dráma",
-    "Head": "11. C",
-    "Others": "történelem mkvez.",
-    "Mail": "mailto:tima.renata@e5vos.hu"
   },
   "Tomozi Zsófia": {
     "Name": "Tomozi Zsófia",

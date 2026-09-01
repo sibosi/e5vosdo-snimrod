@@ -333,7 +333,7 @@ export async function updateUser(user: User | undefined, isLogin = false) {
 
   await dbreq(query, [
     user.name,
-    user.name.split(" ")[0],
+    user.name.split(" ")[1],
     user.email,
     user.image,
     user.name,

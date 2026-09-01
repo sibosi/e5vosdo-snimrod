@@ -88,7 +88,6 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      remotePatternFromEnvUrl(process.env.PROXY_URL, "localhost"),
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",

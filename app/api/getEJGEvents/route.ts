@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import { EventType } from "@/db/event";
-import cloudflareProxyFetch from "@/lib/proxyFetch";
+import fetch from "node-fetch";
+import https from "https";
 
 export async function GET() {
   let cache: { data: any; timestamp: number } | null =
@@ -27,10 +28,14 @@ export async function GET() {
 
 async function updater() {
   try {
+    const httpsAgent = new https.Agent({
+      rejectUnauthorized: false, // Disables SSL certificate verification
+    });
+
     console.log("Fetching events from EJG website...");
-    const response = await cloudflareProxyFetch(
-      "https://www.ejg.hu/utemterv-aktualis/",
-    );
+    const response = await fetch("https://www.ejg.hu/utemterv-aktualis/", {
+      agent: httpsAgent,
+    });
 
     if (!response.ok) {
       console.error(`Failed to fetch from EJG: Status ${response.status}`);

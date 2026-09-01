@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 import { EventType } from "@/db/event";
-import cloudflareProxyFetch from "@/lib/proxyFetch";
+import fetch from "node-fetch";
+import https from "https";
 
 export async function GET() {
   let cache: { data: any; timestamp: number } | null =
@@ -26,11 +27,24 @@ export async function GET() {
 }
 
 async function updater() {
+  const url = "https://www.ejg.hu/utemterv-aktualis/";
+
   try {
     console.log("Fetching events from EJG website...");
-    const response = await cloudflareProxyFetch(
-      "https://www.ejg.hu/utemterv-aktualis/",
-    );
+    
+    let response: Awaited<ReturnType<typeof fetch>>;
+
+    try {
+      response = await fetch(url);
+    } catch (sslError: any) {
+      console.warn("Standard fetch failed (likely SSL issue). Retrying without certificate validation...");
+      
+      const httpsAgent = new https.Agent({
+        rejectUnauthorized: false,
+      });
+      
+      response = await fetch(url, { agent: httpsAgent });
+    }
 
     if (!response.ok) {
       console.error(`Failed to fetch from EJG: Status ${response.status}`);
@@ -46,7 +60,7 @@ async function updater() {
     console.error("Error fetching external events:", error);
     return NextResponse.json(
       { error: "Failed to fetch external events", details: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -35,7 +35,7 @@ function displayDate(dateInStr: string) {
   if (Number.isNaN(date.getTime())) return "";
 
   if (diff < 1000 * 60) {
-    return `${Math.floor(diff / 1000)} másodperce`;
+    return `${Math.floor(diff / 1000)} mp`;
   } else if (diff < 1000 * 60 * 60) {
     return `${Math.floor(diff / (1000 * 60))} perce`;
   } else if (diff < 1000 * 60 * 60 * 24) {
@@ -143,7 +143,7 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
               setSelectedUser(user);
               setSelectedUserLogs([]);
             }}
-            className="overflow-hidden rounded-3xl bg-selfprimary-50 p-6 text-left"
+            className="overflow-hidden rounded-3xl bg-selfprimary-50 px-2 py-6 text-left"
           >
             <div className="flex justify-between">
               <Image
@@ -175,6 +175,8 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
             </h3>
             <p className="mb-2 text-xs">{user.email}</p>
             <p suppressHydrationWarning>
+              <span>{getUserClass(user) || "???"}</span>
+              {" | "}
               <span>{user.is_verified ? "✅" : "❌"}</span>{" "}
               {displayDate(user.last_login)}
             </p>

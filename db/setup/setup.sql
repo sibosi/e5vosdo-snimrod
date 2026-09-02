@@ -24,6 +24,20 @@ CREATE TABLE IF NOT EXISTS `users` (
     `push_about_timetable` BOOLEAN NOT NULL DEFAULT 0,
     `OM5` VARCHAR(5)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
+CREATE TABLE IF NOT EXISTS `one_time_login_codes` (
+        `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        `code_hash` CHAR(64) NOT NULL UNIQUE,
+        `email` VARCHAR(255) CHARACTER SET utf8 NOT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `expires_at` TIMESTAMP NOT NULL,
+        `used_at` TIMESTAMP NULL DEFAULT NULL,
+        INDEX `idx_one_time_login_codes_email` (`email`),
+        INDEX `idx_one_time_login_codes_expires_at` (`expires_at`),
+        CONSTRAINT `fk_one_time_login_codes_user`
+            FOREIGN KEY (`email`) REFERENCES `users` (`email`) ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
 -- Add triggers to the users table
 CREATE TRIGGER before_insert_users BEFORE
 INSERT ON users FOR EACH ROW BEGIN

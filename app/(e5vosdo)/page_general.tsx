@@ -129,24 +129,10 @@ function MainContent({
             <div className="my-2 rounded-xl border-2 border-selfprimary-300 bg-selfprimary-50 px-4 py-2 text-selfprimary-900">
               <p>
                 <Link
-                  href="https://drive.google.com/file/d/1QEtyyWPyAqtZRNDjczbkTzjdWJUtzxq0/view?usp=drive_link"
+                  href="https://drive.google.com/drive/folders/1d9btMmtRQq617f4CoxkVNNf3TzybFPpH"
                   className="font-semibold underline"
                 >
-                  Osztályórarend
-                </Link>
-                &nbsp; &middot; &nbsp;
-                <Link
-                  href="https://drive.google.com/file/d/131aWAUTgm99EL7a-cFT5Cx8fYRLInesh/view?usp=drive_link"
-                  className="font-semibold underline"
-                >
-                  Terembeosztás
-                </Link>
-                &nbsp; &middot; &nbsp;
-                <Link
-                  href="https://drive.google.com/file/d/18e_H5lOvJQK3LrGIpN8BCQXEzeZLcBF3/view?usp=drive_link"
-                  className="font-semibold underline"
-                >
-                  Tanárok
+                  Órarendek mappája
                 </Link>
               </p>
             </div>

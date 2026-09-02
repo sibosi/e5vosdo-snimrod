@@ -1,6 +1,6 @@
 import { getSessionCookieOptions, SESSION_COOKIE_NAME } from "@/auth";
 import { withConnection } from "@/db/db";
-import { createHash } from "crypto";
+import { createHmac } from "crypto";
 import { encode } from "next-auth/jwt";
 import { cookies, headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,9 +8,11 @@ import { NextRequest, NextResponse } from "next/server";
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 const rateLimit = new Map<string, { count: number; resetAt: number }>();
+const CODE_HASH_SECRET = process.env.OTP_HASH_SECRET ?? process.env.AUTH_SECRET;
 
 function hashCode(code: string) {
-  return createHash("sha256").update(code).digest("hex");
+  if (!CODE_HASH_SECRET) return null;
+  return createHmac("sha256", CODE_HASH_SECRET).update(code).digest("hex");
 }
 
 async function getClientIp() {
@@ -24,8 +26,14 @@ async function getClientIp() {
 
 function isRateLimited(ip: string) {
   const now = Date.now();
+  for (const [key, entry] of rateLimit.entries()) {
+    if (entry.resetAt <= now) {
+      rateLimit.delete(key);
+    }
+  }
+
   const current = rateLimit.get(ip);
-  if (!current || current.resetAt <= now) {
+  if (!current) {
     rateLimit.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
     return false;
   }
@@ -44,16 +52,20 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json().catch(() => null);
   const code = typeof body?.code === "string" ? body.code.trim().toUpperCase() : "";
-  if (!/^[A-Z2-9]{8}$/.test(code)) {
+  if (!/^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{8}$/.test(code)) {
     return NextResponse.json({ error: "Érvénytelen kód." }, { status: 400 });
+  }
+  const codeHash = hashCode(code);
+  if (!codeHash) {
+    return NextResponse.json({ error: "A bejelentkezés konfigurációs hibába ütközött." }, { status: 500 });
   }
 
   const result = await withConnection(async (connection) => {
     await connection.beginTransaction();
     try {
       const [rows] = await connection.execute(
-        "SELECT email, expires_at, used_at FROM one_time_login_codes WHERE code = ? FOR UPDATE",
-        [hashCode(code)],
+        "SELECT email, expires_at, used_at FROM one_time_login_codes WHERE code_hash = ? FOR UPDATE",
+        [codeHash],
       );
       const loginCode = (rows as { email: string; expires_at: Date; used_at: Date | null }[])[0];
       if (!loginCode) {
@@ -70,8 +82,8 @@ export async function POST(request: NextRequest) {
       }
 
       await connection.execute(
-        "UPDATE one_time_login_codes SET used_at = CURRENT_TIMESTAMP WHERE code = ? AND used_at IS NULL",
-        [hashCode(code)],
+        "UPDATE one_time_login_codes SET used_at = CURRENT_TIMESTAMP WHERE code_hash = ? AND used_at IS NULL",
+        [codeHash],
       );
       await connection.commit();
       return { email: loginCode.email };

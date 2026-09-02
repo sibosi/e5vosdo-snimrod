@@ -3,6 +3,8 @@
 import { Button, Input, Link } from "@heroui/react";
 import { FormEvent, useState } from "react";
 
+const INVALID_CODE_CHARS = /[^ABCDEFGHJKMNPQRSTUVWXYZ23456789]/g;
+
 const CodeLoginForm = () => {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -36,7 +38,7 @@ const CodeLoginForm = () => {
         autoComplete="one-time-code"
         classNames={{ input: "font-mono uppercase tracking-widest" }}
         onChange={(event) =>
-          setCode(event.target.value.toUpperCase().replace(/[^A-Z2-9]/g, ""))
+          setCode(event.target.value.toUpperCase().replace(INVALID_CODE_CHARS, ""))
         }
       />
       {error && <p className="text-sm text-danger-600">{error}</p>}

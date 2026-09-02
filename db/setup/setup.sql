@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 CREATE TABLE IF NOT EXISTS `one_time_login_codes` (
         `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        `code` CHAR(64) NOT NULL UNIQUE,
+        `code_hash` CHAR(64) NOT NULL UNIQUE,
         `email` VARCHAR(255) CHARACTER SET utf8 NOT NULL,
         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `expires_at` TIMESTAMP NOT NULL,

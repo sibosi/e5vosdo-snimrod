@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { dbreq } from "@/db/db";
-import { createHash, randomBytes } from "crypto";
+import { createHmac, randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -12,8 +12,11 @@ function createCode() {
   return Array.from(bytes, (byte) => CODE_ALPHABET[byte % CODE_ALPHABET.length]).join("");
 }
 
+const CODE_HASH_SECRET = process.env.OTP_HASH_SECRET ?? process.env.AUTH_SECRET;
+
 function hashCode(code: string) {
-  return createHash("sha256").update(code).digest("hex");
+  if (!CODE_HASH_SECRET) return null;
+  return createHmac("sha256", CODE_HASH_SECRET).update(code).digest("hex");
 }
 
 export async function POST() {
@@ -24,12 +27,16 @@ export async function POST() {
   }
 
   const code = createCode();
+  const codeHash = hashCode(code);
+  if (!codeHash) {
+    return NextResponse.json({ error: "A bejelentkezés konfigurációs hibába ütközött." }, { status: 500 });
+  }
   const expiresAt = new Date(Date.now() + CODE_LIFETIME_MS);
 
   await dbreq("UPDATE one_time_login_codes SET used_at = CURRENT_TIMESTAMP WHERE email = ? AND used_at IS NULL", [email]);
   await dbreq(
-    "INSERT INTO one_time_login_codes (code, email, expires_at) VALUES (?, ?, ?)",
-    [hashCode(code), email, expiresAt],
+    "INSERT INTO one_time_login_codes (code_hash, email, expires_at) VALUES (?, ?, ?)",
+    [codeHash, email, expiresAt],
   );
 
   return NextResponse.json({ code, expiresAt: expiresAt.toISOString() });

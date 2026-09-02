@@ -33,6 +33,14 @@ const OneTimeLoginGenerator = () => {
     setRemaining(new Date(data.expiresAt).getTime() - Date.now());
   }
 
+  async function copyCode() {
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      setError("A kód másolása nem sikerült. Másold ki kézzel.");
+    }
+  }
+
   const minutes = Math.floor(remaining / 60000);
   const seconds = Math.floor((remaining % 60000) / 1000)
     .toString()
@@ -52,7 +60,7 @@ const OneTimeLoginGenerator = () => {
           <p className="text-sm font-normal text-danger-600">
             Ne oszd meg senkivel ezt a kódot.
           </p>
-          <Button size="sm" onPress={() => navigator.clipboard.writeText(code)}>
+          <Button size="sm" onPress={copyCode}>
             Kód másolása
           </Button>
         </div>

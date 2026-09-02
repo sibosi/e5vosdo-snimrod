@@ -18,7 +18,7 @@ const Login = () => {
     );
 
   return (
-    <form action={doSocialLogin} className="flex justify-center">
+    <form action={doSocialLogin} className="flex w-full flex-col items-center gap-2">
       <Button
         type="submit"
         name="action"
@@ -27,8 +27,11 @@ const Login = () => {
         onPress={resetCache}
         className="rounded-badge w-full max-w-md bg-selfprimary-300"
       >
-        Bejelentkezés
+        Bejelentkezés Google-lel
       </Button>
+      <Link href="/login/code" size="sm" className="text-selfprimary">
+        Bejelentkezés kóddal
+      </Link>
     </form>
   );
 };

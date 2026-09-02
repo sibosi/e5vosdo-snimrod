@@ -15,6 +15,7 @@ import PersonalDataSettings from "./settings/PersonalDataSettings";
 import { UserType } from "@/db/dbreq";
 import { doLogout } from "@/actions/route";
 import AdvancedSettings from "./settings/AdvancedSettings";
+import OneTimeLoginGenerator from "@/components/OneTimeLoginGenerator";
 
 const Settings = ({ selfUser }: { selfUser: UserType }) => {
   const [activeSection, setActiveSection] = useState<number | null>(null);
@@ -48,6 +49,11 @@ const Settings = ({ selfUser }: { selfUser: UserType }) => {
           setReloadNeeded={setReloadNeeded}
         />
       ),
+    },
+    {
+      title: "Bejelentkezési kód",
+      saveAble: false,
+      content: <OneTimeLoginGenerator />,
     },
     {
       title: "Megjelenés",

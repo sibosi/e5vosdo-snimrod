@@ -6,6 +6,7 @@ const COOKIE_PREFIX = IS_PRODUCTION ? "__Secure-" : "";
 const SESSION_MAX_AGE = (60 * 60 * 24 * 365) / 2;
 const COOKIE_DOMAIN =
   process.env.AUTH_COOKIE_DOMAIN ?? (IS_PRODUCTION ? ".e5vosdo.hu" : undefined);
+export const SESSION_COOKIE_NAME = `${COOKIE_PREFIX}next-auth.session-token`;
 const ALLOWED_ORIGINS = (
   process.env.AUTH_ALLOWED_ORIGINS ??
   "https://e5vosdo.hu,https://info.e5vosdo.hu"
@@ -35,7 +36,7 @@ const nextAuthConfig = {
   },
   cookies: {
     sessionToken: {
-      name: `${COOKIE_PREFIX}next-auth.session-token`,
+      name: SESSION_COOKIE_NAME,
       options: {
         httpOnly: true,
         sameSite: "lax" as const,
@@ -124,5 +125,16 @@ const {
   signIn,
   signOut,
 } = NextAuth(nextAuthConfig);
+
+export function getSessionCookieOptions() {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: "/",
+    secure: IS_PRODUCTION,
+    maxAge: SESSION_MAX_AGE,
+    domain: COOKIE_DOMAIN,
+  };
+}
 
 export { GET, POST, auth, signIn, signOut };

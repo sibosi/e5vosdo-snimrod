@@ -50,10 +50,10 @@ export const clubsOrder: string[] = [
   "MUN-Club",
   "EPAS",
 
-  "Eötvös Média",
-  "Sulirádió",
   "Technikusi Szervezet",
   "Eötvös Alkotó Műhely",
+  "Eötvös Média",
+  "Sulirádió",
 
   "E5vös Sakk",
   "BIMUN",
@@ -466,6 +466,11 @@ export const clubsConfig: Group[] = [
         title: "Technikusi Szervezet Instagram",
         value: "https://www.instagram.com/e5vos.technikusi.szervezet/",
         type: "instagram",
+      },
+      {
+        title: "Technikusi Szervezet Weboldal",
+        value: "https://tsz.e5vos.dev/",
+        type: "website",
       },
       {
         title: "Technikusi Szervezet email",

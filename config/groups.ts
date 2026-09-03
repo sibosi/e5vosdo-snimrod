@@ -51,9 +51,9 @@ export const clubsOrder: string[] = [
   "EPAS",
 
   "Technikusi Szervezet",
+  "Eötvös Alkotó Műhely",
   "Eötvös Média",
   "Sulirádió",
-  "Eötvös Alkotó Műhely",
 
   "E5vös Sakk",
   "BIMUN",

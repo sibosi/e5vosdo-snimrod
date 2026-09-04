@@ -23,6 +23,7 @@ import ShortDay from "@/components/home/shortDay";
 import PromoBeforeEvent from "../(noSidebar)/foca12h/promoBeforeEvent";
 import FinalCountdown from "@/components/home/finalCountdown";
 import { Alert } from "@/components/home/alert";
+import EventExpoPhotos from "./eventExpoPhotos";
 
 export const metadata: Metadata = {
   robots: {

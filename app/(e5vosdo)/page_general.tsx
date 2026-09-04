@@ -94,14 +94,14 @@ export default async function Home() {
 
   return (
     <div>
-    {selfUser && (
+    {1 && (
         <Section
           title="Expo-fotó"
           defaultStatus="opened"
           savable={true}
           dropdownable={true}
         >
-          <EventExpoPhotos />
+          <EventExpoPhotos isSignedIn={!!selfUser}/>
         </Section>
       )}
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />

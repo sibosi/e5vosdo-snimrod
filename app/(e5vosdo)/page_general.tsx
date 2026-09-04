@@ -23,7 +23,6 @@ import ShortDay from "@/components/home/shortDay";
 import PromoBeforeEvent from "../(noSidebar)/foca12h/promoBeforeEvent";
 import FinalCountdown from "@/components/home/finalCountdown";
 import { Alert } from "@/components/home/alert";
-import EventExpoPhotos from "./eventExpoPhotos";
 
 export const metadata: Metadata = {
   robots: {
@@ -94,16 +93,6 @@ export default async function Home() {
 
   return (
     <div>
-    {1 && (
-        <Section
-          title="Expo-fotó"
-          defaultStatus="opened"
-          savable={true}
-          dropdownable={true}
-        >
-          <EventExpoPhotos />
-        </Section>
-      )}
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
       <MainContent selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>

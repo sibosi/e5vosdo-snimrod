@@ -93,6 +93,16 @@ export default async function Home() {
 
   return (
     <div>
+    {selfUser && (
+        <Section
+          title="Expo-fotó"
+          defaultStatus="opened"
+          savable={true}
+          dropdownable={true}
+        >
+          <EventExpoPhotos />
+        </Section>
+      )}
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
       <MainContent selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>

@@ -158,7 +158,7 @@ export default function EventExpoPhotos() {
 
       {previousImages.length > 0 && (
         <div className="overflow-x-auto pb-2">
-          <div className="flex w-max gap-3">
+          <div className="flex sm:w-max gap-3">
             {previousImages.map((image) => (
               <img
                 key={image.id}

@@ -44,7 +44,6 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const selfUser = await getAuth();
-  return NextResponse.json({ error: "Disabled API" }, { status: 403 });
   if (!selfUser) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

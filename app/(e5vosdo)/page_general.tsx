@@ -101,7 +101,7 @@ export default async function Home() {
           savable={true}
           dropdownable={true}
         >
-          <EventExpoPhotos isSignedIn={!!selfUser}/>
+          <EventExpoPhotos />
         </Section>
       )}
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />

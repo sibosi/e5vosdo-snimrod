@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
-import HomeGeneral from "./page_event";
+import HomeGeneral from "./page_genaral";
 import MaintenanceGate from "@/components/home/maintenanceGate";
 import { getAuth } from "@/db/dbreq";
 
@@ -22,8 +22,6 @@ export const metadata: Metadata = {
 export default async function Page() {
   const selfUser = await getAuth();
   return (
-    <MaintenanceGate selfUser={selfUser} isActive={true}>
-      <HomeGeneral />
-    </MaintenanceGate>
+    <HomeGeneral />
   );
 }

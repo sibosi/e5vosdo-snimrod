@@ -117,7 +117,7 @@ export default function EventExpoPhotos() {
             onClick={() => inputRef.current?.click()}
             className="w-full rounded-xl bg-selfprimary-800 px-4 py-3 font-semibold text-white transition hover:bg-selfprimary-900"
           >
-            {selectedFile ? "Másik kép készítése" : "1:1 kép készítése"}
+            {selectedFile ? "Másik kép készítése" : "Kép készítése"}
           </button>
 
           {previewUrl && (

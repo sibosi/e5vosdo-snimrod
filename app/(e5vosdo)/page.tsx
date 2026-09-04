@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
 import HomeGeneral from "./page_general";
+import MaintenanceGate from "@/components/home/maintenanceGate";
+import { getAuth } from "@/db/dbreq";
 
 export const metadata: Metadata = {
   robots: {
@@ -17,6 +19,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
-  return <HomeGeneral />;
+export default async function Page() {
+  const selfUser = await getAuth();
+  return (
+    <HomeGeneral />
+  );
 }

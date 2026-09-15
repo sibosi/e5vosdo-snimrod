@@ -37,6 +37,7 @@ jobs:
       MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       ENCRYPTION_PASSWORD: ${{ secrets.ENCRYPTION_PASSWORD }}
       BACKUP_API_TOKEN: ${{ secrets.BACKUP_API_TOKEN }}
       PRODUCTION_BACKUP_API_URL: ${{ secrets.PRODUCTION_BACKUP_API_URL }}

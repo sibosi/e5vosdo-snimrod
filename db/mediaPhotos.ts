@@ -20,6 +20,54 @@ export interface MediaImageType {
   large_preview_height?: number;
 }
 
+const EXPO_TAG_NAME = "2627-expo";
+
+export async function getExpoImages(
+  selfUser: UserType,
+  limit = 20,
+): Promise<MediaImageType[]> {
+  gate(selfUser, "user");
+  const safeLimit = Math.max(1, Math.min(Math.floor(limit), 50));
+  return (await dbreq(
+    `SELECT images.*
+     FROM media_images images
+     JOIN media_images_to_tags relations
+       ON relations.media_image_id = images.id
+     JOIN media_images_tags tags
+       ON tags.id = relations.media_image_tag_id
+     WHERE tags.tag_name = ?
+       AND COALESCE(images.media_type, 'image') = 'image'
+     ORDER BY images.id DESC
+     LIMIT ${safeLimit}`,
+    [EXPO_TAG_NAME],
+  )) as MediaImageType[];
+}
+
+export async function attachExpoTag(
+  selfUser: UserType,
+  imageId: number,
+): Promise<void> {
+  gate(selfUser, "user");
+
+  await dbreq(
+    "INSERT INTO media_images_tags (tag_name) VALUES (?) ON DUPLICATE KEY UPDATE id = id",
+    [EXPO_TAG_NAME],
+  );
+  const tags = (await dbreq(
+    "SELECT id FROM media_images_tags WHERE tag_name = ?",
+    [EXPO_TAG_NAME],
+  )) as { id: number }[];
+  const tagId = tags[0]?.id;
+  if (!tagId) throw new Error("Expo tag could not be created");
+
+  await dbreq(
+    `INSERT INTO media_images_to_tags (media_image_id, media_image_tag_id)
+     VALUES (?, ?)
+     ON DUPLICATE KEY UPDATE media_image_id = VALUES(media_image_id)`,
+    [imageId, tagId],
+  );
+}
+
 export async function getOriginalImagesFileID() {
   const images: { original_drive_id: string }[] = await dbreq(
     "SELECT original_drive_id FROM media_images ORDER BY id DESC",

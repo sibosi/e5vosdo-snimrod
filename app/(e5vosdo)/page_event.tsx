@@ -9,6 +9,7 @@ import Footer from "@/components/footer";
 import ManageTeams from "./admin/matches/manageTeams";
 import ManageMatches from "./admin/matches/manageMatches";
 import { hasPermission } from "@/db/permissions";
+import EventExpoPhotos from "./eventExpoPhotos";
 
 export const metadata: Metadata = {
   robots: {
@@ -64,6 +65,16 @@ export default async function Home() {
 
   return (
     <div>
+      {selfUser && (
+        <Section
+          title="Expo-fotó"
+          defaultStatus="opened"
+          savable={true}
+          dropdownable={true}
+        >
+          <EventExpoPhotos />
+        </Section>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-8">
         <Section
           title="Csapatok megtekintése"

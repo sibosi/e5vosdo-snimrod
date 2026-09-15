@@ -14,7 +14,7 @@ if (!DATABASE_URL) {
 }
 
 const pool =
-  g.__mysqlPool ??
+  gPS.__mysqlPool ??
   mysql.createPool({
     uri: DATABASE_URL,
     waitForConnections: true,

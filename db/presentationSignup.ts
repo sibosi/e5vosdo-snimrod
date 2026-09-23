@@ -8,14 +8,15 @@ interface MyGlobal {
 
 const gPS = globalThis as MyGlobal;
 
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set");
+}
+
 const pool =
   gPS.__mysqlPool ??
   mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    port: Number(process.env.MYSQL_PORT),
-    database: process.env.MYSQL_DATABASE,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
+    uri: DATABASE_URL,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

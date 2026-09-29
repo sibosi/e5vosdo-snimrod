@@ -1,10 +1,6 @@
 {
   "2026.09.01": {
-    "A": [
-      "Zöldséges burgonyaleves",
-      "Milánói spagetti",
-      "Gyümölcs"
-    ],
+    "A": ["Zöldséges burgonyaleves", "Milánói spagetti", "Gyümölcs"],
     "B": [
       "Zöldséges burgonyaleves",
       "Paprikás csirkemell",
@@ -14,11 +10,7 @@
     "nap": "Tuesday"
   },
   "2026.09.02": {
-    "A": [
-      "Fahéjas szilvaleves",
-      "Tavaszi rizses hús",
-      "Kovászos uborka"
-    ],
+    "A": ["Fahéjas szilvaleves", "Tavaszi rizses hús", "Kovászos uborka"],
     "B": [
       "Fahéjas szilvaleves",
       "Sajtos halszelet",
@@ -44,33 +36,13 @@
     "nap": "Thursday"
   },
   "2026.09.04": {
-    "A": [
-      "Sárgaborsó leves",
-      "Mákos nudli",
-      "Vanília sodó",
-      "Gyümölcs"
-    ],
-    "B": [
-      "Sárgaborsóleves",
-      "Piskótakocka",
-      "Csoki öntet",
-      "Gyümölcs"
-    ],
+    "A": ["Sárgaborsó leves", "Mákos nudli", "Vanília sodó", "Gyümölcs"],
+    "B": ["Sárgaborsóleves", "Piskótakocka", "Csoki öntet", "Gyümölcs"],
     "nap": "Friday"
   },
   "2026.09.07": {
-    "A": [
-      "Reszelt tésztaleves",
-      "Zöldbabfőzelék",
-      "Sült virsli",
-      "Tk. kenyér"
-    ],
-    "B": [
-      "Reszelttészta leves",
-      "Székelykáposzta",
-      "Túró Rudi",
-      "Tk.kenyér"
-    ],
+    "A": ["Reszelt tésztaleves", "Zöldbabfőzelék", "Sült virsli", "Tk. kenyér"],
+    "B": ["Reszelttészta leves", "Székelykáposzta", "Túró Rudi", "Tk.kenyér"],
     "nap": "Monday"
   },
   "2026.09.08": {
@@ -92,11 +64,7 @@
     "nap": "Tuesday"
   },
   "2026.09.09": {
-    "A": [
-      "100%-os gyümölcslé",
-      "Francia sertésragu",
-      "Bulgur"
-    ],
+    "A": ["100%-os gyümölcslé", "Francia sertésragu", "Bulgur"],
     "B": [
       "100%-os gyümölcslé",
       "Rántott csirkemellfilé",
@@ -112,11 +80,7 @@
       "Jázmin rizs",
       "Tartár mártás"
     ],
-    "B": [
-      "Vegyes gyümölcsleves",
-      "Bácskai rizseshús",
-      "Vitamin saláta"
-    ],
+    "B": ["Vegyes gyümölcsleves", "Bácskai rizseshús", "Vitamin saláta"],
     "nap": "Thursday"
   },
   "2026.09.11": {
@@ -141,12 +105,7 @@
       "Fahéj szórat",
       "Gyümölcs"
     ],
-    "B": [
-      "Jókai bableves",
-      "Túrós batyú 2db",
-      "Gyümölcs",
-      "Tk.kenyér"
-    ],
+    "B": ["Jókai bableves", "Túrós batyú 2db", "Gyümölcs", "Tk.kenyér"],
     "nap": "Monday"
   },
   "2026.09.15": {
@@ -166,11 +125,7 @@
     "nap": "Tuesday"
   },
   "2026.09.16": {
-    "A": [
-      "Tejfölös gombaleves",
-      "Mexikói csirkeragu",
-      "Párolt rizs"
-    ],
+    "A": ["Tejfölös gombaleves", "Mexikói csirkeragu", "Párolt rizs"],
     "B": [
       "Tejfölös gombaleves",
       "Mustáros lazac",
@@ -210,11 +165,7 @@
     "nap": "Friday"
   },
   "2026.09.21": {
-    "A": [
-      "Tárkonyos sertésragu leves",
-      "Káposztás kocka",
-      "Gyümölcs"
-    ],
+    "A": ["Tárkonyos sertésragu leves", "Káposztás kocka", "Gyümölcs"],
     "B": [
       "Tárkonyos sertésraguleves",
       "Tejbendara",
@@ -258,12 +209,7 @@
       "Füstölt sajtos brokkolis csirkemellfilé",
       "Bulgur"
     ],
-    "B": [
-      "100%-os gyümölcslé",
-      "Vadas pulykaragu",
-      "Főtt tészta",
-      "Sütemény"
-    ],
+    "B": ["100%-os gyümölcslé", "Vadas pulykaragu", "Főtt tészta", "Sütemény"],
     "nap": "Thursday"
   },
   "2026.09.25": {
@@ -289,12 +235,7 @@
       "Tejfölös öntet",
       "Gyümölcs"
     ],
-    "B": [
-      "Alföldi gulyásleves",
-      "Bécsi fánk 2db",
-      "Gyümölcs",
-      "Tk.kenyér"
-    ],
+    "B": ["Alföldi gulyásleves", "Bécsi fánk 2db", "Gyümölcs", "Tk.kenyér"],
     "nap": "Monday"
   },
   "2026.09.29": {

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import proxyFetch from "@/lib/proxyFetch";
 import { load } from "cheerio";
 const iconv = require("iconv-lite");
 import teacherDataByNames from "@/public/storage/teacherDataByNames.json";
@@ -41,7 +40,7 @@ async function update() {
   const url = "https://suli.ejg.hu/intranet/helyettes/refresh.php";
 
   try {
-    const response = await proxyFetch(url);
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(

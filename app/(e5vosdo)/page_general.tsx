@@ -6,7 +6,7 @@ import { getAuth, UserType } from "@/db/dbreq";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Carousel from "@/components/home/carousel";
-import { Chip } from "@heroui/react";
+import { Chip, Link } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
@@ -94,7 +94,6 @@ export default async function Home() {
   return (
     <div>
       <PageHeadContent selfUser={selfUser} carouselEvents={carouselEvents} />
-      <FinalCountdown date="2026-06-19T09:00:00Z" />
       <MainContent selfUser={selfUser} />
       <Section title="Keresel valamit?" dropdownable={false}>
         <Footer />
@@ -127,13 +126,17 @@ function MainContent({
           }
         >
           <div className="max-w-md">
-            {selfUser?.permissions.includes("tester") ? (
-              <HeadTimetable selfUser={selfUser} />
-            ) : (
-              <Alert className="border-selfprimary-300 bg-selfprimary-50">
-                Hamarosan
-              </Alert>
-            )}
+            <div className="my-2 rounded-xl border-2 border-selfprimary-300 bg-selfprimary-50 px-4 py-2 text-selfprimary-900">
+              <p>
+                <Link
+                  href="https://drive.google.com/drive/folders/1d9btMmtRQq617f4CoxkVNNf3TzybFPpH"
+                  className="font-semibold underline"
+                >
+                  Órarendek mappája
+                </Link>
+              </p>
+            </div>
+            <HeadTimetable selfUser={selfUser} />
           </div>
         </Section>
       )}

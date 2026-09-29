@@ -1,7 +1,6 @@
 import { getAuth } from "@/db/dbreq";
 import { gate } from "@/db/permissions";
 import { extendTimetableWeekWithRooms } from "@/db/timetableRooms";
-import proxyFetch from "@/lib/proxyFetch";
 import { load } from "cheerio";
 
 export interface TimetableLesson {
@@ -44,7 +43,7 @@ async function getTimetable(): Promise<TimetableWeek | null> {
   const studentCode = selfUser.EJG_code;
   const passwordOM = selfUser.OM5;
 
-  const response = await proxyFetch(
+  const response = await fetch(
     "https://suli.ejg.hu/intranet/szulkuk/szulkuk.php",
     {
       headers: {

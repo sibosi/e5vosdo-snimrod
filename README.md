@@ -135,6 +135,7 @@ MYSQL_PORT=3306
 MYSQL_DATABASE=e5info
 MYSQL_USER=your_mysql_user
 MYSQL_PASSWORD=your_mysql_password
+DATABASE_URL=mysql://user:password@host:port/database
 ```
 
 ### 6. Setup script futtatása

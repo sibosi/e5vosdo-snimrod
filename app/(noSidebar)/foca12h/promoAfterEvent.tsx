@@ -111,8 +111,8 @@ const PromoAfterEvent = () => {
 
   return (
     <div className="mb-4 space-y-4 text-center">
-    <Tray className="space-y-2">
-        <h2>19 csapat - ⁶&#129335;⁷  mérkőzés - 159 gól</h2>
+      <Tray className="space-y-2">
+        <h2>19 csapat - ⁶&#129335;⁷ mérkőzés - 159 gól</h2>
 
         <p>
           <Link
@@ -130,7 +130,9 @@ const PromoAfterEvent = () => {
             key={team.id}
             className={
               "flex items-center justify-center gap-2 rounded-lg py-2 " +
-              getPlacementClass(sortedTeams.findIndex((item) => item.id === team.id))
+              getPlacementClass(
+                sortedTeams.findIndex((item) => item.id === team.id),
+              )
             }
           >
             <img
@@ -141,7 +143,6 @@ const PromoAfterEvent = () => {
           </div>
         ))}
       </div>
-
     </div>
   );
 };

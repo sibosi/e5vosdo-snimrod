@@ -223,11 +223,7 @@ export async function GET(
   return await serveMedia(request, params);
 }
 
-async function serveMedia(
-  request: Request,
-  params: Promise<{ id: string }>,
-) {
-
+async function serveMedia(request: Request, params: Promise<{ id: string }>) {
   const { id } = await params;
   const imageId = Number.parseInt(id, 10);
 

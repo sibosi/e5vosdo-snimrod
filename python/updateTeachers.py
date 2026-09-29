@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import locale
 
 '''
 
@@ -29,6 +30,13 @@ The teacherDataByNames.json example:
 
 '''
 
+def sort_json_by_hungarian_abc(data):
+    try: locale.setlocale(locale.LC_COLLATE, "hu_HU.UTF-8")
+    except locale.Error: locale.setlocale(locale.LC_COLLATE, "hun_HUN") # Fallback for Win
+
+    sorted_dict = {k: data[k] for k in sorted(data.keys(), key=locale.strxfrm)}
+    return sorted_dict
+
 URL = 'https://www.ejg.hu/tanarok/tanarok/'
 TITLES = ['Name', 'Photo', 'Subjects', 'Head', 'Others', 'Mail']
 response = requests.get(URL, verify=False)
@@ -42,7 +50,6 @@ table = soup.find('table', id='tanarok_elerhetosege')
 data = []
 rows = table.find_all('tr')
 for row in rows:
-    
     cells = row.find_all('td')
     row_data = []
     for cell in cells:
@@ -53,15 +60,16 @@ for row in rows:
         else:
             # Replace &nbsp; with empty string
             row_data.append(cell.text.replace('\xa0', ''))
-    
-    row_data = dict(zip(TITLES, row_data))
 
+    row_data = dict(zip(TITLES, row_data))
     if row_data != {}: data.append(row_data)
 
 teacherDataByNames = {}
 
 for teacher in data:
     teacherDataByNames[teacher['Name']] = teacher
+
+teacherDataByNames = sort_json_by_hungarian_abc(teacherDataByNames)
 
 with open('public/storage/teacherDataByNames.json', 'w', encoding="UTF-8") as f:
     f.write(json.dumps(teacherDataByNames, ensure_ascii=False, indent=2))

@@ -36,6 +36,7 @@ const NavbarForPhone = ({
     "/admin/page": "Admin",
     "/media": "Média",
     "/dev": "Admin",
+    "/fal": "Fal"
   };
 
   const pathname = usePathname();

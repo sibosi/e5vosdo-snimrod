@@ -9,7 +9,7 @@ const DevPage = async () => {
   if (!selfUser) return <PleaseLogin />;
 
   return (
-    <MaintenanceGate isActive={true} selfUser={selfUser}>
+    <MaintenanceGate isActive={false} selfUser={selfUser}>
       <h1 className="pb-8 text-center text-5xl font-semibold text-foreground max-lg:hidden">
         Fal
       </h1>

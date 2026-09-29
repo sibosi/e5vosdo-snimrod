@@ -167,44 +167,32 @@ export default function ChatWall({
 
   return (
     <section className="mx-auto max-w-3xl px-4 pb-16">
-      <div className="mb-8 border-b border-foreground/15 pb-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-foreground/55">
-              Közös fal
-            </p>
-            <p className="mt-2 max-w-xl text-foreground/70">
-              Indíts egy beszélgetést, vagy szólj hozzá egy meglévőhöz.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
-              <Switch
-                size="sm"
-                isSelected={isPushEnabled}
-                isDisabled={isUpdatingPush}
-                onValueChange={togglePush}
-              >
-                Push értesítések
-              </Switch>
-              <Switch
-                size="sm"
-                isSelected={isPushAboutChatwall}
-                isDisabled={!isPushEnabled || isUpdatingPush}
-                onValueChange={toggleChatwallPush}
-              >
-                A Fal minden üzenete
-              </Switch>
-            </div>
-          </div>
-          <button
-            type="button"
-            aria-label="Sorrend megfordítása"
-            title="Sorrend megfordítása"
-            onClick={() => setNewestFirst((current) => !current)}
-            className="shrink-0 rounded-full border border-foreground/20 px-3 py-1.5 text-xs font-semibold hover:bg-foreground/5"
-          >
-            Sorrend: {newestFirst ? "legújabbak elöl" : "legrégebbiek elöl"}
-          </button>
-        </div>
+      <div className="mb-8 flex flex-wrap gap-x-5 gap-y-2 border-b border-selfprimary-100 pb-5">
+        <Switch
+          size="sm"
+          isSelected={isPushEnabled}
+          isDisabled={isUpdatingPush}
+          onValueChange={togglePush}
+        >
+          Push értesítések
+        </Switch>
+        <Switch
+          size="sm"
+          isSelected={isPushAboutChatwall}
+          isDisabled={!isPushEnabled || isUpdatingPush}
+          onValueChange={toggleChatwallPush}
+        >
+          Értesítés minden üzenetről
+        </Switch>
+        <button
+          type="button"
+          aria-label="Sorrend megfordítása"
+          title="Sorrend megfordítása"
+          onClick={() => setNewestFirst((current) => !current)}
+          className="shrink-0 rounded-full border border-selfprimary-200 px-3 py-1.5 text-xs font-semibold text-selfprimary-600 transition-colors hover:bg-selfprimary-50"
+        >
+          Sorrend: {newestFirst ? "legújabbak elöl" : "legrégebbiek elöl"}
+        </button>
       </div>
 
       <form
@@ -229,10 +217,10 @@ export default function ChatWall({
                 : [...current, user],
             )
           }
-          placeholder="Mi jár a fejedben?"
+          placeholder="Tegyél fel egy kérdést, vagy indíts egy beszélgetést a merch vagy a népszavazás kapcsán..."
           maxLength={2000}
           rows={3}
-          className="w-full resize-y rounded-2xl border border-foreground/20 bg-background p-4 text-foreground outline-none transition focus:border-foreground/60"
+          className="focus:ring-selfprimary/15 w-full resize-y rounded-2xl border border-selfprimary-200 bg-selfprimary-bg p-4 text-foreground outline-none transition focus:border-selfprimary-400 focus:ring-2"
         />
         <MentionField
           users={mentionUsers}
@@ -246,7 +234,7 @@ export default function ChatWall({
           <button
             type="submit"
             disabled={isSending || !content.trim()}
-            className="rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-background transition hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full bg-selfprimary-700 px-5 py-2 text-sm font-semibold text-background transition hover:bg-selfprimary-600 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {isSending ? "Küldés..." : "Új beszélgetés"}
           </button>
@@ -256,7 +244,7 @@ export default function ChatWall({
       {error && (
         <p
           role="alert"
-          className="mb-6 rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300"
+          className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300"
         >
           {error}
         </p>
@@ -270,7 +258,7 @@ export default function ChatWall({
         {displayedMessages.map((message) => (
           <article
             key={message.id}
-            className="relative rounded-2xl border border-foreground/15 p-5"
+            className="shadow-selfprimary-900/5 relative rounded-2xl border border-selfprimary-100 bg-selfprimary-bg p-5 shadow-sm"
           >
             <MentionToggle
               users={message.mentioned_users}
@@ -286,7 +274,7 @@ export default function ChatWall({
               onClick={() =>
                 setReplyingTo(replyingTo === message.id ? null : message.id)
               }
-              className="mt-4 text-sm font-semibold text-foreground/65 hover:text-foreground"
+              className="mt-4 text-sm font-semibold text-selfprimary-600 hover:text-selfprimary-800"
             >
               {replyingTo === message.id ? "Mégse" : "Válasz"}
             </button>
@@ -300,7 +288,7 @@ export default function ChatWall({
                     replyMentionedUsers.map((user) => user.email),
                   )
                 }
-                className="mt-4 border-t border-foreground/10 pt-4"
+                className="mt-4 border-t border-selfprimary-100 pt-4"
               >
                 <MentionTextarea
                   value={replyContent}
@@ -316,7 +304,7 @@ export default function ChatWall({
                   placeholder="Írj választ..."
                   maxLength={2000}
                   rows={2}
-                  className="w-full resize-y rounded-xl border border-foreground/20 bg-background p-3 text-sm outline-none focus:border-foreground/60"
+                  className="focus:ring-selfprimary/15 w-full resize-y rounded-xl border border-selfprimary-200 bg-background p-3 text-sm outline-none focus:border-selfprimary-400 focus:ring-2"
                 />
                 <MentionField
                   users={mentionUsers}
@@ -326,14 +314,14 @@ export default function ChatWall({
                 <button
                   type="submit"
                   disabled={isSending || !replyContent.trim()}
-                  className="mt-2 rounded-full border border-foreground/30 px-4 py-1.5 text-sm font-semibold hover:bg-foreground/5 disabled:opacity-40"
+                  className="mt-2 rounded-full border border-selfprimary-200 px-4 py-1.5 text-sm font-semibold text-selfprimary-600 hover:bg-selfprimary-50 disabled:opacity-40"
                 >
                   Válasz küldése
                 </button>
               </form>
             )}
             {!!message.replies?.length && (
-              <div className="mt-5 space-y-4 border-l-2 border-foreground/10 pl-4">
+              <div className="mt-5 space-y-4 border-l-2 border-selfprimary-100 pl-4">
                 {message.replies.map((reply) => (
                   <div key={reply.id} className="relative pr-12">
                     <MentionToggle
@@ -387,7 +375,7 @@ function MentionField({
         {selectedUsers.map((user) => (
           <span
             key={user.email}
-            className="inline-flex items-center gap-1 rounded-full bg-foreground/10 px-2.5 py-1 text-xs font-semibold"
+            className="inline-flex items-center gap-1 rounded-full bg-selfprimary-50 px-2.5 py-1 text-xs font-semibold text-selfprimary-600"
           >
             @{user.display_name}
             <button
@@ -434,7 +422,7 @@ function MentionedUsers({ users }: Readonly<{ users: DisplayUser[] }>) {
           {users.map((user) => (
             <span
               key={user.email}
-              className="inline-flex items-center gap-2 rounded-full bg-foreground/10 px-2.5 py-1.5 text-xs"
+              className="inline-flex items-center gap-2 rounded-full border border-selfprimary-100 bg-selfprimary-50 px-2.5 py-1.5 text-xs"
             >
               {user.image ? (
                 <img
@@ -475,7 +463,7 @@ function MentionToggle({
       aria-label={`${users.length} megemlítés megjelenítése`}
       title="Megemlített személyek megjelenítése"
       onClick={onToggle}
-      className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-foreground/60 hover:bg-foreground/10 hover:text-foreground"
+      className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-selfprimary-500 hover:bg-selfprimary-50 hover:text-selfprimary-700"
     >
       <span aria-hidden="true">@</span>
       <span>{users.length}</span>

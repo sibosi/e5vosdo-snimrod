@@ -1,4 +1,9 @@
-import { getAuth, newNotificationByEmails, User } from "@/db/dbreq";
+import {
+  getAuth,
+  getUsersEmailWherePushAboutChatwall,
+  newNotificationByEmails,
+  User,
+} from "@/db/dbreq";
 import { dbreq, multipledbreq } from "@/db/db";
 import { calculateUserClass } from "@/public/getUserClass";
 import { ChatWallMessage, TableChatWallMessages } from "@/types/chat_wall";
@@ -34,7 +39,7 @@ function toMessage(
       image: row.user_image,
       class:
         row.coming_year && row.class_character
-          ? `${row.coming_year}.${row.class_character}`
+          ? calculateUserClass(row.coming_year, row.class_character)
           : row.class_character || null,
     },
     parent_id: row.parent_id,
@@ -47,7 +52,7 @@ type ChatWallMentionRow = {
   message_id: number;
   mentioned_user_email: string;
   user_name: string;
-  user_image: string;
+  image: string;
   coming_year?: number;
   class_character?: string;
 };
@@ -57,7 +62,6 @@ export async function getChatWallMentionUsers() {
     `SELECT email, COALESCE(full_name, name) AS display_name, image,
             coming_year, class_character
      FROM users
-     WHERE is_verified = 1 OR is_verified = 0
      ORDER BY display_name ASC, email ASC;`,
   )) as Array<{
     email: string;
@@ -83,7 +87,7 @@ export async function getChatWallMessages(): Promise<ChatWallMessage[]> {
     `SELECT m.*, u.coming_year, u.class_character
 		 FROM chatwall_messages m
 		 LEFT JOIN users u ON u.email = m.user_email
-		 ORDER BY m.timestamp ASC, m.id ASC;`,
+    ORDER BY m.timestamp DESC, m.id DESC;`,
   )) as (TableChatWallMessages & {
     user_name: string;
     user_image: string;
@@ -106,17 +110,18 @@ export async function getChatWallMessages(): Promise<ChatWallMessage[]> {
   >();
 
   for (const mention of mentionRows) {
-    const users = mentionsByMessage.get(mention.message_id) || [];
+    const messageId = Number(mention.message_id);
+    const users = mentionsByMessage.get(messageId) || [];
     users.push({
       email: mention.mentioned_user_email,
       display_name: mention.user_name,
-      image: mention.user_image || "",
+      image: mention.image || "",
       class: calculateUserClass(
         mention.coming_year ?? 0,
         mention.class_character ?? "",
       ),
     });
-    mentionsByMessage.set(mention.message_id, users);
+    mentionsByMessage.set(messageId, users);
   }
 
   for (const message of messages) {
@@ -164,8 +169,10 @@ export async function createChatWallMessage(
   );
   const validMentionRows = uniqueEmails.length
     ? ((await dbreq(
-        `SELECT email FROM users WHERE email IN (?) AND is_verified = 1`,
-        [uniqueEmails],
+        `SELECT email FROM users WHERE email IN (${uniqueEmails
+          .map(() => "?")
+          .join(", ")})`,
+        uniqueEmails,
       )) as { email: string }[])
     : [];
   const validEmails = validMentionRows.map((row) => row.email);
@@ -201,6 +208,22 @@ export async function createChatWallMessage(
       JSON.stringify({
         title: "Megemlítettek a Falon",
         body: `${user.full_name || user.name || user.email} megemlített egy üzenetben`,
+        data: { url: "/fal" },
+      }),
+    );
+  }
+
+  const chatwallSubscribers = (
+    await getUsersEmailWherePushAboutChatwall()
+  ).filter((email) => email !== user.email && !validEmails.includes(email));
+  if (chatwallSubscribers.length > 0) {
+    await newNotificationByEmails(
+      "Új bejegyzés a Falon",
+      trimmedContent,
+      chatwallSubscribers,
+      JSON.stringify({
+        title: "Új bejegyzés a Falon",
+        body: `${user.full_name || user.name || user.email} új üzenetet írt a Falra`,
         data: { url: "/fal" },
       }),
     );

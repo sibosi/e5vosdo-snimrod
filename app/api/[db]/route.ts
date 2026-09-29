@@ -41,6 +41,7 @@ const SZALAGAVATO_GUEST_USER: UserType = {
   push_permission: false,
   push_about_games: false,
   push_about_timetable: false,
+  push_about_chatwall: false,
   is_verified: false,
   analytics_id: null,
 };
@@ -65,6 +66,7 @@ const BIMUN_GUEST_USER: UserType = {
   push_permission: false,
   push_about_games: false,
   push_about_timetable: false,
+  push_about_chatwall: false,
   is_verified: false,
   analytics_id: null,
 };

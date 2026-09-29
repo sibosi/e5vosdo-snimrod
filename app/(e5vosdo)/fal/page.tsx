@@ -16,6 +16,8 @@ const DevPage = async () => {
       <ChatWall
         initialMessages={await getChatWallMessages()}
         mentionUsers={await getChatWallMentionUsers()}
+        pushPermission={selfUser.push_permission}
+        pushAboutChatwall={selfUser.push_about_chatwall}
       />
     </MaintenanceGate>
   );

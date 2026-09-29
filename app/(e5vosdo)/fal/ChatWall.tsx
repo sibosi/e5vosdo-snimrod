@@ -3,12 +3,19 @@
 import { ChatWallMessage } from "@/types/chat_wall";
 import { DisplayUser } from "@/types/users";
 import SearchUser from "@/components/searchUser";
+import { Switch } from "@heroui/react";
+import {
+  requestPushPermissionAndSubscribe,
+  subscribePush,
+} from "@/components/PWA/subscribePush";
 import * as React from "react";
 import { useState } from "react";
 
 interface ChatWallProps {
   initialMessages: ChatWallMessage[];
   mentionUsers: DisplayUser[];
+  pushPermission: boolean;
+  pushAboutChatwall: boolean;
 }
 
 function formatTimestamp(timestamp: string) {
@@ -21,6 +28,8 @@ function formatTimestamp(timestamp: string) {
 export default function ChatWall({
   initialMessages,
   mentionUsers,
+  pushPermission,
+  pushAboutChatwall,
 }: Readonly<ChatWallProps>) {
   const [messages, setMessages] = useState(initialMessages);
   const [content, setContent] = useState("");
@@ -32,6 +41,78 @@ export default function ChatWall({
   );
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
+  const [newestFirst, setNewestFirst] = useState(true);
+  const [isPushEnabled, setIsPushEnabled] = useState(pushPermission);
+  const [isPushAboutChatwall, setIsPushAboutChatwall] =
+    useState(pushAboutChatwall);
+  const [isUpdatingPush, setIsUpdatingPush] = useState(false);
+  const [expandedMentions, setExpandedMentions] = useState<Set<number>>(
+    new Set(),
+  );
+  const displayedMessages = newestFirst ? messages : [...messages].reverse();
+
+  function toggleMentions(messageId: number) {
+    setExpandedMentions((current) => {
+      const next = new Set(current);
+      if (next.has(messageId)) next.delete(messageId);
+      else next.add(messageId);
+      return next;
+    });
+  }
+
+  async function updatePushSettings(settings: {
+    push_permission?: boolean;
+    push_about_chatwall?: boolean;
+  }) {
+    const response = await fetch("/api/editMySettings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ settings }),
+    });
+    if (!response.ok)
+      throw new Error("Nem sikerült menteni a push beállítást.");
+  }
+
+  async function togglePush(enabled: boolean) {
+    setIsUpdatingPush(true);
+    setError("");
+    try {
+      if (enabled) {
+        if (Notification.permission === "granted") {
+          await subscribePush();
+        } else {
+          await requestPushPermissionAndSubscribe();
+        }
+      }
+      await updatePushSettings({ push_permission: enabled });
+      setIsPushEnabled(enabled);
+    } catch (pushError) {
+      setError(
+        pushError instanceof Error
+          ? pushError.message
+          : "Nem sikerült módosítani a push beállítást.",
+      );
+    } finally {
+      setIsUpdatingPush(false);
+    }
+  }
+
+  async function toggleChatwallPush(enabled: boolean) {
+    setIsUpdatingPush(true);
+    setError("");
+    try {
+      await updatePushSettings({ push_about_chatwall: enabled });
+      setIsPushAboutChatwall(enabled);
+    } catch (pushError) {
+      setError(
+        pushError instanceof Error
+          ? pushError.message
+          : "Nem sikerült módosítani a Fal push beállítását.",
+      );
+    } finally {
+      setIsUpdatingPush(false);
+    }
+  }
 
   async function refresh() {
     const response = await fetch("/api/chat-wall", { cache: "no-store" });
@@ -87,12 +168,43 @@ export default function ChatWall({
   return (
     <section className="mx-auto max-w-3xl px-4 pb-16">
       <div className="mb-8 border-b border-foreground/15 pb-5">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-foreground/55">
-          Közös fal
-        </p>
-        <p className="mt-2 max-w-xl text-foreground/70">
-          Indíts egy beszélgetést, vagy szólj hozzá egy meglévőhöz.
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-foreground/55">
+              Közös fal
+            </p>
+            <p className="mt-2 max-w-xl text-foreground/70">
+              Indíts egy beszélgetést, vagy szólj hozzá egy meglévőhöz.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+              <Switch
+                size="sm"
+                isSelected={isPushEnabled}
+                isDisabled={isUpdatingPush}
+                onValueChange={togglePush}
+              >
+                Push értesítések
+              </Switch>
+              <Switch
+                size="sm"
+                isSelected={isPushAboutChatwall}
+                isDisabled={!isPushEnabled || isUpdatingPush}
+                onValueChange={toggleChatwallPush}
+              >
+                A Fal minden üzenete
+              </Switch>
+            </div>
+          </div>
+          <button
+            type="button"
+            aria-label="Sorrend megfordítása"
+            title="Sorrend megfordítása"
+            onClick={() => setNewestFirst((current) => !current)}
+            className="shrink-0 rounded-full border border-foreground/20 px-3 py-1.5 text-xs font-semibold hover:bg-foreground/5"
+          >
+            Sorrend: {newestFirst ? "legújabbak elöl" : "legrégebbiek elöl"}
+          </button>
+        </div>
       </div>
 
       <form
@@ -110,6 +222,13 @@ export default function ChatWall({
           value={content}
           onChange={setContent}
           mentionUsers={mentionUsers}
+          onSelectMention={(user) =>
+            setMentionedUsers((current) =>
+              current.some((selected) => selected.email === user.email)
+                ? current
+                : [...current, user],
+            )
+          }
           placeholder="Mi jár a fejedben?"
           maxLength={2000}
           rows={3}
@@ -148,11 +267,16 @@ export default function ChatWall({
             Még nincs itt beszélgetés.
           </p>
         )}
-        {messages.map((message) => (
+        {displayedMessages.map((message) => (
           <article
             key={message.id}
-            className="rounded-2xl border border-foreground/15 p-5"
+            className="relative rounded-2xl border border-foreground/15 p-5"
           >
+            <MentionToggle
+              users={message.mentioned_users}
+              isOpen={expandedMentions.has(message.id)}
+              onToggle={() => toggleMentions(message.id)}
+            />
             <MessageHeader message={message} />
             <p className="wrap-break-word mt-4 whitespace-pre-wrap text-[15px] leading-7">
               {message.content}
@@ -182,6 +306,13 @@ export default function ChatWall({
                   value={replyContent}
                   onChange={setReplyContent}
                   mentionUsers={mentionUsers}
+                  onSelectMention={(user) =>
+                    setReplyMentionedUsers((current) =>
+                      current.some((selected) => selected.email === user.email)
+                        ? current
+                        : [...current, user],
+                    )
+                  }
                   placeholder="Írj választ..."
                   maxLength={2000}
                   rows={2}
@@ -204,22 +335,25 @@ export default function ChatWall({
             {!!message.replies?.length && (
               <div className="mt-5 space-y-4 border-l-2 border-foreground/10 pl-4">
                 {message.replies.map((reply) => (
-                  <div key={reply.id}>
+                  <div key={reply.id} className="relative pr-12">
+                    <MentionToggle
+                      users={reply.mentioned_users}
+                      isOpen={expandedMentions.has(reply.id)}
+                      onToggle={() => toggleMentions(reply.id)}
+                    />
                     <MessageHeader message={reply} />
                     <p className="wrap-break-word mt-2 whitespace-pre-wrap text-sm leading-6">
                       {reply.content}
                     </p>
+                    {expandedMentions.has(reply.id) && (
+                      <MentionedUsers users={reply.mentioned_users} />
+                    )}
                   </div>
                 ))}
               </div>
             )}
-            {!!message.mentioned_users.length && (
-              <p className="mt-4 text-xs text-foreground/50">
-                Megemlítve:{" "}
-                {message.mentioned_users
-                  .map((user) => `@${user.display_name}`)
-                  .join(", ")}
-              </p>
+            {expandedMentions.has(message.id) && (
+              <MentionedUsers users={message.mentioned_users} />
             )}
           </article>
         ))}
@@ -240,7 +374,7 @@ function MentionField({
   const usersNameByEmail = Object.fromEntries(
     users.map((user) => [
       user.email,
-      { name: user.display_name, class: user.class ?? "" },
+      { name: user.display_name, class: user.class ?? "", image: user.image },
     ]),
   );
 
@@ -287,31 +421,92 @@ function MentionField({
   );
 }
 
+function MentionedUsers({ users }: Readonly<{ users: DisplayUser[] }>) {
+  return (
+    <div className="mt-4">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-foreground/55">
+        Megemlített személyek
+      </p>
+      {users.length === 0 ? (
+        <p className="text-xs text-foreground/45">Nincs megemlített személy.</p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {users.map((user) => (
+            <span
+              key={user.email}
+              className="inline-flex items-center gap-2 rounded-full bg-foreground/10 px-2.5 py-1.5 text-xs"
+            >
+              {user.image ? (
+                <img
+                  src={user.image}
+                  alt=""
+                  className="h-6 w-6 rounded-full object-cover"
+                />
+              ) : (
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-foreground/15 font-semibold">
+                  {user.display_name.slice(0, 1).toUpperCase()}
+                </span>
+              )}
+              <span className="font-semibold">{user.display_name}</span>
+              {user.class && (
+                <span className="text-foreground/55">{user.class}</span>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MentionToggle({
+  users,
+  isOpen,
+  onToggle,
+}: Readonly<{
+  users: DisplayUser[];
+  isOpen: boolean;
+  onToggle: () => void;
+}>) {
+  return (
+    <button
+      type="button"
+      aria-expanded={isOpen}
+      aria-label={`${users.length} megemlítés megjelenítése`}
+      title="Megemlített személyek megjelenítése"
+      onClick={onToggle}
+      className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-foreground/60 hover:bg-foreground/10 hover:text-foreground"
+    >
+      <span aria-hidden="true">@</span>
+      <span>{users.length}</span>
+    </button>
+  );
+}
+
 function MentionTextarea({
   value,
   onChange,
   mentionUsers,
+  onSelectMention,
   ...props
 }: {
   value: string;
   onChange: (value: string) => void;
   mentionUsers: DisplayUser[];
+  onSelectMention?: (user: DisplayUser) => void;
 } & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "onChange">) {
   const [isFocused, setIsFocused] = useState(false);
   const mentionStart = value.lastIndexOf("@");
   const token = mentionStart >= 0 ? value.slice(mentionStart + 1) : "";
   const hasMentionBoundary =
     mentionStart === 0 || /\s/.test(value[mentionStart - 1]);
-  const options =
-    isFocused && hasMentionBoundary && !/\s/.test(token)
-      ? mentionUsers
-          .filter((user) =>
-            user.display_name
-              .toLocaleLowerCase()
-              .includes(token.toLocaleLowerCase()),
-          )
-          .slice(0, 6)
-      : [];
+  const isMentioning = isFocused && hasMentionBoundary && !/\s/.test(token);
+  const usersNameByEmail = Object.fromEntries(
+    mentionUsers.map((user) => [
+      user.email,
+      { name: user.display_name, class: user.class ?? "", image: user.image },
+    ]),
+  );
 
   return (
     <div className="relative">
@@ -322,29 +517,23 @@ function MentionTextarea({
         onFocus={() => setIsFocused(true)}
         onBlur={() => window.setTimeout(() => setIsFocused(false), 120)}
       />
-      {!!options.length && (
-        <div className="absolute left-3 top-full z-10 mt-1 max-h-52 w-[min(20rem,calc(100%-1.5rem))] overflow-y-auto rounded-xl border border-foreground/15 bg-background p-1 shadow-lg">
-          {options.map((user) => (
-            <button
-              type="button"
-              key={user.email}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                onChange(
-                  `${value.slice(0, mentionStart)}@${user.display_name} `,
-                );
-                setIsFocused(false);
-              }}
-              className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-foreground/10"
-            >
-              <span className="font-semibold">{user.display_name}</span>
-              {user.class && (
-                <span className="ml-2 text-xs text-foreground/50">
-                  {user.class}
-                </span>
-              )}
-            </button>
-          ))}
+      {isMentioning && (
+        <div className="absolute left-3 top-full z-10 mt-1 w-[min(20rem,calc(100%-1.5rem))]">
+          <SearchUser
+            usersNameByEmail={usersNameByEmail}
+            onSelectEmail={(email) => {
+              const user = mentionUsers.find(
+                (candidate) => candidate.email === email,
+              );
+              if (!user) return;
+              onChange(`${value.slice(0, mentionStart)}@${user.display_name} `);
+              onSelectMention?.(user);
+              setIsFocused(false);
+            }}
+            showInput={false}
+            inputValue={token}
+            excludeEmails={[]}
+          />
         </div>
       )}
     </div>

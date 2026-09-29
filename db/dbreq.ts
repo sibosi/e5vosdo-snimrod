@@ -32,6 +32,7 @@ export interface User {
   push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
+  push_about_chatwall: boolean;
   is_verified: boolean;
   analytics_id: string | null;
 }
@@ -395,6 +396,13 @@ export async function getUsersEmailWherePushAboutGames() {
   return emails;
 }
 
+export async function getUsersEmailWherePushAboutChatwall() {
+  const response = await dbreq(
+    `SELECT email FROM users WHERE push_permission = 1 AND push_about_chatwall = 1`,
+  );
+  return (response as { email: string }[]).map((user) => user.email);
+}
+
 export async function getNotificationById(id: number) {
   const response = (await dbreq(`SELECT * FROM notifications WHERE id = ?`, [
     id,
@@ -706,6 +714,7 @@ export async function editMySettings({
     push_permission?: boolean;
     push_about_games?: boolean;
     push_about_timetable?: boolean;
+    push_about_chatwall?: boolean;
   };
 }) {
   const selfUser = await getAuth();
@@ -742,6 +751,10 @@ export async function editMySettings({
   if (settings.push_about_timetable !== undefined) {
     setClauses.push("push_about_timetable = ?");
     params.push(settings.push_about_timetable ? 1 : 0);
+  }
+  if (settings.push_about_chatwall !== undefined) {
+    setClauses.push("push_about_chatwall = ?");
+    params.push(settings.push_about_chatwall ? 1 : 0);
   }
 
   if (settings.nickname) {

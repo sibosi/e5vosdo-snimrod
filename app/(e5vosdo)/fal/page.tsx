@@ -1,6 +1,7 @@
 import { getAuth } from "@/db/dbreq";
-import ManageEvents from "@/app/(e5vosdo)/admin/users/eventManager";
+import { getChatWallMentionUsers, getChatWallMessages } from "@/lib/chat_wall";
 import PleaseLogin from "../me/redirectToLogin";
+import ChatWall from "./ChatWall";
 
 const DevPage = async () => {
   const selfUser = await getAuth();
@@ -9,9 +10,12 @@ const DevPage = async () => {
   return (
     <>
       <h1 className="pb-8 text-center text-5xl font-semibold text-foreground max-lg:hidden">
-        Események kezelése
+        Fal
       </h1>
-      <ManageEvents selfUser={selfUser} />
+      <ChatWall
+        initialMessages={await getChatWallMessages()}
+        mentionUsers={await getChatWallMentionUsers()}
+      />
     </>
   );
 };

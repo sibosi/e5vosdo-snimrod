@@ -9,6 +9,7 @@ export default function SearchUser({
   placeholder,
   size,
   addCustomParticipant = false,
+  excludeEmails = [],
 }: Readonly<{
   usersNameByEmail: Record<string, string | { name: string; class: string }>;
   onSelectEmail: (email: string) => void;
@@ -16,6 +17,7 @@ export default function SearchUser({
   placeholder?: string;
   size?: "sm" | "md" | "lg";
   addCustomParticipant?: boolean;
+  excludeEmails?: string[];
 }>) {
   const [searchValue, setSearchValue] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
@@ -28,11 +30,13 @@ export default function SearchUser({
   };
 
   const filter = (searchValue: string) => {
-    const elements = Object.keys(usersNameByEmail).filter((email) =>
-      searchValue
-        .toLocaleLowerCase()
-        .split(" ")
-        .every((input) => getUserName(email).toLowerCase().includes(input)),
+    const elements = Object.keys(usersNameByEmail).filter(
+      (email) =>
+        !excludeEmails.includes(email) &&
+        searchValue
+          .toLocaleLowerCase()
+          .split(" ")
+          .every((input) => getUserName(email).toLowerCase().includes(input)),
     );
 
     return elements.slice(0, 6);
@@ -45,7 +49,7 @@ export default function SearchUser({
     setFilteredEmails(results);
     setHighlightedIndex(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchValue]);
+  }, [searchValue, excludeEmails]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (filteredEmails.length === 0) return;

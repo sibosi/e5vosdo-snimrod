@@ -18,6 +18,7 @@ import VersionManager from "@/components/PWA/versionManager";
 import { ThemeOptions, ThemeTemplate } from "@/components/themePicker";
 import { Alert } from "@/components/home/alert";
 import { ReinstallServiceWorker } from "@/components/PWA/managesw";
+import { requestPushPermissionAndSubscribe } from "@/components/PWA/subscribePush";
 
 const SettingsSection = ({
   title,
@@ -360,20 +361,24 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           <div className="grid grid-cols-1 gap-2">
             <Switch
               isSelected={isPushEnabled.value}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  Notification.requestPermission();
-                  save_settings({
-                    settings: {
-                      push_permission: true,
-                    },
-                  });
-                } else
-                  save_settings({
-                    settings: {
-                      push_permission: false,
-                    },
-                  });
+              onValueChange={async (checked) => {
+                if (checked) {
+                  try {
+                    await requestPushPermissionAndSubscribe();
+                  } catch (error) {
+                    alert(
+                      error instanceof Error
+                        ? error.message
+                        : "Nem sikerült bekapcsolni a push értesítést.",
+                    );
+                    return;
+                  }
+                }
+                save_settings({
+                  settings: {
+                    push_permission: checked,
+                  },
+                });
               }}
             >
               Értesítések engedélyezése

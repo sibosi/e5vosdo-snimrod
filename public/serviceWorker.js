@@ -106,8 +106,7 @@ self.addEventListener("fetch", (event) => {
 
 self.addEventListener("push", (event) => {
   console.log("Push event received:", event);
-  if (!(self.Notification && self.Notification.permission === "granted"))
-    return;
+  if (self.Notification?.permission !== "granted") return;
   console.log(
     "Push event with data:",
     event.data ? event.data.text() : "No data",
@@ -145,16 +144,18 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+  const targetUrl = event.notification.data?.url || "/";
   event.waitUntil(
     clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        for (const client of clientList) {
-          if (client.focused) {
-            return client.focus();
-          }
+        const focusedClient = clientList.find((client) => client.focused);
+        if (focusedClient) {
+          return focusedClient
+            .navigate(targetUrl)
+            .then((client) => client?.focus());
         }
-        return clients.openWindow(event.notification.data?.url || "/");
+        return clients.openWindow(targetUrl);
       }),
   );
 });

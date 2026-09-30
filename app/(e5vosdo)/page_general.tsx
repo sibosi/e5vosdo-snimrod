@@ -141,6 +141,20 @@ function MainContent({
         </Section>
       )}
 
+      <Section
+        title="ZVN események"
+        dropdownable={true}
+        defaultStatus="opened"
+        savable={false}
+        chip={
+          <Chip color="secondary" size="sm">
+            Programok egész nap!
+          </Chip>
+        }
+      >
+        <SpecialDay />
+      </Section>
+
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section
           title={"Helyettesítések"}

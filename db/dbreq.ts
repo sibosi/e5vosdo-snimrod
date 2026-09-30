@@ -728,7 +728,7 @@ export async function editMySettings({
   const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]{13}$/.test(code);
 
   if (
-    selfUser.tickets.includes("EJG_code_edit") &&
+    (selfUser.tickets ?? []).includes("EJG_code_edit") &&
     selfUser.EJG_code != settings.EJG_code &&
     isValidEJGCode(settings.EJG_code ?? "")
   ) {
@@ -769,7 +769,7 @@ export async function editMySettings({
   }
 
   if (
-    selfUser.tickets.includes("OM5_code_edit") &&
+    (selfUser.tickets ?? []).includes("OM5_code_edit") &&
     selfUser.OM5 != settings.OM5
   ) {
     await removeTicket("OM5_code_edit");

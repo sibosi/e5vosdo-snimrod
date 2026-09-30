@@ -182,9 +182,9 @@ export const GET = async (
     const data = await defaultApiReq(gate as apireqType, bodyData);
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching events:", error);
+    console.error(`Error processing API request ${gate}:`, error);
     return NextResponse.json(
-      { error: "Failed to fetch events" },
+      { error: "Failed to process API request" },
       { status: 500 },
     );
   }

@@ -60,5 +60,85 @@
         "date": "2025/10/01 18:00"
       }
     ]
+  },
+  {
+    "date": "2026/10/01",
+    "title": "Zene világnapja",
+    "image": "/events/ZVN.jpeg",
+    "events": [
+      {
+        "type": "table",
+        "title": "Fellépők",
+        "headers": [
+          "Időpont",
+          "Aula",
+          "Udvar",
+          "1. emelet (kanapék)",
+          "Büfé",
+          "Rajzterem",
+          "Díszterem"
+        ],
+        "table": [
+          ["7:45-8:15", "Kisnull", null, null, null, null, null],
+          [
+            "1. szünet",
+            "Néptánc (Feke tanár úr, Czirók tanárnő)",
+            null,
+            "Svorcz Levente",
+            "Liu Bo Wen",
+            null,
+            "Dudla Natália"
+          ],
+          [
+            "2. szünet",
+            "Néptánc (Feke tanár úr, Czirók tanárnő)",
+            null,
+            "Peti bá'",
+            "Grónai Gábor",
+            null,
+            "Eisler Olga és Eisler Jana"
+          ],
+          [
+            "3. szünet",
+            "Néptánc (Feke tanár úr, Czirók tanárnő)",
+            null,
+            "Rósa Letícia, Medveczky Márk, Ströcker-Molnár Levente, Varga Eszter",
+            "Terényi András",
+            null,
+            "Kovács Gregor; Kovács Gregor és Hegedüs Zsigmond"
+          ],
+          [
+            "1. nagyszünet",
+            null,
+            "Kisnull",
+            null,
+            "Bujáki Flóra és Hong Yezi; Bati Dániel",
+            "Néptánc (Feke tanár úr, Czirók tanárnő)",
+            "Székely-Kovács Regina; Gurbai Anissza"
+          ],
+          [
+            "2. nagyszünet",
+            "Kórus körbevonulás",
+            "Néptánc a közönséggel (Feke tanár úr, Czirók tanárnő)",
+            null,
+            "Remete Donát, Ságvári Benedek és Takács Hanga",
+            null,
+            "Annus Medárd; Annus Richárd"
+          ]
+        ]
+      },
+      {
+        "type": "event",
+        "title": "ZVN táncház",
+        "description": "Tanítás után, 14:30-15:30-ig közös, élőzenés táncház lesz az udvaron Czirók tanárnőék vezetésével.",
+        "date": "2026/10/01 14:30"
+      },
+      {
+        "type": "event",
+        "title": "ZVN esti koncert",
+        "description": "18:15-től kapunyitás, 18:30-tól pedig a díszteremben várunk mindenkit az esti koncertre, ahol diákok, tanárok és a kórus lépnek fel (Kovács Gregor, Eisler Olga, Lakó Levente, Lukács Illés, Mészáros Marcell, Eötvös kórus, Peti bá', Pulay Johanna). Az est végén zenés vetélkedő lesz, a nyerteseket jutalmazzuk. Lesz süti, tea, zene és jó hangulat. Jegyek a büfében és a helyszínen is kaphatók 500 Ft-ért, készpénzben.",
+        "date": "2026/10/01 18:30"
+      }
+    ]
   }
 ]

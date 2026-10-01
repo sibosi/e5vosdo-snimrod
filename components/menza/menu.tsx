@@ -57,7 +57,7 @@ const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
         <div
           className={`m-auto max-h-fit max-w-fit text-4xl font-bold md:text-5xl text-${color}-700`}
         >
-          {"∆"}
+          {menu}
         </div>
       </div>
       <div className="">
@@ -122,7 +122,7 @@ export const Menu = ({
   date: Date;
 }) => {
   const tableData = mindenkorimenu;
-  const [realMenu, setRealMenu] = useState("B");
+  const [realMenu, setRealMenu] = useState(menu);
 
   useEffect(() => {
     fetch("/api/getAuth").then((res) => {

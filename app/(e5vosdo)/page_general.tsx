@@ -23,7 +23,6 @@ import ShortDay from "@/components/home/shortDay";
 import PromoBeforeEvent from "../(noSidebar)/foca12h/promoBeforeEvent";
 import FinalCountdown from "@/components/home/finalCountdown";
 import { Alert } from "@/components/home/alert";
-import SpecialDay from "@/components/events/specialDay";
 
 export const metadata: Metadata = {
   robots: {
@@ -141,20 +140,6 @@ function MainContent({
           </div>
         </Section>
       )}
-
-      <Section
-        title="ZVN események"
-        dropdownable={true}
-        defaultStatus="opened"
-        savable={false}
-        chip={
-          <Chip color="secondary" size="sm">
-            Programok egész nap!
-          </Chip>
-        }
-      >
-        <SpecialDay />
-      </Section>
 
       {siteConfig.pageSections["helyettesitesek"] != "hidden" && (
         <Section

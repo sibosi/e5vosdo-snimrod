@@ -1,4 +1,9 @@
-{
+{ 
+   "2026.10.01": {
+    "A": [],
+    "B": ["Kedves Eötvös Népe! Ezúton is szeretnénk megemlékezni azokról a diákközösségekről, akiknek köszönhetően iskolánk falai között nap mint nap élvezetes, sokszínű és színvonalas események valósulhatnak meg. Ezen diákok fontos feladatokat látnak el.", "Köszönjük a Technikusi Szervezet és az Eötvös Média munkáját!"],
+     "nap": "Thursday"
+  },
   "2026.03.30": {
     "A": ["Sertésraguleves", "Sajtos spagetti", "Tejfölös öntet", "Gyümölcs"],
     "B": ["Sertésraguleves", "Tejbendara", "Kakaó szórás", "Gyümölcs"],

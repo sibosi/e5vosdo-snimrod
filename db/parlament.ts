@@ -22,14 +22,15 @@ export async function createParlament(
 ) {
   gate(selfUser, "head_of_parlament");
   console.log("createParlament", date, title);
-  return await dbreq(
-    `INSERT INTO parlaments (date, title) VALUES ("${date}", "${title}");`,
-  );
+  return await dbreq(`INSERT INTO parlaments (date, title) VALUES (?, ?);`, [
+    date,
+    title,
+  ]);
 }
 
 export async function deleteParlament(selfUser: UserType, parlamentId: number) {
   gate(selfUser, "admin");
-  return await dbreq(`DELETE FROM parlaments WHERE id = ${parlamentId};`);
+  return await dbreq(`DELETE FROM parlaments WHERE id = ?;`, [parlamentId]);
 }
 
 export async function getParlaments(selfUser: UserType) {
@@ -40,7 +41,7 @@ export async function getParlaments(selfUser: UserType) {
 export async function getParlament(selfUser: UserType, parlamentId: number) {
   gate(selfUser, ["head_of_parlament", "delegate", "delegate_counter"]);
   return (
-    await dbreq(`SELECT * FROM parlaments WHERE id = ${parlamentId};`)
+    await dbreq(`SELECT * FROM parlaments WHERE id = ?;`, [parlamentId])
   )[0] as Parlament;
 }
 
@@ -52,7 +53,8 @@ export async function registerToParlament(
 ) {
   gate(selfUser, "delegate_counter");
   return await dbreq(
-    `INSERT INTO parlament_participants (email, class, parlament_id) VALUES ("${email}", "${group}", ${parlamentId});`,
+    `INSERT INTO parlament_participants (email, class, parlament_id) VALUES (?, ?, ?);`,
+    [email, group, parlamentId],
   );
 }
 
@@ -64,7 +66,8 @@ export async function unregisterFromParlament(
 ) {
   gate(selfUser, "delegate_counter");
   return await dbreq(
-    `DELETE FROM parlament_participants WHERE email = "${email}" AND class = "${group}" AND parlament_id = ${parlamentId};`,
+    `DELETE FROM parlament_participants WHERE email = ? AND class = ? AND parlament_id = ?;`,
+    [email, group, parlamentId],
   );
 }
 
@@ -72,9 +75,9 @@ export async function getParlamentParticipants(
   selfUser: UserType,
   parlamentId: number,
 ) {
-  gate(selfUser, ["head_of_parlament", "delegate", "delegate_counter"]);
   const data: ParlamentParticipant[] = (await dbreq(
-    `SELECT * FROM parlament_participants WHERE parlament_id = ${parlamentId};`,
+    `SELECT * FROM parlament_participants WHERE parlament_id = ?;`,
+    [parlamentId],
   )) as any;
 
   const response: Record<string, string[]> = {};

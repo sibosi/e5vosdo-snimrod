@@ -11,7 +11,7 @@ const ParlamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
     redirect("/");
   }
 
-  addLog("parlament", selfUser?.email ?? "unknown");
+  void addLog("parlament", selfUser?.email ?? "unknown");
 
   try {
     const [selectedParlament, participants, usersNameByEmail] =

@@ -34,12 +34,10 @@ export async function deleteParlament(selfUser: UserType, parlamentId: number) {
 }
 
 export async function getParlaments(selfUser: UserType) {
-  gate(selfUser, ["head_of_parlament", "delegate", "delegate_counter"]);
   return await dbreq(`SELECT * FROM parlaments;`);
 }
 
 export async function getParlament(selfUser: UserType, parlamentId: number) {
-  gate(selfUser, ["head_of_parlament", "delegate", "delegate_counter"]);
   return (
     await dbreq(`SELECT * FROM parlaments WHERE id = ?;`, [parlamentId])
   )[0] as Parlament;
@@ -80,11 +78,12 @@ export async function getParlamentParticipants(
     [parlamentId],
   )) as any;
 
-  const response: Record<string, string[]> = {};
+  const participantsByClass: Record<string, string[]> = {};
   data.forEach((participant) => {
-    if (!response[participant.class]) response[participant.class] = [];
-    response[participant.class].push(participant.email);
+    if (!participantsByClass[participant.class])
+      participantsByClass[participant.class] = [];
+    participantsByClass[participant.class].push(participant.email);
   });
 
-  return response;
+  return participantsByClass;
 }

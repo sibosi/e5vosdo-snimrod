@@ -272,7 +272,7 @@ export const Events = ({ all = false }: { all?: boolean }) => {
           href="/events"
         >
           <h2 className="text-base font-semibold text-foreground">
-            Az összes esemény megtekintése ➡
+            Az összes esemény megtekintése ➜
           </h2>
         </a>
       )}

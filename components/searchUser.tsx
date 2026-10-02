@@ -1,6 +1,6 @@
 "use client";
 import { Input } from "@heroui/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 
 export default function SearchUser({
   usersNameByEmail,
@@ -31,7 +31,6 @@ export default function SearchUser({
   const [internalSearchValue, setInternalSearchValue] = useState("");
   const searchValue = inputValue ?? internalSearchValue;
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
-  const [filteredEmails, setFilteredEmails] = useState<string[]>([]);
   const optionsRef = useRef<HTMLButtonElement[]>([]);
 
   const getUserName = (email: string) => {
@@ -66,13 +65,15 @@ export default function SearchUser({
     return elements.slice(0, 6);
   };
 
-  useEffect(() => {
+  const filteredEmails = useMemo(() => {
     const results = filter(searchValue);
     if (addCustomParticipant && results.length < 2)
       results.push(`${searchValue} (Nem regisztrált)`);
-    setFilteredEmails(results);
+    return results;
+  }, [searchValue, excludeEmails, addCustomParticipant, usersNameByEmail]);
+
+  useEffect(() => {
     setHighlightedIndex(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue, excludeEmails, addCustomParticipant]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {

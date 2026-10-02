@@ -2,6 +2,7 @@ import { addLog, getAuth, getAllUsersNameByEmail } from "@/db/dbreq";
 import { getParlament, getParlamentParticipants } from "@/db/parlament";
 import { redirect } from "next/navigation";
 import ParlamentIDClient from "./ParlamentIDClient";
+import { hasPermission } from "@/db/permissions";
 
 const ParlamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
@@ -29,6 +30,11 @@ const ParlamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
         initialParlament={selectedParlament}
         initialParticipants={participants}
         usersNameByEmail={usersNameByEmail}
+        canEdit={hasPermission(selfUser, [
+          "head_of_parlament",
+          "delegate_counter",
+        ])}
+        canCheckIn={!!selfUser.EJG_code}
       />
     );
   } catch (error) {

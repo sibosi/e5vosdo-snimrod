@@ -29,7 +29,7 @@ export async function createParlament(
 }
 
 export async function deleteParlament(selfUser: UserType, parlamentId: number) {
-  gate(selfUser, "admin");
+  gate(selfUser, "head_of_parlament");
   return await dbreq(`DELETE FROM parlaments WHERE id = ?;`, [parlamentId]);
 }
 
@@ -49,7 +49,7 @@ export async function registerToParlament(
   group: string,
   parlamentId: number,
 ) {
-  gate(selfUser, "delegate_counter");
+  gate(selfUser, ["delegate_counter", "head_of_parlament"]);
   return await dbreq(
     `INSERT INTO parlament_participants (email, class, parlament_id) VALUES (?, ?, ?);`,
     [email, group, parlamentId],
@@ -62,7 +62,7 @@ export async function unregisterFromParlament(
   group: string,
   parlamentId: number,
 ) {
-  gate(selfUser, "delegate_counter");
+  gate(selfUser, ["delegate_counter", "head_of_parlament"]);
   return await dbreq(
     `DELETE FROM parlament_participants WHERE email = ? AND class = ? AND parlament_id = ?;`,
     [email, group, parlamentId],

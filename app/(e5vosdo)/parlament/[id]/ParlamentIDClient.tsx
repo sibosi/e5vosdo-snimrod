@@ -4,7 +4,7 @@ import Tray from "@/components/tray";
 import { Parlament } from "@/db/parlament";
 import { EJG_CLASSES } from "@/public/getUserClass";
 import { Button, Link } from "@heroui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const MagicIcon = (
   <svg
@@ -23,6 +23,81 @@ interface Props {
   initialParlament: Parlament;
   initialParticipants: Record<string, string[]>;
   usersNameByEmail: Record<string, string | { name: string; class: string }>;
+  canEdit: boolean;
+  canCheckIn: boolean;
+}
+
+interface Participant {
+  email: string;
+  class: string;
+  type: "appearer" | "previous";
+}
+
+const TRANSLATION = {
+  appearer: "Jelen",
+  previous: "Korábbi",
+  checking_in: "Kérvénylő",
+};
+
+async function fetchPreviousParticipants(
+  parlamentId: number,
+): Promise<Record<string, string[]> | undefined> {
+  try {
+    const res = await fetch("/api/getParlaments", {
+      headers: { module: "parlament" },
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch parlaments. Status: " + res.status);
+    }
+
+    const data: Parlament[] = await res.json();
+    const previousParlamentId = data
+      ?.toSorted((a, b) => a.id - b.id)
+      .reverse()
+      .find((p) => p.id < parlamentId)?.id;
+
+    if (!Number.isInteger(previousParlamentId)) {
+      console.warn("No previous parlament found for parlamentId:", parlamentId);
+      return;
+    }
+
+    if (previousParlamentId) {
+      const resp = await fetch("/api/getParlamentParticipants", {
+        method: "POST",
+        body: JSON.stringify({ parlamentId: previousParlamentId }),
+        headers: {
+          module: "parlament",
+        },
+      });
+      if (resp.ok) {
+        return await resp.json();
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching previous participants:", error);
+  }
+}
+
+function deleteParlament(parlamentId: number) {
+  const confirmation = window.confirm(
+    "Biztosan törölni szeretnéd ezt a parlamentet? Ez a művelet nem visszavonható.",
+  );
+  if (!confirmation) return;
+
+  void fetch("/api/deleteParlament", {
+    method: "POST",
+    body: JSON.stringify({ parlamentId }),
+    headers: {
+      module: "parlament",
+    },
+  }).then((res) => {
+    if (res.ok) {
+      alert("Parlament sikeresen törölve");
+      window.location.href = "/parlament";
+    } else {
+      alert("Hiba a parlament törlése közben");
+    }
+  });
 }
 
 const ParlamentIDClient = ({
@@ -30,69 +105,36 @@ const ParlamentIDClient = ({
   initialParlament,
   initialParticipants,
   usersNameByEmail,
+  canEdit,
+  canCheckIn,
 }: Props) => {
-  const [selectedUser, setSelectedUser] =
+  const [appearerParticipants, setAppearerParticipants] =
     useState<Record<string, string[]>>(initialParticipants);
-  const [previousParlamentDelegates, setPreviousParlamentDelegates] = useState<
-    Record<string, string[]>
-  >({});
+  const [previousParlamentParticipants, setPreviousParlamentParticipants] =
+    useState<Record<string, string[]>>({});
   const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    // Fetch previous parlament participants for suggestions
-    const fetchPreviousParticipants = async () => {
-      try {
-        const res = await fetch("/api/getParlaments", {
-          headers: { module: "parlament" },
-        });
-        if (res.ok) {
-          const data: Parlament[] = await res.json();
-          const previousParlamentId = data
-            ?.sort()
-            .reverse()
-            .find((p) => p.id < parlamentId)?.id;
+  const mergedParticipants = useMemo(() => {
+    const merged: Participant[] = [];
 
-          if (previousParlamentId) {
-            const resp = await fetch("/api/getParlamentParticipants", {
-              method: "POST",
-              body: JSON.stringify({ parlamentId: previousParlamentId }),
-              headers: {
-                module: "parlament",
-              },
-            });
-            if (resp.ok) {
-              const previousData = await resp.json();
-              setPreviousParlamentDelegates(previousData);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching previous participants:", error);
-      }
-    };
-
-    fetchPreviousParticipants();
-  }, [parlamentId]);
-
-  function deleteParlament(parlamentId: number) {
-    fetch("/api/deleteParlament", {
-      method: "POST",
-      body: JSON.stringify({ parlamentId }),
-      headers: {
-        module: "parlament",
-      },
-    }).then((res) => {
-      if (res.ok) {
-        alert("Parlament sikeresen törölve");
-        window.location.href = "/parlament";
-      } else {
-        alert("Hiba a parlament törlése közben");
-      }
+    Object.entries(appearerParticipants).forEach(([group, emails]) => {
+      emails.forEach((email) => {
+        merged.push({ email, class: group, type: "appearer" });
+      });
     });
-  }
 
-  async function registerToParlament(email: string, group: string) {
-    fetch("/api/registerToParlament", {
+    Object.entries(previousParlamentParticipants).forEach(([group, emails]) => {
+      emails.forEach((email) => {
+        if (!appearerParticipants[group]?.includes(email))
+          merged.push({ email, class: group, type: "previous" });
+      });
+    });
+
+    return merged;
+  }, [appearerParticipants, previousParlamentParticipants]);
+
+  const registerToParlament = async (email: string, group: string) => {
+    void fetch("/api/registerToParlament", {
       method: "POST",
       body: JSON.stringify({
         email,
@@ -104,17 +146,17 @@ const ParlamentIDClient = ({
       },
     }).then((res) => {
       if (res.ok) {
-        setSelectedUser((prev) => ({
+        setAppearerParticipants((prev) => ({
           ...prev,
-          [group]: [...(selectedUser[group] ?? []), email],
+          [group]: [...(appearerParticipants[group] ?? []), email],
         }));
       } else {
         alert("Hiba a regisztráció közben");
       }
     });
-  }
+  };
 
-  async function unregisterFromParlament(email: string, group: string) {
+  const unregisterFromParlament = async (email: string, group: string) => {
     try {
       const res = await fetch("/api/unregisterFromParlament", {
         method: "POST",
@@ -129,8 +171,10 @@ const ParlamentIDClient = ({
       });
 
       if (res.ok) {
-        const updatedGroup = selectedUser[group].filter((e) => e !== email);
-        setSelectedUser((prev) => ({
+        const updatedGroup = appearerParticipants[group].filter(
+          (e) => e !== email,
+        );
+        setAppearerParticipants((prev) => ({
           ...prev,
           [group]: updatedGroup,
         }));
@@ -141,110 +185,120 @@ const ParlamentIDClient = ({
       console.error("Error unregistering from parlament:", error);
       alert("Hiba a regisztráció törlésekor");
     }
-  }
+  };
+
+  useEffect(() => {
+    void fetchPreviousParticipants(parlamentId).then((data) => {
+      if (data) setPreviousParlamentParticipants(data);
+    });
+  }, [parlamentId]);
+
+  const getRowClasses = (type: "appearer" | "previous" | "checking_in") => {
+    if (!isEditing && type !== "appearer") return "hidden";
+    if (isEditing && type === "appearer")
+      return "bg-success text-black cursor-pointer";
+    if (isEditing && type === "checking_in")
+      return "bg-warning text-black cursor-pointer";
+    if (isEditing) return "cursor-pointer";
+  };
+
+  const getRowClickHandler = (
+    type: "appearer" | "previous" | "checking_in",
+    email: string,
+    group: string,
+  ) => {
+    if (!isEditing) return undefined;
+    if (type === "appearer") return () => unregisterFromParlament(email, group);
+    return () => registerToParlament(email, group);
+  };
 
   return (
-    <Tray title={initialParlament.title} colorVariant="dark">
-      <p>Időpont: {initialParlament.date}</p>
+    <div className="flex flex-col gap-4">
+      <Link href="/parlament">
+        <span className="rotate-180">➜</span>&nbsp;Vissza a parlamentekhez
+      </Link>
+      <Tray title={initialParlament.title} colorVariant="dark">
+        <p>Időpont: {initialParlament.date}</p>
 
-      <div className="flex flex-wrap gap-2">
-        <Link
-          className="mt-2 rounded-xl bg-foreground-200 px-4 py-2 text-foreground"
-          href="/parlament"
-        >
-          Vissza
-        </Link>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Button
+            isDisabled={!canEdit}
+            color={isEditing ? "danger" : "success"}
+            onPress={() => setIsEditing(!isEditing)}
+          >
+            {isEditing ? "Szerkesztés befejezése" : "Szerkesztés indítása"}
+          </Button>
 
-        <Button
-          className="mt-2"
-          color={isEditing ? "danger" : "success"}
-          onPress={() => setIsEditing(!isEditing)}
-        >
-          {isEditing ? "Szerkesztés befejezése" : "Szerkesztés indítása"}
-        </Button>
+          <Button
+            color="danger"
+            onPress={() => deleteParlament(initialParlament.id)}
+            isDisabled={
+              !canEdit ||
+              !Object.values(appearerParticipants).every(
+                (group) => group.length === 0,
+              )
+            }
+          >
+            Üres parlament törlése
+          </Button>
+        </div>
 
-        <Button
-          radius="sm"
-          className="mt-2 bg-selfsecondary-200 px-1 text-foreground"
-          onPress={() => deleteParlament(initialParlament.id)}
-          isDisabled={
-            !Object.values(selectedUser).every((group) => group.length === 0)
-          }
-        >
-          Üres parlament törlése
-        </Button>
-      </div>
+        <div>
+          {EJG_CLASSES.map((group) => (
+            <div key={group} className="my-2 border-b-1 py-2">
+              <div className="flex gap-2">
+                <div
+                  className={
+                    "text-xl font-extrabold " +
+                    (!appearerParticipants[group]?.length
+                      ? "bg-danger-300"
+                      : "")
+                  }
+                >
+                  {group}
+                </div>
 
-      <div>
-        {EJG_CLASSES.map((group) => (
-          <div key={group} className="my-2 border-b-1 py-2">
-            <div className="flex gap-2">
-              <div
-                className={
-                  "text-xl font-extrabold " +
-                  (!selectedUser[group]?.length ? "bg-danger-300" : "")
-                }
-              >
-                {group}
+                {isEditing && (
+                  <SearchUser
+                    addCustomParticipant={true}
+                    onSelectEmail={(email) => {
+                      void registerToParlament(email, group);
+                    }}
+                    usersNameByEmail={usersNameByEmail}
+                    label="Képviselő keresése"
+                    placeholder="Írj be egy résztvevőt..."
+                    size="sm"
+                  />
+                )}
               </div>
 
-              {isEditing && (
-                <SearchUser
-                  addCustomParticipant={true}
-                  onSelectEmail={(email) => {
-                    registerToParlament(email, group);
-                  }}
-                  usersNameByEmail={usersNameByEmail}
-                  label="Képviselő keresése"
-                  placeholder="Írj be egy résztvevőt..."
-                  size="sm"
-                />
-              )}
-            </div>
-
-            <div>
-              {previousParlamentDelegates[group]?.length && isEditing ? (
-                <div>
-                  {previousParlamentDelegates[group]
-                    .filter((email) => !selectedUser[group]?.includes(email))
-                    .map((email) => (
-                      <Button
-                        key={email}
-                        color="default"
-                        variant="faded"
-                        onPress={() => registerToParlament(email, group)}
-                      >
-                        {MagicIcon} {email}
-                      </Button>
-                    ))}
-                </div>
-              ) : null}
-            </div>
-
-            <div>
-              {selectedUser[group]?.length ? (
-                <div className="flex flex-wrap gap-2">
-                  {selectedUser[group].map((email) => (
-                    <Button
-                      key={email}
-                      className={!isEditing ? "cursor-not-allowed" : ""}
-                      color={isEditing ? "success" : "default"}
-                      onPress={() =>
-                        isEditing && unregisterFromParlament(email, group)
-                      }
+              <div className="my-2 overflow-hidden rounded-xl bg-foreground/10">
+                {mergedParticipants
+                  .filter((p) => p.class === group)
+                  .map((p) => (
+                    <button
+                      key={p.email + p.type}
+                      className={`flex w-full items-center gap-2 border-t-1 border-foreground/20 p-3 text-left text-sm first:border-t-0 ${getRowClasses(p.type)}`}
+                      onClick={getRowClickHandler(p.type, p.email, group)}
+                      disabled={!isEditing}
+                      hidden={!canEdit && p.type === "previous"}
                     >
-                      {email}
-                    </Button>
+                      <div className="w-16 shrink-0">{TRANSLATION[p.type]}</div>
+                      {p.email}
+                    </button>
                   ))}
+              </div>
+
+              {!appearerParticipants[group]?.length && !isEditing && (
+                <div>
+                  <p>Nincs hozzáadott képviselő</p>
                 </div>
-              ) : (
-                <p>Nincs hozzáadott képviselő</p>
               )}
             </div>
-          </div>
-        ))}
-      </div>
-    </Tray>
+          ))}
+        </div>
+      </Tray>
+    </div>
   );
 };
 

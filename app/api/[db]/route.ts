@@ -72,7 +72,6 @@ const BIMUN_GUEST_USER: UserType = {
 };
 
 const modules = {
-  parlament: import("@/db/parlament"),
   autobackup: import("@/db/autobackup"),
   event: import("@/db/event"),
   supabaseStorage: import("@/db/supabaseStorage"),

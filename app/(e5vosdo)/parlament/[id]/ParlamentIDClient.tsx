@@ -1,7 +1,7 @@
 "use client";
 import SearchUser from "@/components/searchUser";
 import Tray from "@/components/tray";
-import { Parlament } from "@/db/parlament";
+import type { Parlament } from "@/types/parliaments";
 import { EJG_CLASSES } from "@/public/getUserClass";
 import { Button, Link } from "@heroui/react";
 import React, { useEffect, useMemo, useState } from "react";
@@ -43,9 +43,7 @@ async function fetchPreviousParticipants(
   parlamentId: number,
 ): Promise<Record<string, string[]> | undefined> {
   try {
-    const res = await fetch("/api/getParlaments", {
-      headers: { module: "parlament" },
-    });
+    const res = await fetch("/api/parliaments");
     if (!res.ok) {
       throw new Error("Failed to fetch parlaments. Status: " + res.status);
     }
@@ -62,13 +60,9 @@ async function fetchPreviousParticipants(
     }
 
     if (previousParlamentId) {
-      const resp = await fetch("/api/getParlamentParticipants", {
-        method: "POST",
-        body: JSON.stringify({ parlamentId: previousParlamentId }),
-        headers: {
-          module: "parlament",
-        },
-      });
+      const resp = await fetch(
+        `/api/parliaments/participants?parlamentId=${previousParlamentId}`,
+      );
       if (resp.ok) {
         return await resp.json();
       }
@@ -84,11 +78,11 @@ function deleteParlament(parlamentId: number) {
   );
   if (!confirmation) return;
 
-  void fetch("/api/deleteParlament", {
-    method: "POST",
+  void fetch("/api/parliaments/parliament", {
+    method: "DELETE",
     body: JSON.stringify({ parlamentId }),
     headers: {
-      module: "parlament",
+      "Content-Type": "application/json",
     },
   }).then((res) => {
     if (res.ok) {
@@ -133,8 +127,8 @@ const ParlamentIDClient = ({
     return merged;
   }, [appearerParticipants, previousParlamentParticipants]);
 
-  const registerToParlament = async (email: string, group: string) => {
-    void fetch("/api/registerToParlament", {
+  const registerToParlament = (email: string, group: string) => {
+    void fetch("/api/parliaments/participants", {
       method: "POST",
       body: JSON.stringify({
         email,
@@ -142,7 +136,7 @@ const ParlamentIDClient = ({
         parlamentId,
       }),
       headers: {
-        module: "parlament",
+        "Content-Type": "application/json",
       },
     }).then((res) => {
       if (res.ok) {
@@ -158,15 +152,15 @@ const ParlamentIDClient = ({
 
   const unregisterFromParlament = async (email: string, group: string) => {
     try {
-      const res = await fetch("/api/unregisterFromParlament", {
-        method: "POST",
+      const res = await fetch("/api/parliaments/participants", {
+        method: "DELETE",
         body: JSON.stringify({
           email,
           group,
           parlamentId,
         }),
         headers: {
-          module: "parlament",
+          "Content-Type": "application/json",
         },
       });
 
@@ -262,7 +256,7 @@ const ParlamentIDClient = ({
                   <SearchUser
                     addCustomParticipant={true}
                     onSelectEmail={(email) => {
-                      void registerToParlament(email, group);
+                      registerToParlament(email, group);
                     }}
                     usersNameByEmail={usersNameByEmail}
                     label="Képviselő keresése"

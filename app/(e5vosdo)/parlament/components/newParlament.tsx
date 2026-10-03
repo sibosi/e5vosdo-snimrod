@@ -10,14 +10,14 @@ const NewParlament = () => {
 
   function createParlament(date?: string) {
     const parlamentTitle = `Parlament - ${date ?? newParlamentDate}`;
-    fetch("/api/createParlament", {
+    void fetch("/api/parliaments", {
       method: "POST",
       body: JSON.stringify({
         date: date ?? newParlamentDate,
         title: parlamentTitle,
       }),
       headers: {
-        module: "parlament",
+        "Content-Type": "application/json",
       },
     }).then((res) => {
       if (res.ok) {
@@ -26,6 +26,8 @@ const NewParlament = () => {
       } else {
         alert("Hiba a parlament létrehozása közben");
       }
+    }).catch(() => {
+      alert("Hiba a parlament létrehozása közben");
     });
   }
 

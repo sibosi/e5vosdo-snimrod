@@ -1,19 +1,9 @@
 import { dbreq } from "./db";
 import { UserType } from "./dbreq";
 import { gate } from "./permissions";
+import type { Parlament, ParlamentParticipant } from "@/types/parliaments";
 
-export interface Parlament {
-  id: number;
-  date: string;
-  title: string;
-}
-
-export interface ParlamentParticipant {
-  id: number;
-  email: string;
-  class: string;
-  parlament_id: number;
-}
+export type { Parlament, ParlamentParticipant };
 
 export async function createParlament(
   selfUser: UserType,

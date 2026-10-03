@@ -27,6 +27,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Error applying to parliament:", error);
+    if (
+      error instanceof Error &&
+      error.message ===
+        "A parlamenti jelentkezés csak a kezdés előtt, illetve azután egy óráig lehetséges"
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     return NextResponse.json(
       { error: "Failed to apply to parliament" },
       { status: 500 },

@@ -86,14 +86,24 @@ function deleteParlament(parlamentId: number) {
   });
 }
 
-function applyToParliament(parliamentId: number) {
-  return fetch("/api/parliaments/apply", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ parliamentId }),
-  });
+async function applyToParliament(parliamentId: number) {
+  try {
+    const response = await fetch("/api/parliaments/apply", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ parliamentId }),
+    });
+
+    if (!response.ok) {
+      const body = (await response.json()) as { error?: string };
+      alert(body.error ?? "Hiba a parlamentre jelentkezés közben");
+    }
+  } catch (error) {
+    console.error("Error applying to parlament:", error);
+    alert("Hiba a parlamentre jelentkezés közben");
+  }
 }
 
 const ParlamentIDClient = ({
@@ -238,7 +248,7 @@ const ParlamentIDClient = ({
     if (appearerParticipants[userClass]?.includes(selfUser?.email)) {
       return (
         <Button color="success" isDisabled={true} className="mt-1 w-full">
-          Már részvevő vagy a parlamenten
+          Már részvevő vagy
         </Button>
       );
     }
@@ -247,7 +257,7 @@ const ParlamentIDClient = ({
     if (applicants[userClass]?.includes(selfUser?.email)) {
       return (
         <Button color="warning" isDisabled={true} className="mt-1 w-full">
-          Már jelentkeztél a parlamentre
+          Már jelentkeztél
         </Button>
       );
     }
@@ -256,7 +266,7 @@ const ParlamentIDClient = ({
       return (
         <Button
           color="success"
-          onPress={() => registerToParlament(selfUser.email, userClass)}
+          onPress={() => applyToParliament(parlamentId)}
           isDisabled={!userClass}
           className="mt-1 w-full"
         >
@@ -268,7 +278,7 @@ const ParlamentIDClient = ({
     return (
       <Button
         color="success"
-        onPress={applyToParliament.bind(null, parlamentId)}
+        onPress={() => applyToParliament(parlamentId)}
         isDisabled={!userClass}
         className="mt-1 w-full"
       >
@@ -279,7 +289,13 @@ const ParlamentIDClient = ({
 
   return (
     <Tray title={initialParlament.title} colorVariant="dark">
-      <p>Időpont: {initialParlament.date}</p>
+      <p>
+        Időpont:{" "}
+        {new Date(initialParlament.date).toLocaleString("hu-HU", {
+          dateStyle: "short",
+          timeStyle: "short",
+        })}
+      </p>
 
       <div className="my-2 rounded-xl bg-foreground/10 p-3 text-center">
         <p>Saját adatok</p>

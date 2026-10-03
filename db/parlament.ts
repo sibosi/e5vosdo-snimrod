@@ -104,6 +104,20 @@ export async function applyToParlamentFromOwnClass(
   selfUser: UserType,
   parlamentId: number,
 ) {
+  const parlament = await getParlament(selfUser, parlamentId);
+  const startTime = new Date(parlament.date).getTime();
+  const elapsedTime = Date.now() - startTime;
+
+  if (
+    !Number.isFinite(startTime) ||
+    elapsedTime < 0 ||
+    elapsedTime >= 60 * 60 * 1000
+  ) {
+    throw new Error(
+      "A parlamenti jelentkezés csak a kezdés előtt, illetve azután egy óráig lehetséges",
+    );
+  }
+
   const userClass = getUserClass(selfUser);
   if (!userClass) throw new Error("User class could not be determined");
 

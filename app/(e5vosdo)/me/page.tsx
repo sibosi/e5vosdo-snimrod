@@ -52,6 +52,13 @@ const MePage = async () => {
         selfUser.permissions.includes("admin") ||
         selfUser.permissions.includes("media_admin"),
     },
+    {
+      title: "Rádió",
+      href: "/radio",
+      access:
+        selfUser.permissions.includes("admin") ||
+        selfUser.permissions.includes("radio_access"),
+    },
   ];
 
   return (

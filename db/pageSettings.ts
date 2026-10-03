@@ -1,5 +1,5 @@
 import { dbreq } from "./db";
-import { UserType } from "./dbreq";
+import { addLog, UserType } from "./dbreq";
 import { gate } from "./permissions";
 
 export interface PageSettingsType {
@@ -28,6 +28,10 @@ export async function editPageSettings(
   settings: PageSettingsType,
 ) {
   gate(selfUser, "matchOrganiser");
-  const query = `UPDATE settings SET headspace = ${settings.headspace}, livescore = ${settings.livescore} WHERE name = 'now';`;
-  return await dbreq(query);
+  void addLog("editPageSettings", selfUser.email);
+
+  return await dbreq(
+    `UPDATE settings SET headspace = ?, livescore = ? WHERE name = 'now';`,
+    [settings.headspace, settings.livescore],
+  );
 }

@@ -31,9 +31,9 @@ export async function getEvent(selfUser: UserType, id: number) {
 
 export async function getPreviewEvent(selfUser: UserType, id: number) {
   gate(selfUser, "admin");
-  const resp = (await dbreq(
-    `SELECT * FROM events_preview WHERE id = ${id}`,
-  )) as EventType[];
+  const resp = (await dbreq(`SELECT * FROM events_preview WHERE id = ?`, [
+    id,
+  ])) as EventType[];
   if (!resp?.length) return null;
   const event = resp[0];
   try {
@@ -68,6 +68,8 @@ export async function getPreviewEvents(selfUser: UserType) {
 
 export async function rollbackEvent(selfUser: UserType, id: number) {
   gate(selfUser, "admin");
+  if (Number.isNaN(Number(id))) throw new TypeError("Invalid event ID");
+
   return await multipledbreq([
     `INSERT INTO events_preview SELECT * FROM events_active WHERE id = ${id};`,
     `DELETE FROM events_active WHERE id = ${id};`,
@@ -76,6 +78,8 @@ export async function rollbackEvent(selfUser: UserType, id: number) {
 
 export async function approveEvent(selfUser: UserType, id: number) {
   gate(selfUser, "admin");
+  if (Number.isNaN(Number(id))) throw new TypeError("Invalid event ID");
+
   return await multipledbreq([
     `INSERT INTO events_active SELECT * FROM events_preview WHERE id = ${id};`,
     `DELETE FROM events_preview WHERE id = ${id};`,
@@ -84,7 +88,7 @@ export async function approveEvent(selfUser: UserType, id: number) {
 
 export async function rejectEvent(selfUser: UserType, id: number) {
   gate(selfUser, "admin");
-  return await dbreq(`DELETE FROM events_preview WHERE id = ${id};`);
+  return await dbreq(`DELETE FROM events_preview WHERE id = ?;`, [id]);
 }
 
 export async function editEvent(selfUser: UserType, event: EventType) {
@@ -109,7 +113,7 @@ export async function editEvent(selfUser: UserType, event: EventType) {
 
 export async function createEvent(selfUser: UserType, event: EventType) {
   gate(selfUser, "user");
-  newNotificationByNames("Új esemény", selfUser.email, ["admin"]);
+  void newNotificationByNames("Új esemény", selfUser.email, ["admin"]);
   return await dbreq(
     `INSERT INTO events_preview (title, time, show_time, hide_time, image, description, tags, show_author, show_at_carousel, show_at_events) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
     [

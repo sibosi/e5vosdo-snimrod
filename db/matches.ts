@@ -1,5 +1,5 @@
 import { dbreq } from "./db";
-import { UserType } from "./dbreq";
+import { addLog, UserType } from "./dbreq";
 import { gate } from "./permissions";
 
 export interface TeamCategory {
@@ -46,91 +46,133 @@ export const getTeams = async () => {
 };
 
 export const getTeam = async (selfUser: UserType, id: number) => {
-  const query = `SELECT * FROM teams WHERE id = ${id}`;
-  const result = await dbreq(query);
+  const result = await dbreq(`SELECT * FROM teams WHERE id = ?`, [id]);
   return result[0];
 };
 
 export const createTeam = async (selfUser: UserType, team: Team) => {
   gate(selfUser, "admin");
-  const query = `INSERT INTO teams (name, full_name, image_url, team_leader, category_id) VALUES ('${team.name}', '${team.full_name}', '${team.image_url || ""}', '${team.team_leader || ""}', ${team.category_id})`;
-  return await dbreq(query);
+  void addLog("createTeam", selfUser.email);
+
+  return await dbreq(
+    `INSERT INTO teams (name, full_name, image_url, team_leader, category_id) VALUES (?, ?, ?, ?, ?)`,
+    [
+      team.name,
+      team.full_name,
+      team.image_url || "",
+      team.team_leader || "",
+      team.category_id,
+    ],
+  );
 };
 
 export const editTeam = async (selfUser: UserType, team: Team) => {
   gate(selfUser, "admin");
-  const query = `UPDATE teams SET name = '${team.name}', full_name = '${team.full_name}', image_url = '${team.image_url || ""}', team_leader = '${team.team_leader || ""}', category_id = ${team.category_id} WHERE id = ${team.id}`;
-  return await dbreq(query);
+  void addLog("editTeam", selfUser.email);
+  return await dbreq(
+    `UPDATE teams SET name = ?, full_name = ?, image_url = ?, team_leader = ?, category_id = ? WHERE id = ?`,
+    [
+      team.name,
+      team.full_name,
+      team.image_url || "",
+      team.team_leader || "",
+      team.category_id,
+      team.id,
+    ],
+  );
 };
 
 export const deleteTeam = async (selfUser: UserType, id: number) => {
   gate(selfUser, "admin");
-  const query = `DELETE FROM teams WHERE id = ${id}`;
-  return await dbreq(query);
+  void addLog("deleteTeam", selfUser.email);
+  return await dbreq(`DELETE FROM teams WHERE id = ?`, [id]);
 };
 
 export const pinMatch = async (selfUser: UserType, id: number) => {
   gate(selfUser, "admin");
-  const query = `UPDATE settings SET headspace = ${1}, livescore = ${id} WHERE name = 'now';`;
-  return await dbreq(query);
+  return await dbreq(
+    `UPDATE settings SET headspace = ?, livescore = ? WHERE name = 'now';`,
+    [1, id],
+  );
 };
 
 export const getMatches = async () => {
-  const query = "SELECT * FROM matches";
-  const result = await dbreq(query);
-  return result;
+  return await dbreq("SELECT * FROM matches");
 };
 
 export const getMatch = async (id: number) => {
-  const query = `SELECT * FROM matches WHERE id = ${id}`;
-  const result = await dbreq(query);
+  const result = await dbreq(`SELECT * FROM matches WHERE id = ?`, [id]);
   return result[0];
 };
 
 export const getNextMatch = async () => {
-  const query =
-    "SELECT * FROM matches WHERE status IN ('pending', 'live') ORDER BY datetime LIMIT 1";
-  const result = await dbreq(query);
+  const result = await dbreq(
+    "SELECT * FROM matches WHERE status IN ('pending', 'live') ORDER BY datetime LIMIT 1",
+  );
   return result[0];
 };
 
 export const createMatch = async (selfUser: UserType, match: Match) => {
   gate(selfUser, "matchOrganiser");
-  const query = `INSERT INTO matches (category_id, team1_id, team2_id, team1_score, team2_score, datetime, start_time, end_time, status) VALUES (${match.category_id || "NULL"}, ${match.team1_id}, ${match.team2_id}, ${match.team1_score}, ${match.team2_score}, '${match.datetime}', '${match.start_time}', '${match.end_time}', '${match.status}')`;
-  return await dbreq(query);
+  return await dbreq(
+    `INSERT INTO matches (category_id, team1_id, team2_id, team1_score, team2_score, datetime, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      match.category_id || "NULL",
+      match.team1_id,
+      match.team2_id,
+      match.team1_score,
+      match.team2_score,
+      match.datetime,
+      match.start_time,
+      match.end_time,
+      match.status,
+    ],
+  );
 };
 
 export const editMatch = async (selfUser: UserType, match: Match) => {
   gate(selfUser, "matchOrganiser");
-  const query = `UPDATE matches SET category_id = ${match.category_id || "NULL"}, team1_id = ${match.team1_id}, team2_id = ${match.team2_id}, team1_score = ${match.team1_score}, team2_score = ${match.team2_score}, datetime = '${match.datetime}', start_time = '${match.start_time}', end_time = '${match.end_time}', status = '${match.status}' WHERE id = ${match.id}`;
-  return await dbreq(query);
+  return await dbreq(
+    `UPDATE matches SET category_id = ?, team1_id = ?, team2_id = ?, team1_score = ?, team2_score = ?, datetime = ?, start_time = ?, end_time = ?, status = ? WHERE id = ?`,
+    [
+      match.category_id || "NULL",
+      match.team1_id,
+      match.team2_id,
+      match.team1_score,
+      match.team2_score,
+      match.datetime,
+      match.start_time,
+      match.end_time,
+      match.status,
+      match.id,
+    ],
+  );
 };
 
 export const deleteMatch = async (selfUser: UserType, id: number) => {
   gate(selfUser, "matchOrganiser");
-  const query = `DELETE FROM matches WHERE id = ${id}`;
-  return await dbreq(query);
+  return await dbreq(`DELETE FROM matches WHERE id = ?`, [id]);
 };
 
 // Get matches by category
 export const getMatchesByCategory = async (categoryId: number) => {
-  const query = `SELECT * FROM matches WHERE category_id = ${categoryId} ORDER BY datetime`;
-  const result = await dbreq(query);
-  return result;
+  return await dbreq(
+    `SELECT * FROM matches WHERE category_id = ? ORDER BY datetime`,
+    [categoryId],
+  );
 };
 
 // Get matches by team
 export const getMatchesByTeam = async (teamId: number) => {
-  const query = `SELECT * FROM matches WHERE team1_id = ${teamId} OR team2_id = ${teamId} ORDER BY datetime`;
-  const result = await dbreq(query);
-  return result;
+  return await dbreq(
+    "SELECT * FROM matches WHERE team1_id = ? OR team2_id = ? ORDER BY datetime",
+    [teamId, teamId],
+  );
 };
 
 // Get teams by category
 export const getTeamsByCategory = async (categoryId: number) => {
-  const query = `SELECT * FROM teams WHERE category_id = ${categoryId}`;
-  const result = await dbreq(query);
-  return result;
+  return await dbreq(`SELECT * FROM teams WHERE category_id = ?`, [categoryId]);
 };
 
 // Update match status
@@ -140,8 +182,10 @@ export const updateMatchStatus = async (
   status: "pending" | "live" | "finished",
 ) => {
   gate(selfUser, "matchOrganiser");
-  const query = `UPDATE matches SET status = '${status}' WHERE id = ${id}`;
-  return await dbreq(query);
+  return await dbreq("UPDATE matches SET status = ? WHERE id = ?", [
+    status,
+    id,
+  ]);
 };
 
 // Update match score
@@ -152,8 +196,10 @@ export const updateMatchScore = async (
   team2Score: number,
 ) => {
   gate(selfUser, "matchOrganiser");
-  const query = `UPDATE matches SET team1_score = ${team1Score}, team2_score = ${team2Score} WHERE id = ${id}`;
-  return await dbreq(query);
+  return await dbreq(
+    "UPDATE matches SET team1_score = ?, team2_score = ? WHERE id = ?",
+    [team1Score, team2Score, id],
+  );
 };
 
 // Get team statistics

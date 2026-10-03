@@ -1,10 +1,10 @@
 import { addLog, getAuth } from "@/db/dbreq";
-import NewParlament from "./components/newParlament";
-import ParlamentsList from "./components/parlamentsList";
+import NewParlament from "./components/newParliament";
+import ParlamentsList from "./components/parliamentsList";
 
-const ParlamentPage = async () => {
+const ParliamentPage = async () => {
   const selfUser = await getAuth();
-  addLog("parlament", selfUser?.email ?? "unknown");
+  void addLog("parlament", selfUser?.email ?? "unknown");
 
   if (!selfUser?.permissions.includes("head_of_parlament"))
     return (
@@ -21,4 +21,4 @@ const ParlamentPage = async () => {
   );
 };
 
-export default ParlamentPage;
+export default ParliamentPage;

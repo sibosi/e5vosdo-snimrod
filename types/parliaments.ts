@@ -9,4 +9,5 @@ export interface ParlamentParticipant {
   email: string;
   class: string;
   parlament_id: number;
+  is_applicant: boolean;
 }

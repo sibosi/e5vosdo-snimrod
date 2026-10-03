@@ -1,9 +1,8 @@
+import getUserClass from "@/public/getUserClass";
 import { dbreq } from "./db";
 import { UserType } from "./dbreq";
 import { gate } from "./permissions";
 import type { Parlament, ParlamentParticipant } from "@/types/parliaments";
-
-export type { Parlament, ParlamentParticipant };
 
 export async function createParlament(
   selfUser: UserType,
@@ -38,11 +37,12 @@ export async function registerToParlament(
   email: string,
   group: string,
   parlamentId: number,
+  isApplicant: boolean = false,
 ) {
   gate(selfUser, ["delegate_counter", "head_of_parlament"]);
   return await dbreq(
-    `INSERT INTO parlament_participants (email, class, parlament_id) VALUES (?, ?, ?);`,
-    [email, group, parlamentId],
+    `INSERT INTO parlament_participants (email, class, parlament_id, is_applicant) VALUES (?, ?, ?, ?);`,
+    [email, group, parlamentId, isApplicant],
   );
 }
 
@@ -64,7 +64,7 @@ export async function getParlamentParticipants(
   parlamentId: number,
 ) {
   const data: ParlamentParticipant[] = (await dbreq(
-    `SELECT * FROM parlament_participants WHERE parlament_id = ?;`,
+    `SELECT * FROM parlament_participants WHERE parlament_id = ? AND is_applicant = 0;`,
     [parlamentId],
   )) as any;
 
@@ -76,4 +76,39 @@ export async function getParlamentParticipants(
   });
 
   return participantsByClass;
+}
+
+export async function getParlamentApplicants(
+  selfUser: UserType,
+  parlamentId: number,
+) {
+  const data: ParlamentParticipant[] = (await dbreq(
+    `SELECT * FROM parlament_participants WHERE parlament_id = ? AND is_applicant = 1;`,
+    [parlamentId],
+  )) as any;
+
+  const participantsByClass: Record<string, string[]> = {};
+  data.forEach((participant) => {
+    if (!participantsByClass[participant.class])
+      participantsByClass[participant.class] = [];
+    participantsByClass[participant.class].push(participant.email);
+  });
+
+  return participantsByClass;
+}
+
+export async function applyToParlamentFromOwnClass(
+  selfUser: UserType,
+  parlamentId: number,
+) {
+  const userClass = getUserClass(selfUser);
+  if (!userClass) throw new Error("User class could not be determined");
+
+  return await registerToParlament(
+    selfUser,
+    selfUser.email,
+    userClass,
+    parlamentId,
+    true,
+  );
 }

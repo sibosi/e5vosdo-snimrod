@@ -1,11 +1,7 @@
-export default function ParlamentLayout({
+export default function ParliamentLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
-  return (
-    <section className="pt-8 md:pt-10">
-      <div className="p-1 text-foreground">{children}</div>
-    </section>
-  );
+}>) {
+  return <section className="px-1 md:pt-4">{children}</section>;
 }

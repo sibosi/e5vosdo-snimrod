@@ -9,5 +9,6 @@ CREATE TABLE IF NOT EXISTS parlament_participants (
     parlament_id INT NOT NULL,
     email VARCHAR(255) NOT NULL,
     class VARCHAR(255) NOT NULL,
+    is_applicant BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (parlament_id) REFERENCES parlaments(id)
 );

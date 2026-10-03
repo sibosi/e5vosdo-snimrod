@@ -41,22 +41,28 @@ const yearByClassCharacter: { [key: string]: number } = {
   N: 8,
 };
 
-const getUserClass = (selfUser: User | undefined) => {
-  if (!selfUser?.coming_year || !selfUser.class_character) return null;
+export const calculateUserClass = (
+  comingYear: number,
+  classCharacter: string,
+): string | null => {
+  if (!comingYear || !classCharacter) return null;
   // How many year after the coming year aug. 1st.
 
   const msInAYear = 1000 * 60 * 60 * 24 * 365.25;
-
   const evfolyam =
     Math.floor(
-      (Date.now() - new Date(selfUser.coming_year + "/08/01").getTime()) /
-        msInAYear,
-    ) + (yearByClassCharacter[selfUser.class_character] ?? 0);
+      (Date.now() - new Date(comingYear + "/08/01").getTime()) / msInAYear,
+    ) + (yearByClassCharacter[classCharacter] ?? 0);
 
-  if (evfolyam + "." + selfUser.class_character === "8.N") return "9.N";
-  if (selfUser.class_character === "N") return evfolyam + ".E";
+  if (evfolyam + "." + classCharacter === "8.N") return "9.N";
+  if (classCharacter === "N") return evfolyam + ".E";
 
-  return evfolyam + "." + selfUser.class_character;
+  return evfolyam + "." + classCharacter;
+};
+
+const getUserClass = (selfUser: User | undefined) => {
+  if (!selfUser) return null;
+  return calculateUserClass(selfUser.coming_year, selfUser.class_character);
 };
 
 export default getUserClass;

@@ -24,8 +24,9 @@ const ParliamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
     const [selectedParlament, participants, applicants, usersNameByEmail] =
       await Promise.all([
         getParlament(selfUser, Number(id)),
-        getParlamentApplicants(selfUser, Number(id)),
         getParlamentParticipants(selfUser, Number(id)),
+        getParlamentApplicants(selfUser, Number(id)),
+
         getAllUsersNameByEmail(),
       ]);
 

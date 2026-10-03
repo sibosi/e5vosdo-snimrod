@@ -39,7 +39,10 @@ export async function registerToParlament(
   parlamentId: number,
   isApplicant: boolean = false,
 ) {
-  gate(selfUser, ["delegate_counter", "head_of_parlament"]);
+  if (!isApplicant) {
+    gate(selfUser, ["delegate_counter", "head_of_parlament"]);
+  }
+
   return await dbreq(
     `INSERT INTO parlament_participants (email, class, parlament_id, is_applicant) VALUES (?, ?, ?, ?);`,
     [email, group, parlamentId, isApplicant],
@@ -87,14 +90,14 @@ export async function getParlamentApplicants(
     [parlamentId],
   )) as any;
 
-  const participantsByClass: Record<string, string[]> = {};
+  const applicantsByClass: Record<string, string[]> = {};
   data.forEach((participant) => {
-    if (!participantsByClass[participant.class])
-      participantsByClass[participant.class] = [];
-    participantsByClass[participant.class].push(participant.email);
+    if (!applicantsByClass[participant.class])
+      applicantsByClass[participant.class] = [];
+    applicantsByClass[participant.class].push(participant.email);
   });
 
-  return participantsByClass;
+  return applicantsByClass;
 }
 
 export async function applyToParlamentFromOwnClass(

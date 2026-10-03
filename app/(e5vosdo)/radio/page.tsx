@@ -9,7 +9,7 @@ export default async function Page() {
   const selfUser = await getAuth();
   if (!selfUser) redirect("/");
   const hasAccess = hasPermission(selfUser, "radio_access");
-  const radio = await dbreq("SELECT * FROM key_status");
+  const radio = await dbreq("SELECT * FROM radio_key_status");
   const radioStatus = radio[0];
 
   return (

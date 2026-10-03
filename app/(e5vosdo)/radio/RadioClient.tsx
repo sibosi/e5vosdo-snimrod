@@ -134,7 +134,7 @@ export default function Page({
       )}
       <KeyLogTable />
       <div
-        className={`${hidden ? "hidden" : ""} fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-black`}
+        className={`${hidden ? "hidden" : ""} fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-selfprimary-bg`}
       >
         <p className="text-center text-2xl">
           Sikeresen kölcsönvetted a rádiókulcsot!
@@ -159,8 +159,8 @@ export default function Page({
           <motion.path
             d="M836.2 346.1H360.6V337c0-5.1-4.1-9.1-9.1-9.1h-29.3l221.3-148.3c4.2-2.8 5.3-8.5 2.5-12.7s-8.5-5.3-12.7-2.5l-240.4 161c-1 0.7-1.8 1.5-2.4 2.4h-48.8c-5.1 0-9.1 4.1-9.1 9.1v9.1h-18.3c-20.2 0-36.6 16.4-36.6 36.6V785c0 20.2 16.4 36.6 36.6 36.6h622c20.2 0 36.6-16.4 36.6-36.6V382.7c-0.1-20.2-16.5-36.6-36.7-36.6z m-621.9 439V382.7h622v402.4h-622z"
             fill="#211F1E"
-            stroke="white"
-            strokeWidth="4"
+            stroke="#96C8D1"
+            strokeWidth="10"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: [0, 1, 1, 0] }}
             transition={{

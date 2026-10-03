@@ -8,12 +8,12 @@ export async function borrowRadio() {
   const selfUser = await getAuth();
   const hasAccess = hasPermission(selfUser, "radio_access");
   const now = new Date();
-  const radio = await dbreq("SELECT * FROM key_status");
+  const radio = await dbreq("SELECT * FROM radio_key_status");
   const radioStatus = radio[0];
 
   if (hasAccess && radioStatus.borrowed === 0) {
     await dbreq(
-      "UPDATE key_status SET borrowed = 1, borrowed_by = ?, borrowed_at = ?",
+      "UPDATE radio_key_status SET borrowed = 1, borrowed_by = ?, borrowed_at = ?",
       [selfUser?.name, now],
     );
   } else {
@@ -28,7 +28,7 @@ export async function borrowRadio() {
 export async function returnRadio() {
   const selfUser = await getAuth();
   const hasAccess = hasPermission(selfUser, "radio_access");
-  const radio = await dbreq("SELECT * FROM key_status");
+  const radio = await dbreq("SELECT * FROM radio_key_status");
   const radioStatus = radio[0];
 
   if (
@@ -37,10 +37,10 @@ export async function returnRadio() {
     radioStatus.borrowed_by === selfUser?.name
   ) {
     await dbreq(
-      "UPDATE key_status SET borrowed = 0, borrowed_by = NULL, borrowed_at = NULL",
+      "UPDATE radio_key_status SET borrowed = 0, borrowed_by = NULL, borrowed_at = NULL",
     );
     await dbreq(
-      "INSERT INTO key_logs (name, email, borrowed_at, returned_at) VALUES (?, ?, ?, ?)",
+      "INSERT INTO radio_key_logs (name, email, borrowed_at, returned_at) VALUES (?, ?, ?, ?)",
       [selfUser?.name, selfUser?.email, radioStatus.borrowed_at, new Date()],
     );
   } else {
@@ -53,7 +53,7 @@ export async function returnRadio() {
 }
 
 export async function getRadioStatus() {
-  const radio = await dbreq("SELECT * FROM key_status");
+  const radio = await dbreq("SELECT * FROM radio_key_status");
   return radio[0];
 }
 
@@ -64,6 +64,6 @@ export async function getRadioKeyLogs() {
   }
 
   return dbreq(
-    "SELECT id, name, email, borrowed_at, returned_at FROM key_logs ORDER BY borrowed_at DESC, id DESC",
+    "SELECT id, name, email, borrowed_at, returned_at FROM radio_key_logs ORDER BY borrowed_at DESC, id DESC",
   );
 }

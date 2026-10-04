@@ -269,26 +269,6 @@ const ParlamentIDClient = ({
       );
     }
 
-    if (canEdit) {
-      return (
-        <Button
-          color="success"
-          isDisabled={!userClass}
-          className="mt-1 w-full"
-          onPress={() =>
-            applyToParliament(parlamentId, () => {
-              setApplicants((prev) => ({
-                ...prev,
-                [userClass]: [...(applicants[userClass] ?? []), selfUser.email],
-              }));
-            })
-          }
-        >
-          Jelentkezés a parlamentre
-        </Button>
-      );
-    }
-
     return (
       <Button
         color="success"

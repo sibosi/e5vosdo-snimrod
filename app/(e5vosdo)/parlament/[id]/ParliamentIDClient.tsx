@@ -283,7 +283,7 @@ const ParlamentIDClient = ({
           })
         }
       >
-        Jelentkezés a parlamentre
+        Képviselő részt veszek
       </Button>
     );
   };

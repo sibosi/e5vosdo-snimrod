@@ -481,7 +481,11 @@ function DesktopCarousel({ data }: Readonly<{ data: EventType[] }>) {
         className="max-h-80 overflow-auto bg-selfprimary-100 p-4"
         style={{ display: imageLoaded ? "block" : "none" }}
       >
-        <h2>{data[currentIndex].title}</h2>
+        <h2>
+          {Array.isArray(data[currentIndex].title)
+            ? data[currentIndex].title.join(" ")
+            : data[currentIndex].title.replaceAll(String.raw`\n`, " ")}
+        </h2>
         <p className="mt-2 whitespace-pre-wrap">
           {parse(String(data[currentIndex].description))}
         </p>
@@ -508,7 +512,8 @@ function filterCarouselData(data: EventType[]) {
   const filteredData = data.filter((event) => {
     const eventDate = new Date(event.time);
     const diff = eventDate.getTime() - now.getTime();
-    return diff > 0;
+    const oneHourInMs = 60 * 60 * 1000;
+    return diff > -oneHourInMs; // Only include events that are more than 1 hour in the past
   });
   return filteredData.sort(
     (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),

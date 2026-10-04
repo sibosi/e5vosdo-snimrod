@@ -64,9 +64,9 @@ export const useEvents = (all = false): UseEventsReturn => {
   let archivedEventsByDate: EventByDateType = {};
   let futureEventsByDate: EventByDateType = {};
 
-  const twoWeeksFromNow = new Date();
-  twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
-  twoWeeksFromNow.setHours(0, 0, 0, 0);
+  const threeWeeksFromNow = new Date();
+  threeWeeksFromNow.setDate(threeWeeksFromNow.getDate() + 21);
+  threeWeeksFromNow.setHours(0, 0, 0, 0);
 
   sortedEvents.forEach((event) => {
     const date = new Date(event.time).toLocaleDateString("en-CA", {
@@ -80,7 +80,7 @@ export const useEvents = (all = false): UseEventsReturn => {
     if (eventDate.getTime() < new Date().setHours(0, 0, 0, 0)) {
       archivedEventsByDate[date] ??= [];
       archivedEventsByDate[date].push(event);
-    } else if (eventDate.getTime() >= twoWeeksFromNow.getTime()) {
+    } else if (eventDate.getTime() >= threeWeeksFromNow.getTime()) {
       futureEventsByDate[date] ??= [];
       futureEventsByDate[date].push(event);
     } else {

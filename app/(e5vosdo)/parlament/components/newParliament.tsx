@@ -13,7 +13,7 @@ const NewParlament = () => {
   function createParlament(date?: string) {
     const selectedDate = date ?? newParlamentDate;
     const startDate = new Date(selectedDate);
-    const parlamentTitle = `Parlament - ${startDate.toLocaleString("hu-HU")}`;
+    const parlamentTitle = `Diákparlament - ${startDate.toLocaleString("hu-HU")}`;
     void fetch("/api/parliaments", {
       method: "POST",
       body: JSON.stringify({
@@ -23,16 +23,18 @@ const NewParlament = () => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => {
-      if (res.ok) {
-        alert("Parlament sikeresen létrehozva");
-        window.location.reload();
-      } else {
+    })
+      .then((res) => {
+        if (res.ok) {
+          alert("Parlament sikeresen létrehozva");
+          window.location.reload();
+        } else {
+          alert("Hiba a parlament létrehozása közben");
+        }
+      })
+      .catch(() => {
         alert("Hiba a parlament létrehozása közben");
-      }
-    }).catch(() => {
-      alert("Hiba a parlament létrehozása közben");
-    });
+      });
   }
 
   return (

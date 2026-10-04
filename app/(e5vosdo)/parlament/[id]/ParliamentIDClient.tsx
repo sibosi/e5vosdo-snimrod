@@ -12,7 +12,7 @@ interface Props {
   parlamentId: number;
   initialParlament: Parlament;
   initialParticipants: Record<string, string[]>;
-  applicants: Record<string, string[]>;
+  initialApplicants: Record<string, string[]>;
   usersNameByEmail: Record<string, string | { name: string; class: string }>;
   canEdit: boolean;
   selfUser: PossibleUserType;
@@ -86,7 +86,10 @@ function deleteParlament(parlamentId: number) {
   });
 }
 
-async function applyToParliament(parliamentId: number) {
+async function applyToParliament(
+  parliamentId: number,
+  setApplicantsHandler: () => void,
+) {
   try {
     const response = await fetch("/api/parliaments/apply", {
       method: "POST",
@@ -96,7 +99,10 @@ async function applyToParliament(parliamentId: number) {
       body: JSON.stringify({ parliamentId }),
     });
 
-    if (!response.ok) {
+    if (response.ok) {
+      setApplicantsHandler();
+      alert("Sikeres jelentkezés a parlamentre");
+    } else {
       const body = (await response.json()) as { error?: string };
       alert(body.error ?? "Hiba a parlamentre jelentkezés közben");
     }
@@ -110,7 +116,7 @@ const ParlamentIDClient = ({
   parlamentId,
   initialParlament,
   initialParticipants,
-  applicants,
+  initialApplicants,
   usersNameByEmail,
   canEdit,
   selfUser,
@@ -120,6 +126,7 @@ const ParlamentIDClient = ({
     useState<Record<string, string[]>>(initialParticipants);
   const [previousParlamentParticipants, setPreviousParlamentParticipants] =
     useState<Record<string, string[]>>({});
+  const [applicants, setApplicants] = useState(initialApplicants);
   const [isEditing, setIsEditing] = useState(false);
 
   const mergedParticipants = useMemo(() => {
@@ -149,7 +156,7 @@ const ParlamentIDClient = ({
     });
 
     return merged;
-  }, [appearerParticipants, previousParlamentParticipants]);
+  }, [appearerParticipants, previousParlamentParticipants, applicants]);
 
   const registerToParlament = (email: string, group: string) => {
     void fetch("/api/parliaments/participants", {
@@ -266,9 +273,16 @@ const ParlamentIDClient = ({
       return (
         <Button
           color="success"
-          onPress={() => applyToParliament(parlamentId)}
           isDisabled={!userClass}
           className="mt-1 w-full"
+          onPress={() =>
+            applyToParliament(parlamentId, () => {
+              setApplicants((prev) => ({
+                ...prev,
+                [userClass]: [...(applicants[userClass] ?? []), selfUser.email],
+              }));
+            })
+          }
         >
           Jelentkezés a parlamentre
         </Button>
@@ -278,9 +292,16 @@ const ParlamentIDClient = ({
     return (
       <Button
         color="success"
-        onPress={() => applyToParliament(parlamentId)}
         isDisabled={!userClass}
         className="mt-1 w-full"
+        onPress={() =>
+          applyToParliament(parlamentId, () => {
+            setApplicants((prev) => ({
+              ...prev,
+              [userClass]: [...(applicants[userClass] ?? []), selfUser.email],
+            }));
+          })
+        }
       >
         Jelentkezés a parlamentre
       </Button>

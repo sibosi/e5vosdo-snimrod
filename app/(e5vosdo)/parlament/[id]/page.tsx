@@ -43,7 +43,7 @@ const ParliamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
           parlamentId={Number(id)}
           initialParlament={selectedParlament}
           initialParticipants={participants}
-          applicants={applicants}
+          initialApplicants={applicants}
           usersNameByEmail={usersNameByEmail}
           canEdit={hasPermission(selfUser, [
             "head_of_parlament",

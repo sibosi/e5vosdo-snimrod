@@ -1,6 +1,7 @@
 import { dbreq, multipledbreq } from "./db";
 import { newNotificationByNames, UserType } from "./dbreq";
 import { gate } from "./permissions";
+import { getParlamentEvents } from "./parlament";
 
 export interface EventType {
   title: string | string[];
@@ -45,9 +46,13 @@ export async function getPreviewEvent(selfUser: UserType, id: number) {
 }
 
 export async function getCarouselEvents() {
-  return (await dbreq(
-    "SELECT * FROM events_active WHERE show_at_carousel = 1",
-  )) as EventType[];
+  const [events, parlamentEvents] = await Promise.all([
+    dbreq("SELECT * FROM events_active WHERE show_at_carousel = 1") as Promise<
+      EventType[]
+    >,
+    getParlamentEvents(),
+  ]);
+  return [...events, ...parlamentEvents];
 }
 
 export async function getEventEvents() {
@@ -55,10 +60,16 @@ export async function getEventEvents() {
   const year = now.getMonth() < 8 ? now.getFullYear() - 1 : now.getFullYear();
   const lastSeptFirstDate = new Date(year, 8, 1);
   lastSeptFirstDate.setHours(0, 0, 0, 0);
-  return (await dbreq(
-    "SELECT * FROM events_active WHERE show_at_events = 1 AND time >= ? ORDER BY time ASC",
-    [lastSeptFirstDate.toISOString()],
-  )) as EventType[];
+  const [events, parlamentEvents] = await Promise.all([
+    dbreq(
+      "SELECT * FROM events_active WHERE show_at_events = 1 AND time >= ? ORDER BY time ASC",
+      [lastSeptFirstDate.toISOString()],
+    ) as Promise<EventType[]>,
+    getParlamentEvents(),
+  ]);
+  return [...events, ...parlamentEvents].sort(
+    (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+  );
 }
 
 export async function getPreviewEvents(selfUser: UserType) {

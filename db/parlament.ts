@@ -3,6 +3,7 @@ import { dbreq } from "./db";
 import { UserType } from "./dbreq";
 import { gate } from "./permissions";
 import type { Parlament, ParlamentParticipant } from "@/types/parliaments";
+import type { EventType } from "./event";
 
 export async function createParlament(
   selfUser: UserType,
@@ -24,6 +25,32 @@ export async function deleteParlament(selfUser: UserType, parlamentId: number) {
 
 export async function getParlaments(selfUser: UserType) {
   return await dbreq(`SELECT * FROM parlaments;`);
+}
+
+export async function getParlamentEvents(): Promise<EventType[]> {
+  const parlaments = (await dbreq(`SELECT * FROM parlaments;`)) as Parlament[];
+  const now = Date.now();
+
+  return parlaments
+    .map((parlament): EventType | null => {
+      const time = new Date(parlament.date);
+      if (!Number.isFinite(time.getTime()) || time.getTime() <= now)
+        return null;
+
+      return {
+        id: -parlament.id,
+        title: parlament.title,
+        image: "/events/parlament.jpg",
+        description: `/parlament/${parlament.id}`,
+        time: time.toISOString(),
+        show_time: null,
+        hide_time: time.toISOString(),
+        tags: ["Parlament"],
+        show_at_carousel: true,
+        show_at_events: true,
+      };
+    })
+    .filter((event): event is EventType => event !== null);
 }
 
 export async function getParlament(selfUser: UserType, parlamentId: number) {

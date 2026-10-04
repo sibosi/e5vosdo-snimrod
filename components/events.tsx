@@ -81,53 +81,67 @@ const renderEventCard = (
   event: EventData[string][0],
   keyPrefix: string,
   tagIndex?: number,
-) => (
-  <SideCard
-    title={
-      typeof event.title === "object" ? event.title.join(" ") : event.title
-    }
-    details={event.description ?? undefined}
-    description={""}
-    image={event.image ?? undefined}
-    popup={true}
-    makeStringToHTML={true}
-  >
-    <div className="flex gap-2">
-      {event.show_time ? (
-        <>
-          {event.description ? (
+) => {
+  const eventUrl =
+    event.description?.startsWith("http") || event.description?.startsWith("/")
+      ? event.description.split("\n")[0]
+      : undefined;
+
+  return (
+    <SideCard
+      title={
+        typeof event.title === "object" ? event.title.join(" ") : event.title
+      }
+      details={event.description ?? undefined}
+      description={""}
+      image={event.image ?? undefined}
+      popup={eventUrl === undefined}
+      makeStringToHTML={true}
+      onClick={
+        eventUrl
+          ? () => {
+              globalThis.location.href = eventUrl;
+            }
+          : undefined
+      }
+    >
+      <div className="flex gap-2">
+        {event.show_time ? (
+          <>
+            {event.description ? (
+              <Chip
+                key={`${keyPrefix}-info-${event.id}`}
+                size="sm"
+                className="bg-selfprimary-50"
+              >
+                részletek
+              </Chip>
+            ) : null}
             <Chip
-              key={`${keyPrefix}-info-${event.id}`}
+              key={`${keyPrefix}-time-${event.id}`}
               size="sm"
-              className="bg-selfprimary-50"
+              className="bg-selfsecondary-50"
             >
-              részletek
+              {new Date(event.time).toLocaleTimeString("hu-HU", {
+                hour: "numeric",
+                minute: "numeric",
+              })}
             </Chip>
-          ) : null}
+          </>
+        ) : null}
+        {event.tags?.map((tag, idx) => (
           <Chip
-            key={`${keyPrefix}-time-${event.id}`}
+            key={`${keyPrefix}-tag-${event.id}-${idx}`}
+            className="bg-selfprimary-200"
             size="sm"
-            className="bg-selfsecondary-50"
           >
-            {new Date(event.time).toLocaleTimeString("hu-HU", {
-              hour: "numeric",
-              minute: "numeric",
-            })}
+            {tag}
           </Chip>
-        </>
-      ) : null}
-      {event.tags?.map((tag, idx) => (
-        <Chip
-          key={`${keyPrefix}-tag-${event.id}-${idx}`}
-          className="bg-selfprimary-200"
-          size="sm"
-        >
-          {tag}
-        </Chip>
-      ))}
-    </div>
-  </SideCard>
-);
+        ))}
+      </div>
+    </SideCard>
+  );
+};
 
 const renderEventDate = (
   dateKey: string,

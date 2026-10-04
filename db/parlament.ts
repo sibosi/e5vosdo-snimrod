@@ -31,10 +31,15 @@ export async function getParlamentEvents(): Promise<EventType[]> {
   const parlaments = (await dbreq(`SELECT * FROM parlaments;`)) as Parlament[];
   const now = Date.now();
 
+  const estimatedParliamentDuration = 60 * 60 * 1000; // 1 hour in milliseconds
+
   return parlaments
     .map((parlament): EventType | null => {
       const time = new Date(parlament.date);
-      if (!Number.isFinite(time.getTime()) || time.getTime() <= now)
+      if (
+        !Number.isFinite(time.getTime()) ||
+        time.getTime() + estimatedParliamentDuration <= now
+      )
         return null;
 
       return {

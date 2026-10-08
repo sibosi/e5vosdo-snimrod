@@ -2,7 +2,7 @@
 
 import { Button } from "@heroui/react";
 import { useState } from "react";
-import { getRadioKeyLogs } from "./radioActions";
+import { getKeyLogs } from "./keyActions";
 
 interface KeyLog {
   id: number;
@@ -10,6 +10,11 @@ interface KeyLog {
   email: string | null;
   borrowed_at: string | Date | null;
   returned_at: string | Date | null;
+}
+
+interface KeyLogTableProps {
+  logTable: string;
+  permission: string;
 }
 
 function formatDate(value: string | Date | null) {
@@ -27,7 +32,7 @@ function formatDate(value: string | Date | null) {
   });
 }
 
-export default function KeyLogTable() {
+export default function KeyLogTable({ logTable, permission }: KeyLogTableProps) {
   const [open, setOpen] = useState(false);
   const [logs, setLogs] = useState<KeyLog[]>([]);
   const [loading, setLoading] = useState(false);
@@ -38,7 +43,7 @@ export default function KeyLogTable() {
     setLoading(true);
     setError("");
     try {
-      setLogs(await getRadioKeyLogs());
+      setLogs(await getKeyLogs({ logTable, permission, table: "" }));
     } catch (err) {
       setError(
         err instanceof Error
@@ -65,7 +70,7 @@ export default function KeyLogTable() {
           <section className="flex max-h-[85vh] w-full max-w-6xl flex-col rounded-xl bg-white p-5 text-gray-900 shadow-xl dark:bg-gray-900 dark:text-white">
             <div className="mb-4 flex items-center justify-between gap-4">
               <h2 id="key-log-title" className="text-xl font-semibold">
-                Rádiókulcs kölcsönzési előzményei
+                Kulcs kölcsönzési előzményei
               </h2>
               <Button onPress={() => setOpen(false)}>Bezárás</Button>
             </div>

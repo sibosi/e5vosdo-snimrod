@@ -54,10 +54,15 @@ const MePage = async () => {
     },
     {
       title: "Rádió",
-      href: "/radio",
+      href: "/keys/radio",
       access:
-        selfUser.permissions.includes("admin") ||
         selfUser.permissions.includes("radio_access"),
+    },
+     {
+      title: "Höki",
+      href: "/keys/hoki",
+      access:
+        selfUser.permissions.includes("hoki_access"),
     },
   ];
 

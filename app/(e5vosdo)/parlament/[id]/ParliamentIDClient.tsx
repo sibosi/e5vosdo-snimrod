@@ -219,12 +219,25 @@ const ParlamentIDClient = ({
   }, [parlamentId]);
 
   const getRowClasses = (type: "appearer" | "previous" | "applied") => {
-    if (!isEditing && type !== "appearer") return "hidden";
-    if (isEditing && type === "appearer")
-      return "bg-success text-black cursor-pointer";
-    if (isEditing && type === "applied")
-      return "bg-warning text-black cursor-pointer";
-    if (isEditing) return "cursor-pointer";
+    if (isEditing) {
+      switch (type) {
+        case "appearer":
+          return "bg-success text-black cursor-pointer";
+        case "applied":
+          return "bg-warning text-black cursor-pointer";
+        case "previous":
+          return "cursor-pointer";
+      }
+    } else {
+      switch (type) {
+        case "appearer":
+          return "bg-success-200 text-white";
+        case "applied":
+          return "bg-warning-200 text-white";
+        case "previous":
+          return "hidden";
+      }
+    }
   };
 
   const getRowClickHandler = (

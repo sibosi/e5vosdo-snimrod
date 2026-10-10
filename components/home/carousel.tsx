@@ -36,6 +36,12 @@ const interpolate = (
   );
 };
 
+const formatEventTitle = (title: string | string[]) =>
+  (Array.isArray(title) ? title.join("\n") : title).replaceAll(
+    String.raw`\n`,
+    "\n",
+  );
+
 const CarouselItem = ({
   uri,
   scrollX,
@@ -56,7 +62,7 @@ const CarouselItem = ({
   width?: number | string;
 }) => {
   const [largeImageWidth, setLargeImageWidth] = useState(100);
-  const titleLines = Array.isArray(title) ? title : title.split(String.raw`\n`);
+  const titleLines = formatEventTitle(title).split("\n");
 
   useEffect(() => {
     setLargeImageWidth(window.innerWidth * 0.5);
@@ -241,7 +247,9 @@ function MobileCarousel({ data }: Readonly<{ data: EventType[] }>) {
                 }
                 className="max-h-60 w-full object-cover"
               />
-              <ModalHeader>{data[clicked].title}</ModalHeader>
+              <ModalHeader className="whitespace-pre-wrap">
+                {formatEventTitle(data[clicked].title)}
+              </ModalHeader>
               <ModalBody className="pb-18 whitespace-pre-wrap scrollbar-hide">
                 {parse(String(data[clicked].description))}
               </ModalBody>
@@ -481,10 +489,8 @@ function DesktopCarousel({ data }: Readonly<{ data: EventType[] }>) {
         className="max-h-80 overflow-auto bg-selfprimary-100 p-4"
         style={{ display: imageLoaded ? "block" : "none" }}
       >
-        <h2>
-          {Array.isArray(data[currentIndex].title)
-            ? data[currentIndex].title.join(" ")
-            : data[currentIndex].title.replaceAll(String.raw`\n`, " ")}
+        <h2 className="whitespace-pre-wrap">
+          {formatEventTitle(data[currentIndex].title)}
         </h2>
         <p className="mt-2 whitespace-pre-wrap">
           {parse(String(data[currentIndex].description))}

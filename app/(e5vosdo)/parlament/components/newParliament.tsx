@@ -13,7 +13,16 @@ const NewParlament = () => {
   function createParlament(date?: string) {
     const selectedDate = date ?? newParlamentDate;
     const startDate = new Date(selectedDate);
-    const parlamentTitle = `Diákparlament - ${startDate.toLocaleString("hu-HU")}`;
+    const parlamentTitle = `Diákparlament - \n${startDate.toLocaleString(
+      "hu-HU",
+      {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      },
+    )}`;
     void fetch("/api/parliaments", {
       method: "POST",
       body: JSON.stringify({
@@ -56,7 +65,14 @@ const NewParlament = () => {
         onPress={() => createParlament()}
         isDisabled={!newParlamentDate}
       >
-        Létrehozás - {new Date(newParlamentDate).toLocaleString("hu-HU")}
+        Létrehozás -{" "}
+        {new Date(newParlamentDate).toLocaleString("hu-HU", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
       </Button>
     </Tray>
   );

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     if (
       error instanceof Error &&
       error.message ===
-        "A parlamenti jelentkezés csak a kezdés előtt, illetve azután egy óráig lehetséges"
+        "A parlamenti jelentkezés csak a kezdés előtt, illetve azután 15 percig lehetséges"
     ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

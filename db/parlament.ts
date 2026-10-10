@@ -138,15 +138,12 @@ export async function applyToParlamentFromOwnClass(
 ) {
   const parlament = await getParlament(selfUser, parlamentId);
   const startTime = new Date(parlament.date).getTime();
-  const elapsedTime = Date.now() - startTime;
+  const now = Date.now();
+  const fifteenMinutesInMs = 15 * 60 * 1000;
 
-  if (
-    !Number.isFinite(startTime) ||
-    elapsedTime < 0 ||
-    elapsedTime >= 60 * 60 * 1000
-  ) {
+  if (!Number.isFinite(startTime) || now > startTime + fifteenMinutesInMs) {
     throw new Error(
-      "A parlamenti jelentkezés csak a kezdés előtt, illetve azután egy óráig lehetséges",
+      "A parlamenti jelentkezés csak a kezdés előtt, illetve azután 15 percig lehetséges",
     );
   }
 

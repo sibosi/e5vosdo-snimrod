@@ -219,7 +219,7 @@ const ParlamentIDClient = ({
   }, [parlamentId]);
 
   const getRowClasses = (type: "appearer" | "previous" | "applied") => {
-    if (!canEdit && type == "applied") return "hidden";
+    // if (!canEdit && type == "applied") return "hidden";
     if (isEditing) {
       switch (type) {
         case "appearer":

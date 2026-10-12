@@ -49,7 +49,6 @@
         font-family: "DM Sans", sans-serif;
         justify-content: center;
         min-height: 100vh;
-        overflow: hidden;
         padding: 32px 20px;
       }
 
@@ -324,6 +323,302 @@
           transition-duration: 0.01ms !important;
         }
       }
+
+/* Menu and substitutions */
+
+.data-section {
+  margin-top: 42px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.section-label {
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin-bottom: 8px;
+}
+
+.section-heading h2 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  letter-spacing: -0.045em;
+}
+
+.live-badge {
+  border: 1px solid rgba(133, 176, 209, 0.25);
+  border-radius: 100px;
+  color: var(--primary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.menu-days {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.menu-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(19, 42, 56, 0.65);
+}
+
+.menu-card.today {
+  border-color: rgba(133, 176, 209, 0.48);
+  background: linear-gradient(
+    145deg,
+    rgba(80, 124, 154, 0.17),
+    rgba(19, 42, 56, 0.65)
+  );
+}
+
+.menu-date {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-bottom: 15px;
+}
+
+.menu-date strong {
+  color: var(--ink);
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.menu-option {
+  border-top: 1px solid var(--line);
+  padding-top: 13px;
+  margin-top: 13px;
+}
+
+.menu-option-title {
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+.menu-option p {
+  color: #d7e2e8;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.section-description {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin-top: -8px;
+  margin-bottom: 18px;
+}
+
+.substitutions {
+  display: grid;
+  gap: 10px;
+}
+
+.substitution-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.substitution-top {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.period-badge {
+  background: rgba(250, 143, 87, 0.12);
+  border: 1px solid rgba(250, 143, 87, 0.25);
+  border-radius: 7px;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 5px 9px;
+}
+
+.substitution-date {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.substitution-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.substitution-field {
+  min-width: 0;
+}
+
+.substitution-field small {
+  color: var(--muted);
+  display: block;
+  font-size: 0.75rem;
+  margin-bottom: 4px;
+}
+
+.substitution-field p {
+  color: var(--ink);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.updated {
+  color: #7f96a3;
+  font-size: 0.75rem;
+  margin-top: 14px;
+}
+
+.loading,
+.empty-state,
+.error-state {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.error-state a {
+  color: var(--primary);
+}
+
+@media (max-width: 600px) {
+  .menu-days {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-card {
+    padding: 18px;
+  }
+
+  .substitution-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Grouped substitutions */
+.sub-day {
+  margin-bottom: 28px;
+}
+
+.sub-day-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sub-day-heading h3 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.35rem;
+  text-transform: capitalize;
+}
+
+.sub-day-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.sub-teacher {
+  overflow: hidden;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(19, 42, 56, 0.65);
+}
+
+.sub-teacher-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 18px;
+  background: rgba(133, 176, 209, 0.08);
+  border-bottom: 1px solid var(--line);
+}
+
+.sub-teacher-heading h4 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.sub-teacher-heading span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.sub-lesson {
+  padding: 16px 18px;
+}
+
+.sub-lesson + .sub-lesson {
+  border-top: 1px solid var(--line);
+}
+
+.sub-lesson-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sub-lesson .period-badge {
+  display: inline-block;
+}
+
+.sub-lesson-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+}
+
+.sub-lesson .substitution-field {
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .sub-lesson-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sub-teacher-heading,
+  .sub-lesson {
+    padding: 14px;
+  }
+}
     </style>
   </head>
   <body>
@@ -337,8 +632,42 @@
         <p class="eyebrow">Rövid szünet</p>
         <h1>Valami keszul...</h1>
         <p class="lead">
-          Az Eötvös DÖ oldala fejlesztés alatt áll. Kérjük, nézz vissza később!
+          Az Eötvös DÖ oldala fejlesztés alatt áll. Jelenleg csak a menza, illetve a helyettesítések állnak rendelkezésre.
         </p>
+
+<section class="data-section" aria-labelledby="menu-heading">
+  <div class="section-heading">
+    <div>
+      <p class="section-label">MAI AJÁNLAT</p>
+      <h2 id="menu-heading">Menza</h2>
+    </div>
+    <span class="live-badge">A / B menü</span>
+  </div>
+
+  <div id="menu-days" class="menu-days">
+    <p class="loading">Menü betöltése...</p>
+  </div>
+</section>
+
+<section class="data-section" aria-labelledby="sub-heading">
+  <div class="section-heading">
+    <div>
+      <p class="section-label">NAPRAKÉSZ INFORMÁCIÓK</p>
+      <h2 id="sub-heading">Helyettesítések</h2>
+    </div>
+
+  </div>
+
+  <p class="section-description">
+    Az aktuális tanári helyettesítések és óraváltozások.
+  </p>
+
+  <div id="substitutions" class="substitutions">
+    <p class="loading">Helyettesítések betöltése...</p>
+  </div>
+
+  <p class="updated" id="sub-updated"></p>
+</section>
 
         <div class="button-container">
           <a
@@ -383,5 +712,352 @@
         >
       </footer>
     </div>
+
+<script>
+  /*
+   * EDIT THE MENU HERE.
+   * Dates must use YYYY-MM-DD format.
+   * Replace the example dishes with the actual daily menu.
+   */
+
+const MENU_BASE_URL =
+  "https://raw.githubusercontent.com/sibosi/e5vosdo-snimrod/master/components/menza/tablak";
+
+const TIME_ZONE = "Europe/Budapest";
+
+function getLocalDate(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+
+  const values = Object.fromEntries(
+    parts.map(part => [part.type, part.value])
+  );
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function addDays(dateString, amount) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day + amount));
+
+  return [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, "0"),
+    String(date.getUTCDate()).padStart(2, "0")
+  ].join("-");
+}
+
+function formatDate(dateString) {
+  const [year, month, day] = dateString.split("-").map(Number);
+
+  return new Intl.DateTimeFormat("hu-HU", {
+    timeZone: TIME_ZONE,
+    month: "long",
+    day: "numeric",
+    weekday: "long"
+  }).format(new Date(Date.UTC(year, month - 1, day, 12)));
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
+async function fetchMonth(dateString) {
+  const [year, month] = dateString.split("-").map(Number);
+  const filename =
+    String(year).slice(-2) + "m" + String(month).padStart(2, "0");
+
+  const response = await fetch(`${MENU_BASE_URL}/${filename}.json`);
+
+  if (!response.ok) {
+    throw new Error(`A ${filename}.json fájl nem érhető el.`);
+  }
+
+  return response.json();
+}
+
+async function renderMenu() {
+  const container = document.getElementById("menu-days");
+  const today = getLocalDate();
+  const dates = [today, addDays(today, 1)];
+
+  container.innerHTML = '<p class="loading">Menü betöltése...</p>';
+
+  try {
+    const monthData = new Map();
+
+    await Promise.all(
+      [...new Set(dates.map(date => date.slice(0, 7)))].map(
+        async monthKey => {
+          monthData.set(
+            monthKey,
+            await fetchMonth(monthKey + "-01")
+          );
+        }
+      )
+    );
+
+    container.innerHTML = dates.map((date, index) => {
+      const menu = monthData.get(date.slice(0, 7))?.[
+        date.replaceAll("-", ".")
+      ];
+
+      const options = ["A", "B"].map(type => {
+        const dishes = menu?.[type];
+
+        return `
+          <div class="menu-option">
+            <p class="menu-option-title">${type} MENÜ</p>
+            <p>${
+              Array.isArray(dishes) && dishes.length
+                ? dishes.map(escapeHTML).join("<br>")
+                : "Nincs közzétett menü erre a napra."
+            }</p>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <article class="menu-card ${index === 0 ? "today" : ""}">
+          <div class="menu-date">
+            <strong>${index === 0 ? "Ma" : "Holnap"}</strong>
+            ${escapeHTML(formatDate(date))}
+          </div>
+          ${options}
+        </article>
+      `;
+    }).join("");
+
+  } catch (error) {
+    console.error("Menübetöltési hiba:", error);
+
+    container.innerHTML = `
+      <div class="error-state">
+        A menü most nem tölthető be.
+        <br>
+        <a
+          href="https://github.com/sibosi/e5vosdo-snimrod/tree/master/components/menza/tablak"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Menük megtekintése a GitHubon ↗</a>
+      </div>
+    `;
+  }
+}
+
+renderMenu();
+  /*
+   * Fetch the official substitutions page and parse its table.
+   * The school server must permit cross-origin requests for this
+   * direct browser approach to work.
+   */
+  async function loadSubstitutions() {
+    const container = document.getElementById("substitutions");
+    const updated = document.getElementById("sub-updated");
+
+    try {
+      const response = await fetch("https://do-substitution-fetch.spammail-nikoo.workers.dev/", {
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const html = await response.text();
+      const documentHTML = new DOMParser().parseFromString(
+        html,
+        "text/html"
+      );
+
+      const rows = [...documentHTML.querySelectorAll("tr")];
+
+      const headings = [
+        "dátum",
+        "hiányzó tanár",
+        "óra / terem",
+        "csoport",
+        "tárgy",
+        "helyettes tanár",
+        "megjegyzés"
+      ];
+
+      const normalized = value => value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const headerRow = rows.find(row => {
+        const cells = [...row.querySelectorAll("th, td")]
+          .map(cell => normalized(cell.textContent));
+
+        return headings.every(heading =>
+          cells.some(cell => cell === normalized(heading))
+        );
+      });
+
+      if (!headerRow) {
+        throw new Error("A helyettesítési táblázat nem található.");
+      }
+
+      const columnNames = [...headerRow.querySelectorAll("th, td")]
+        .map(cell => normalized(cell.textContent));
+
+      const indexes = headings.map(heading =>
+        columnNames.indexOf(normalized(heading))
+      );
+
+      const dataRows = rows.slice(rows.indexOf(headerRow) + 1)
+        .map(row => [...row.querySelectorAll("th, td")])
+        .filter(cells => cells.length >= columnNames.length)
+        .map(cells => indexes.map(index =>
+          cells[index]?.textContent.trim() || "—"
+        ))
+        .filter(cells => /^\d{4}-\d{2}-\d{2}$/.test(cells[0]));
+
+
+const today = getLocalDate();
+const tomorrow = addDays(today, 1);
+const dates = [today, tomorrow];
+
+const relevantRows = dataRows.filter(row =>
+  dates.includes(row[0])
+);
+
+if (!relevantRows.length) {
+  container.innerHTML = `
+    <div class="empty-state">
+      Nincs közzétett helyettesítés mára vagy holnapra.
+      <br>
+      <a
+        href="https://www.ejg.hu/helyettes/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Eredeti lista megnyitása
+      </a>
+    </div>
+  `;
+} else {
+  const dayLabels = {
+    [today]: "Ma",
+    [tomorrow]: "Holnap"
+  };
+
+  container.innerHTML = dates.map(date => {
+    const dayRows = relevantRows.filter(row => row[0] === date);
+
+    if (!dayRows.length) {
+      return "";
+    }
+
+    // Group lessons by absent teacher within each day.
+    const teachers = new Map();
+
+    dayRows.forEach(row => {
+      const teacher = row[1] || "Ismeretlen tanár";
+
+      if (!teachers.has(teacher)) {
+        teachers.set(teacher, []);
+      }
+
+      teachers.get(teacher).push(row);
+    });
+
+    const teacherGroups = [...teachers.entries()]
+      .sort(([a], [b]) => a.localeCompare(b, "hu"))
+      .map(([teacher, lessons]) => `
+        <section class="sub-teacher">
+          <div class="sub-teacher-heading">
+            <h4>${escapeHTML(teacher)}</h4>
+            <span>
+              ${lessons.length}
+              ${lessons.length === 1 ? "óra" : "óra"}
+            </span>
+          </div>
+
+          ${lessons.map(row => `
+            <article class="sub-lesson">
+              <div class="sub-lesson-top">
+                <span class="period-badge">
+                  ${escapeHTML(row[2])}
+                </span>
+              </div>
+
+              <div class="sub-lesson-grid">
+                <div class="substitution-field">
+                  <small>Helyettes tanár</small>
+                  <p>${escapeHTML(row[5])}</p>
+                </div>
+
+                <div class="substitution-field">
+                  <small>Csoport</small>
+                  <p>${escapeHTML(row[3])}</p>
+                </div>
+
+                <div class="substitution-field">
+                  <small>Tantárgy</small>
+                  <p>${escapeHTML(row[4])}</p>
+                </div>
+
+                <div class="substitution-field">
+                  <small>Megjegyzés</small>
+                  <p>${escapeHTML(row[6])}</p>
+                </div>
+              </div>
+            </article>
+          `).join("")}
+        </section>
+      `).join("");
+
+    return `
+      <section class="sub-day">
+        <div class="sub-day-heading">
+          <h3>${dayLabels[date]}</h3>
+          <span class="sub-day-count">
+            ${escapeHTML(formatDate(date))}
+            · ${dayRows.length} helyettesítés
+          </span>
+        </div>
+
+        ${teacherGroups}
+      </section>
+    `;
+  }).join("");
+}
+
+
+
+    } catch (error) {
+      console.error("Helyettesítések betöltési hiba:", error);
+
+      container.innerHTML = `
+        <div class="error-state">
+          A helyettesítések most nem tölthetők be automatikusan.
+          <br>
+          <a href="https://www.ejg.hu/helyettes/"
+             target="_blank" rel="noopener noreferrer">
+            Helyettesítések megtekintése az EJG oldalán ↗
+          </a>
+        </div>
+      `;
+    }
+  }
+
+  renderMenu();
+  loadSubstitutions();
+</script>
   </body>
 </html>

@@ -15,9 +15,7 @@ interface ClientProps {
   borrowedAt?: Date;
   name: string;
   title: string;
-  table: string;
-  logTable: string;
-  permission: string;
+  org: string;
   svg: Number;
 }
 
@@ -27,9 +25,7 @@ export default function Page({
   borrowedAt,
   name,
   title,
-  table,
-  logTable,
-  permission,
+  org,
   svg
 }: ClientProps) {
   const router = useRouter();
@@ -41,6 +37,21 @@ export default function Page({
     borrowedAt: borrowedAt,
   });
   const [errorMessage, setErrorMessage] = useState("");
+
+  const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+
+  const table = `${orgFixed}_key_status`;
+  const logTable = `${orgFixed}_key_logs`;
+  const permission = `${orgFixed}_access`;
+
+
+
+
+
+
+
   const readableTime = borrowedAt
     ? new Date(borrowedAt.toISOString()).toLocaleString("hu-HU", {
         timeZone: "Europe/Budapest",
@@ -56,7 +67,7 @@ export default function Page({
   const handleBorrowKey = async () => {
     setErrorMessage("");
     try {
-      await borrowKey({ permission, table, logTable });
+      await borrowKey({ org });
       setHidden(false);
       router.refresh();
     } catch (error) {
@@ -72,7 +83,7 @@ export default function Page({
   const handleReturnKey = async () => {
     setErrorMessage("");
     try {
-      await returnKey({ permission, table, logTable });
+      await returnKey({ org });
       router.refresh();
     } catch (error) {
       console.error("Failed to return key:", error);
@@ -87,7 +98,7 @@ export default function Page({
   const handleShowDiagram = () => {
     setErrorMessage("");
     try {
-      getKeyStatus({ table, permission, logTable }).then((status) => {
+      getKeyStatus({ org }).then((status) => {
         setKeyStatus({
           borrowed: status.borrowed,
           borrowedBy: status.borrowed_by,
@@ -145,7 +156,7 @@ export default function Page({
           <Button onPress={handleBorrowKey}>Kulcs kölcsönzése</Button>
         </>
       )}
-      <KeyLogTable logTable={logTable} permission={permission} />
+      <KeyLogTable org={org} />
 
       <div
         className={`${hidden ? "hidden" : ""} fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-selfprimary-bg`}

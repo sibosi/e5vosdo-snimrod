@@ -21,9 +21,7 @@ export default async function Page() {
           borrowedAt={hokiStatus.borrowed_at}
           name={selfUser.name}
           title="Höki kulcs kölcsönzés"
-          table="hoki_key_status"
-          logTable="hoki_key_logs"
-          permission="hoki_access"
+          org="hoki"
           svg={2}
         />
       )}

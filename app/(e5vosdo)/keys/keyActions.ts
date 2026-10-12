@@ -5,12 +5,16 @@ import { getAuth } from "@/db/dbreq";
 import { hasPermission } from "@/db/permissions";
 
 interface Key {
-  permission: string;
-  table: string;
-  logTable: string;
+  org: string;
 }
 
-export async function borrowKey({ permission, table }: Key) {
+export async function borrowKey({ org }: Key) {
+  const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+  const table = `${orgFixed}_key_status`;
+  const permission = `${orgFixed}_access`;
+
   const selfUser = await getAuth();
   const hasAccess = hasPermission(selfUser, permission);
   const now = new Date();
@@ -31,8 +35,14 @@ export async function borrowKey({ permission, table }: Key) {
   return true;
 }
 
-export async function returnKey({ permission, table, logTable }: Key) {
+export async function returnKey({ org }: Key) {
   const selfUser = await getAuth();
+   const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+  const table = `${orgFixed}_key_status`;
+  const logTable = `${orgFixed}_key_logs`;
+  const permission = `${orgFixed}_access`;
   const hasAccess = hasPermission(selfUser, permission);
   const radio = await dbreq(`SELECT * FROM ${table}`);
   const radioStatus = radio[0];
@@ -58,13 +68,23 @@ export async function returnKey({ permission, table, logTable }: Key) {
   return true;
 }
 
-export async function getKeyStatus({ table }: Key) {
+export async function getKeyStatus({ org }: Key) {
+  const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+  const table = `${orgFixed}_key_status`;
   const key = await dbreq(`SELECT * FROM ${table}`);
   console.log("Key status:", key[0]);
   return key[0];
 }
 
-export async function getKeyLogs({ permission, logTable }: Key) {
+export async function getKeyLogs({ org }: Key) {
+  const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+  const logTable = `${orgFixed}_key_logs`;
+  const permission = `${orgFixed}_access`;
+
   const selfUser = await getAuth();
   if (!hasPermission(selfUser, permission)) {
     throw new Error("Permission denied");

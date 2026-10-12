@@ -13,8 +13,7 @@ interface KeyLog {
 }
 
 interface KeyLogTableProps {
-  logTable: string;
-  permission: string;
+  org: string;
 }
 
 function formatDate(value: string | Date | null) {
@@ -32,7 +31,7 @@ function formatDate(value: string | Date | null) {
   });
 }
 
-export default function KeyLogTable({ logTable, permission }: KeyLogTableProps) {
+export default function KeyLogTable({ org }: KeyLogTableProps) {
   const [open, setOpen] = useState(false);
   const [logs, setLogs] = useState<KeyLog[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,7 +42,7 @@ export default function KeyLogTable({ logTable, permission }: KeyLogTableProps) 
     setLoading(true);
     setError("");
     try {
-      setLogs(await getKeyLogs({ logTable, permission, table: "" }));
+      setLogs(await getKeyLogs({ org }));
     } catch (err) {
       setError(
         err instanceof Error

@@ -21,9 +21,7 @@ export default async function Page() {
           borrowedAt={radioStatus.borrowed_at}
           name={selfUser.name}
           title="Rádiókulcs kölcsönzés"
-          table="radio_key_status"
-          logTable="radio_key_logs"
-          permission="radio_access"
+          org="radio"
           svg={1}
         />
       )}

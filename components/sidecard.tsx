@@ -65,7 +65,9 @@ export const SideCard = ({
         </div>
 
         <div className="p-4 py-1">
-          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+          <h2 className="whitespace-pre-wrap text-lg font-semibold text-foreground">
+            {title.replaceAll(String.raw`\n`, "\n")}
+          </h2>
         </div>
       </button>
       {OptionalButton(popup)}

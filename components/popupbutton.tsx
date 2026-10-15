@@ -50,8 +50,8 @@ export const PopupButton: React.FC<CardProps> = ({
                 className="max-h-60 w-full object-cover"
               />
             )}
-            <ModalHeader className="flex flex-col gap-1 text-xl font-semibold text-foreground">
-              {title}
+            <ModalHeader className="flex flex-col gap-1 whitespace-pre-line text-xl font-semibold text-foreground">
+              {title.replaceAll(String.raw`\n`, "\n")}
             </ModalHeader>
             <ModalBody className="pb-18 scrollbar-hide">
               {typeof datetime === "string" && (

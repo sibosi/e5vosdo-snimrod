@@ -191,42 +191,81 @@ const AdminPresentationsPage = () => {
     }));
   };
 
-  const pauseSignup = async () => {
-    if (!confirm("Biztosan szüneteltetni szeretnéd a jelentkezést?")) return;
+  const closeAllSignup = async () => {
+    if (
+      !confirm(
+        "Biztosan le szeretnéd zárni minden prezentációnál a jelentkezést?",
+      )
+    )
+      return;
 
     try {
-      const response = await fetch("/api/presentations/pauseSignup");
+      const response = await fetch("/api/presentations/closeAllSignupForAll");
 
       if (response.ok) {
         await fetchPresentations();
         await fetchSignups();
         await fetchNamesByEmail();
-        alert("Jelentkezés szüneteltetve");
+        alert("Minden prezentációnál lezárva a jelentkezés");
       } else {
         alert("Hiba történt");
       }
     } catch (error) {
-      console.error("Error pausing signup:", error);
+      console.error("Error closing all signups:", error);
       alert("Hiba történt");
     }
   };
 
-  const startSignupProcess = async () => {
-    if (!confirm("Biztosan indítani szeretnéd a jelentkezést?")) return;
+  const openAllSignupOnlyForPriority = async () => {
+    if (
+      !confirm(
+        "Biztosan csak az elsőbbségi jelentkezéssel rendelkezők számára nyitod meg minden prezentáció jelentkezését?",
+      )
+    )
+      return;
 
     try {
-      const response = await fetch("/api/presentations/startSignup");
+      const response = await fetch(
+        "/api/presentations/openAllSignupOnlyForPriority",
+      );
 
       if (response.ok) {
         await fetchPresentations();
         await fetchSignups();
         await fetchNamesByEmail();
-        alert("Jelentkezés elindítva");
+        alert("Minden prezentáció megnyitva elsőbbségi jelentkezésre");
       } else {
         alert("Hiba történt");
       }
     } catch (error) {
-      console.error("Error starting signup:", error);
+      console.error("Error opening priority signups:", error);
+      alert("Hiba történt");
+    }
+  };
+
+  const openAllSignupForEveryone = async () => {
+    if (
+      !confirm(
+        "Biztosan mindenki számára megnyitod minden prezentáció jelentkezését?",
+      )
+    )
+      return;
+
+    try {
+      const response = await fetch(
+        "/api/presentations/openAllSigupForEveryoune",
+      );
+
+      if (response.ok) {
+        await fetchPresentations();
+        await fetchSignups();
+        await fetchNamesByEmail();
+        alert("Minden prezentáció megnyitva mindenki számára");
+      } else {
+        alert("Hiba történt");
+      }
+    } catch (error) {
+      console.error("Error opening all signups:", error);
       alert("Hiba történt");
     }
   };
@@ -360,6 +399,7 @@ const AdminPresentationsPage = () => {
       capacity: 20,
       remaining_capacity: 20,
       performer: null,
+      open_for: "nobody",
     });
     setIsCreating(true);
   };
@@ -559,18 +599,26 @@ const AdminPresentationsPage = () => {
 
         <Button
           color="success"
-          onPress={startSignupProcess}
+          onPress={openAllSignupForEveryone}
           isDisabled={editingPresentation !== null || isManagingSlots}
         >
-          Jelentkezés Indítása
+          Jelentkezés megnyitása mindenkinek
         </Button>
 
         <Button
           color="warning"
-          onPress={pauseSignup}
+          onPress={openAllSignupOnlyForPriority}
           isDisabled={editingPresentation !== null || isManagingSlots}
         >
-          Jelentkezés Szüneteltetése
+          Megnyitás csak elsőbbségieknek
+        </Button>
+
+        <Button
+          color="danger"
+          onPress={closeAllSignup}
+          isDisabled={editingPresentation !== null || isManagingSlots}
+        >
+          Minden jelentkezés lezárása
         </Button>
 
         <Button
@@ -799,6 +847,32 @@ const AdminPresentationsPage = () => {
                 }
                 placeholder="Az előadó neve"
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="open-for-input"
+                className="mb-2 block font-medium"
+              >
+                Jelentkezhetnek
+              </label>
+              <select
+                id="open-for-input"
+                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                value={editingPresentation.open_for || "everyone"}
+                onChange={(e) =>
+                  setEditingPresentation({
+                    ...editingPresentation,
+                    open_for: e.target.value as PresentationType["open_for"],
+                  })
+                }
+              >
+                <option value="everyone">Mindenki</option>
+                <option value="only_priority">
+                  Csak elsőbbségi jelentkezéssel
+                </option>
+                <option value="nobody">Senki</option>
+              </select>
             </div>
 
             <div className="md:col-span-2">

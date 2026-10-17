@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
       address,
       requirements,
       capacity,
+      open_for = "everyone",
     } = await request.json();
 
     if (
@@ -66,8 +67,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!["everyone", "only_priority", "nobody"].includes(open_for)) {
+      return NextResponse.json(
+        { error: "Érvénytelen jelentkezési jogosultság" },
+        { status: 400 },
+      );
+    }
+
     const result = await dbreq(
-      "INSERT INTO presentations (title, performer, slot_id, description, address, requirements, capacity, remaining_capacity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO presentations (title, performer, slot_id, description, address, requirements, capacity, remaining_capacity, open_for) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         title,
         performer,
@@ -76,7 +84,8 @@ export async function POST(request: NextRequest) {
         address || null,
         requirements || null,
         capacity,
-        null,
+        capacity,
+        open_for,
       ],
     );
 
@@ -107,6 +116,7 @@ export async function PUT(request: NextRequest) {
       address,
       requirements,
       capacity,
+      open_for = "everyone",
     } = await request.json();
 
     if (
@@ -121,6 +131,13 @@ export async function PUT(request: NextRequest) {
         {
           error: "Minden mező kitöltése kötelező (ID, slot_id, név, kapacitás)",
         },
+        { status: 400 },
+      );
+    }
+
+    if (!["everyone", "only_priority", "nobody"].includes(open_for)) {
+      return NextResponse.json(
+        { error: "Érvénytelen jelentkezési jogosultság" },
         { status: 400 },
       );
     }
@@ -152,7 +169,7 @@ export async function PUT(request: NextRequest) {
       currentRemainingCapacity === null ? null : capacity - currentSignupsTotal;
 
     await dbreq(
-      "UPDATE presentations SET slot_id = ?, title = ?, performer = ?, description = ?, address = ?, requirements = ?, capacity = ?, remaining_capacity = ? WHERE id = ?",
+      "UPDATE presentations SET slot_id = ?, title = ?, performer = ?, description = ?, address = ?, requirements = ?, capacity = ?, remaining_capacity = ?, open_for = ? WHERE id = ?",
       [
         slot_id,
         title,
@@ -162,6 +179,7 @@ export async function PUT(request: NextRequest) {
         requirements || null,
         capacity,
         newRemainingCapacity,
+        open_for,
         id,
       ],
     );

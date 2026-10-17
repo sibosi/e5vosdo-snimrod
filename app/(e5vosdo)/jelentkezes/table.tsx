@@ -58,6 +58,14 @@ const Table = ({
   const [email, setEmail] = useState("");
 
   const isVerified = selfUser?.is_verified;
+  const canSignUpFor = (presentation: PresentationType) => {
+    if (presentation.open_for === "nobody") return false;
+    if (presentation.open_for === "only_priority") {
+      return selfUser?.permissions.includes("elsőbbségi_jelentkezés") === true;
+    }
+    // everyone case
+    return EXTERNAL_SIGNUPS || Boolean(selfUser);
+  };
 
   const presName = EXTERNAL_SIGNUPS ? "Óra" : "Előadás";
   const presNamePrep = EXTERNAL_SIGNUPS ? "órára" : "előadásra";
@@ -649,14 +657,15 @@ const Table = ({
           </div>
         </div>
 
-        {Number.isInteger(EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) && (
-          <div className="rounded-xl bg-selfprimary-200 p-2 md:col-span-2">
-            <p className="font-xl font-bold">
-              Legfeljebb {EXTERNAL_SIGNUPS_PRESENTATION_LIMIT}{" "}
-              {presNamePrep.toLowerCase()}ra jelentkezhetsz.
-            </p>
-          </div>
-        )}
+        {EXTERNAL_SIGNUPS &&
+          Number.isInteger(EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) && (
+            <div className="rounded-xl bg-selfprimary-200 p-2 md:col-span-2">
+              <p className="font-xl font-bold">
+                Legfeljebb {EXTERNAL_SIGNUPS_PRESENTATION_LIMIT}{" "}
+                {presNamePrep.toLowerCase()}ra jelentkezhetsz.
+              </p>
+            </div>
+          )}
       </div>
 
       <div className="z-100 fixed">
@@ -696,6 +705,16 @@ const Table = ({
                   </p>
                 )}
                 <br />
+                {presentation.open_for === "only_priority" && (
+                  <>
+                    <p className="mb-1 text-sm font-bold text-warning-900">
+                      Csak elsőbbségi jelentkezéssel rendelkező felhasználók
+                      jelentkezhetnek. (DÖ Parlamenti képviselők)
+                    </p>
+                    <br />
+                  </>
+                )}
+
                 <p className="info">
                   Maximális létszám: {presentation.capacity} fő
                 </p>
@@ -746,6 +765,7 @@ const Table = ({
                   presentation.remaining_capacity === 0 ||
                   (EXTERNAL_SIGNUPS && !isValidExternalData) ||
                   presentation.remaining_capacity === null ||
+                  !canSignUpFor(presentation) ||
                   (EXTERNAL_SIGNUPS &&
                     selectedSlot !== null &&
                     (presentation.remaining_capacity ?? 0) <
@@ -759,6 +779,12 @@ const Table = ({
                     selectedBySlot[selectedSlot] === presentation.id
                   )
                     return "Jelentkezve";
+                  if (presentation.open_for === "nobody") return "Lezárva";
+                  if (
+                    presentation.open_for === "only_priority" &&
+                    !canSignUpFor(presentation)
+                  )
+                    return "Lezárva*";
                   if (presentation.remaining_capacity === 0) return "Betelt";
                   if (EXTERNAL_SIGNUPS && selectedSlot !== null) {
                     const amount = signupAmounts[selectedSlot] || 1;

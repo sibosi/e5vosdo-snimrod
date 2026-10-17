@@ -16,6 +16,7 @@ CREATE TABLE
         requirements VARCHAR(255) DEFAULT NULL,
         capacity INTEGER NOT NULL,
         remaining_capacity INTEGER DEFAULT NULL,
+        open_for ENUM('everyone', 'only_priority', 'nobody') NOT NULL DEFAULT 'nobody',
         FOREIGN KEY (slot_id) REFERENCES presentation_slots (id)
     );
 

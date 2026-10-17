@@ -1,6 +1,6 @@
 import mysql from "mysql2/promise";
 import { getAuth } from "./dbreq";
-import { gate } from "./permissions";
+import { gate, hasPermission } from "./permissions";
 
 interface MyGlobal {
   __mysqlPool?: mysql.Pool;
@@ -100,6 +100,7 @@ export interface PresentationType {
   requirements: string;
   capacity: number;
   remaining_capacity: number | null;
+  open_for: "everyone" | "only_priority" | "nobody";
 }
 
 export interface SignupType {
@@ -253,7 +254,40 @@ export async function signUpForPresentation(
       } else {
         // Ha nem NULL, akkor jelentkezünk
 
+        const [presentationRows] = await conn.execute(
+          `SELECT open_for FROM presentations WHERE id = ? FOR UPDATE`,
+          [presentation_id],
+        );
+        const presentation = Array.isArray(presentationRows)
+          ? (
+              presentationRows as { open_for: PresentationType["open_for"] }[]
+            )[0]
+          : undefined;
+
+        if (!presentation) {
+          return { success: false, message: "A prezentáció nem található" };
+        }
+
+        if (presentation.open_for === "nobody") {
+          return {
+            success: false,
+            message: "Erre a prezentációra nem lehet jelentkezni",
+          };
+        }
+
+        if (presentation.open_for === "only_priority") {
+          const selfUser = await getAuth();
+          if (!selfUser || !hasPermission(selfUser, "elsőbbségi_jelentkezés")) {
+            return {
+              success: false,
+              message:
+                "Erre a prezentációra csak elsőbbségi jelentkezéssel lehet jelentkezni",
+            };
+          }
+        }
+
         if (
+          process.env.EXTERNAL_SIGNUPS &&
           Number.isInteger(process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) &&
           existingSignups.length + (existingSignupInThatSlot ? 0 : 1) >
             Number(process.env.EXTERNAL_SIGNUPS_PRESENTATION_LIMIT)
@@ -396,21 +430,25 @@ export async function adminForceUserSignUp(
   });
 }
 
-export async function pauseSignup() {
+export async function closeAllSignupForAll() {
   const selfUser = await getAuth();
   if (!selfUser) throw new Error("Nem vagy bejelentkezve");
   gate(selfUser, "admin");
-  // lock the signup table
-  return await dbreq("UPDATE presentations SET remaining_capacity = NULL");
+  return await dbreq("UPDATE presentations SET open_for = 'nobody'");
 }
 
-export async function startSignup() {
+export async function openAllSignupOnlyForPriority() {
   const selfUser = await getAuth();
   if (!selfUser) throw new Error("Nem vagy bejelentkezve");
   gate(selfUser, "admin");
-  return await dbreq(
-    `UPDATE presentations SET remaining_capacity = capacity - (SELECT COALESCE(SUM(amount), 0) FROM signups WHERE presentation_id = presentations.id)`,
-  );
+  return await dbreq("UPDATE presentations SET open_for = 'only_priority'");
+}
+
+export async function openAllSigupForEveryoune() {
+  const selfUser = await getAuth();
+  if (!selfUser) throw new Error("Nem vagy bejelentkezve");
+  gate(selfUser, "admin");
+  return await dbreq("UPDATE presentations SET open_for = 'everyone'");
 }
 
 export async function getAllSignups(): Promise<{

@@ -96,5 +96,77 @@ export async function getKeyLogs({ org }: Key) {
   return logs;
 }
 
+interface Lock {
+  msg: string;
+}
 
+export async function lockRadioKey({ msg }: Lock) {
+
+  const selfUser = await getAuth();
+
+  const hasAccess = hasPermission(selfUser, "radio_admin");
+  const key = await dbreq(`SELECT * FROM radio_key_status`);
+  const keyStatus = key[0];
+  const now = new Date()
+
+  if (keyStatus.borrowed === 0 && hasAccess) {
+    await dbreq(
+      `UPDATE radio_key_status SET borrowed = 2, borrowed_by = ?, borrowed_at = ?`,
+      [msg, now],
+    );
+  } else {
+    throw new Error(
+      "A kulcs már ki van kölcsönözve, vagy nincs jogosultságod a kölcsönzéshez.",
+    );
+  }
+
+  return true;
+}
+
+export async function unlockRadioKey() {
+const selfUser = await getAuth();
+
+  const hasAccess = hasPermission(selfUser, "radio_admin");
+
+  const key = await dbreq(`SELECT * FROM radio_key_status`);
+  const keyStatus = key[0];
+
+  if (keyStatus.borrowed === 2 && hasAccess) {
+    await dbreq(
+      `UPDATE radio_key_status SET borrowed = 0, borrowed_by = NULL, borrowed_at = NULL`
+    );
+  } else {
+    throw new Error(
+      "A kulcs már ki van kölcsönözve, vagy nincs jogosultságod a kölcsönzéshez.",
+    );
+  }
+
+  return true;
+}
+
+export async function forceReturnKey() {
+  const selfUser = await getAuth();
+
+  const hasAccess = hasPermission(selfUser, "radio_admin");
+  const radio = await dbreq(`SELECT * FROM radio_key_status`);
+  const radioStatus = radio[0];
+
+  if (
+    hasAccess
+  ) {
+    await dbreq(
+      `UPDATE radio_key_status SET borrowed = 0, borrowed_by = NULL, borrowed_at = NULL`
+    );
+    await dbreq(
+      `INSERT INTO radio_key_logs (name, email, borrowed_at, returned_at) VALUES (?, ?, ?, ?)`,
+      [`${selfUser?.name} (forced)`, selfUser?.email, radioStatus.borrowed_at, new Date()],
+    );
+  } else {
+    throw new Error(
+      "Nincs jogosultságod a visszatételehez.",
+    );
+  }
+
+  return true;
+}
 

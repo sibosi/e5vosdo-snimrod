@@ -685,7 +685,7 @@ const Table = ({
       )}
       {presentations
         ?.filter((presentation) => presentation.slot_id === selectedSlot)
-        ?.map((presentation) => (
+        ?.map((presentation, index) => (
           <div
             id={`presentation-card-${presentation.id}`}
             key={presentation.id}
@@ -693,7 +693,9 @@ const Table = ({
           >
             <Field className="bg-selfprimary-200 md:col-span-2">
               <div>
-                <div className="text-lg font-bold">{presentation.title}</div>
+                <div className="text-lg font-bold">
+                  {presentation.slot_id}/{index} | {presentation.title}
+                </div>
 
                 {presentation.performer && (
                   <p className="italic">{presentation.performer}</p>
@@ -724,7 +726,9 @@ const Table = ({
               </div>
             </Field>
             <Field className="md:col-span-2">
-              <div>{presentation.description}</div>
+              <div className="max-h-64 overflow-auto whitespace-pre-line break-words">
+                {presentation.description ?? ""}
+              </div>
             </Field>
             <Field className="bg-selfprimary-200 text-center max-md:flex max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
               <p className="h-7 md:hidden">Szabad helyek:</p>

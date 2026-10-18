@@ -47,7 +47,7 @@ export default function VerifyStudentData({
         <h1 className="text-3xl font-semibold">Tanulói adatok ellenőrzése</h1>
         <p className="mt-2 opacity-75">
           Az órarended lekérésével ellenőrizzük az EJG-kódodat és az OM
-          azonosítódat. Sikeres ellenőrzés után ezeket az adatokat már nem lehet
+          azonosítód <strong>utolsó 5 számjegyét</strong>. Sikeres ellenőrzés után ezeket az adatokat már nem lehet
           a beállítások között módosítani.
         </p>
       </div>

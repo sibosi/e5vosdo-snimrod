@@ -12,6 +12,16 @@ interface EditingPresentation extends Partial<PresentationType> {
   isNew?: boolean;
 }
 
+const Field = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return <div className={"space-y-2 p-2 " + (className || "")}>{children}</div>;
+};
+
 const AdminPresentationsPage = () => {
   const [presentations, setPresentations] = useState<PresentationType[]>([]);
   const [signups, setSignups] = useState<{ [key: number]: string[] }>({});
@@ -949,93 +959,109 @@ const AdminPresentationsPage = () => {
               <div
                 id={"presentation-card-" + presentation.id}
                 key={presentation.id}
-                className="rounded-lg border-2 border-selfprimary-400 bg-selfprimary-100 p-4"
+                className="my-2 overflow-hidden rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100"
               >
-                <div className="grid gap-4 md:grid-cols-4">
-                  <div className="md:col-span-2">
+                <div className="grid md:grid-cols-5 md:gap-4">
+                  <Field className="bg-selfprimary-200 md:col-span-2">
                     <h3 className="text-lg font-bold">
                       {existingSlots.find((s) => s.id === presentation.slot_id)
                         ?.title || `Slot #${presentation.slot_id}`}{" "}
                       | {presentation.id}. {presentation.title}
                     </h3>
                     {presentation.performer && (
-                      <p className="mt-1 text-sm font-semibold text-foreground-700">
-                        Előadó: {presentation.performer}
+                      <p className="italic">{presentation.performer}</p>
+                    )}
+                    {presentation.requirements && (
+                      <p className="font-bold text-selfsecondary">
+                        {presentation.requirements}
                       </p>
                     )}
-                    <p className="mt-1 text-sm text-foreground-600">
-                      {presentation.address}
+                    {presentation.open_for === "only_priority" && (
+                      <p className="text-sm font-bold text-warning-900">
+                        Csak elsőbbségi jelentkezéssel rendelkezőknek
+                      </p>
+                    )}
+                    {presentation.open_for === "nobody" && (
+                      <p className="text-sm font-bold text-danger">
+                        A jelentkezés lezárva
+                      </p>
+                    )}
+                    <p className="info">
+                      Maximális létszám: {presentation.capacity} fő
                     </p>
-                    <p className="text-sm text-foreground-600">
-                      {presentation.requirements}
-                    </p>
-                    <p className="mt-2">{presentation.description}</p>
-                  </div>
+                    {presentation.address && (
+                      <p className="info">Helyszín: {presentation.address}</p>
+                    )}
+                  </Field>
 
-                  <div className="text-center">
-                    <div className="text-lg font-semibold">
-                      {presentation.remaining_capacity == null &&
-                        "(Szüneteltetve) "}{" "}
-                      {(() => {
-                        const signupsForPresentation =
-                          signupsWithAmounts[presentation.id] || [];
-                        const totalAmount = signupsForPresentation.reduce(
-                          (acc, signup) => acc + signup.amount,
-                          0,
-                        );
-                        return presentation.capacity - totalAmount;
-                      })()}
-                      / {presentation.capacity}
+                  <Field className="md:col-span-2">
+                    <div className="max-h-64 overflow-auto whitespace-pre-line break-words">
+                      {presentation.description ?? ""}
                     </div>
-                    <div className="text-sm text-foreground-600">
-                      Szabad / Összes hely
+                  </Field>
+
+                  <Field className="bg-selfprimary-200 text-center max-md:flex max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
+                    <p className="h-7 md:hidden">Szabad helyek:</p>
+                    <div className="text-xl font-bold">
+                      {presentation.remaining_capacity == null && "-"}
+                      {presentation.remaining_capacity != null &&
+                        (() => {
+                          const signupsForPresentation =
+                            signupsWithAmounts[presentation.id] || [];
+                          const totalAmount = signupsForPresentation.reduce(
+                            (acc, signup) => acc + signup.amount,
+                            0,
+                          );
+                          return presentation.capacity - totalAmount;
+                        })()}
+                      <span className="text-sm font-normal">
+                        {" "}
+                        / {presentation.capacity}
+                      </span>
                     </div>
-                    <div className="mt-1 text-xs text-foreground-500">
+                    <div className="text-xs text-foreground-500">
                       ({signups[presentation.id]?.length || 0} jelentkezés)
                     </div>
-                    <div className="mt-2">
-                      <Button
-                        size="sm"
-                        variant="light"
-                        onPress={() => toggleSignupsView(presentation.id)}
-                      >
-                        {showSignups[presentation.id]
-                          ? "Jelentkezők elrejtése"
-                          : "Jelentkezők megtekintése"}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
                     <Button
-                      color="primary"
-                      size="sm"
-                      onPress={() => startEditing(presentation)}
-                      isDisabled={editingPresentation !== null}
-                    >
-                      Szerkesztés
-                    </Button>
-                    <Button
-                      color="success"
-                      size="sm"
-                      onPress={() => startAddingUser(presentation.id)}
-                      isDisabled={
-                        editingPresentation !== null ||
-                        addingUserToPresentationId !== null
-                      }
-                    >
-                      Felhasználó hozzáadása
-                    </Button>
-                    <Button
-                      color="danger"
                       size="sm"
                       variant="light"
-                      onPress={() => handleDelete(presentation.id)}
-                      isDisabled={editingPresentation !== null}
+                      onPress={() => toggleSignupsView(presentation.id)}
                     >
-                      Törlés
+                      {showSignups[presentation.id]
+                        ? "Jelentkezők elrejtése"
+                        : "Jelentkezők megtekintése"}
                     </Button>
-                  </div>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        color="primary"
+                        size="sm"
+                        onPress={() => startEditing(presentation)}
+                        isDisabled={editingPresentation !== null}
+                      >
+                        Szerkesztés
+                      </Button>
+                      <Button
+                        color="success"
+                        size="sm"
+                        onPress={() => startAddingUser(presentation.id)}
+                        isDisabled={
+                          editingPresentation !== null ||
+                          addingUserToPresentationId !== null
+                        }
+                      >
+                        Felhasználó hozzáadása
+                      </Button>
+                      <Button
+                        color="danger"
+                        size="sm"
+                        variant="light"
+                        onPress={() => handleDelete(presentation.id)}
+                        isDisabled={editingPresentation !== null}
+                      >
+                        Törlés
+                      </Button>
+                    </div>
+                  </Field>
                 </div>
 
                 {showSignups[presentation.id] && (

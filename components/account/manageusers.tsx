@@ -13,18 +13,30 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-function sortUsers(users: any[]) {
-  return users.sort((a: any, b: any) => {
+type UserSort = "recent" | "name" | "permissions";
+type VerificationFilter = "all" | "verified" | "unverified";
+
+function sortUsers(users: UserType[], sort: UserSort = "recent") {
+  return [...users].sort((a, b) => {
+    if (sort === "name") {
+      return getUserName(a).localeCompare(getUserName(b), "hu");
+    }
+    if (sort === "permissions") {
+      return b.permissions.length - a.permissions.length;
+    }
     return new Date(b.last_login).getTime() - new Date(a.last_login).getTime();
   });
 }
 
-async function fetchUsers(setUsers: (data: any) => void) {
+async function fetchUsers(setUsers: (data: UserType[]) => void) {
   const response = await fetch("/api/getUsers");
   const data = await response.json();
-  setUsers(sortUsers(data));
+  if (!response.ok || !Array.isArray(data)) {
+    throw new Error("A felhasználók frissítése sikertelen.");
+  }
+  setUsers(data);
 }
 
 function displayDate(dateInStr: string) {
@@ -52,35 +64,78 @@ function displayDate(dateInStr: string) {
   }
 }
 
-const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
-  const [users, setUsers] = useState(sortUsers(initialUsers));
+function getUserName(user: UserType) {
+  return user.full_name || user.name;
+}
+
+const ManageUsers = ({
+  initialUsers,
+  availablePermissions,
+}: {
+  initialUsers: UserType[];
+  availablePermissions: string[];
+}) => {
+  const [users, setUsers] = useState<UserType[]>(initialUsers);
 
   const [searchName, setSearchName] = useState("");
+  const [permissionFilter, setPermissionFilter] = useState("all");
+  const [verificationFilter, setVerificationFilter] =
+    useState<VerificationFilter>("all");
+  const [sort, setSort] = useState<UserSort>("recent");
+  const [visibleCount, setVisibleCount] = useState(24);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
   const [newPermission, setNewPermission] = useState("");
   const [newTicket, setNewTicket] = useState("");
 
   const [selectedUserLogs, setSelectedUserLogs] = useState<Log[]>([]);
+  const [actionError, setActionError] = useState("");
+  const allPermissions = Array.from(
+    new Set([
+      ...availablePermissions,
+      ...users.flatMap((user) => user.permissions ?? []),
+    ]),
+  ).sort((a, b) => a.localeCompare(b, "hu"));
 
-  async function addUserPermission(email: any, permission: string) {
-    fetch(`/api/addUserPermission`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: email, permission: permission }),
-    }).then(() => reload());
+  async function addUserPermission(email: string, permission: string) {
+    const trimmedPermission = permission.trim();
+    if (!trimmedPermission) return;
+    try {
+      const response = await fetch(`/api/addUserPermission`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, permission: trimmedPermission }),
+      });
+      if (!response.ok) throw new Error("A permission hozzáadása sikertelen.");
+      setActionError("");
+      await reload();
+    } catch (error) {
+      setActionError(
+        error instanceof Error ? error.message : "Ismeretlen hiba történt.",
+      );
+    }
   }
 
-  async function removeUserPermission(email: any, permission: string) {
-    fetch(`/api/removeUserPermissions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: email, permission: permission }),
-    }).then(() => reload());
+  async function removeUserPermission(email: string, permission: string) {
+    try {
+      const response = await fetch(`/api/removeUserPermissions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, permission }),
+      });
+      if (!response.ok)
+        throw new Error("A permission eltávolítása sikertelen.");
+      setActionError("");
+      await reload();
+    } catch (error) {
+      setActionError(
+        error instanceof Error ? error.message : "Ismeretlen hiba történt.",
+      );
+    }
   }
 
   async function addTicket(email: any, ticket: string) {
@@ -103,40 +158,122 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
     }).then(() => reload());
   }
 
-  useEffect(() => {
-    if (searchName.length < 2) {
-      setUsers(sortUsers(initialUsers));
-      return;
-    }
-
-    const filteredUsers = initialUsers.filter((user: any) =>
-      getUserName(user).toLowerCase().includes(searchName.toLowerCase()),
-    );
-    setUsers(sortUsers(filteredUsers));
-  }, [searchName]);
+  const filteredUsers = sortUsers(
+    users.filter((user) => {
+      const query = searchName.trim().toLowerCase();
+      const matchesSearch =
+        !query ||
+        getUserName(user).toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query) ||
+        user.username.toLowerCase().includes(query);
+      const matchesPermission =
+        permissionFilter === "all" ||
+        user.permissions.includes(permissionFilter);
+      const matchesVerification =
+        verificationFilter === "all" ||
+        (verificationFilter === "verified" && user.is_verified) ||
+        (verificationFilter === "unverified" && !user.is_verified);
+      return matchesSearch && matchesPermission && matchesVerification;
+    }),
+    sort,
+  );
 
   async function reload() {
-    await fetchUsers(setUsers);
-
-    setSelectedUser(
-      users.find((user) => selectedUser?.email == user.email) ?? null,
-    );
-  }
-
-  function getUserName(user: UserType) {
-    return user.full_name || user.name;
+    try {
+      await fetchUsers((freshUsers) => {
+        setUsers(freshUsers);
+        setSelectedUser(
+          freshUsers.find((user) => selectedUser?.email === user.email) ?? null,
+        );
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
     <div className="my-2 text-foreground">
-      <Input
-        placeholder="Keresés név alapján"
-        value={searchName}
-        onChange={(e) => setSearchName(e.target.value)}
-        className="mb-2 max-w-[200px]"
-      />
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        {users.slice(0, 24).map((user: UserType) => (
+      {actionError && (
+        <div
+          role="alert"
+          className="mb-3 rounded-xl bg-danger-50 p-3 text-sm text-danger"
+        >
+          {actionError}
+        </div>
+      )}
+      <div className="mb-4 rounded-3xl bg-selfprimary-50 p-4">
+        <div className="grid gap-3 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]">
+          <Input
+            aria-label="Felhasználók keresése"
+            placeholder="Keresés név, email vagy felhasználónév alapján"
+            value={searchName}
+            onChange={(e) => {
+              setSearchName(e.target.value);
+              setVisibleCount(24);
+            }}
+          />
+          <select
+            aria-label="Permission szűrése"
+            value={permissionFilter}
+            onChange={(e) => {
+              setPermissionFilter(e.target.value);
+              setVisibleCount(24);
+            }}
+            className="min-h-10 rounded-xl border border-default-200 bg-background px-3 text-sm"
+          >
+            <option value="all">Minden permission</option>
+            {allPermissions.map((permission) => (
+              <option key={permission} value={permission}>
+                {permission}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="Ellenőrzöttség szűrése"
+            value={verificationFilter}
+            onChange={(e) => {
+              setVerificationFilter(e.target.value as VerificationFilter);
+              setVisibleCount(24);
+            }}
+            className="min-h-10 rounded-xl border border-default-200 bg-background px-3 text-sm"
+          >
+            <option value="all">Minden státusz</option>
+            <option value="verified">Ellenőrzött</option>
+            <option value="unverified">Nem ellenőrzött</option>
+          </select>
+          <select
+            aria-label="Felhasználók rendezése"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as UserSort)}
+            className="min-h-10 rounded-xl border border-default-200 bg-background px-3 text-sm"
+          >
+            <option value="recent">Legutóbbi belépés</option>
+            <option value="name">Név szerint</option>
+            <option value="permissions">Permissionök száma</option>
+          </select>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm opacity-75">
+          <span>{filteredUsers.length} felhasználó a szűrés alapján</span>
+          {(searchName ||
+            permissionFilter !== "all" ||
+            verificationFilter !== "all") && (
+            <Button
+              size="sm"
+              variant="light"
+              onPress={() => {
+                setSearchName("");
+                setPermissionFilter("all");
+                setVerificationFilter("all");
+                setVisibleCount(24);
+              }}
+            >
+              Szűrők törlése
+            </Button>
+          )}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredUsers.slice(0, visibleCount).map((user: UserType) => (
           <button
             key={user.email}
             onClick={() => {
@@ -154,18 +291,16 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                 className="rounded-full"
                 loading="lazy"
               />
-              <div className="flex flex-col gap-2">
-                {["admin", "tester"].map(
-                  (permission) =>
-                    user.permissions.includes(permission) && (
-                      <Chip
-                        key={permission + " enable"}
-                        size="sm"
-                        color="secondary"
-                      >
-                        {permission}
-                      </Chip>
-                    ),
+              <div className="flex max-w-[55%] flex-wrap justify-end gap-1">
+                {user.permissions.slice(0, 3).map((permission) => (
+                  <Chip key={permission} size="sm" color="secondary">
+                    {permission}
+                  </Chip>
+                ))}
+                {user.permissions.length > 3 && (
+                  <Chip size="sm" variant="flat">
+                    +{user.permissions.length - 3}
+                  </Chip>
                 )}
               </div>
             </div>
@@ -183,13 +318,17 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
           </button>
         ))}
       </div>
-      {users.length == 0 && (
+      {filteredUsers.length === 0 && (
         <div className="text-foreground">Nincs találat</div>
       )}
-      {users.length > 12 && (
-        <div className="my-2 rounded-3xl bg-selfprimary-50 p-6 text-center">
-          Túl sok találat ({users.length})
-        </div>
+      {filteredUsers.length > visibleCount && (
+        <Button
+          className="my-4 w-full"
+          variant="flat"
+          onPress={() => setVisibleCount((count) => count + 24)}
+        >
+          További felhasználók betöltése ({filteredUsers.length - visibleCount})
+        </Button>
       )}
 
       <Modal
@@ -328,17 +467,21 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                     </div>
                   </div>
                   <div className="mb-3 rounded-3xl bg-selfprimary-50 p-6">
-                    <h3>Hozzáférés hozzáadása</h3>
-                    <p>
-                      Permissions: {(selectedUser.permissions ?? []).join(" ")}
+                    <h3 className="mb-1 text-lg font-semibold">
+                      Hozzáférés kezelése
+                    </h3>
+                    <p className="mb-4 text-sm opacity-75">
+                      A zöld gombok aktív permissionök. Kattints egy gombra a
+                      hozzáadásához vagy eltávolításához.
                     </p>
-                    <div className="flex gap-2">
-                      {["student", "admin", "tester"].map((permission) =>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {allPermissions.map((permission) =>
                         selectedUser.permissions.includes(permission) ? (
                           <Button
                             key={permission + " enable"}
-                            size="sm"
+                            size="md"
                             color="success"
+                            className="h-auto min-h-10 justify-start whitespace-normal break-words px-3 py-2 text-left"
                             onPress={() =>
                               removeUserPermission(
                                 selectedUser.email,
@@ -351,8 +494,10 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                         ) : (
                           <Button
                             key={permission + " disable"}
-                            size="sm"
+                            size="md"
                             color="default"
+                            variant="flat"
+                            className="h-auto min-h-10 justify-start whitespace-normal break-words px-3 py-2 text-left"
                             onPress={() =>
                               addUserPermission(selectedUser.email, permission)
                             }
@@ -362,11 +507,12 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                         ),
                       )}
                     </div>
-                    <ButtonGroup>
+                    <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                       <Input
                         value={newPermission}
                         onChange={(e) => setNewPermission(e.target.value)}
-                        placeholder="Permission"
+                        placeholder="Új permission neve"
+                        className="min-w-0 flex-1"
                       />
                       <Button
                         onPress={() => {
@@ -374,24 +520,10 @@ const ManageUsers = ({ initialUsers }: { initialUsers: any }) => {
                           setNewPermission("");
                         }}
                         color="success"
+                        className="shrink-0"
                       >
-                        +
+                        Hozzáadás
                       </Button>
-                    </ButtonGroup>
-                    <div>
-                      {selectedUser.permissions.map((permission) => (
-                        <Button
-                          key={permission}
-                          color="success"
-                          className="m-1"
-                          size="sm"
-                          onPress={() =>
-                            removeUserPermission(selectedUser.email, permission)
-                          }
-                        >
-                          {permission}
-                        </Button>
-                      ))}
                     </div>
                   </div>
 

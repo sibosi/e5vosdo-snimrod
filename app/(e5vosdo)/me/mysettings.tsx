@@ -262,7 +262,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
                 </th>
               </tr>
               <tr>
-                <th className="font-semibold">OM azonosító:</th>
+                <th className="font-semibold">OM azonosító utolsó 5 számjegye:</th>
                 <th className="font-mono">
                   {selfUserPromise.OM5 || "Nincs megadva"}
                 </th>

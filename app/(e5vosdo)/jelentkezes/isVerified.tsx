@@ -10,7 +10,7 @@ const textByTopic = {
       "Az E5N előadások jelentkezéséhez be kell jelentkezned az eötvösös google fiókoddal!",
     notVerified:
       "Csak igazolt diákok jelentkezhetnek előadásra. Probléma esetén értesítendő: ",
-    verified: "Diákstátusz igazolva! Az előadásokra jelentkezhetsz.",
+    verified: "Diákstátusz igazolva! Az előadásokra a felület megnyílásakor jelentkezhetsz.",
   },
   vote: {
     notLoggedIn:

@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
 import { OAuth2Client } from "google-auth-library";
+import { siteConfig } from "@/config/site";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -708,8 +709,6 @@ export async function editMySettings({
 }: {
   settings: {
     nickname?: string;
-    EJG_code?: string;
-    OM5?: string;
     food_menu?: string;
     push_permission?: boolean;
     push_about_games?: boolean;
@@ -725,18 +724,6 @@ export async function editMySettings({
 
   const setClauses: string[] = [];
   const params: any[] = [];
-  const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]{13}$/.test(code);
-
-  if (
-    selfUser.tickets.includes("EJG_code_edit") &&
-    selfUser.EJG_code != settings.EJG_code &&
-    isValidEJGCode(settings.EJG_code ?? "")
-  ) {
-    await removeTicket("EJG_code_edit");
-    setClauses.push("EJG_code = ?");
-    params.push(settings.EJG_code);
-  }
-
   console.log(JSON.stringify(settings));
 
   if (settings.push_permission !== undefined) {
@@ -768,15 +755,6 @@ export async function editMySettings({
     );
   }
 
-  if (
-    selfUser.tickets.includes("OM5_code_edit") &&
-    selfUser.OM5 != settings.OM5
-  ) {
-    await removeTicket("OM5_code_edit");
-    setClauses.push("OM5 = ?");
-    params.push(settings.OM5);
-  }
-
   if (setClauses.length === 0) return "No changes";
   const request = `UPDATE users SET ${setClauses.join(", ")} WHERE email = ?;`;
   params.push(email);
@@ -785,6 +763,61 @@ export async function editMySettings({
   console.log(await dbreq(request, params));
 
   return null;
+}
+
+export async function verifyAndSaveStudentData(EJG_code: string, OM5: string) {
+  const selfUser = await getAuth();
+  if (!selfUser)
+    return { ok: false, error: "A hitelesítéshez be kell jelentkezned." };
+  if (selfUser.is_verified) {
+    return {
+      ok: false,
+      error:
+        "A tanulói adataid már ellenőrizve vannak, ezért nem módosíthatók.",
+    };
+  }
+
+  const studentCode = EJG_code.trim().toUpperCase();
+  const omCode = OM5.trim();
+  if (!/^[A-Z0-9]{13}$/.test(studentCode) || !/^\d{5}$/.test(omCode)) {
+    return {
+      ok: false,
+      error: "Az EJG-kódnak 13, az OM azonosítónak 5 számjegyből kell állnia.",
+    };
+  }
+
+  const response = await fetch(
+    "https://suli.ejg.hu/intranet/szulkuk/szulkuk.php",
+    {
+      headers: {
+        accept: "text/html,application/xhtml+xml",
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      body: `EMAIL=%28%3A&DIAKKOD=${encodeURIComponent(studentCode)}&OMKOD=${encodeURIComponent(omCode)}&orarend=V%E1laszt`,
+      method: "POST",
+    },
+  );
+  const html = new TextDecoder("windows-1250").decode(
+    await response.arrayBuffer(),
+  );
+
+  if (
+    !response.ok ||
+    !html.includes("<BIG>") ||
+    !html.includes("órarendje</BIG>")
+  ) {
+    return {
+      ok: false,
+      error: `Érvénytelen adatok. Csekkold az EJG-kódot és az OM azonosítót, majd ha továbbra sem működik, keresd fel a fejlesztőt: ${siteConfig.developer} (${siteConfig.developerEmail})`,
+    };
+  }
+
+  await dbreq(
+    `UPDATE users SET EJG_code = ?, OM5 = ?, is_verified = TRUE WHERE email = ?`,
+    [studentCode, omCode, selfUser.email],
+  );
+  addLog("verifyStudentData", selfUser.email);
+  return { ok: true };
 }
 
 export async function getMyClassTimetable(EJG_class: string) {

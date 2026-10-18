@@ -808,7 +808,7 @@ export async function verifyAndSaveStudentData(EJG_code: string, OM5: string) {
   ) {
     return {
       ok: false,
-      error: `Érvénytelen adatok. Csekkold az EJG-kódot és az OM azonosítót, majd ha továbbra sem működik, keresd fel a fejlesztőt: ${siteConfig.developer} (${siteConfig.developerEmail})`,
+      error: `Érvénytelen adatok. Csekkold az EJG-kódot és az OM azonosító utolsó 5 számjegyét, majd ha továbbra sem működik, keresd fel a fejlesztőt: ${siteConfig.developer} (${siteConfig.developerEmail})`,
     };
   }
 

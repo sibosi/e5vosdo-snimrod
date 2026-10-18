@@ -4,13 +4,24 @@ import {
   getAuth,
   getUsers,
   hasPermission,
+  UserType,
 } from "@/db/dbreq";
+import { PERMISSIONS } from "@/db/permissions";
 import ManageUsers from "@/components/account/manageusers";
 
 const UsersPage = async () => {
   const selfUser = await getAuth();
   const admins = await getAdminUsersEmail();
   if (!selfUser) redirect("/");
+
+  const canManageUsers = await hasPermission(selfUser.email, "getUsers");
+  const users = canManageUsers ? await getUsers() : [];
+  const permissions = Array.from(
+    new Set([
+      ...PERMISSIONS,
+      ...users.flatMap((user: UserType) => user.permissions ?? []),
+    ]),
+  ).sort((a, b) => a.localeCompare(b, "hu"));
 
   return (
     <div className="space-y-4">
@@ -20,8 +31,8 @@ const UsersPage = async () => {
 
       <p>{"Adminok: " + admins.join(", ")}</p>
 
-      {(await hasPermission(selfUser.email, "getUsers")) ? (
-        <ManageUsers initialUsers={await getUsers()} />
+      {canManageUsers ? (
+        <ManageUsers initialUsers={users} availablePermissions={permissions} />
       ) : (
         <></>
       )}

@@ -218,6 +218,34 @@ export async function getPresentationsCapacity(): Promise<{
   return result;
 }
 
+export async function getPresentationsRealtimeData(): Promise<{
+  [key: number]: {
+    remaining_capacity: number | null;
+    open_for: PresentationType["open_for"];
+  };
+}> {
+  const rows: {
+    id: number;
+    remaining_capacity: number | null;
+    open_for: PresentationType["open_for"];
+  }[] = await dbreq(
+    "SELECT id, remaining_capacity, open_for FROM presentations",
+  );
+  const result: {
+    [key: number]: {
+      remaining_capacity: number | null;
+      open_for: PresentationType["open_for"];
+    };
+  } = {};
+  for (const row of rows) {
+    result[row.id] = {
+      remaining_capacity: row.remaining_capacity,
+      open_for: row.open_for,
+    };
+  }
+  return result;
+}
+
 export async function getMyPresentations(
   email: string | null | undefined,
 ): Promise<PresentationType[]> {

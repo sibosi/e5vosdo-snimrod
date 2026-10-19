@@ -398,6 +398,11 @@ const AdminPresentationsPage = () => {
     setIsCreating(false);
   };
 
+  const editingPresentationHasSignups =
+    editingPresentation !== null &&
+    !editingPresentation.isNew &&
+    (signups[editingPresentation.id ?? -1]?.length ?? 0) > 0;
+
   const startCreating = () => {
     setEditingPresentation({
       isNew: true,
@@ -406,6 +411,7 @@ const AdminPresentationsPage = () => {
       description: "",
       address: "",
       requirements: "",
+      linked_presentation_id: null,
       capacity: 20,
       remaining_capacity: 20,
       performer: null,
@@ -765,7 +771,7 @@ const AdminPresentationsPage = () => {
                       : undefined,
                   })
                 }
-                disabled={!editingPresentation.isNew}
+                disabled={editingPresentationHasSignups}
               >
                 <option value="">Válassz slotot...</option>
                 {existingSlots.map((slot) => (
@@ -797,6 +803,49 @@ const AdminPresentationsPage = () => {
                 }
                 placeholder="Prezentáció neve"
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="linked-presentation-input"
+                className="mb-2 block font-medium"
+              >
+                Duplaelőadás párja
+              </label>
+              <select
+                id="linked-presentation-input"
+                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                value={editingPresentation.linked_presentation_id ?? ""}
+                onChange={(e) =>
+                  setEditingPresentation({
+                    ...editingPresentation,
+                    linked_presentation_id: e.target.value
+                      ? Number(e.target.value)
+                      : null,
+                  })
+                }
+                disabled={editingPresentationHasSignups}
+              >
+                <option value="">Nincs összekapcsolva</option>
+                {presentations
+                  .filter(
+                    (candidate) =>
+                      candidate.id !== editingPresentation.id &&
+                      candidate.slot_id !== editingPresentation.slot_id,
+                  )
+                  .map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>
+                      {existingSlots.find((s) => s.id === candidate.slot_id)
+                        ?.title || `Slot #${candidate.slot_id}`}{" "}
+                      | {candidate.title}
+                    </option>
+                  ))}
+              </select>
+              <p className="mt-1 text-xs text-foreground-600">
+                A jelentkezés és a törlés mindkét sávban egyszerre történik.
+                {editingPresentationHasSignups &&
+                  " Jelentkezőkkel rendelkező előadásnál ez nem módosítható."}
+              </p>
             </div>
 
             <div>
@@ -959,7 +1008,7 @@ const AdminPresentationsPage = () => {
               <div
                 id={"presentation-card-" + presentation.id}
                 key={presentation.id}
-                className="my-2 overflow-hidden rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100"
+                className="my-2 rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100"
               >
                 <div className="grid md:grid-cols-5 md:gap-4">
                   <Field className="bg-selfprimary-200 md:col-span-2">
@@ -996,11 +1045,19 @@ const AdminPresentationsPage = () => {
 
                   <Field className="md:col-span-2">
                     <div className="max-h-64 overflow-auto whitespace-pre-line break-words">
+                      {presentation.linked_presentation_id && (
+                        <p className="mb-2 text-sm font-semibold text-selfsecondary">
+                          Duplaelőadás párja:{" "}
+                          {presentations.find(
+                            (p) => p.id === presentation.linked_presentation_id,
+                          )?.title || "másik előadás"}
+                        </p>
+                      )}
                       {presentation.description ?? ""}
                     </div>
                   </Field>
 
-                  <Field className="bg-selfprimary-200 text-center max-md:flex max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
+                  <Field className="bg-selfprimary-200 text-center max-md:flex max-md:flex-wrap max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
                     <p className="h-7 md:hidden">Szabad helyek:</p>
                     <div className="text-xl font-bold">
                       {presentation.remaining_capacity == null && "-"}

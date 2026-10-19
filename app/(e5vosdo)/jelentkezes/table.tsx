@@ -121,22 +121,19 @@ const Table = ({
     const amounts: { [slot_id: number]: number } = {};
     if (Array.isArray(mySignupsData)) {
       for (const signup of mySignupsData as SignupType[]) {
-        console.log("Hi");
-        setSelectedBySlot((prev) => ({
-          ...prev,
-          [signup.slot_id]: signup.presentation_id,
-        }));
         slotSelections[signup.slot_id] = signup.presentation_id;
         amounts[signup.slot_id] = signup.amount;
       }
     }
 
-    // setSelectedBySlot((prev) => ({ ...prev, ...slotSelections }));
+    setSelectedBySlot((prev) => {
+      const next = { ...prev };
+      for (const slotId of Object.keys(next)) {
+        next[Number(slotId)] = slotSelections[Number(slotId)] ?? null;
+      }
+      return { ...next, ...slotSelections };
+    });
     setSignupAmounts((prev) => ({ ...prev, ...amounts }));
-
-    console.log(JSON.stringify(mySignupsData));
-    console.log(JSON.stringify(slotSelections));
-    console.log(JSON.stringify(selectedBySlot));
   }
 
   // imételje 5 mp enként
@@ -320,37 +317,59 @@ const Table = ({
       });
     }
 
-    let signupsCount = 0;
+    const previewBody: {
+      presentation_id: number;
+      details?: string;
+    } = { presentation_id };
+    if (EXTERNAL_SIGNUPS) previewBody.details = details ?? undefined;
 
-    for (const pres of Object.values(selectedBySlot)) {
-      if (pres !== null) signupsCount++;
-    }
-
-    if (
-      selectedBySlot[selectedSlot] === null ||
-      selectedBySlot[selectedSlot] === undefined
-    ) {
-      signupsCount++;
-    } else if (
-      !confirm(
-        `Ebben a sávban már jelentkeztél az alábbira: ${
-          presentations?.find((p) => p.id === selectedBySlot[selectedSlot])
-            ?.title
-        }. Felülírod a jelentkezésed?`,
-      )
-    ) {
-      return;
-    }
-
-    if (
-      EXTERNAL_SIGNUPS &&
-      EXTERNAL_SIGNUPS_PRESENTATION_LIMIT !== null &&
-      signupsCount > EXTERNAL_SIGNUPS_PRESENTATION_LIMIT
-    ) {
+    const previewResponse = await fetch(
+      "/api/presentations/getSignupChangePreview",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(previewBody),
+      },
+    );
+    if (!previewResponse.ok) {
+      const errorData = await previewResponse.json();
       alert(
-        `Legfeljebb ${EXTERNAL_SIGNUPS_PRESENTATION_LIMIT} előadásra jelentkezhetsz!`,
+        `Nem sikerült ellenőrizni a jelentkezés következményeit: ${
+          errorData.error?.message || "Ismeretlen hiba"
+        }`,
       );
       return;
+    }
+
+    const preview: {
+      targetPresentations: Array<{
+        id: number;
+        title: string;
+        slot_id: number;
+      }>;
+      cancelledPresentations: Array<{
+        id: number;
+        title: string;
+        slot_id: number;
+      }>;
+    } = await previewResponse.json();
+    if (preview.cancelledPresentations.length > 0) {
+      const targetTitles = preview.targetPresentations
+        .map((presentation) => presentation.title)
+        .join(" és ");
+      const cancelledTitles = preview.cancelledPresentations
+        .map((presentation) => presentation.title)
+        .join("\n-  ");
+      if (
+        !confirm(
+          `A(z) ${targetTitles} előadásra jelentkezel.\n\n` +
+            `A rendszer a következő korábbi jelentkezéseidet lemondja:\n` +
+            `- ${cancelledTitles}\n\n` +
+            "Biztosan folytatod?",
+        )
+      ) {
+        return;
+      }
     }
 
     const response = await fetch("/api/presentations/signUpForPresentation", {
@@ -365,16 +384,26 @@ const Table = ({
     });
 
     if (response.ok) {
-      setSelectedBySlot((prev) => ({
-        ...prev,
-        [selectedSlot]: presentation_id,
-      }));
+      setSelectedBySlot((prev) => {
+        const next = { ...prev };
+        for (const cancelledPresentation of preview.cancelledPresentations) {
+          next[cancelledPresentation.slot_id] = null;
+        }
+        for (const targetPresentation of preview.targetPresentations) {
+          next[targetPresentation.slot_id] = targetPresentation.id;
+        }
+        return next;
+      });
 
       if (EXTERNAL_SIGNUPS) {
         await loadMySignups();
       }
 
-      alert("Sikeres jelentkezés");
+      alert(
+        preview.targetPresentations.length > 1
+          ? "Sikeres jelentkezés: a duplaelőadás másik előadására is jelentkeztettünk."
+          : "Sikeres jelentkezés",
+      );
     } else {
       const errorData = await response.json();
       alert(
@@ -555,16 +584,32 @@ const Table = ({
                   },
                 );
                 if (response.ok) {
+                  const selectedPresentation = presentations?.find(
+                    (presentation) =>
+                      presentation.id === selectedBySlot[selectedSlot],
+                  );
+                  const linkedPresentation = presentations?.find(
+                    (presentation) =>
+                      presentation.id ===
+                      selectedPresentation?.linked_presentation_id,
+                  );
                   setSelectedBySlot((prev) => ({
                     ...prev,
                     [selectedSlot]: null,
+                    ...(linkedPresentation
+                      ? { [linkedPresentation.slot_id]: null }
+                      : {}),
                   }));
 
                   if (EXTERNAL_SIGNUPS) {
                     await loadMySignups();
                   }
 
-                  alert("Sikeres törlés");
+                  alert(
+                    linkedPresentation
+                      ? "A duplaelőadás mindkét jelentkezése törölve."
+                      : "Sikeres törlés",
+                  );
                 } else {
                   const errorData = await response.json();
                   alert(
@@ -696,6 +741,11 @@ const Table = ({
                 <div className="text-lg font-bold">
                   {presentation.slot_id}/{index} | {presentation.title}
                 </div>
+                {presentation.linked_presentation_id && (
+                  <p className="text-sm font-semibold text-selfsecondary">
+                    Duplaelőadás: a kapcsolt előadásra is jelentkeztetünk
+                  </p>
+                )}
 
                 {presentation.performer && (
                   <p className="italic">{presentation.performer}</p>

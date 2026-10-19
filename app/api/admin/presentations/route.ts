@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { gate } from "@/db/permissions";
 import { getAuth } from "@/db/dbreq";
-import { dbreq } from "@/db/presentationSignup";
+import { dbreq, multipledbreq } from "@/db/presentationSignup";
 
 export async function GET() {
   try {
@@ -40,7 +40,8 @@ export async function POST(request: NextRequest) {
       address,
       requirements,
       capacity,
-      open_for = "everyone",
+      open_for = "nobody",
+      linked_presentation_id = null,
     } = await request.json();
 
     if (
@@ -116,7 +117,8 @@ export async function PUT(request: NextRequest) {
       address,
       requirements,
       capacity,
-      open_for = "everyone",
+      open_for = "nobody",
+      linked_presentation_id = null,
     } = await request.json();
 
     if (
@@ -142,47 +144,130 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Get current signups total amount (sum of all amounts)
-    const [signupsResult] = await dbreq(
-      "SELECT COALESCE(SUM(amount), 0) as total FROM signups WHERE presentation_id = ?",
-      [id],
-    );
-    const currentSignupsTotal = signupsResult.total;
-
-    if (capacity < currentSignupsTotal && !gate(user, "admin", "boolean")) {
-      return NextResponse.json(
-        {
-          error: `Cannot set capacity below current signups total (${currentSignupsTotal})`,
-        },
-        { status: 400 },
+    await multipledbreq(async (conn) => {
+      const ids = [id, linked_presentation_id]
+        .filter((value): value is number => value !== null)
+        .sort((a, b) => a - b);
+      const [lockedRows] = await conn.execute(
+        `SELECT id, slot_id, linked_presentation_id, capacity,
+                remaining_capacity
+         FROM presentations
+         WHERE id IN (${ids.map(() => "?").join(",")})
+            OR linked_presentation_id IN (${ids.map(() => "?").join(",")})
+         ORDER BY id
+         FOR UPDATE`,
+        [...ids, ...ids],
       );
-    }
+      const rows = lockedRows as Array<{
+        id: number;
+        slot_id: number;
+        linked_presentation_id: number | null;
+        capacity: number;
+        remaining_capacity: number | null;
+      }>;
+      const current = rows.find((presentation) => presentation.id === id);
+      if (!current) throw new Error("A prezentáció nem található");
 
-    const currentRemainingCapacityResult = await dbreq(
-      "SELECT remaining_capacity FROM presentations WHERE id = ?",
-      [id],
-    );
-    const currentRemainingCapacity =
-      currentRemainingCapacityResult[0].remaining_capacity;
+      const [signupRows] = await conn.execute(
+        `SELECT presentation_id, COALESCE(SUM(amount), 0) AS total
+         FROM signups
+         WHERE presentation_id IN (${rows.map(() => "?").join(",")})
+         GROUP BY presentation_id`,
+        rows.map((presentation) => presentation.id),
+      );
+      const signupTotals = new Map(
+        (signupRows as Array<{ presentation_id: number; total: number }>).map(
+          (row) => [row.presentation_id, row.total],
+        ),
+      );
+      const currentSignupsTotal = signupTotals.get(id) ?? 0;
+      const hasCurrentSignups = currentSignupsTotal > 0;
+      const linkChanged =
+        (current.linked_presentation_id ?? null) !==
+        (linked_presentation_id ?? null);
+      if (hasCurrentSignups && (current.slot_id !== slot_id || linkChanged)) {
+        throw new Error(
+          "Jelentkezőkkel rendelkező előadás sávja és duplaelőadás-kapcsolata nem módosítható",
+        );
+      }
 
-    const newRemainingCapacity =
-      currentRemainingCapacity === null ? null : capacity - currentSignupsTotal;
-
-    await dbreq(
-      "UPDATE presentations SET slot_id = ?, title = ?, performer = ?, description = ?, address = ?, requirements = ?, capacity = ?, remaining_capacity = ?, open_for = ? WHERE id = ?",
-      [
-        slot_id,
-        title,
-        performer,
-        description || null,
-        address || null,
-        requirements || null,
-        capacity,
-        newRemainingCapacity,
-        open_for,
+      const linkedTarget =
+        linked_presentation_id === null
+          ? undefined
+          : rows.find(
+              (presentation) => presentation.id === linked_presentation_id,
+            );
+      if (linked_presentation_id !== null && !linkedTarget) {
+        throw new Error("A kapcsolt prezentáció nem található");
+      }
+      if (linkedTarget && linkedTarget.slot_id === slot_id) {
+        throw new Error("Csak különböző sávban lévő előadások köthetők össze");
+      }
+      const affectedLinkIds = [
         id,
-      ],
-    );
+        current.linked_presentation_id,
+        linked_presentation_id,
+      ].filter((value): value is number => value !== null);
+      if (
+        linkChanged &&
+        affectedLinkIds.some(
+          (affectedId) => (signupTotals.get(affectedId) ?? 0) > 0,
+        )
+      ) {
+        throw new Error("Jelentkezéssel rendelkező előadás nem köthető össze");
+      }
+      const newRemainingCapacity =
+        current.remaining_capacity === null
+          ? null
+          : capacity - currentSignupsTotal;
+      await conn.execute(
+        `UPDATE presentations
+         SET slot_id = ?, title = ?, performer = ?, description = ?,
+             address = ?, requirements = ?, capacity = ?,
+             remaining_capacity = ?, open_for = ?
+         WHERE id = ?`,
+        [
+          hasCurrentSignups ? current.slot_id : slot_id,
+          title,
+          performer,
+          description || null,
+          address || null,
+          requirements || null,
+          capacity,
+          newRemainingCapacity,
+          open_for,
+          id,
+        ],
+      );
+
+      if (linkChanged) {
+        await conn.execute(
+          `UPDATE presentations
+           SET linked_presentation_id = NULL
+           WHERE linked_presentation_id IN (?, ?) OR id IN (?, ?)`,
+          [
+            id,
+            current.linked_presentation_id ?? id,
+            id,
+            current.linked_presentation_id ?? id,
+          ],
+        );
+        if (linked_presentation_id !== null) {
+          await conn.execute(
+            `UPDATE presentations
+             SET linked_presentation_id = ?
+             WHERE id = ?`,
+            [linked_presentation_id, id],
+          );
+          await conn.execute(
+            `UPDATE presentations
+             SET linked_presentation_id = ?
+             WHERE id = ?`,
+            [id, linked_presentation_id],
+          );
+        }
+      }
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

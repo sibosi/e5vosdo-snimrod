@@ -398,6 +398,11 @@ const AdminPresentationsPage = () => {
     setIsCreating(false);
   };
 
+  const editingPresentationHasSignups =
+    editingPresentation !== null &&
+    !editingPresentation.isNew &&
+    (signups[editingPresentation.id ?? -1]?.length ?? 0) > 0;
+
   const startCreating = () => {
     setEditingPresentation({
       isNew: true,
@@ -766,7 +771,7 @@ const AdminPresentationsPage = () => {
                       : undefined,
                   })
                 }
-                disabled={!editingPresentation.isNew}
+                disabled={editingPresentationHasSignups}
               >
                 <option value="">Válassz slotot...</option>
                 {existingSlots.map((slot) => (
@@ -819,6 +824,7 @@ const AdminPresentationsPage = () => {
                       : null,
                   })
                 }
+                disabled={editingPresentationHasSignups}
               >
                 <option value="">Nincs összekapcsolva</option>
                 {presentations
@@ -837,6 +843,8 @@ const AdminPresentationsPage = () => {
               </select>
               <p className="mt-1 text-xs text-foreground-600">
                 A jelentkezés és a törlés mindkét sávban egyszerre történik.
+                {editingPresentationHasSignups &&
+                  " Jelentkezőkkel rendelkező előadásnál ez nem módosítható."}
               </p>
             </div>
 

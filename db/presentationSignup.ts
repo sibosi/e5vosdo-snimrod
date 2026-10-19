@@ -855,7 +855,7 @@ async function addUserSignup(
         }
         await conn.execute(
           `UPDATE presentations
-           SET remaining_capacity = GREATEST(remaining_capacity - ?, 0)
+           SET remaining_capacity = remaining_capacity - ?
            WHERE id = ?`,
           [amount, candidate.id],
         );

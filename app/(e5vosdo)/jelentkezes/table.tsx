@@ -136,138 +136,137 @@ const Table = ({
     setSignupAmounts((prev) => ({ ...prev, ...amounts }));
   }
 
-  // imételje 5 mp enként
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      console.log(JSON.stringify(selectedBySlot));
-    }, 5000);
+    let stopped = false;
+    let es: EventSource | null = null;
 
-    return () => clearInterval(intervalId);
-  }, []);
+    let lastMessage = Date.now();
 
-  const [evtSource, setEvtSource] = useState<EventSource | null>(null);
+    const connect = () => {
+      if (stopped) return;
 
-  const setupSSE = () => {
-    // Clean up existing connection if any
-    if (evtSource) {
-      console.log(
-        "Cleaning up existing SSE connection before creating new one",
-      );
-      evtSource.close();
-    }
+      es?.close();
 
-    console.log("Setting up new SSE connection");
-    const newEvtSource = new EventSource("/api/presentations/sseCapacity");
-    setEvtSource(newEvtSource);
-    setIsFetchingAutomatically(null);
+      const source = new EventSource("/api/presentations/sseCapacity");
 
-    newEvtSource.onmessage = (event) => {
-      setIsFetchingAutomatically(true);
-      try {
-        const capacityData:
-          | {
-              [key: number]: {
-                remaining_capacity: number | null;
-                open_for: PresentationType["open_for"];
-              };
-            }
-          | { message: string } = JSON.parse(event.data);
+      es = source;
+      lastMessage = Date.now();
 
-        if (!("message" in capacityData))
+      source.onopen = () => {
+        if (stopped || es !== source) return;
+
+        lastMessage = Date.now();
+        setIsFetchingAutomatically(true);
+      };
+
+      source.addEventListener("connected", () => {
+        if (stopped || es !== source) return;
+        lastMessage = Date.now();
+      });
+
+      source.addEventListener("ping", () => {
+        if (stopped || es !== source) return;
+
+        lastMessage = Date.now();
+        setIsFetchingAutomatically(true);
+      });
+
+      source.onmessage = (event) => {
+        if (stopped || es !== source) return;
+
+        lastMessage = Date.now();
+
+        try {
+          const capacityData = JSON.parse(event.data);
+
+          if (
+            !capacityData ||
+            typeof capacityData !== "object" ||
+            Array.isArray(capacityData)
+          ) {
+            return;
+          }
+
           setPresentations((prev) =>
             prev?.map((p) => {
-              const liveData = capacityData[p.id];
-              return liveData
-                ? {
-                    ...p,
-                    remaining_capacity: liveData.remaining_capacity,
-                    open_for: liveData.open_for,
-                  }
-                : p;
+              const live = capacityData[p.id];
+
+              if (!live) return p;
+
+              return {
+                ...p,
+                remaining_capacity: live.remaining_capacity,
+                open_for: live.open_for,
+              };
             }),
           );
-      } catch (err) {
-        console.error("Error parsing SSE data:", err);
-      }
 
-      setLastUpdated(Date.now());
-    };
+          setLastUpdated(Date.now());
+          setIsFetchingAutomatically(true);
+        } catch (error) {
+          console.error("[SSE] Invalid message:", error);
+        }
+      };
 
-    newEvtSource.onerror = (err) => {
-      console.error("EventSource encountered an error:", err);
-      newEvtSource.close();
-      setEvtSource(null);
-      setIsFetchingAutomatically(false);
-    };
+      source.onerror = () => {
+        if (stopped || es !== source) return;
 
-    return () => {
-      console.log("Cleaning up SSE connection");
-      newEvtSource.close();
-      setEvtSource(null);
-      setIsFetchingAutomatically(false);
-    };
-  };
-
-  useEffect(() => {
-    if (lastUpdated === null) return;
-
-    const timeoutId = setTimeout(() => {
-      if (Date.now() - lastUpdated > 20000) {
         setIsFetchingAutomatically(false);
-        console.warn("Automatic fetching seems to have stopped.");
+
+        // DO NOT close here.
+        // Let EventSource handle automatic reconnection.
+      };
+    };
+
+    // Safety mechanism for connections that appear open
+    // but no longer receive any events.
+    const watchdog = setInterval(() => {
+      if (stopped || !es) return;
+
+      // Avoid reconnect storms caused by background-tab
+      // timer throttling.
+      if (document.visibilityState !== "visible") return;
+
+      if (Date.now() - lastMessage > 30000) {
+        console.warn("[SSE] Connection appears stale.");
+
+        setIsFetchingAutomatically(false);
+        connect();
       }
-    }, 20000);
+    }, 10000);
 
-    return () => clearTimeout(timeoutId);
-  }, [lastUpdated]);
+    const onVisibilityChange = () => {
+      if (stopped) return;
 
-  const [reconnectAttempts, setReconnectAttempts] = useState(0);
-
-  useEffect(() => {
-    if (isFetchingAutomatically === false) {
-      // Add exponential backoff for reconnection attempts
-      const reconnectDelay = Math.min(
-        1000 * Math.pow(2, reconnectAttempts),
-        12000,
-      ); // Max 12 second delay
-
-      console.log(
-        `Scheduling reconnection attempt ${reconnectAttempts + 1} in ${reconnectDelay}ms`,
-      );
-
-      const timeoutId = setTimeout(() => {
-        setReconnectAttempts((prev) => prev + 1);
-        setupSSE();
-      }, reconnectDelay);
-
-      if (!isToastVisible) {
-        setIsToastVisible(true);
-        addToast({
-          title: "Az automatikus frissítés leállt. Újrakapcsolódás...",
-          timeout: Infinity,
-          color: "warning",
-        });
+      if (
+        document.visibilityState === "visible" &&
+        es &&
+        Date.now() - lastMessage > 30000
+      ) {
+        connect();
       }
+    };
 
-      return () => clearTimeout(timeoutId);
-    }
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
-    if (isFetchingAutomatically === true) {
-      setReconnectAttempts(0);
-      setIsToastVisible(false);
-      closeAll();
-    }
-  }, [isFetchingAutomatically]);
+    // Keep your existing initial data loading.
+    // Do not connect after an unmount.
+    void initData()
+      .catch((error) => {
+        console.error("[SSE] Initial data load failed:", error);
+      })
+      .finally(() => {
+        if (!stopped) connect();
+      });
 
-  useEffect(() => {
-    initData().then(() => setupSSE());
-
-    // Cleanup on component unmount
     return () => {
-      if (evtSource) {
-        console.log("Component unmounting - cleaning up SSE connection");
-        evtSource.close();
-      }
+      stopped = true;
+
+      es?.close();
+
+      clearInterval(watchdog);
+
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
 

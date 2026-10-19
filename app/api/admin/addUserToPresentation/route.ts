@@ -14,28 +14,21 @@ export async function POST(request: NextRequest) {
     const {
       email,
       presentation_id,
-      slot_id,
       amount = 1,
       details = null,
     } = await request.json();
 
-    if (!email || !presentation_id || slot_id === undefined) {
+    if (!email || !presentation_id) {
       return NextResponse.json(
         {
           error:
-            "Required fields: email, presentation_id, slot_id. Optional: amount, details",
+            "Required fields: email, presentation_id. Optional: amount, details",
         },
         { status: 400 },
       );
     }
 
-    await adminForceUserSignUp(
-      email,
-      presentation_id,
-      slot_id,
-      amount,
-      details,
-    );
+    await adminForceUserSignUp(email, presentation_id, amount, details);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

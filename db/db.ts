@@ -64,6 +64,9 @@ export async function multipledbreq<T>(
 ): Promise<T> {
   return await withConnection(async (connection) => {
     try {
+      await connection.query(
+        "SET TRANSACTION ISOLATION LEVEL READ COMMITTED",
+      );
       await connection.beginTransaction();
       let result: any;
       if (typeof queries === "function") {
@@ -78,7 +81,11 @@ export async function multipledbreq<T>(
       await connection.commit();
       return result;
     } catch (e) {
-      await connection.rollback();
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Rollback sikertelen:", rollbackError);
+      }
       throw e;
     }
   });

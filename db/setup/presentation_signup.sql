@@ -17,6 +17,7 @@ CREATE TABLE
         capacity INTEGER NOT NULL,
         remaining_capacity INTEGER DEFAULT NULL,
         open_for ENUM('everyone', 'only_priority', 'nobody') NOT NULL DEFAULT 'nobody',
+        linked_presentation_id INTEGER DEFAULT NULL,
         FOREIGN KEY (slot_id) REFERENCES presentation_slots (id)
     );
 

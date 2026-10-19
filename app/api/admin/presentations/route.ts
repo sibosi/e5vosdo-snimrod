@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { gate } from "@/db/permissions";
 import { getAuth } from "@/db/dbreq";
-import { dbreq } from "@/db/presentationSignup";
+import { dbreq, linkPresentations } from "@/db/presentationSignup";
 
 export async function GET() {
   try {
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
       requirements,
       capacity,
       open_for = "everyone",
+      linked_presentation_id = null,
     } = await request.json();
 
     if (
@@ -117,6 +118,7 @@ export async function PUT(request: NextRequest) {
       requirements,
       capacity,
       open_for = "everyone",
+      linked_presentation_id = null,
     } = await request.json();
 
     if (
@@ -183,6 +185,7 @@ export async function PUT(request: NextRequest) {
         id,
       ],
     );
+    await linkPresentations(id, linked_presentation_id);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

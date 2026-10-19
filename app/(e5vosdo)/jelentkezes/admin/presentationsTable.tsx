@@ -406,6 +406,7 @@ const AdminPresentationsPage = () => {
       description: "",
       address: "",
       requirements: "",
+      linked_presentation_id: null,
       capacity: 20,
       remaining_capacity: 20,
       performer: null,
@@ -800,6 +801,46 @@ const AdminPresentationsPage = () => {
             </div>
 
             <div>
+              <label
+                htmlFor="linked-presentation-input"
+                className="mb-2 block font-medium"
+              >
+                Duplaelőadás párja
+              </label>
+              <select
+                id="linked-presentation-input"
+                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                value={editingPresentation.linked_presentation_id ?? ""}
+                onChange={(e) =>
+                  setEditingPresentation({
+                    ...editingPresentation,
+                    linked_presentation_id: e.target.value
+                      ? Number(e.target.value)
+                      : null,
+                  })
+                }
+              >
+                <option value="">Nincs összekapcsolva</option>
+                {presentations
+                  .filter(
+                    (candidate) =>
+                      candidate.id !== editingPresentation.id &&
+                      candidate.slot_id !== editingPresentation.slot_id,
+                  )
+                  .map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>
+                      {existingSlots.find((s) => s.id === candidate.slot_id)
+                        ?.title || `Slot #${candidate.slot_id}`}{" "}
+                      | {candidate.title}
+                    </option>
+                  ))}
+              </select>
+              <p className="mt-1 text-xs text-foreground-600">
+                A jelentkezés és a törlés mindkét sávban egyszerre történik.
+              </p>
+            </div>
+
+            <div>
               <label htmlFor="address-input" className="mb-2 block font-medium">
                 Helyszín
               </label>
@@ -996,6 +1037,14 @@ const AdminPresentationsPage = () => {
 
                   <Field className="md:col-span-2">
                     <div className="max-h-64 overflow-auto whitespace-pre-line break-words">
+                      {presentation.linked_presentation_id && (
+                        <p className="mb-2 text-sm font-semibold text-selfsecondary">
+                          Duplaelőadás párja:{" "}
+                          {presentations.find(
+                            (p) => p.id === presentation.linked_presentation_id,
+                          )?.title || "másik előadás"}
+                        </p>
+                      )}
                       {presentation.description ?? ""}
                     </div>
                   </Field>

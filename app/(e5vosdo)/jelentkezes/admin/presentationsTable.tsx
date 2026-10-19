@@ -1008,7 +1008,7 @@ const AdminPresentationsPage = () => {
               <div
                 id={"presentation-card-" + presentation.id}
                 key={presentation.id}
-                className="my-2 overflow-hidden rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100"
+                className="my-2 rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100"
               >
                 <div className="grid md:grid-cols-5 md:gap-4">
                   <Field className="bg-selfprimary-200 md:col-span-2">

@@ -1057,7 +1057,7 @@ const AdminPresentationsPage = () => {
                     </div>
                   </Field>
 
-                  <Field className="bg-selfprimary-200 text-center max-md:flex max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
+                  <Field className="bg-selfprimary-200 text-center max-md:flex max-md:flex-wrap max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
                     <p className="h-7 md:hidden">Szabad helyek:</p>
                     <div className="text-xl font-bold">
                       {presentation.remaining_capacity == null && "-"}

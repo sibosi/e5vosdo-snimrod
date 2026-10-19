@@ -164,15 +164,27 @@ const Table = ({
     newEvtSource.onmessage = (event) => {
       setIsFetchingAutomatically(true);
       try {
-        const capacityData: { [key: number]: number } | { message: string } =
-          JSON.parse(event.data);
+        const capacityData:
+          | {
+              [key: number]: {
+                remaining_capacity: number | null;
+                open_for: PresentationType["open_for"];
+              };
+            }
+          | { message: string } = JSON.parse(event.data);
 
         if (!("message" in capacityData))
           setPresentations((prev) =>
-            prev?.map((p) => ({
-              ...p,
-              remaining_capacity: capacityData[p.id],
-            })),
+            prev?.map((p) => {
+              const liveData = capacityData[p.id];
+              return liveData
+                ? {
+                    ...p,
+                    remaining_capacity: liveData.remaining_capacity,
+                    open_for: liveData.open_for,
+                  }
+                : p;
+            }),
           );
       } catch (err) {
         console.error("Error parsing SSE data:", err);

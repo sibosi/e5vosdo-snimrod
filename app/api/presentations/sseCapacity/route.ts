@@ -1,4 +1,4 @@
-import { getPresentationsCapacity } from "@/db/presentationSignup";
+import { getPresentationsRealtimeData } from "@/db/presentationSignup";
 import { NextRequest } from "next/server";
 
 interface SSEGlobalState {
@@ -35,10 +35,10 @@ async function sendCapacity(conditional = true) {
     );
 
     const capacity = await Promise.race([
-      getPresentationsCapacity(),
+      getPresentationsRealtimeData(),
       timeoutPromise,
     ]).catch((e) => {
-      console.error("Error in getPresentationsCapacity:", e);
+      console.error("Error in getPresentationsRealtimeData:", e);
       return null;
     });
 

@@ -1,177 +1,202 @@
 import { getPresentationsRealtimeData } from "@/db/presentationSignup";
 import { NextRequest } from "next/server";
 
-interface SSEGlobalState {
-  gSignupSseSubscribers: Set<WritableStreamDefaultWriter<Uint8Array>>;
-  gSignupPresentationsInterval: ReturnType<typeof setInterval> | null;
-  gSignupHeartbeatInterval: ReturnType<typeof setInterval> | null;
-  gSignupLastCapacity: unknown;
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+type Client = ReadableStreamDefaultController<Uint8Array>;
+
+interface SseState {
+  clients: Set<Client>;
+  dataTimer: ReturnType<typeof setInterval> | null;
+  heartbeatTimer: ReturnType<typeof setInterval> | null;
+  lastJson: string | null;
+  lastFetchAt: number;
+  inFlight: boolean;
 }
 
-const globalState = globalThis as unknown as Partial<SSEGlobalState>;
-globalState.gSignupSseSubscribers ??= new Set<
-  WritableStreamDefaultWriter<Uint8Array>
->();
-if (globalState.gSignupPresentationsInterval === undefined)
-  globalState.gSignupPresentationsInterval = null;
-if (globalState.gSignupHeartbeatInterval === undefined)
-  globalState.gSignupHeartbeatInterval = null;
-if (globalState.gSignupLastCapacity === undefined)
-  globalState.gSignupLastCapacity = null;
+const g = globalThis as unknown as {
+  __signupSse?: SseState;
+};
 
-const textEncoder = new TextEncoder();
+const state = (g.__signupSse ??= {
+  clients: new Set<Client>(),
+  dataTimer: null,
+  heartbeatTimer: null,
+  lastJson: null,
+  lastFetchAt: 0,
+  inFlight: false,
+});
 
-const workerId = process.env.WORKER_ID;
-const isTimerWorker = workerId === "1" || !workerId;
+const encoder = new TextEncoder();
 
-console.log(
-  `Worker ${workerId || "standalone"} (PID: ${process.pid}) - Timer initialization: ${isTimerWorker ? "YES" : "NO"}`,
-);
+function removeClient(client: Client, close = true) {
+  state.clients.delete(client);
 
-async function sendCapacity(conditional = true) {
-  try {
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Database query timeout")), 5000),
-    );
-
-    const capacity = await Promise.race([
-      getPresentationsRealtimeData(),
-      timeoutPromise,
-    ]).catch((e) => {
-      console.error("Error in getPresentationsRealtimeData:", e);
-      return null;
-    });
-
-    if (capacity === null) return;
-
-    const capacityJson = JSON.stringify(capacity);
-    if (
-      conditional &&
-      globalState.gSignupLastCapacity &&
-      globalState.gSignupLastCapacity === capacityJson
-    ) {
-      return;
+  if (close) {
+    try {
+      client.close();
+    } catch {
+      // Already closed or cancelled.
     }
+  }
 
-    globalState.gSignupLastCapacity = capacityJson;
-    const data = textEncoder.encode(`data: ${capacityJson}\n\n`);
-
-    const subscribersArray = Array.from(globalState.gSignupSseSubscribers!);
-    const writePromises = subscribersArray.map(async (writer) => {
-      try {
-        const writeTimeout = new Promise<void>((_, reject) =>
-          setTimeout(() => reject(new Error("Client write timeout")), 3000),
-        );
-
-        await Promise.race([writer.write(data), writeTimeout]);
-      } catch (e) {
-        const isTimeoutError =
-          e instanceof Error && e.message === "Client write timeout";
-        console.error(
-          `SSE write error (${isTimeoutError ? "timeout" : "other error"}):`,
-          e,
-        );
-
-        globalState.gSignupSseSubscribers!.delete(writer);
-        console.log(
-          `Client removed. Active connections remaining: ${globalState.gSignupSseSubscribers!.size}`,
-        );
-
-        try {
-          await writer.close();
-        } catch (error_) {
-          console.error("Error closing writer:", error_);
-        }
-      }
-    });
-
-    await Promise.allSettled(writePromises);
-  } catch (error) {
-    console.error("Unexpected error in sendCapacity:", error);
+  if (state.clients.size === 0) {
+    stopTimers();
   }
 }
 
-if (isTimerWorker) {
-  globalState.gSignupPresentationsInterval ??= setInterval(sendCapacity, 3000);
-  globalState.gSignupHeartbeatInterval ??= setInterval(
-    () => sendCapacity(false),
-    10000,
-  );
+function send(client: Client, message: string) {
+  try {
+    const desired = client.desiredSize;
+
+    // Avoid accumulating messages for slow clients.
+    if (desired === null || desired <= -2) {
+      removeClient(client);
+      return;
+    }
+
+    client.enqueue(encoder.encode(message));
+  } catch {
+    removeClient(client);
+  }
 }
 
-export async function OPTIONS() {
-  return new Response(null, {
-    status: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Cache-Control, Content-Type",
-      "Access-Control-Max-Age": "86400",
-    },
-  });
+function broadcast(message: string) {
+  for (const client of state.clients) {
+    send(client, message);
+  }
+}
+
+async function refreshCapacity() {
+  if (state.inFlight || state.clients.size === 0) {
+    return;
+  }
+
+  state.inFlight = true;
+
+  try {
+    const capacity = await getPresentationsRealtimeData();
+
+    if (capacity == null) {
+      throw new Error("Capacity query returned null");
+    }
+
+    const json = JSON.stringify(capacity);
+
+    // The query completed successfully.
+    state.lastFetchAt = Date.now();
+
+    // Broadcast only if something changed.
+    if (json !== state.lastJson) {
+      state.lastJson = json;
+      broadcast(`data: ${json}\n\n`);
+    }
+  } catch (error) {
+    console.error("[SSE] Capacity refresh failed:", error);
+
+    // Keep the existing connections alive.
+    // The next successful query will update the cache.
+  } finally {
+    state.inFlight = false;
+  }
+}
+
+function startTimers() {
+  if (state.dataTimer === null) {
+    state.dataTimer = setInterval(() => {
+      void refreshCapacity();
+    }, 3000);
+  }
+
+  if (state.heartbeatTimer === null) {
+    state.heartbeatTimer = setInterval(() => {
+      broadcast("event: ping\ndata: 1\n\n");
+    }, 10000);
+  }
+}
+
+function stopTimers() {
+  if (state.dataTimer !== null) {
+    clearInterval(state.dataTimer);
+    state.dataTimer = null;
+  }
+
+  if (state.heartbeatTimer !== null) {
+    clearInterval(state.heartbeatTimer);
+    state.heartbeatTimer = null;
+  }
 }
 
 export async function GET(request: NextRequest) {
-  console.log("New SSE connection request received");
+  let controllerRef: Client | null = null;
+  let cleanedUp = false;
 
-  const stream = new TransformStream();
-  const writer = stream.writable.getWriter();
+  const cleanup = (cancelled = false) => {
+    if (cleanedUp) return;
 
-  globalState.gSignupSseSubscribers!.add(writer);
+    cleanedUp = true;
 
-  const connectionsCount = globalState.gSignupSseSubscribers!.size;
-  console.log(
-    `New SSE connection established. Total active connections: ${connectionsCount}`,
-  );
+    request.signal.removeEventListener("abort", onAbort);
 
-  const initialMessage = `data: ${JSON.stringify({ message: "SSE connection established", connectionsCount })}\n\n`;
-  const encodedInitialMessage = textEncoder.encode(initialMessage);
-
-  writer.write(encodedInitialMessage).catch((error) => {
-    console.error("Error sending initial SSE message:", error);
-    globalState.gSignupSseSubscribers!.delete(writer);
-    writer.close();
-  });
-
-  const cleanup = async () => {
-    const subscriberCount = globalState.gSignupSseSubscribers!.size;
-    console.log(
-      `SSE connection cleanup. Active connections before: ${subscriberCount}`,
-    );
-
-    globalState.gSignupSseSubscribers!.delete(writer);
-    try {
-      await writer.close();
-    } catch (error) {
-      console.error("Error closing writer during cleanup:", error);
+    if (controllerRef) {
+      removeClient(controllerRef, !cancelled);
+      controllerRef = null;
     }
-
-    console.log(
-      `SSE connection closed. Active connections after: ${globalState.gSignupSseSubscribers!.size}`,
-    );
   };
 
-  request.signal.addEventListener("abort", cleanup);
+  const onAbort = () => cleanup();
 
-  setTimeout(() => sendCapacity(false), 100);
+  const stream = new ReadableStream<Uint8Array>(
+    {
+      start(controller) {
+        controllerRef = controller;
 
-  return new Response(stream.readable, {
+        state.clients.add(controller);
+
+        // Tell the browser how long to wait before retrying.
+        send(controller, "retry: 3000\n\n");
+
+        // Initial connection event.
+        send(controller, "event: connected\ndata: 1\n\n");
+
+        // Send cached capacity only to the new client.
+        if (state.lastJson !== null) {
+          send(controller, `data: ${state.lastJson}\n\n`);
+        }
+
+        startTimers();
+
+        // On first connection, or if cached data is old,
+        // refresh once. inFlight prevents simultaneous queries.
+        if (state.lastJson === null || Date.now() - state.lastFetchAt > 3000) {
+          void refreshCapacity();
+        }
+      },
+
+      cancel() {
+        cleanup(true);
+      },
+    },
+    {
+      highWaterMark: 2,
+      size: () => 1,
+    },
+  );
+
+  request.signal.addEventListener("abort", onAbort, {
+    once: true,
+  });
+
+  if (request.signal.aborted) {
+    cleanup();
+  }
+
+  return new Response(stream, {
     headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache, no-store, must-revalidate",
-      Pragma: "no-cache",
-      Expires: "0",
-      Connection: "keep-alive",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Cache-Control",
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
       "X-Accel-Buffering": "no",
-      // Force HTTP/1.1 to avoid HTTP/2 protocol errors with SSE
-      "X-Content-Type-Options": "nosniff",
-      // Disable HTTP/2 server push
-      "X-Frame-Options": "DENY",
-      // Add headers to prevent HTTP/2 issues
-      "Keep-Alive": "timeout=30, max=100",
     },
   });
 }

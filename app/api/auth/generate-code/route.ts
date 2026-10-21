@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { dbreq } from "@/db/db";
 import { getAuth, getUser } from "@/db/dbreq";
 import { hasPermission } from "@/db/permissions";
+import { isValidEmailAddress } from "@/lib/emailValidation";
 import { createHmac, randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
         { status: 403 },
       );
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedEmail)) {
+    if (!isValidEmailAddress(requestedEmail)) {
       return NextResponse.json(
         { error: "Érvényes cél-email cím szükséges." },
         { status: 400 },

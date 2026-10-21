@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createUserByEmail, getAuth } from "@/db/dbreq";
 import { gate } from "@/db/permissions";
+import { isValidEmailAddress } from "@/lib/emailValidation";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const email = typeof body.email === "string" ? body.email.trim() : "";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!isValidEmailAddress(email)) {
       return NextResponse.json(
         { error: "Érvényes email cím megadása kötelező." },
         { status: 400 },

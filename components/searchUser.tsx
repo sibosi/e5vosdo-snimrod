@@ -13,6 +13,7 @@ export default function SearchUser({
   showInput = true,
   inputValue,
   onInputChange,
+  clearOnSelect = true,
 }: Readonly<{
   usersNameByEmail: Record<
     string,
@@ -27,8 +28,10 @@ export default function SearchUser({
   showInput?: boolean;
   inputValue?: string;
   onInputChange?: (value: string) => void;
+  clearOnSelect?: boolean;
 }>) {
   const [internalSearchValue, setInternalSearchValue] = useState("");
+  const [showResults, setShowResults] = useState(true);
   const searchValue = inputValue ?? internalSearchValue;
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const optionsRef = useRef<HTMLButtonElement[]>([]);
@@ -46,6 +49,16 @@ export default function SearchUser({
   const setSearchValue = (value: string) => {
     setInternalSearchValue(value);
     onInputChange?.(value);
+    setShowResults(true);
+  };
+
+  const selectEmail = (email: string) => {
+    onSelectEmail(email);
+    if (clearOnSelect) {
+      setSearchValue("");
+    } else {
+      setShowResults(false);
+    }
   };
 
   const filter = (searchValue: string) => {
@@ -96,8 +109,7 @@ export default function SearchUser({
         break;
       case "Enter":
         if (highlightedIndex !== null) {
-          onSelectEmail(filteredEmails[highlightedIndex]);
-          setSearchValue("");
+          selectEmail(filteredEmails[highlightedIndex]);
         }
         break;
       case "Escape":
@@ -120,16 +132,13 @@ export default function SearchUser({
           onKeyDown={handleKeyDown}
         />
       )}
-      {searchValue.length > (showInput ? 1 : 0) && (
+      {showResults && searchValue.length > (showInput ? 1 : 0) && (
         <div className="w-unit-80 absolute z-50 mt-8 rounded-md border border-selfprimary-200 bg-selfprimary-bg p-1 text-selfprimary-900 shadow-md">
           {filteredEmails.map((email, index) => (
             <button
               type="button"
               key={email}
-              onClick={() => {
-                onSelectEmail(email);
-                setSearchValue("");
-              }}
+              onClick={() => selectEmail(email)}
               ref={(el) => {
                 optionsRef.current[index] = el!;
               }}

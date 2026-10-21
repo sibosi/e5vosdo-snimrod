@@ -81,6 +81,7 @@ const OneTimeLoginGenerator = ({
             onSelectEmail={setEmail}
             inputValue={email}
             onInputChange={setEmail}
+            clearOnSelect={false}
             placeholder="Felhasználó keresése"
           />
           <select

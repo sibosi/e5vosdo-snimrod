@@ -14,6 +14,7 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import React, { useState } from "react";
+import OneTimeLoginGenerator from "@/components/OneTimeLoginGenerator";
 
 type UserSort = "recent" | "name" | "permissions";
 type VerificationFilter = "all" | "verified" | "unverified";
@@ -234,6 +235,22 @@ const ManageUsers = ({
           {actionError}
         </div>
       )}
+      <div className="mb-4 rounded-3xl bg-selfprimary-50 p-4">
+        <h2 className="mb-2 text-lg font-semibold">Admin belépési kód</h2>
+        <OneTimeLoginGenerator
+          admin
+          usersNameByEmail={Object.fromEntries(
+            users.map((user) => [
+              user.email,
+              {
+                name: getUserName(user),
+                class: getUserClass(user) ?? "",
+                image: user.image,
+              },
+            ]),
+          )}
+        />
+      </div>
       <div className="mb-4 rounded-3xl bg-selfprimary-50 p-4">
         <h2 className="mb-2 text-lg font-semibold">Felhasználó generálása</h2>
         <p className="mb-3 text-sm opacity-75">

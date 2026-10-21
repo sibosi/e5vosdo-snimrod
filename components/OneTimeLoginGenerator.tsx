@@ -2,13 +2,25 @@
 
 import { Button } from "@heroui/react";
 import { useEffect, useState } from "react";
+import SearchUser from "./searchUser";
 
-const OneTimeLoginGenerator = () => {
+const OneTimeLoginGenerator = ({
+  admin = false,
+  usersNameByEmail = {},
+}: {
+  admin?: boolean;
+  usersNameByEmail?: Record<
+    string,
+    string | { name: string; class: string; image?: string }
+  >;
+}) => {
   const [code, setCode] = useState("");
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [remaining, setRemaining] = useState(0);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [days, setDays] = useState("1");
 
   useEffect(() => {
     if (!expiresAt) return;
@@ -21,16 +33,25 @@ const OneTimeLoginGenerator = () => {
   async function generateCode() {
     setIsLoading(true);
     setError("");
-    const response = await fetch("/api/auth/generate-code", { method: "POST" });
-    const data = await response.json();
-    setIsLoading(false);
-    if (!response.ok) {
-      setError(data.error ?? "Nem sikerült kódot generálni.");
-      return;
+    try {
+      const response = await fetch("/api/auth/generate-code", {
+        method: "POST",
+        headers: admin ? { "Content-Type": "application/json" } : undefined,
+        body: admin ? JSON.stringify({ email, days: Number(days) }) : undefined,
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error ?? "Nem sikerült kódot generálni.");
+        return;
+      }
+      setCode(data.code);
+      setExpiresAt(new Date(data.expiresAt).getTime());
+      setRemaining(new Date(data.expiresAt).getTime() - Date.now());
+    } catch {
+      setError("Nem sikerült kódot generálni.");
+    } finally {
+      setIsLoading(false);
     }
-    setCode(data.code);
-    setExpiresAt(new Date(data.expiresAt).getTime());
-    setRemaining(new Date(data.expiresAt).getTime() - Date.now());
   }
 
   async function copyCode() {
@@ -49,8 +70,34 @@ const OneTimeLoginGenerator = () => {
   return (
     <div className="space-y-3">
       <p className="text-sm font-normal">
-        Ezzel a kóddal másik eszközön is bejelentkezhetsz Google OAuth nélkül.
+        {admin
+          ? "Generálj belépési kódot egy felhasználó számára Google OAuth nélkül."
+          : "Ezzel a kóddal másik eszközön is bejelentkezhetsz Google OAuth nélkül."}
       </p>
+      {admin && (
+        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_8rem]">
+          <SearchUser
+            usersNameByEmail={usersNameByEmail}
+            onSelectEmail={setEmail}
+            inputValue={email}
+            onInputChange={setEmail}
+            clearOnSelect={false}
+            placeholder="Felhasználó keresése"
+          />
+          <select
+            aria-label="Kód érvényessége"
+            value={days}
+            onChange={(event) => setDays(event.target.value)}
+            className="min-h-10 rounded-xl border border-default-200 bg-background px-3 text-sm"
+          >
+            {Array.from({ length: 7 }, (_, index) => index + 1).map((day) => (
+              <option key={day} value={day}>
+                {day} {day === 1 ? "nap" : "napig"}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       {code && remaining > 0 && (
         <div className="space-y-2 rounded-xl border border-selfprimary-300 p-3 text-center">
           <p className="font-mono text-3xl font-bold tracking-widest">{code}</p>

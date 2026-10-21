@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/bgimage.css";
 import { siteConfig } from "@/config/site";
-import HomeGeneral from "./page_general";
+import HomeEvent from "./page_event";
 
 export const metadata: Metadata = {
   robots: {
@@ -18,5 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <HomeGeneral />;
+  return <HomeEvent />;
 }

@@ -127,11 +127,20 @@ const MyPresentations = () => {
                       )}
                     </CardHeader>
                     <CardBody className="pt-0">
-                      <div className="space-y-1 text-sm">
-                        <p className="text-foreground-700">
-                          <span className="font-medium">Helyszín:</span>{" "}
-                          {pres.address}
-                        </p>
+                      <div className="space-y-3 text-sm">
+                        {pres.address && (
+                          <div className="rounded-xl border-2 border-selfsecondary-400 bg-selfsecondary-50 p-3 text-selfsecondary-900">
+                            <p className="text-xs font-semibold uppercase tracking-wide">
+                              Helyszín
+                            </p>
+                            <p className="text-lg font-bold">{pres.address}</p>
+                          </div>
+                        )}
+                        {pres.description && (
+                          <p className="whitespace-pre-wrap text-foreground-700">
+                            {pres.description}
+                          </p>
+                        )}
                       </div>
                     </CardBody>
                   </Card>

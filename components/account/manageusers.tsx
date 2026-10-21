@@ -14,6 +14,7 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import React, { useState } from "react";
+import OneTimeLoginGenerator from "@/components/OneTimeLoginGenerator";
 
 type UserSort = "recent" | "name" | "permissions";
 type VerificationFilter = "all" | "verified" | "unverified";
@@ -87,6 +88,8 @@ const ManageUsers = ({
 
   const [newPermission, setNewPermission] = useState("");
   const [newTicket, setNewTicket] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
 
   const [selectedUserLogs, setSelectedUserLogs] = useState<Log[]>([]);
   const [actionError, setActionError] = useState("");
@@ -191,6 +194,37 @@ const ManageUsers = ({
     }
   }
 
+  async function createUser() {
+    const email = newUserEmail.trim();
+    if (!email) {
+      setActionError("Az email cím megadása kötelező.");
+      return;
+    }
+
+    setIsCreatingUser(true);
+    try {
+      const response = await fetch("/api/admin/createUser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "A felhasználó létrehozása sikertelen.");
+      }
+
+      setNewUserEmail("");
+      setActionError("");
+      await reload();
+    } catch (error) {
+      setActionError(
+        error instanceof Error ? error.message : "Ismeretlen hiba történt.",
+      );
+    } finally {
+      setIsCreatingUser(false);
+    }
+  }
+
   return (
     <div className="my-2 text-foreground">
       {actionError && (
@@ -201,6 +235,48 @@ const ManageUsers = ({
           {actionError}
         </div>
       )}
+      <div className="mb-4 rounded-3xl bg-selfprimary-50 p-4">
+        <h2 className="mb-2 text-lg font-semibold">Admin belépési kód</h2>
+        <OneTimeLoginGenerator
+          admin
+          usersNameByEmail={Object.fromEntries(
+            users.map((user) => [
+              user.email,
+              {
+                name: getUserName(user),
+                class: getUserClass(user) ?? "",
+                image: user.image,
+              },
+            ]),
+          )}
+        />
+      </div>
+      <div className="mb-4 rounded-3xl bg-selfprimary-50 p-4">
+        <h2 className="mb-2 text-lg font-semibold">Felhasználó generálása</h2>
+        <p className="mb-3 text-sm opacity-75">
+          A felhasználó az email cím alapján, alapértelmezett adatokkal jön
+          létre.
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Input
+            type="email"
+            aria-label="Új felhasználó email címe"
+            placeholder="email cím"
+            value={newUserEmail}
+            onChange={(event) => setNewUserEmail(event.target.value)}
+            className="min-w-0 flex-1"
+            isDisabled={isCreatingUser}
+          />
+          <Button
+            color="primary"
+            onPress={createUser}
+            isLoading={isCreatingUser}
+            className="shrink-0"
+          >
+            Létrehozás
+          </Button>
+        </div>
+      </div>
       <div className="mb-4 rounded-3xl bg-selfprimary-50 p-4">
         <div className="grid gap-3 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]">
           <Input

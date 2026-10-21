@@ -347,6 +347,38 @@ export async function updateUser(user: User | undefined, isLogin = false) {
   return null;
 }
 
+export async function createUserByEmail(email: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) throw new Error("Az email cím megadása kötelező.");
+
+  const existingUser = await getUser(normalizedEmail);
+  if (existingUser) {
+    throw new Error("Ezzel az email címmel már létezik felhasználó.");
+  }
+
+  const emptyProfileValue = normalizedEmail;
+  await dbreq(
+    `INSERT INTO \`users\` (
+      \`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`,
+      \`permissions\`, \`notifications\`, \`tickets\`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      emptyProfileValue,
+      emptyProfileValue,
+      normalizedEmail,
+      "",
+      emptyProfileValue,
+      new Date().toJSON(),
+      JSON.stringify(["user"]),
+      JSON.stringify({ new: [1], read: [], sent: [] }),
+      JSON.stringify([]),
+    ],
+  );
+
+  void addLog("createUserByEmail", normalizedEmail);
+  return await getUser(normalizedEmail);
+}
+
 export async function addUserPermission(
   email: string | undefined,
   permission: string,

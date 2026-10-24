@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
 import { OAuth2Client } from "google-auth-library";
+import { hasPermission } from "./permissions";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -549,7 +550,10 @@ export async function newNotificationByEmails(
   payload: string = "",
 ) {
   const senderUser = await getAuth();
-  const sender_email = senderUser?.email;
+  if (!senderUser || !hasPermission(senderUser, "admin")) {
+    throw new Error("You don't have permission to send notifications");
+  }
+  const sender_email = senderUser.email;
 
   let valid_receiving_emails: string[] = [];
 

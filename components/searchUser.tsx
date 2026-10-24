@@ -1,6 +1,6 @@
 "use client";
 import { Input } from "@heroui/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 
 export default function SearchUser({
   usersNameByEmail,
@@ -9,17 +9,31 @@ export default function SearchUser({
   placeholder,
   size,
   addCustomParticipant = false,
+  excludeEmails = [],
+  showInput = true,
+  inputValue,
+  onInputChange,
+  clearOnSelect = true,
 }: Readonly<{
-  usersNameByEmail: Record<string, string | { name: string; class: string }>;
+  usersNameByEmail: Record<
+    string,
+    string | { name: string; class: string; image?: string }
+  >;
   onSelectEmail: (email: string) => void;
   label?: string;
   placeholder?: string;
   size?: "sm" | "md" | "lg";
   addCustomParticipant?: boolean;
+  excludeEmails?: string[];
+  showInput?: boolean;
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
+  clearOnSelect?: boolean;
 }>) {
-  const [searchValue, setSearchValue] = useState("");
+  const [internalSearchValue, setInternalSearchValue] = useState("");
+  const [showResults, setShowResults] = useState(true);
+  const searchValue = inputValue ?? internalSearchValue;
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
-  const [filteredEmails, setFilteredEmails] = useState<string[]>([]);
   const optionsRef = useRef<HTMLButtonElement[]>([]);
 
   const getUserName = (email: string) => {
@@ -27,25 +41,53 @@ export default function SearchUser({
     return typeof userInfo === "string" ? userInfo : (userInfo?.name ?? email);
   };
 
+  const getUserInfo = (email: string) => {
+    const userInfo = usersNameByEmail[email];
+    return typeof userInfo === "string" ? undefined : userInfo;
+  };
+
+  const setSearchValue = (value: string) => {
+    setInternalSearchValue(value);
+    onInputChange?.(value);
+    setShowResults(true);
+  };
+
+  const selectEmail = (email: string) => {
+    onSelectEmail(email);
+    if (clearOnSelect) {
+      setSearchValue("");
+    } else {
+      setShowResults(false);
+    }
+  };
+
   const filter = (searchValue: string) => {
-    const elements = Object.keys(usersNameByEmail).filter((email) =>
-      searchValue
-        .toLocaleLowerCase()
-        .split(" ")
-        .every((input) => getUserName(email).toLowerCase().includes(input)),
+    const elements = Object.keys(usersNameByEmail).filter(
+      (email) =>
+        !excludeEmails.includes(email) &&
+        searchValue
+          .toLocaleLowerCase()
+          .split(" ")
+          .every((input) =>
+            `${getUserName(email)} ${email} ${getUserInfo(email)?.class ?? ""}`
+              .toLowerCase()
+              .includes(input),
+          ),
     );
 
     return elements.slice(0, 6);
   };
 
-  useEffect(() => {
+  const filteredEmails = useMemo(() => {
     const results = filter(searchValue);
     if (addCustomParticipant && results.length < 2)
       results.push(`${searchValue} (Nem regisztrált)`);
-    setFilteredEmails(results);
+    return results;
+  }, [searchValue, excludeEmails, addCustomParticipant, usersNameByEmail]);
+
+  useEffect(() => {
     setHighlightedIndex(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchValue]);
+  }, [searchValue, excludeEmails, addCustomParticipant]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (filteredEmails.length === 0) return;
@@ -67,8 +109,7 @@ export default function SearchUser({
         break;
       case "Enter":
         if (highlightedIndex !== null) {
-          onSelectEmail(filteredEmails[highlightedIndex]);
-          setSearchValue("");
+          selectEmail(filteredEmails[highlightedIndex]);
         }
         break;
       case "Escape":
@@ -81,24 +122,23 @@ export default function SearchUser({
 
   return (
     <>
-      <Input
-        name={label ?? "Diák keresése"}
-        placeholder={placeholder ?? "Diák neve"}
-        size={size}
-        value={searchValue}
-        onChange={(event) => setSearchValue(event.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      {searchValue.length > 1 && (
+      {showInput && (
+        <Input
+          name={label ?? "Diák keresése"}
+          placeholder={placeholder ?? "Diák neve"}
+          size={size}
+          value={searchValue}
+          onChange={(event) => setSearchValue(event.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+      )}
+      {showResults && searchValue.length > (showInput ? 1 : 0) && (
         <div className="w-unit-80 absolute z-50 mt-8 rounded-md border border-selfprimary-200 bg-selfprimary-bg p-1 text-selfprimary-900 shadow-md">
           {filteredEmails.map((email, index) => (
             <button
               type="button"
               key={email}
-              onClick={() => {
-                onSelectEmail(email);
-                setSearchValue("");
-              }}
+              onClick={() => selectEmail(email)}
               ref={(el) => {
                 optionsRef.current[index] = el!;
               }}
@@ -106,8 +146,28 @@ export default function SearchUser({
                 highlightedIndex === index ? "bg-selfprimary-200" : ""
               }`}
             >
-              <p className="font-bold">{getUserName(email)}</p>
-              <p className="text-xs font-thin">{email}</p>
+              <div className="flex items-center gap-2">
+                {getUserInfo(email)?.image ? (
+                  <img
+                    src={getUserInfo(email)?.image}
+                    alt=""
+                    className="h-7 w-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground/10 text-xs font-semibold">
+                    {getUserName(email).slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate font-bold">{getUserName(email)}</p>
+                  <p className="text-xs font-thin">
+                    {getUserInfo(email)?.class
+                      ? `${getUserInfo(email)?.class} · `
+                      : ""}
+                    {email}
+                  </p>
+                </div>
+              </div>
             </button>
           ))}
         </div>

@@ -1,12 +1,21 @@
 import { redirect } from "next/navigation";
-import { getAdminUsersEmail, getAuth, getUsers } from "@/db/dbreq";
+import { getAdminUsersEmail, getAuth, getUsers, UserType } from "@/db/dbreq";
 import ManageUsers from "@/components/account/manageusers";
-import { hasPermission } from "@/db/permissions";
+import { PERMISSIONS, hasPermission } from "@/db/permissions";
 
 const UsersPage = async () => {
   const selfUser = await getAuth();
   const admins = await getAdminUsersEmail();
   if (!selfUser) redirect("/");
+
+  const canManageUsers = hasPermission(selfUser, "admin");
+  const users = canManageUsers ? await getUsers() : [];
+  const permissions = Array.from(
+    new Set([
+      ...PERMISSIONS,
+      ...users.flatMap((user: UserType) => user.permissions ?? []),
+    ]),
+  ).sort((a, b) => a.localeCompare(b, "hu"));
 
   return (
     <div className="space-y-4">
@@ -16,8 +25,8 @@ const UsersPage = async () => {
 
       <p>{"Adminok: " + admins.join(", ")}</p>
 
-      {hasPermission(selfUser, "admin") ? (
-        <ManageUsers initialUsers={await getUsers()} />
+      {canManageUsers ? (
+        <ManageUsers initialUsers={users} availablePermissions={permissions} />
       ) : (
         <></>
       )}

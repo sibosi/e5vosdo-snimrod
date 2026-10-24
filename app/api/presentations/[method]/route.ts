@@ -17,6 +17,7 @@ const allowedFunctionsForUnauthorized = new Set<string>([
 const allowedForExternalSignups = new Set<string>([
   "signUpForPresentation",
   "getMySignups",
+  "getSignupChangePreview",
 ]);
 
 function extractExternalEmail(body: any): string | null {

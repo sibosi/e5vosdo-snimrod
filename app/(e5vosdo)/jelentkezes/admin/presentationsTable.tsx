@@ -12,6 +12,16 @@ interface EditingPresentation extends Partial<PresentationType> {
   isNew?: boolean;
 }
 
+const Field = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return <div className={"space-y-2 p-2 " + (className || "")}>{children}</div>;
+};
+
 const AdminPresentationsPage = () => {
   const [presentations, setPresentations] = useState<PresentationType[]>([]);
   const [signups, setSignups] = useState<{ [key: number]: string[] }>({});
@@ -191,42 +201,81 @@ const AdminPresentationsPage = () => {
     }));
   };
 
-  const pauseSignup = async () => {
-    if (!confirm("Biztosan szüneteltetni szeretnéd a jelentkezést?")) return;
+  const closeAllSignup = async () => {
+    if (
+      !confirm(
+        "Biztosan le szeretnéd zárni minden prezentációnál a jelentkezést?",
+      )
+    )
+      return;
 
     try {
-      const response = await fetch("/api/presentations/pauseSignup");
+      const response = await fetch("/api/presentations/closeAllSignupForAll");
 
       if (response.ok) {
         await fetchPresentations();
         await fetchSignups();
         await fetchNamesByEmail();
-        alert("Jelentkezés szüneteltetve");
+        alert("Minden prezentációnál lezárva a jelentkezés");
       } else {
         alert("Hiba történt");
       }
     } catch (error) {
-      console.error("Error pausing signup:", error);
+      console.error("Error closing all signups:", error);
       alert("Hiba történt");
     }
   };
 
-  const startSignupProcess = async () => {
-    if (!confirm("Biztosan indítani szeretnéd a jelentkezést?")) return;
+  const openAllSignupOnlyForPriority = async () => {
+    if (
+      !confirm(
+        "Biztosan csak az elsőbbségi jelentkezéssel rendelkezők számára nyitod meg minden prezentáció jelentkezését?",
+      )
+    )
+      return;
 
     try {
-      const response = await fetch("/api/presentations/startSignup");
+      const response = await fetch(
+        "/api/presentations/openAllSignupOnlyForPriority",
+      );
 
       if (response.ok) {
         await fetchPresentations();
         await fetchSignups();
         await fetchNamesByEmail();
-        alert("Jelentkezés elindítva");
+        alert("Minden prezentáció megnyitva elsőbbségi jelentkezésre");
       } else {
         alert("Hiba történt");
       }
     } catch (error) {
-      console.error("Error starting signup:", error);
+      console.error("Error opening priority signups:", error);
+      alert("Hiba történt");
+    }
+  };
+
+  const openAllSignupForEveryone = async () => {
+    if (
+      !confirm(
+        "Biztosan mindenki számára megnyitod minden prezentáció jelentkezését?",
+      )
+    )
+      return;
+
+    try {
+      const response = await fetch(
+        "/api/presentations/openAllSigupForEveryoune",
+      );
+
+      if (response.ok) {
+        await fetchPresentations();
+        await fetchSignups();
+        await fetchNamesByEmail();
+        alert("Minden prezentáció megnyitva mindenki számára");
+      } else {
+        alert("Hiba történt");
+      }
+    } catch (error) {
+      console.error("Error opening all signups:", error);
       alert("Hiba történt");
     }
   };
@@ -349,6 +398,11 @@ const AdminPresentationsPage = () => {
     setIsCreating(false);
   };
 
+  const editingPresentationHasSignups =
+    editingPresentation !== null &&
+    !editingPresentation.isNew &&
+    (signups[editingPresentation.id ?? -1]?.length ?? 0) > 0;
+
   const startCreating = () => {
     setEditingPresentation({
       isNew: true,
@@ -357,9 +411,11 @@ const AdminPresentationsPage = () => {
       description: "",
       address: "",
       requirements: "",
+      linked_presentation_id: null,
       capacity: 20,
       remaining_capacity: 20,
       performer: null,
+      open_for: "nobody",
     });
     setIsCreating(true);
   };
@@ -559,18 +615,26 @@ const AdminPresentationsPage = () => {
 
         <Button
           color="success"
-          onPress={startSignupProcess}
+          onPress={openAllSignupForEveryone}
           isDisabled={editingPresentation !== null || isManagingSlots}
         >
-          Jelentkezés Indítása
+          Jelentkezés megnyitása mindenkinek
         </Button>
 
         <Button
           color="warning"
-          onPress={pauseSignup}
+          onPress={openAllSignupOnlyForPriority}
           isDisabled={editingPresentation !== null || isManagingSlots}
         >
-          Jelentkezés Szüneteltetése
+          Megnyitás csak elsőbbségieknek
+        </Button>
+
+        <Button
+          color="danger"
+          onPress={closeAllSignup}
+          isDisabled={editingPresentation !== null || isManagingSlots}
+        >
+          Minden jelentkezés lezárása
         </Button>
 
         <Button
@@ -707,7 +771,7 @@ const AdminPresentationsPage = () => {
                       : undefined,
                   })
                 }
-                disabled={!editingPresentation.isNew}
+                disabled={editingPresentationHasSignups}
               >
                 <option value="">Válassz slotot...</option>
                 {existingSlots.map((slot) => (
@@ -739,6 +803,49 @@ const AdminPresentationsPage = () => {
                 }
                 placeholder="Prezentáció neve"
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="linked-presentation-input"
+                className="mb-2 block font-medium"
+              >
+                Duplaelőadás párja
+              </label>
+              <select
+                id="linked-presentation-input"
+                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                value={editingPresentation.linked_presentation_id ?? ""}
+                onChange={(e) =>
+                  setEditingPresentation({
+                    ...editingPresentation,
+                    linked_presentation_id: e.target.value
+                      ? Number(e.target.value)
+                      : null,
+                  })
+                }
+                disabled={editingPresentationHasSignups}
+              >
+                <option value="">Nincs összekapcsolva</option>
+                {presentations
+                  .filter(
+                    (candidate) =>
+                      candidate.id !== editingPresentation.id &&
+                      candidate.slot_id !== editingPresentation.slot_id,
+                  )
+                  .map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>
+                      {existingSlots.find((s) => s.id === candidate.slot_id)
+                        ?.title || `Slot #${candidate.slot_id}`}{" "}
+                      | {candidate.title}
+                    </option>
+                  ))}
+              </select>
+              <p className="mt-1 text-xs text-foreground-600">
+                A jelentkezés és a törlés mindkét sávban egyszerre történik.
+                {editingPresentationHasSignups &&
+                  " Jelentkezőkkel rendelkező előadásnál ez nem módosítható."}
+              </p>
             </div>
 
             <div>
@@ -799,6 +906,32 @@ const AdminPresentationsPage = () => {
                 }
                 placeholder="Az előadó neve"
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="open-for-input"
+                className="mb-2 block font-medium"
+              >
+                Jelentkezhetnek
+              </label>
+              <select
+                id="open-for-input"
+                className="w-full rounded-md bg-selfprimary-50 p-2 text-selfprimary-900"
+                value={editingPresentation.open_for || "everyone"}
+                onChange={(e) =>
+                  setEditingPresentation({
+                    ...editingPresentation,
+                    open_for: e.target.value as PresentationType["open_for"],
+                  })
+                }
+              >
+                <option value="everyone">Mindenki</option>
+                <option value="only_priority">
+                  Csak elsőbbségi jelentkezéssel
+                </option>
+                <option value="nobody">Senki</option>
+              </select>
             </div>
 
             <div className="md:col-span-2">
@@ -875,93 +1008,117 @@ const AdminPresentationsPage = () => {
               <div
                 id={"presentation-card-" + presentation.id}
                 key={presentation.id}
-                className="rounded-lg border-2 border-selfprimary-400 bg-selfprimary-100 p-4"
+                className="my-2 rounded-xl border-2 border-selfprimary-400 bg-selfprimary-100"
               >
-                <div className="grid gap-4 md:grid-cols-4">
-                  <div className="md:col-span-2">
+                <div className="grid md:grid-cols-5 md:gap-4">
+                  <Field className="bg-selfprimary-200 md:col-span-2">
                     <h3 className="text-lg font-bold">
                       {existingSlots.find((s) => s.id === presentation.slot_id)
                         ?.title || `Slot #${presentation.slot_id}`}{" "}
                       | {presentation.id}. {presentation.title}
                     </h3>
                     {presentation.performer && (
-                      <p className="mt-1 text-sm font-semibold text-foreground-700">
-                        Előadó: {presentation.performer}
+                      <p className="italic">{presentation.performer}</p>
+                    )}
+                    {presentation.requirements && (
+                      <p className="font-bold text-selfsecondary">
+                        {presentation.requirements}
                       </p>
                     )}
-                    <p className="mt-1 text-sm text-foreground-600">
-                      {presentation.address}
+                    {presentation.open_for === "only_priority" && (
+                      <p className="text-sm font-bold text-warning-900">
+                        Csak elsőbbségi jelentkezéssel rendelkezőknek
+                      </p>
+                    )}
+                    {presentation.open_for === "nobody" && (
+                      <p className="text-sm font-bold text-danger">
+                        A jelentkezés lezárva
+                      </p>
+                    )}
+                    <p className="info">
+                      Maximális létszám: {presentation.capacity} fő
                     </p>
-                    <p className="text-sm text-foreground-600">
-                      {presentation.requirements}
-                    </p>
-                    <p className="mt-2">{presentation.description}</p>
-                  </div>
+                    {presentation.address && (
+                      <p className="info">Helyszín: {presentation.address}</p>
+                    )}
+                  </Field>
 
-                  <div className="text-center">
-                    <div className="text-lg font-semibold">
-                      {presentation.remaining_capacity == null &&
-                        "(Szüneteltetve) "}{" "}
-                      {(() => {
-                        const signupsForPresentation =
-                          signupsWithAmounts[presentation.id] || [];
-                        const totalAmount = signupsForPresentation.reduce(
-                          (acc, signup) => acc + signup.amount,
-                          0,
-                        );
-                        return presentation.capacity - totalAmount;
-                      })()}
-                      / {presentation.capacity}
+                  <Field className="md:col-span-2">
+                    <div className="max-h-64 overflow-auto whitespace-pre-line break-words">
+                      {presentation.linked_presentation_id && (
+                        <p className="mb-2 text-sm font-semibold text-selfsecondary">
+                          Duplaelőadás párja:{" "}
+                          {presentations.find(
+                            (p) => p.id === presentation.linked_presentation_id,
+                          )?.title || "másik előadás"}
+                        </p>
+                      )}
+                      {presentation.description ?? ""}
                     </div>
-                    <div className="text-sm text-foreground-600">
-                      Szabad / Összes hely
+                  </Field>
+
+                  <Field className="bg-selfprimary-200 text-center max-md:flex max-md:flex-wrap max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
+                    <p className="h-7 md:hidden">Szabad helyek:</p>
+                    <div className="text-xl font-bold">
+                      {presentation.remaining_capacity == null && "-"}
+                      {presentation.remaining_capacity != null &&
+                        (() => {
+                          const signupsForPresentation =
+                            signupsWithAmounts[presentation.id] || [];
+                          const totalAmount = signupsForPresentation.reduce(
+                            (acc, signup) => acc + signup.amount,
+                            0,
+                          );
+                          return presentation.capacity - totalAmount;
+                        })()}
+                      <span className="text-sm font-normal">
+                        {" "}
+                        / {presentation.capacity}
+                      </span>
                     </div>
-                    <div className="mt-1 text-xs text-foreground-500">
+                    <div className="text-xs text-foreground-500">
                       ({signups[presentation.id]?.length || 0} jelentkezés)
                     </div>
-                    <div className="mt-2">
-                      <Button
-                        size="sm"
-                        variant="light"
-                        onPress={() => toggleSignupsView(presentation.id)}
-                      >
-                        {showSignups[presentation.id]
-                          ? "Jelentkezők elrejtése"
-                          : "Jelentkezők megtekintése"}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
                     <Button
-                      color="primary"
-                      size="sm"
-                      onPress={() => startEditing(presentation)}
-                      isDisabled={editingPresentation !== null}
-                    >
-                      Szerkesztés
-                    </Button>
-                    <Button
-                      color="success"
-                      size="sm"
-                      onPress={() => startAddingUser(presentation.id)}
-                      isDisabled={
-                        editingPresentation !== null ||
-                        addingUserToPresentationId !== null
-                      }
-                    >
-                      Felhasználó hozzáadása
-                    </Button>
-                    <Button
-                      color="danger"
                       size="sm"
                       variant="light"
-                      onPress={() => handleDelete(presentation.id)}
-                      isDisabled={editingPresentation !== null}
+                      onPress={() => toggleSignupsView(presentation.id)}
                     >
-                      Törlés
+                      {showSignups[presentation.id]
+                        ? "Jelentkezők elrejtése"
+                        : "Jelentkezők megtekintése"}
                     </Button>
-                  </div>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        color="primary"
+                        size="sm"
+                        onPress={() => startEditing(presentation)}
+                        isDisabled={editingPresentation !== null}
+                      >
+                        Szerkesztés
+                      </Button>
+                      <Button
+                        color="success"
+                        size="sm"
+                        onPress={() => startAddingUser(presentation.id)}
+                        isDisabled={
+                          editingPresentation !== null ||
+                          addingUserToPresentationId !== null
+                        }
+                      >
+                        Felhasználó hozzáadása
+                      </Button>
+                      <Button
+                        color="danger"
+                        size="sm"
+                        variant="light"
+                        onPress={() => handleDelete(presentation.id)}
+                        isDisabled={editingPresentation !== null}
+                      >
+                        Törlés
+                      </Button>
+                    </div>
+                  </Field>
                 </div>
 
                 {showSignups[presentation.id] && (

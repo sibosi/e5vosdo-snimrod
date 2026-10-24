@@ -6,20 +6,27 @@ interface MyGlobal {
 
 const g = globalThis as MyGlobal;
 
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set");
+}
+
 const pool =
   g.__mysqlPool ??
   mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    port: Number(process.env.MYSQL_PORT),
-    database: process.env.MYSQL_DATABASE,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
+    uri: DATABASE_URL,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
   });
 
 g.__mysqlPool = pool;
+
+const RETRYABLE_CONNECTION_ERRORS = new Set([
+  "PROTOCOL_CONNECTION_LOST",
+  "ECONNRESET",
+  "EPIPE",
+]);
 
 export async function withConnection<T>(
   callback: (connection: mysql.PoolConnection) => Promise<T>,
@@ -32,27 +39,23 @@ export async function withConnection<T>(
   }
 }
 
-export async function dbreq(query: string, params?: any[]): Promise<any> {
+export async function dbreq<T = any>(
+  query: string,
+  params?: any[],
+): Promise<T> {
   try {
-    return await withConnection(async (connection) => {
-      try {
-        const [result] = await connection.execute(query, params);
-        return result;
-      } catch (error: any) {
-        console.error(
-          "Hiba a lekérdezés során, újrapróbálkozás:",
-          error.message,
-        );
-        connection.destroy();
-        return await withConnection(async (newConnection) => {
-          const [result] = await newConnection.execute(query, params);
-          return result;
-        });
-      }
-    });
-  } catch (error) {
-    console.error("Lekérdezés végrehajtása sikertelen:", error);
-    throw new Error("Failed to execute query. bug #71");
+    const [result] = await pool.execute(query, params);
+    return result as T;
+  } catch (error: any) {
+    if (
+      !RETRYABLE_CONNECTION_ERRORS.has(error?.code) ||
+      !/^\s*select\b/i.test(query)
+    ) {
+      throw error;
+    }
+
+    const [result] = await pool.execute(query, params);
+    return result as T;
   }
 }
 
@@ -61,6 +64,9 @@ export async function multipledbreq<T>(
 ): Promise<T> {
   return await withConnection(async (connection) => {
     try {
+      await connection.query(
+        "SET TRANSACTION ISOLATION LEVEL READ COMMITTED",
+      );
       await connection.beginTransaction();
       let result: any;
       if (typeof queries === "function") {
@@ -75,7 +81,11 @@ export async function multipledbreq<T>(
       await connection.commit();
       return result;
     } catch (e) {
-      await connection.rollback();
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Rollback sikertelen:", rollbackError);
+      }
       throw e;
     }
   });

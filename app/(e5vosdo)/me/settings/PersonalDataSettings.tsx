@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
-import { Input, Link, RadioGroup, Radio, InputOtp } from "@heroui/react";
+import { Input, Link, RadioGroup, Radio } from "@heroui/react";
 import { Alert } from "@/components/home/alert";
 import { UserType } from "@/db/dbreq";
 
@@ -15,38 +15,14 @@ const PersonalDataSettings = ({
 }) => {
   const [nickname, setNickname] = useState<string>(selfUser.nickname);
   const [nicknameError, setNicknameError] = useState<string>("");
-  const [studentCode, setStudentCode] = useState<string>(
-    selfUser.EJG_code ?? "",
-  );
-  const [studentCodeError, setStudentCodeError] = useState<string>("");
   const [foodMenu, setFoodMenu] = useState<string>(selfUser.food_menu);
-  const [OM5, setOM5] = useState<string>(selfUser.OM5 ?? "");
-  const [initialSettings] = useState(() => ({
-    nickname,
-    studentCode,
-    foodMenu,
-    OM5,
-  }));
-
-  console.log("Saving settings:", {
-    nickname,
-    studentCode,
-    foodMenu,
-    OM5,
-  });
+  const [initialSettings] = useState(() => ({ nickname, foodMenu }));
 
   const isAlphabetic = (username: string): boolean =>
     /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/.test(username);
-  const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]+$/.test(code);
-
   const saveSettings = useCallback(() => {
-    if (nicknameError || studentCodeError) return;
-    if (
-      nickname === selfUser.nickname &&
-      studentCode === selfUser.EJG_code &&
-      foodMenu === selfUser.food_menu &&
-      OM5 === selfUser.OM5
-    )
+    if (nicknameError) return;
+    if (nickname === selfUser.nickname && foodMenu === selfUser.food_menu)
       return;
 
     fetch("/api/editMySettings", {
@@ -55,35 +31,28 @@ const PersonalDataSettings = ({
       body: JSON.stringify({
         settings: {
           nickname,
-          EJG_code: studentCode.length === 13 ? studentCode : "",
           food_menu: foodMenu,
-          OM5: OM5,
         },
       }),
     }).then(async (response) => {
       if (response.ok) window.location.reload();
       else alert("Hiba történt a mentés során.");
     });
-  }, [nickname, studentCode, foodMenu, selfUser, OM5]);
+  }, [nickname, foodMenu, selfUser, nicknameError]);
 
   useEffect(() => {
     setSaveSettings(() => saveSettings);
   }, [saveSettings]);
 
   useEffect(() => {
-    const value = {
-      nickname,
-      studentCode,
-      foodMenu,
-      OM5,
-    };
+    const value = { nickname, foodMenu };
 
     setIsSaveNeeded(JSON.stringify(value) !== JSON.stringify(initialSettings));
-  }, [nickname, studentCode, foodMenu, OM5]);
+  }, [nickname, foodMenu, initialSettings]);
 
   return (
     <div>
-      {studentCode === "" && (
+      {!selfUser.EJG_code && (
         <Alert className="mt-2 border-selfsecondary-300 bg-selfsecondary-100">
           Az EJG kódod még nincs megadva. Az EJG kód nélkül nem tudod használni
           az alkalmazás számos funkcióját, például az órarended megtekintését és
@@ -138,38 +107,23 @@ const PersonalDataSettings = ({
           </tr>
           <tr>
             <th className="font-semibold">EJG kód:</th>
-            <td>
-              <Input
-                color={studentCode.length === 13 ? "primary" : "danger"}
-                placeholder="EJG kód"
-                value={studentCode}
-                onChange={(e) => {
-                  const code = e.target.value.toUpperCase();
-                  setStudentCode(code);
-                  if (!isValidEJGCode(code)) {
-                    setStudentCodeError(
-                      "Az EJG kód csak betűket és számokat tartalmazhat.",
-                    );
-                  } else {
-                    setStudentCodeError("");
-                  }
-                }}
-                isDisabled={!selfUser.tickets.includes("EJG_code_edit")}
-              />
-              {studentCodeError && (
-                <p className="text-danger-600">{studentCodeError}</p>
-              )}
+            <td className="font-mono">
+              {selfUser.EJG_code || "Nincs megadva"}
             </td>
           </tr>
           <tr>
-            <th className="font-semibold">OM azonosító utolsó 5 számjegye:</th>
+            <th className="font-semibold">OM azonosító:</th>
+            <td className="font-mono">{selfUser.OM5 || "Nincs megadva"}</td>
+          </tr>
+          <tr>
+            <th className="font-semibold">Tanulói adatok:</th>
             <td>
-              <InputOtp
-                length={5}
-                value={OM5}
-                onValueChange={setOM5}
-                isDisabled={!selfUser.tickets.includes("OM5_code_edit")}
-              />
+              <Link
+                href="/me/verify"
+                className="inline-block rounded-xl bg-selfprimary px-3 py-2 text-white"
+              >
+                EJG- és OM-adatok ellenőrzése
+              </Link>
             </td>
           </tr>
           <tr>

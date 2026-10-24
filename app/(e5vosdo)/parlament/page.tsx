@@ -1,17 +1,12 @@
-import { addLog, getAuth } from "@/db/dbreq";
-import NewParlament from "./components/newParlament";
-import ParlamentsList from "./components/parlamentsList";
+import { getAuth } from "@/db/dbreq";
+import NewParlament from "./components/newParliament";
+import ParlamentsList from "./components/parliamentsList";
+import { hasPermission } from "@/db/permissions";
 
-const ParlamentPage = async () => {
+const ParliamentPage = async () => {
   const selfUser = await getAuth();
-  addLog("parlament", selfUser?.email ?? "unknown");
 
-  if (!selfUser?.permissions.includes("head_of_parlament"))
-    return (
-      <div className="font-semibold text-foreground">
-        <h1>Hozzáférés megtagadva!</h1>
-      </div>
-    );
+  if (!hasPermission(selfUser, "head_of_parlament")) return <ParlamentsList />;
 
   return (
     <div className="space-y-4 font-semibold text-foreground">
@@ -21,4 +16,4 @@ const ParlamentPage = async () => {
   );
 };
 
-export default ParlamentPage;
+export default ParliamentPage;

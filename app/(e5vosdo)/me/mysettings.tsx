@@ -1,15 +1,6 @@
 "use client";
 import { User } from "@/db/dbreq";
-import {
-  RadioGroup,
-  Radio,
-  Input,
-  Link,
-  Button,
-  ModalContent,
-  Modal,
-  Switch,
-} from "@heroui/react";
+import { RadioGroup, Radio, Input, Link, Button, Switch } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 import VersionTable from "./versionTable";
 import { Section } from "@/components/home/section";
@@ -18,6 +9,8 @@ import VersionManager from "@/components/PWA/versionManager";
 import { ThemeOptions, ThemeTemplate } from "@/components/themePicker";
 import { Alert } from "@/components/home/alert";
 import { ReinstallServiceWorker } from "@/components/PWA/managesw";
+import { requestPushPermissionAndSubscribe } from "@/components/PWA/subscribePush";
+import { siteConfig } from "@/config/site";
 
 const SettingsSection = ({
   title,
@@ -50,12 +43,8 @@ const SettingsSection = ({
 
 const MySettings = ({ selfUser }: { selfUser: User }) => {
   const [selfUserPromise, setSelfUserPromise] = useState<User>(selfUser);
-  const [EJG_code, setEJG_code] = useState<string>(
-    selfUserPromise.EJG_code ?? "",
-  );
   const [nickname, setNickname] = useState<string>(selfUserPromise.nickname);
   const [nicknameError, setNicknameError] = useState<string>("");
-  const [EJG_codeError, setEJG_codeError] = useState<string>("");
   const [isMaterialBg, setIsMaterialBg] = useState<boolean>(false);
 
   const [reload, setReload] = useState<boolean>(false);
@@ -134,14 +123,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (
-        EJG_code &&
-        EJG_code.length === 13 &&
-        nickname &&
-        (EJG_code !== selfUserPromise.EJG_code ||
-          nickname !== selfUserPromise.nickname) &&
-        !nicknameError
-      ) {
+      if (nickname && nickname !== selfUserPromise.nickname && !nicknameError) {
         e.preventDefault();
       }
     };
@@ -150,25 +132,11 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [
-    EJG_code,
-    nickname,
-    nicknameError,
-    selfUserPromise.EJG_code,
-    selfUserPromise.food_menu,
-    selfUserPromise.nickname,
-  ]);
-
-  const [sureQuestion, setSureQuestion] = useState<boolean>(false);
+  }, [nickname, nicknameError, selfUserPromise.nickname]);
 
   const isAlphabetic = (username: string): boolean => {
     const regex = /^[A-Za-zÁÉÍÓÖŐÚÜŰáéíóöőúüű]+$/;
     return regex.test(username);
-  };
-
-  const isValidEJGCode = (code: string): boolean => {
-    const regex = /^[A-Z0-9]+$/;
-    return regex.test(code);
   };
 
   async function save_settings({
@@ -205,7 +173,6 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
       },
       body: JSON.stringify({
         settings: {
-          EJG_code: EJG_code,
           nickname: nickname,
         },
       }),
@@ -229,7 +196,7 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           beállításaidat.
         </p>
 
-        {EJG_code === "" && (
+        {!selfUserPromise.EJG_code && (
           <Alert className="mt-2 border-selfsecondary-400 bg-selfsecondary-200">
             Az EJG kódod még nincs megadva. Az EJG kódod nélkül nem tudod
             használni az alkalmazás számos funkcióját, például az órarended
@@ -290,28 +257,25 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
               </tr>
               <tr>
                 <th className="font-semibold">EJG kód:</th>
+                <th className="font-mono">
+                  {selfUserPromise.EJG_code || "Nincs megadva"}
+                </th>
+              </tr>
+              <tr>
+                <th className="font-semibold">OM azonosító utolsó 5 számjegye:</th>
+                <th className="font-mono">
+                  {selfUserPromise.OM5 || "Nincs megadva"}
+                </th>
+              </tr>
+              <tr>
+                <th className="font-semibold">Tanulói adatok:</th>
                 <th>
-                  <Input
-                    color={EJG_code.length == 13 ? "primary" : "danger"}
-                    placeholder="EJG kód"
-                    value={EJG_code}
-                    onChange={(e) => {
-                      setEJG_code(e.target.value.toUpperCase());
-                      if (!isValidEJGCode(e.target.value.toUpperCase())) {
-                        setEJG_codeError(
-                          "Az EJG kód csak betűket és számokat tartalmazhat.",
-                        );
-                      } else {
-                        setEJG_codeError("");
-                      }
-                    }}
-                    isDisabled={
-                      !selfUserPromise.tickets.includes("EJG_code_edit")
-                    }
-                  />
-                  {EJG_codeError && (
-                    <p className="text-danger-600">{EJG_codeError}</p>
-                  )}
+                  <Link
+                    href="/me/verify"
+                    className="inline-block rounded-xl bg-selfprimary px-3 py-2"
+                  >
+                    EJG- és OM-adatok ellenőrzése
+                  </Link>
                 </th>
               </tr>
               <tr>
@@ -360,20 +324,24 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
           <div className="grid grid-cols-1 gap-2">
             <Switch
               isSelected={isPushEnabled.value}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  Notification.requestPermission();
-                  save_settings({
-                    settings: {
-                      push_permission: true,
-                    },
-                  });
-                } else
-                  save_settings({
-                    settings: {
-                      push_permission: false,
-                    },
-                  });
+              onValueChange={async (checked) => {
+                if (checked) {
+                  try {
+                    await requestPushPermissionAndSubscribe();
+                  } catch (error) {
+                    alert(
+                      error instanceof Error
+                        ? error.message
+                        : "Nem sikerült bekapcsolni a push értesítést.",
+                    );
+                    return;
+                  }
+                }
+                save_settings({
+                  settings: {
+                    push_permission: checked,
+                  },
+                });
               }}
             >
               Értesítések engedélyezése
@@ -467,31 +435,21 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
         <div
           className={
             "fixed inset-x-0 z-50 mx-auto flex h-14 w-36 border-2 border-foreground-500 bg-foreground-100 transition-all duration-300 max-md:rounded-b-2xl max-md:border-t-0 xs:w-72 md:rounded-t-2xl md:border-b-0 " +
-            (EJG_code &&
-            EJG_code.length === 13 &&
-            nickname &&
-            (EJG_code !== selfUserPromise.EJG_code ||
-              nickname !== selfUserPromise.nickname) &&
-            !nicknameError
+            (nickname && nickname !== selfUserPromise.nickname && !nicknameError
               ? "max-md:top-0 md:bottom-0"
               : "max-md:-top-16 md:-bottom-16")
           }
         >
           <Button
             onPress={() => {
-              EJG_code !== selfUserPromise.EJG_code
-                ? setSureQuestion(true)
-                : save();
+              save();
             }}
             // make the button to be on the right side
             className="m-auto bg-selfsecondary"
             isDisabled={
               !(
-                EJG_code &&
-                EJG_code.length === 13 &&
                 nickname &&
-                (EJG_code !== selfUserPromise.EJG_code ||
-                  nickname !== selfUserPromise.nickname) &&
+                nickname !== selfUserPromise.nickname &&
                 !nicknameError
               )
             }
@@ -503,48 +461,12 @@ const MySettings = ({ selfUser }: { selfUser: User }) => {
 
       <p className="mx-auto max-w-xl px-5 text-xs text-foreground-300">
         Amennyiben problémád adódik a fiókoddal kapcsolatban, vedd fel a
-        kapcsolatot a fejlesztővel!
+        kapcsolatot a fejlesztővel:
+        <br />
+        <strong>
+          {siteConfig.developer} ({siteConfig.developerEmail})
+        </strong>
       </p>
-
-      <Modal
-        placement="center"
-        isOpen={sureQuestion}
-        onClose={() => setSureQuestion(false)}
-        className="mx-5"
-      >
-        <ModalContent className="p-4 text-foreground">
-          <h3 className="text-lg font-bold">EJG kód módosítása</h3>
-          <p className="text-foreground-600">
-            Adatvédelmi okokból csak EJG kódoddal tudunk beazonosítani. A kód
-            befolyásolhatja az oldalon megjelenő tartalmat, illetve
-            kulcsfontosságú szerepe van az E5vös Napok alatt. Figyelem, a
-            kódodat később nem módosíthatod!
-          </p>
-          <div className="py-4 text-center">
-            <p>Biztosan helyesen adtad-e meg a kódod?</p>
-            <p className="text-2xl font-extrabold">{EJG_code}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-2 pt-2">
-            <Button
-              color="danger"
-              onPress={() => {
-                setSureQuestion(false);
-              }}
-            >
-              Mégse
-            </Button>
-            <Button
-              color="success"
-              onPress={() => {
-                setSureQuestion(false);
-                save();
-              }}
-            >
-              Igen
-            </Button>
-          </div>
-        </ModalContent>
-      </Modal>
     </>
   );
 };

@@ -1,9 +1,16 @@
 import { addLog, getAuth, getAllUsersNameByEmail } from "@/db/dbreq";
-import { getParlament, getParlamentParticipants } from "@/db/parlament";
+import {
+  getParlament,
+  getParlamentParticipants,
+  getParlamentApplicants,
+} from "@/db/parlament";
 import { redirect } from "next/navigation";
-import ParlamentIDClient from "./ParlamentIDClient";
+import ParliamentIDClient from "./ParliamentIDClient";
+import { hasPermission } from "@/db/permissions";
+import getUserClass from "@/public/getUserClass";
+import { Link } from "@heroui/react";
 
-const ParlamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
+const ParliamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
   const { id } = await props.params;
 
   const selfUser = await getAuth();
@@ -11,25 +18,41 @@ const ParlamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
     redirect("/");
   }
 
-  addLog("parlament", selfUser?.email ?? "unknown");
+  void addLog("parlament", selfUser?.email ?? "unknown");
 
   try {
-    const [selectedParlament, participants, usersNameByEmail] =
+    const [selectedParlament, participants, applicants, usersNameByEmail] =
       await Promise.all([
         getParlament(selfUser, Number(id)),
         getParlamentParticipants(selfUser, Number(id)),
+        getParlamentApplicants(selfUser, Number(id)),
+
         getAllUsersNameByEmail(),
       ]);
 
     console.log("Selected Parlament:", selectedParlament);
 
+    const userClass = getUserClass(selfUser);
+
     return (
-      <ParlamentIDClient
-        parlamentId={Number(id)}
-        initialParlament={selectedParlament}
-        initialParticipants={participants}
-        usersNameByEmail={usersNameByEmail}
-      />
+      <div className="flex flex-col gap-4">
+        <Link href="/parlament">
+          <span className="rotate-180">➜</span>&nbsp;Vissza a parlamentekhez
+        </Link>
+        <ParliamentIDClient
+          parlamentId={Number(id)}
+          initialParlament={selectedParlament}
+          initialParticipants={participants}
+          initialApplicants={applicants}
+          usersNameByEmail={usersNameByEmail}
+          canEdit={hasPermission(selfUser, [
+            "head_of_parlament",
+            "delegate_counter",
+          ])}
+          selfUser={selfUser}
+          userClass={userClass}
+        />
+      </div>
     );
   } catch (error) {
     console.error("Error loading parlament:", error);
@@ -41,4 +64,4 @@ const ParlamentIDPage = async (props: { params: Promise<{ id: string }> }) => {
   }
 };
 
-export default ParlamentIDPage;
+export default ParliamentIDPage;

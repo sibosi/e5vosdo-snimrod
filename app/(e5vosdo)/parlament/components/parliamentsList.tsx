@@ -1,7 +1,7 @@
 "use client";
 import { Section } from "@/components/home/section";
 import Tray from "@/components/tray";
-import { Parlament } from "@/db/parlament";
+import type { Parlament } from "@/types/parliaments";
 import { Link } from "@heroui/react";
 import React, { useEffect, useState } from "react";
 
@@ -9,19 +9,20 @@ export default function ParlamentManager() {
   const [parlamentList, setParlamentList] = useState<Parlament[]>();
 
   useEffect(() => {
-    fetch("/api/getParlaments", {
-      headers: {
-        module: "parlament",
-      },
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((data: Parlament[]) => {
-          setParlamentList(data.toReversed());
-        });
-      } else {
+    void (async () => {
+      try {
+        const res = await fetch("/api/parliaments");
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch parlaments");
+        }
+
+        const data: Parlament[] = await res.json();
+        setParlamentList(data.toReversed());
+      } catch {
         alert("Hiba a parlamentek lekérdezése közben");
       }
-    });
+    })();
   }, []);
 
   return (

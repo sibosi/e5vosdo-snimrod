@@ -58,6 +58,14 @@ const Table = ({
   const [email, setEmail] = useState("");
 
   const isVerified = selfUser?.is_verified;
+  const canSignUpFor = (presentation: PresentationType) => {
+    if (presentation.open_for === "nobody") return false;
+    if (presentation.open_for === "only_priority") {
+      return selfUser?.permissions.includes("elsőbbségi_jelentkezés") === true;
+    }
+    // everyone case
+    return EXTERNAL_SIGNUPS || Boolean(selfUser);
+  };
 
   const presName = EXTERNAL_SIGNUPS ? "Óra" : "Előadás";
   const presNamePrep = EXTERNAL_SIGNUPS ? "órára" : "előadásra";
@@ -113,144 +121,152 @@ const Table = ({
     const amounts: { [slot_id: number]: number } = {};
     if (Array.isArray(mySignupsData)) {
       for (const signup of mySignupsData as SignupType[]) {
-        console.log("Hi");
-        setSelectedBySlot((prev) => ({
-          ...prev,
-          [signup.slot_id]: signup.presentation_id,
-        }));
         slotSelections[signup.slot_id] = signup.presentation_id;
         amounts[signup.slot_id] = signup.amount;
       }
     }
 
-    // setSelectedBySlot((prev) => ({ ...prev, ...slotSelections }));
+    setSelectedBySlot((prev) => {
+      const next = { ...prev };
+      for (const slotId of Object.keys(next)) {
+        next[Number(slotId)] = slotSelections[Number(slotId)] ?? null;
+      }
+      return { ...next, ...slotSelections };
+    });
     setSignupAmounts((prev) => ({ ...prev, ...amounts }));
-
-    console.log(JSON.stringify(mySignupsData));
-    console.log(JSON.stringify(slotSelections));
-    console.log(JSON.stringify(selectedBySlot));
   }
 
-  // imételje 5 mp enként
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      console.log(JSON.stringify(selectedBySlot));
-    }, 5000);
+    let stopped = false;
+    let es: EventSource | null = null;
 
-    return () => clearInterval(intervalId);
-  }, []);
+    let lastMessage = Date.now();
 
-  const [evtSource, setEvtSource] = useState<EventSource | null>(null);
+    const connect = () => {
+      if (stopped) return;
 
-  const setupSSE = () => {
-    // Clean up existing connection if any
-    if (evtSource) {
-      console.log(
-        "Cleaning up existing SSE connection before creating new one",
-      );
-      evtSource.close();
-    }
+      es?.close();
 
-    console.log("Setting up new SSE connection");
-    const newEvtSource = new EventSource("/api/presentations/sseCapacity");
-    setEvtSource(newEvtSource);
-    setIsFetchingAutomatically(null);
+      const source = new EventSource("/api/presentations/sseCapacity");
 
-    newEvtSource.onmessage = (event) => {
-      setIsFetchingAutomatically(true);
-      try {
-        const capacityData: { [key: number]: number } | { message: string } =
-          JSON.parse(event.data);
+      es = source;
+      lastMessage = Date.now();
 
-        if (!("message" in capacityData))
+      source.onopen = () => {
+        if (stopped || es !== source) return;
+
+        lastMessage = Date.now();
+        setIsFetchingAutomatically(true);
+      };
+
+      source.addEventListener("connected", () => {
+        if (stopped || es !== source) return;
+        lastMessage = Date.now();
+      });
+
+      source.addEventListener("ping", () => {
+        if (stopped || es !== source) return;
+
+        lastMessage = Date.now();
+        setIsFetchingAutomatically(true);
+      });
+
+      source.onmessage = (event) => {
+        if (stopped || es !== source) return;
+
+        lastMessage = Date.now();
+
+        try {
+          const capacityData = JSON.parse(event.data);
+
+          if (
+            !capacityData ||
+            typeof capacityData !== "object" ||
+            Array.isArray(capacityData)
+          ) {
+            return;
+          }
+
           setPresentations((prev) =>
-            prev?.map((p) => ({
-              ...p,
-              remaining_capacity: capacityData[p.id],
-            })),
+            prev?.map((p) => {
+              const live = capacityData[p.id];
+
+              if (!live) return p;
+
+              return {
+                ...p,
+                remaining_capacity: live.remaining_capacity,
+                open_for: live.open_for,
+              };
+            }),
           );
-      } catch (err) {
-        console.error("Error parsing SSE data:", err);
-      }
 
-      setLastUpdated(Date.now());
-    };
+          setLastUpdated(Date.now());
+          setIsFetchingAutomatically(true);
+        } catch (error) {
+          console.error("[SSE] Invalid message:", error);
+        }
+      };
 
-    newEvtSource.onerror = (err) => {
-      console.error("EventSource encountered an error:", err);
-      newEvtSource.close();
-      setEvtSource(null);
-      setIsFetchingAutomatically(false);
-    };
+      source.onerror = () => {
+        if (stopped || es !== source) return;
 
-    return () => {
-      console.log("Cleaning up SSE connection");
-      newEvtSource.close();
-      setEvtSource(null);
-      setIsFetchingAutomatically(false);
-    };
-  };
-
-  useEffect(() => {
-    if (lastUpdated === null) return;
-
-    const timeoutId = setTimeout(() => {
-      if (Date.now() - lastUpdated > 20000) {
         setIsFetchingAutomatically(false);
-        console.warn("Automatic fetching seems to have stopped.");
+
+        // DO NOT close here.
+        // Let EventSource handle automatic reconnection.
+      };
+    };
+
+    // Safety mechanism for connections that appear open
+    // but no longer receive any events.
+    const watchdog = setInterval(() => {
+      if (stopped || !es) return;
+
+      // Avoid reconnect storms caused by background-tab
+      // timer throttling.
+      if (document.visibilityState !== "visible") return;
+
+      if (Date.now() - lastMessage > 30000) {
+        console.warn("[SSE] Connection appears stale.");
+
+        setIsFetchingAutomatically(false);
+        connect();
       }
-    }, 20000);
+    }, 10000);
 
-    return () => clearTimeout(timeoutId);
-  }, [lastUpdated]);
+    const onVisibilityChange = () => {
+      if (stopped) return;
 
-  const [reconnectAttempts, setReconnectAttempts] = useState(0);
-
-  useEffect(() => {
-    if (isFetchingAutomatically === false) {
-      // Add exponential backoff for reconnection attempts
-      const reconnectDelay = Math.min(
-        1000 * Math.pow(2, reconnectAttempts),
-        12000,
-      ); // Max 12 second delay
-
-      console.log(
-        `Scheduling reconnection attempt ${reconnectAttempts + 1} in ${reconnectDelay}ms`,
-      );
-
-      const timeoutId = setTimeout(() => {
-        setReconnectAttempts((prev) => prev + 1);
-        setupSSE();
-      }, reconnectDelay);
-
-      if (!isToastVisible) {
-        setIsToastVisible(true);
-        addToast({
-          title: "Az automatikus frissítés leállt. Újrakapcsolódás...",
-          timeout: Infinity,
-          color: "warning",
-        });
+      if (
+        document.visibilityState === "visible" &&
+        es &&
+        Date.now() - lastMessage > 30000
+      ) {
+        connect();
       }
+    };
 
-      return () => clearTimeout(timeoutId);
-    }
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
-    if (isFetchingAutomatically === true) {
-      setReconnectAttempts(0);
-      setIsToastVisible(false);
-      closeAll();
-    }
-  }, [isFetchingAutomatically]);
+    // Keep your existing initial data loading.
+    // Do not connect after an unmount.
+    void initData()
+      .catch((error) => {
+        console.error("[SSE] Initial data load failed:", error);
+      })
+      .finally(() => {
+        if (!stopped) connect();
+      });
 
-  useEffect(() => {
-    initData().then(() => setupSSE());
-
-    // Cleanup on component unmount
     return () => {
-      if (evtSource) {
-        console.log("Component unmounting - cleaning up SSE connection");
-        evtSource.close();
-      }
+      stopped = true;
+
+      es?.close();
+
+      clearInterval(watchdog);
+
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
 
@@ -312,37 +328,59 @@ const Table = ({
       });
     }
 
-    let signupsCount = 0;
+    const previewBody: {
+      presentation_id: number;
+      details?: string;
+    } = { presentation_id };
+    if (EXTERNAL_SIGNUPS) previewBody.details = details ?? undefined;
 
-    for (const pres of Object.values(selectedBySlot)) {
-      if (pres !== null) signupsCount++;
-    }
-
-    if (
-      selectedBySlot[selectedSlot] === null ||
-      selectedBySlot[selectedSlot] === undefined
-    ) {
-      signupsCount++;
-    } else if (
-      !confirm(
-        `Ebben a sávban már jelentkeztél az alábbira: ${
-          presentations?.find((p) => p.id === selectedBySlot[selectedSlot])
-            ?.title
-        }. Felülírod a jelentkezésed?`,
-      )
-    ) {
-      return;
-    }
-
-    if (
-      EXTERNAL_SIGNUPS &&
-      EXTERNAL_SIGNUPS_PRESENTATION_LIMIT !== null &&
-      signupsCount > EXTERNAL_SIGNUPS_PRESENTATION_LIMIT
-    ) {
+    const previewResponse = await fetch(
+      "/api/presentations/getSignupChangePreview",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(previewBody),
+      },
+    );
+    if (!previewResponse.ok) {
+      const errorData = await previewResponse.json();
       alert(
-        `Legfeljebb ${EXTERNAL_SIGNUPS_PRESENTATION_LIMIT} előadásra jelentkezhetsz!`,
+        `Nem sikerült ellenőrizni a jelentkezés következményeit: ${
+          errorData.error?.message || "Ismeretlen hiba"
+        }`,
       );
       return;
+    }
+
+    const preview: {
+      targetPresentations: Array<{
+        id: number;
+        title: string;
+        slot_id: number;
+      }>;
+      cancelledPresentations: Array<{
+        id: number;
+        title: string;
+        slot_id: number;
+      }>;
+    } = await previewResponse.json();
+    if (preview.cancelledPresentations.length > 0) {
+      const targetTitles = preview.targetPresentations
+        .map((presentation) => presentation.title)
+        .join(" és ");
+      const cancelledTitles = preview.cancelledPresentations
+        .map((presentation) => presentation.title)
+        .join("\n-  ");
+      if (
+        !confirm(
+          `A(z) ${targetTitles} előadásra jelentkezel.\n\n` +
+            `A rendszer a következő korábbi jelentkezéseidet lemondja:\n` +
+            `- ${cancelledTitles}\n\n` +
+            "Biztosan folytatod?",
+        )
+      ) {
+        return;
+      }
     }
 
     const response = await fetch("/api/presentations/signUpForPresentation", {
@@ -357,16 +395,26 @@ const Table = ({
     });
 
     if (response.ok) {
-      setSelectedBySlot((prev) => ({
-        ...prev,
-        [selectedSlot]: presentation_id,
-      }));
+      setSelectedBySlot((prev) => {
+        const next = { ...prev };
+        for (const cancelledPresentation of preview.cancelledPresentations) {
+          next[cancelledPresentation.slot_id] = null;
+        }
+        for (const targetPresentation of preview.targetPresentations) {
+          next[targetPresentation.slot_id] = targetPresentation.id;
+        }
+        return next;
+      });
 
       if (EXTERNAL_SIGNUPS) {
         await loadMySignups();
       }
 
-      alert("Sikeres jelentkezés");
+      alert(
+        preview.targetPresentations.length > 1
+          ? "Sikeres jelentkezés: a duplaelőadás másik előadására is jelentkeztettünk."
+          : "Sikeres jelentkezés",
+      );
     } else {
       const errorData = await response.json();
       alert(
@@ -547,16 +595,32 @@ const Table = ({
                   },
                 );
                 if (response.ok) {
+                  const selectedPresentation = presentations?.find(
+                    (presentation) =>
+                      presentation.id === selectedBySlot[selectedSlot],
+                  );
+                  const linkedPresentation = presentations?.find(
+                    (presentation) =>
+                      presentation.id ===
+                      selectedPresentation?.linked_presentation_id,
+                  );
                   setSelectedBySlot((prev) => ({
                     ...prev,
                     [selectedSlot]: null,
+                    ...(linkedPresentation
+                      ? { [linkedPresentation.slot_id]: null }
+                      : {}),
                   }));
 
                   if (EXTERNAL_SIGNUPS) {
                     await loadMySignups();
                   }
 
-                  alert("Sikeres törlés");
+                  alert(
+                    linkedPresentation
+                      ? "A duplaelőadás mindkét jelentkezése törölve."
+                      : "Sikeres törlés",
+                  );
                 } else {
                   const errorData = await response.json();
                   alert(
@@ -649,14 +713,15 @@ const Table = ({
           </div>
         </div>
 
-        {Number.isInteger(EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) && (
-          <div className="rounded-xl bg-selfprimary-200 p-2 md:col-span-2">
-            <p className="font-xl font-bold">
-              Legfeljebb {EXTERNAL_SIGNUPS_PRESENTATION_LIMIT}{" "}
-              {presNamePrep.toLowerCase()}ra jelentkezhetsz.
-            </p>
-          </div>
-        )}
+        {EXTERNAL_SIGNUPS &&
+          Number.isInteger(EXTERNAL_SIGNUPS_PRESENTATION_LIMIT) && (
+            <div className="rounded-xl bg-selfprimary-200 p-2 md:col-span-2">
+              <p className="font-xl font-bold">
+                Legfeljebb {EXTERNAL_SIGNUPS_PRESENTATION_LIMIT}{" "}
+                {presNamePrep.toLowerCase()}ra jelentkezhetsz.
+              </p>
+            </div>
+          )}
       </div>
 
       <div className="z-100 fixed">
@@ -676,7 +741,7 @@ const Table = ({
       )}
       {presentations
         ?.filter((presentation) => presentation.slot_id === selectedSlot)
-        ?.map((presentation) => (
+        ?.map((presentation, index) => (
           <div
             id={`presentation-card-${presentation.id}`}
             key={presentation.id}
@@ -684,7 +749,14 @@ const Table = ({
           >
             <Field className="bg-selfprimary-200 md:col-span-2">
               <div>
-                <div className="text-lg font-bold">{presentation.title}</div>
+                <div className="text-lg font-bold">
+                  {presentation.slot_id}/{index} | {presentation.title}
+                </div>
+                {presentation.linked_presentation_id && (
+                  <p className="text-sm font-semibold text-selfsecondary">
+                    Duplaelőadás: a kapcsolt előadásra is jelentkeztetünk
+                  </p>
+                )}
 
                 {presentation.performer && (
                   <p className="italic">{presentation.performer}</p>
@@ -696,6 +768,16 @@ const Table = ({
                   </p>
                 )}
                 <br />
+                {presentation.open_for === "only_priority" && (
+                  <>
+                    <p className="mb-1 text-sm font-bold text-warning-900">
+                      Csak elsőbbségi jelentkezéssel rendelkező felhasználók
+                      jelentkezhetnek. (DÖ Parlamenti képviselők)
+                    </p>
+                    <br />
+                  </>
+                )}
+
                 <p className="info">
                   Maximális létszám: {presentation.capacity} fő
                 </p>
@@ -705,7 +787,9 @@ const Table = ({
               </div>
             </Field>
             <Field className="md:col-span-2">
-              <div>{presentation.description}</div>
+              <div className="max-h-64 overflow-auto whitespace-pre-line break-words">
+                {presentation.description ?? ""}
+              </div>
             </Field>
             <Field className="bg-selfprimary-200 text-center max-md:flex max-md:items-center max-md:justify-between max-md:gap-2 max-md:space-y-0">
               <p className="h-7 md:hidden">Szabad helyek:</p>
@@ -746,6 +830,7 @@ const Table = ({
                   presentation.remaining_capacity === 0 ||
                   (EXTERNAL_SIGNUPS && !isValidExternalData) ||
                   presentation.remaining_capacity === null ||
+                  !canSignUpFor(presentation) ||
                   (EXTERNAL_SIGNUPS &&
                     selectedSlot !== null &&
                     (presentation.remaining_capacity ?? 0) <
@@ -759,6 +844,12 @@ const Table = ({
                     selectedBySlot[selectedSlot] === presentation.id
                   )
                     return "Jelentkezve";
+                  if (presentation.open_for === "nobody") return "Lezárva";
+                  if (
+                    presentation.open_for === "only_priority" &&
+                    !canSignUpFor(presentation)
+                  )
+                    return "Lezárva*";
                   if (presentation.remaining_capacity === 0) return "Betelt";
                   if (EXTERNAL_SIGNUPS && selectedSlot !== null) {
                     const amount = signupAmounts[selectedSlot] || 1;

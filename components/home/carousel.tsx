@@ -36,6 +36,12 @@ const interpolate = (
   );
 };
 
+const formatEventTitle = (title: string | string[]) =>
+  (Array.isArray(title) ? title.join("\n") : title).replaceAll(
+    String.raw`\n`,
+    "\n",
+  );
+
 const CarouselItem = ({
   uri,
   scrollX,
@@ -56,7 +62,7 @@ const CarouselItem = ({
   width?: number | string;
 }) => {
   const [largeImageWidth, setLargeImageWidth] = useState(100);
-  const titleLines = Array.isArray(title) ? title : title.split(String.raw`\n`);
+  const titleLines = formatEventTitle(title).split("\n");
 
   useEffect(() => {
     setLargeImageWidth(window.innerWidth * 0.5);
@@ -241,7 +247,9 @@ function MobileCarousel({ data }: Readonly<{ data: EventType[] }>) {
                 }
                 className="max-h-60 w-full object-cover"
               />
-              <ModalHeader>{data[clicked].title}</ModalHeader>
+              <ModalHeader className="whitespace-pre-wrap">
+                {formatEventTitle(data[clicked].title)}
+              </ModalHeader>
               <ModalBody className="pb-18 whitespace-pre-wrap scrollbar-hide">
                 {parse(String(data[clicked].description))}
               </ModalBody>
@@ -481,7 +489,9 @@ function DesktopCarousel({ data }: Readonly<{ data: EventType[] }>) {
         className="max-h-80 overflow-auto bg-selfprimary-100 p-4"
         style={{ display: imageLoaded ? "block" : "none" }}
       >
-        <h2>{data[currentIndex].title}</h2>
+        <h2 className="whitespace-pre-wrap">
+          {formatEventTitle(data[currentIndex].title)}
+        </h2>
         <p className="mt-2 whitespace-pre-wrap">
           {parse(String(data[currentIndex].description))}
         </p>
@@ -508,7 +518,8 @@ function filterCarouselData(data: EventType[]) {
   const filteredData = data.filter((event) => {
     const eventDate = new Date(event.time);
     const diff = eventDate.getTime() - now.getTime();
-    return diff > 0;
+    const oneHourInMs = 60 * 60 * 1000;
+    return diff > -oneHourInMs; // Only include events that are more than 1 hour in the past
   });
   return filteredData.sort(
     (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),

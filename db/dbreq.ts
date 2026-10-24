@@ -3,6 +3,7 @@ import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
 import { OAuth2Client } from "google-auth-library";
 import { hasPermission } from "./permissions";
+import { siteConfig } from "@/config/site";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY as string;
@@ -33,6 +34,7 @@ export interface User {
   push_permission: boolean;
   push_about_games: boolean;
   push_about_timetable: boolean;
+  push_about_chatwall: boolean;
   is_verified: boolean;
   analytics_id: string | null;
 }
@@ -332,6 +334,38 @@ export async function updateUser(user: User | undefined, isLogin = false) {
   return null;
 }
 
+export async function createUserByEmail(email: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) throw new Error("Az email cím megadása kötelező.");
+
+  const existingUser = await getUser(normalizedEmail);
+  if (existingUser) {
+    throw new Error("Ezzel az email címmel már létezik felhasználó.");
+  }
+
+  const emptyProfileValue = normalizedEmail;
+  await dbreq(
+    `INSERT INTO \`users\` (
+      \`username\`, \`nickname\`, \`email\`, \`image\`, \`name\`, \`last_login\`,
+      \`permissions\`, \`notifications\`, \`tickets\`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      emptyProfileValue,
+      emptyProfileValue,
+      normalizedEmail,
+      "",
+      emptyProfileValue,
+      new Date().toJSON(),
+      JSON.stringify(["user"]),
+      JSON.stringify({ new: [1], read: [], sent: [] }),
+      JSON.stringify([]),
+    ],
+  );
+
+  void addLog("createUserByEmail", normalizedEmail);
+  return await getUser(normalizedEmail);
+}
+
 export async function addUserPermission(
   email: string | undefined,
   permission: string,
@@ -380,6 +414,13 @@ export async function getUsersEmailWherePushAboutGames() {
   let emails: string[] = [];
   response.map((user: { email: string }) => emails.push(user.email));
   return emails;
+}
+
+export async function getUsersEmailWherePushAboutChatwall() {
+  const response = await dbreq(
+    `SELECT email FROM users WHERE push_permission = 1 AND push_about_chatwall = 1`,
+  );
+  return (response as { email: string }[]).map((user) => user.email);
 }
 
 export async function getNotificationById(id: number) {
@@ -690,12 +731,11 @@ export async function editMySettings({
 }: {
   settings: {
     nickname?: string;
-    EJG_code?: string;
-    OM5?: string;
     food_menu?: string;
     push_permission?: boolean;
     push_about_games?: boolean;
     push_about_timetable?: boolean;
+    push_about_chatwall?: boolean;
   };
 }) {
   const selfUser = await getAuth();
@@ -706,18 +746,6 @@ export async function editMySettings({
 
   const setClauses: string[] = [];
   const params: any[] = [];
-  const isValidEJGCode = (code: string): boolean => /^[A-Z0-9]{13}$/.test(code);
-
-  if (
-    selfUser.tickets.includes("EJG_code_edit") &&
-    selfUser.EJG_code != settings.EJG_code &&
-    isValidEJGCode(settings.EJG_code ?? "")
-  ) {
-    await removeTicket("EJG_code_edit");
-    setClauses.push("EJG_code = ?");
-    params.push(settings.EJG_code);
-  }
-
   console.log(JSON.stringify(settings));
 
   if (settings.push_permission !== undefined) {
@@ -733,6 +761,10 @@ export async function editMySettings({
     setClauses.push("push_about_timetable = ?");
     params.push(settings.push_about_timetable ? 1 : 0);
   }
+  if (settings.push_about_chatwall !== undefined) {
+    setClauses.push("push_about_chatwall = ?");
+    params.push(settings.push_about_chatwall ? 1 : 0);
+  }
 
   if (settings.nickname) {
     setClauses.push("nickname = ?");
@@ -745,15 +777,6 @@ export async function editMySettings({
     );
   }
 
-  if (
-    selfUser.tickets.includes("OM5_code_edit") &&
-    selfUser.OM5 != settings.OM5
-  ) {
-    await removeTicket("OM5_code_edit");
-    setClauses.push("OM5 = ?");
-    params.push(settings.OM5);
-  }
-
   if (setClauses.length === 0) return "No changes";
   const request = `UPDATE users SET ${setClauses.join(", ")} WHERE email = ?;`;
   params.push(email);
@@ -762,6 +785,61 @@ export async function editMySettings({
   console.log(await dbreq(request, params));
 
   return null;
+}
+
+export async function verifyAndSaveStudentData(EJG_code: string, OM5: string) {
+  const selfUser = await getAuth();
+  if (!selfUser)
+    return { ok: false, error: "A hitelesítéshez be kell jelentkezned." };
+  if (selfUser.is_verified) {
+    return {
+      ok: false,
+      error:
+        "A tanulói adataid már ellenőrizve vannak, ezért nem módosíthatók.",
+    };
+  }
+
+  const studentCode = EJG_code.trim().toUpperCase();
+  const omCode = OM5.trim();
+  if (!/^[A-Z0-9]{13}$/.test(studentCode) || !/^\d{5}$/.test(omCode)) {
+    return {
+      ok: false,
+      error: "Az EJG-kódnak 13, az OM azonosítónak 5 számjegyből kell állnia.",
+    };
+  }
+
+  const response = await fetch(
+    "https://suli.ejg.hu/intranet/szulkuk/szulkuk.php",
+    {
+      headers: {
+        accept: "text/html,application/xhtml+xml",
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      body: `EMAIL=%28%3A&DIAKKOD=${encodeURIComponent(studentCode)}&OMKOD=${encodeURIComponent(omCode)}&orarend=V%E1laszt`,
+      method: "POST",
+    },
+  );
+  const html = new TextDecoder("windows-1250").decode(
+    await response.arrayBuffer(),
+  );
+
+  if (
+    !response.ok ||
+    !html.includes("<BIG>") ||
+    !html.includes("órarendje</BIG>")
+  ) {
+    return {
+      ok: false,
+      error: `Érvénytelen adatok. Csekkold az EJG-kódot és az OM azonosító utolsó 5 számjegyét, majd ha továbbra sem működik, keresd fel a fejlesztőt: ${siteConfig.developer} (${siteConfig.developerEmail})`,
+    };
+  }
+
+  await dbreq(
+    `UPDATE users SET EJG_code = ?, OM5 = ?, is_verified = TRUE WHERE email = ?`,
+    [studentCode, omCode, selfUser.email],
+  );
+  addLog("verifyStudentData", selfUser.email);
+  return { ok: true };
 }
 
 export async function getMyClassTimetable(EJG_class: string) {

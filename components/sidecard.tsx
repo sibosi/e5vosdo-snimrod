@@ -10,6 +10,7 @@ type SideCardProps = {
   popup: boolean;
   children?: React.ReactNode;
   makeStringToHTML?: boolean;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 export const SideCard = ({
@@ -20,6 +21,7 @@ export const SideCard = ({
   popup,
   children,
   makeStringToHTML,
+  onClick,
 }: SideCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -42,7 +44,7 @@ export const SideCard = ({
     <>
       <button
         className="w-full max-w-md rounded-2xl bg-selfprimary-100 text-left"
-        onClick={() => setIsModalOpen(true)}
+        onClick={onClick ?? (() => setIsModalOpen(true))}
       >
         <div
           className="overflow-hidden rounded-t-2xl"
@@ -63,7 +65,9 @@ export const SideCard = ({
         </div>
 
         <div className="p-4 py-1">
-          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+          <h2 className="whitespace-pre-wrap text-lg font-semibold text-foreground">
+            {title.replaceAll(String.raw`\n`, "\n")}
+          </h2>
         </div>
       </button>
       {OptionalButton(popup)}

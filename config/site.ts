@@ -57,7 +57,7 @@ export const siteConfig = {
     instagram: "https://instagram.com/e5vosdo/",
     mediaGallery: "/media",
     gdrive:
-      "https://drive.google.com/drive/u/0/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA",
+      "https://drive.google.com/drive/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA?resourcekey=0-dexBffraBCSqohIM_y4Xiw",
     feedback: "https://forms.gle/XdMtAx6fsubWEBW97",
   },
 };

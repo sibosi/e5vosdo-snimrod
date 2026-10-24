@@ -13,6 +13,7 @@ export const PERMISSIONS = [
   "matchOrganiser",
   "media_admin",
   "backup",
+  "elsőbbségi_jelentkezés",
 ];
 
 /**
@@ -29,6 +30,7 @@ delegate_counter: can register delegates to parlaments
 matchOrganiser: can manage matches
 media_admin: can manage media images, tags, and import XML metadata
 backup: can create backup
+elsőbbségi_jelentkezés: can sign up for priority-only presentations
 */
 
 /** user: valid user or undefined

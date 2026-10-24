@@ -71,15 +71,19 @@ def validate_localhost() -> bool:
     This prevents accidental modifications to production databases.
     """
     mysql_host = os.getenv('MYSQL_HOST', '').strip().lower()
+    mysql_database = os.getenv('MYSQL_DATABASE', '').strip()
 
     if not mysql_host:
         print('✗ Error: MYSQL_HOST not set in .env')
         return False
 
-    if mysql_host != 'localhost' and mysql_host != '127.0.0.1' \
-            and "railway" not in mysql_host and "rlwy" not in mysql_host:
+    is_safe_db = False
+    if mysql_host in ['localhost', '127.0.0.1']: is_safe_db = True
+    if "testing" in mysql_database: is_safe_db = True
+    if not is_safe_db:
         print('✗ Security Error: This script only works with localhost databases.')
         print(f'  Current MYSQL_HOST: {mysql_host}')
+        print(f'  Current MYSQL_DATABASE: {mysql_database}')
         print('  To prevent accidental data loss, remote database modifications are disabled.')
         return False
 

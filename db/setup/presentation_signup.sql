@@ -16,6 +16,9 @@ CREATE TABLE
         requirements VARCHAR(255) DEFAULT NULL,
         capacity INTEGER NOT NULL,
         remaining_capacity INTEGER DEFAULT NULL,
+        open_for ENUM('everyone', 'only_priority', 'nobody') NOT NULL DEFAULT 'nobody',
+        linked_presentation_id INTEGER DEFAULT NULL,
+        INDEX idx_presentations_linked_presentation_id (linked_presentation_id),
         FOREIGN KEY (slot_id) REFERENCES presentation_slots (id)
     );
 
@@ -28,6 +31,7 @@ CREATE TABLE
         participated BOOLEAN DEFAULT FALSE NOT NULL,
         amount INTEGER DEFAULT 1 NOT NULL,
         details TEXT DEFAULT NULL,
+        UNIQUE KEY uq_signups_email_slot (email, slot_id),
         FOREIGN KEY (presentation_id) REFERENCES presentations (id),
         FOREIGN KEY (slot_id) REFERENCES presentation_slots (id)
     );

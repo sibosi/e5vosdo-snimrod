@@ -10,7 +10,7 @@
 
 ### Modern webapplikáció az Eötvös József Gimnázium Diákönkormányzatának
 
-_Tervezte és fejlesztette: [Simon Nimród](https://www.github.com/sibosi)_
+_Tervezte és fejlesztette: [Simon Nimród](https://snimrod.com)_
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)

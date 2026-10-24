@@ -9,7 +9,7 @@ This is a web application by Nimród Simon for the student government of the Eö
 
 ## Authors
 
-- [Simon Nimród](https://www.github.com/sibosi)
+- [Simon Nimród](https://snimrod.com)
 
 ## Technologies Used
 

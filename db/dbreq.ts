@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { dbreq, multipledbreq } from "./db";
 import webPush from "web-push";
 import { OAuth2Client } from "google-auth-library";
+import { hasPermission } from "./permissions";
 import { siteConfig } from "@/config/site";
 
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY as string;
@@ -258,20 +259,6 @@ export async function getAuth(): Promise<User | null | undefined> {
     console.error("Error in getAuth:", e);
     return null;
   }
-}
-export async function hasPermission(
-  email: string | undefined,
-  functionname: string,
-) {
-  if (!email) return false;
-  const user = (await getUser(email)) as User;
-  const userPermissionsSet = new Set(user.permissions);
-  const functionPermissions = new Set(apireq[functionname as apireqType]?.perm);
-
-  const response = Array.from(functionPermissions).some((item) =>
-    userPermissionsSet.has(item),
-  );
-  return response;
 }
 
 export async function getUsersEmail() {
@@ -604,7 +591,10 @@ export async function newNotificationByEmails(
   payload: string = "",
 ) {
   const senderUser = await getAuth();
-  const sender_email = senderUser?.email;
+  if (!senderUser || !hasPermission(senderUser, "admin")) {
+    throw new Error("You don't have permission to send notifications");
+  }
+  const sender_email = senderUser.email;
 
   let valid_receiving_emails: string[] = [];
 
@@ -949,7 +939,6 @@ export const apireq = {
   getUser: { req: getUser, perm: [] },
   getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },
   getAuth: { req: getAuth, perm: ["user"] },
-  hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
   getStudentUsers: { req: getStudentUsers, perm: ["admin", "tester"] },
   getStudentUsersEmail: { req: getStudentUsersEmail, perm: [] },

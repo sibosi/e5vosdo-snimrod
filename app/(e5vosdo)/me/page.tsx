@@ -1,9 +1,10 @@
-import { getAuth, hasPermission } from "@/db/dbreq";
+import { getAuth } from "@/db/dbreq";
 import { Avatar, Link } from "@heroui/react";
 import IDCard from "./IDCard";
 import PleaseLogin from "./redirectToLogin";
 import Tray from "@/components/tray";
 import Settings from "./Settings";
+import { hasPermission } from "@/db/permissions";
 
 const MePage = async () => {
   const selfUser = await getAuth();
@@ -13,44 +14,42 @@ const MePage = async () => {
     {
       title: "Felhasználók",
       href: "/admin/users",
-      access: await hasPermission(selfUser.email, "getUsers"),
+      access: hasPermission(selfUser, "admin"),
     },
     {
       title: "Oldal",
       href: "/admin/page",
-      access: await hasPermission(selfUser.email, "getUsers"),
+      access: hasPermission(selfUser, "admin"),
     },
     {
       title: "Prezentációk",
       href: "/jelentkezes/admin",
-      access: selfUser.permissions.includes("admin"),
+      access: hasPermission(selfUser, "admin"),
     },
     {
       title: "Események",
       href: "/dev",
-      access: selfUser.permissions.includes("admin"),
+      access: hasPermission(selfUser, "admin"),
     },
     {
       title: "Parlamentek",
       href: "/parlament",
-      access: selfUser.permissions.includes("head_of_parlament"),
+      access: hasPermission(selfUser, "head_of_parlament"),
     },
     {
       title: "Mérkőzések",
       href: "/admin/matches",
-      access: selfUser.permissions.includes("matchOrganiser"),
+      access: hasPermission(selfUser, "matchOrganiser"),
     },
     {
       title: "Előadások jelenléti íve",
       href: "/tanari/jelenletek",
-      access: selfUser.permissions.includes("admin"),
+      access: hasPermission(selfUser, "admin"),
     },
     {
       title: "Média admin",
       href: "/admin/media",
-      access:
-        selfUser.permissions.includes("admin") ||
-        selfUser.permissions.includes("media_admin"),
+      access: hasPermission(selfUser, ["admin", "media_admin"]),
     },
     {
       title: "Rádió",

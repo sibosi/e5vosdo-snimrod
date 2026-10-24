@@ -33,6 +33,11 @@ backup: can create backup
 elsőbbségi_jelentkezés: can sign up for priority-only presentations
 */
 
+/** user: valid user or undefined
+ * @param user - The user to check permissions for
+ * @param permission - The permission(s) to check (at least one must be present)
+ * @returns true if the user has the required permission, false otherwise
+ */
 export function hasPermission(
   user: PossibleUserType,
   permission: string | string[],

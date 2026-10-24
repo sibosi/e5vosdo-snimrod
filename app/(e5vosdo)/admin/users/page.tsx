@@ -1,20 +1,14 @@
 import { redirect } from "next/navigation";
-import {
-  getAdminUsersEmail,
-  getAuth,
-  getUsers,
-  hasPermission,
-  UserType,
-} from "@/db/dbreq";
-import { PERMISSIONS } from "@/db/permissions";
+import { getAdminUsersEmail, getAuth, getUsers, UserType } from "@/db/dbreq";
 import ManageUsers from "@/components/account/manageusers";
+import { PERMISSIONS, hasPermission } from "@/db/permissions";
 
 const UsersPage = async () => {
   const selfUser = await getAuth();
   const admins = await getAdminUsersEmail();
   if (!selfUser) redirect("/");
 
-  const canManageUsers = await hasPermission(selfUser.email, "getUsers");
+  const canManageUsers = hasPermission(selfUser, "admin");
   const users = canManageUsers ? await getUsers() : [];
   const permissions = Array.from(
     new Set([

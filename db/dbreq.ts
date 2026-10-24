@@ -257,20 +257,6 @@ export async function getAuth(): Promise<User | null | undefined> {
     return null;
   }
 }
-export async function hasPermission(
-  email: string | undefined,
-  functionname: string,
-) {
-  if (!email) return false;
-  const user = (await getUser(email)) as User;
-  const userPermissionsSet = new Set(user.permissions);
-  const functionPermissions = new Set(apireq[functionname as apireqType]?.perm);
-
-  const response = Array.from(functionPermissions).some((item) =>
-    userPermissionsSet.has(item),
-  );
-  return response;
-}
 
 export async function getUsersEmail() {
   const response = await dbreq(`SELECT email FROM users;`);
@@ -871,7 +857,6 @@ export const apireq = {
   getUser: { req: getUser, perm: [] },
   getAllUsersNameByEmail: { req: getAllUsersNameByEmail, perm: ["user"] },
   getAuth: { req: getAuth, perm: ["user"] },
-  hasPermission: { req: hasPermission, perm: [] },
   getUsersEmail: { req: getUsersEmail, perm: ["admin", "tester"] },
   getStudentUsers: { req: getStudentUsers, perm: ["admin", "tester"] },
   getStudentUsersEmail: { req: getStudentUsersEmail, perm: [] },

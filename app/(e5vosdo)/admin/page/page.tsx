@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getAuth, hasPermission } from "@/db/dbreq";
+import { getAuth } from "@/db/dbreq";
+import { hasPermission } from "@/db/permissions";
 import NewNotification from "@/components/account/notification";
 import PageSettings from "@/components/pagesettings";
 import { Section } from "@/components/home/section";
@@ -12,7 +13,7 @@ const PagePage = async () => {
 
   return (
     <div className="space-y-4">
-      {(await hasPermission(selfUser.email, "getUsers")) ? (
+      {hasPermission(selfUser, "admin") ? (
         <Section
           title="Új értesítés · csak adminoknak"
           dropdownable={false}
@@ -34,7 +35,7 @@ const PagePage = async () => {
         <PresentationAPIButtons />
       </Section>
 
-      {selfUser.permissions.includes("admin") ? (
+      {hasPermission(selfUser, "admin") ? (
         <>
           <Section
             title="Alert kezelése"

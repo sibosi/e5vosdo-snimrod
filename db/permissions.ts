@@ -31,6 +31,11 @@ media_admin: can manage media images, tags, and import XML metadata
 backup: can create backup
 */
 
+/** user: valid user or undefined
+ * @param user - The user to check permissions for
+ * @param permission - The permission(s) to check (at least one must be present)
+ * @returns true if the user has the required permission, false otherwise
+ */
 export function hasPermission(
   user: PossibleUserType,
   permission: string | string[],

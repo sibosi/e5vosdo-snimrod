@@ -6,9 +6,6 @@ import { Button, Input } from "@heroui/react";
 import { lockRadioKey, unlockRadioKey, forceReturnKey } from "../keyActions";
 import { useRouter } from "next/navigation";
 import { getWeekLabel } from "./week";
-import { Section } from "@/components/home/section";
-import { WeekA, WeekB } from "./tables";
-import { useSession } from "next-auth/react";
 
 interface ClientProps {
   isAdmin: boolean;
@@ -47,43 +44,6 @@ export default function Client({ isAdmin, status, msg }: ClientProps) {
     <>
       <div className="m-4">
         <h1 className="m-2 text-center text-xl font-semibold">{week}</h1>
-
-        {(week === "Jelenleg A hét van." || week === "A hét következik.") && (
-          <>
-            <Section
-              title="A hét beosztás"
-              dropdownable={false}
-              defaultStatus={"opened"}
-            >
-              <WeekA />
-            </Section>
-            <Section
-              title="B hét beosztás"
-              dropdownable={true}
-              defaultStatus={"closed"}
-            >
-              <WeekB />
-            </Section>
-          </>
-        )}
-        {(week === "Jelenleg B hét van." || week === "B hét következik.") && (
-          <>
-            <Section
-              title="B hét beosztás"
-              dropdownable={false}
-              defaultStatus={"opened"}
-            >
-              <WeekB />
-            </Section>
-            <Section
-              title="A hét beosztás"
-              dropdownable={true}
-              defaultStatus={"closed"}
-            >
-              <WeekA />
-            </Section>
-          </>
-        )}
       </div>
       {status == 2 && (
         <div className="flex h-40 items-center justify-center">

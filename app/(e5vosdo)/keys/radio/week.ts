@@ -21,8 +21,8 @@ export function getWeekLabel() {
 
   if (isWeekend) {
     const nextWeek = currentWeek === "A" ? "B" : "A";
-    return `${nextWeek} hét következik.`;
+    return `"${nextWeek}" hét következik.`;
   }
 
-  return `Jelenleg ${currentWeek} hét van.`;
+  return `Jelenleg "${currentWeek}" hét van.`;
 }

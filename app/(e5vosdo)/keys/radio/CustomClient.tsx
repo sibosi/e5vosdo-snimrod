@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Button, Input } from "@heroui/react";
+import { Button, Input, Link } from "@heroui/react";
 import { lockRadioKey, unlockRadioKey, forceReturnKey } from "../keyActions";
 import { useRouter } from "next/navigation";
 import { getWeekLabel } from "./week";
@@ -42,8 +42,15 @@ export default function Client({ isAdmin, status, msg }: ClientProps) {
 
   return (
     <>
-      <div className="m-4">
+      <div className="m-4 flex flex-col items-center justify-center">
         <h1 className="m-2 text-center text-xl font-semibold">{week}</h1>
+        <Link
+          isExternal
+          href="https://docs.google.com/spreadsheets/d/1VKtZ2-UKuXWRNvGaqBVG647DQUpv0_ZycNXwn8Xfaeg/edit?usp=sharing"
+          className="m-2 text-center text-xl text-selfprimary"
+        >
+          Beosztás táblázat
+        </Link>
       </div>
       {status == 2 && (
         <div className="flex h-40 items-center justify-center">

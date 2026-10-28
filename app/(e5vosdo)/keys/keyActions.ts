@@ -1,0 +1,172 @@
+"use server";
+
+import { dbreq } from "@/db/db";
+import { getAuth } from "@/db/dbreq";
+import { hasPermission } from "@/db/permissions";
+
+interface Key {
+  org: string;
+}
+
+export async function borrowKey({ org }: Key) {
+  const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+  const table = `${orgFixed}_key_status`;
+  const permission = `${orgFixed}_access`;
+
+  const selfUser = await getAuth();
+  const hasAccess = hasPermission(selfUser, permission);
+  const now = new Date();
+  const key = await dbreq(`SELECT * FROM ${table}`);
+  const keyStatus = key[0];
+
+  if (hasAccess && keyStatus.borrowed === 0) {
+    await dbreq(
+      `UPDATE ${table} SET borrowed = 1, borrowed_by = ?, borrowed_at = ?`,
+      [selfUser?.name, now],
+    );
+  } else {
+    throw new Error(
+      "A kulcs már ki van kölcsönözve, vagy nincs jogosultságod a kölcsönzéshez.",
+    );
+  }
+
+  return true;
+}
+
+export async function returnKey({ org }: Key) {
+  const selfUser = await getAuth();
+   const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+  const table = `${orgFixed}_key_status`;
+  const logTable = `${orgFixed}_key_logs`;
+  const permission = `${orgFixed}_access`;
+  const hasAccess = hasPermission(selfUser, permission);
+  const radio = await dbreq(`SELECT * FROM ${table}`);
+  const radioStatus = radio[0];
+
+  if (
+    hasAccess &&
+    radioStatus.borrowed === 1 &&
+    radioStatus.borrowed_by === selfUser?.name
+  ) {
+    await dbreq(
+      `UPDATE ${table} SET borrowed = 0, borrowed_by = NULL, borrowed_at = NULL`
+    );
+    await dbreq(
+      `INSERT INTO ${logTable} (name, email, borrowed_at, returned_at) VALUES (?, ?, ?, ?)`,
+      [selfUser?.name, selfUser?.email, radioStatus.borrowed_at, new Date()],
+    );
+  } else {
+    throw new Error(
+      "A kulcs nem a te neveddel van kölcsönözve, vagy nincs jogosultságod a visszatételehez.",
+    );
+  }
+
+  return true;
+}
+
+export async function getKeyStatus({ org }: Key) {
+  const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+  const table = `${orgFixed}_key_status`;
+  const key = await dbreq(`SELECT * FROM ${table}`);
+  console.log("Key status:", key[0]);
+  return key[0];
+}
+
+export async function getKeyLogs({ org }: Key) {
+  const orgFixed =
+    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
+
+  const logTable = `${orgFixed}_key_logs`;
+  const permission = `${orgFixed}_access`;
+
+  const selfUser = await getAuth();
+  if (!hasPermission(selfUser, permission)) {
+    throw new Error("Permission denied");
+  }
+
+  const logs = await dbreq(
+    `SELECT id, name, email, borrowed_at, returned_at FROM ${logTable} ORDER BY borrowed_at DESC, id DESC`
+  );
+  return logs;
+}
+
+interface Lock {
+  msg: string;
+}
+
+export async function lockRadioKey({ msg }: Lock) {
+
+  const selfUser = await getAuth();
+
+  const hasAccess = hasPermission(selfUser, "radio_admin");
+  const key = await dbreq(`SELECT * FROM radio_key_status`);
+  const keyStatus = key[0];
+  const now = new Date()
+
+  if (keyStatus.borrowed === 0 && hasAccess) {
+    await dbreq(
+      `UPDATE radio_key_status SET borrowed = 2, borrowed_by = ?, borrowed_at = ?`,
+      [msg, now],
+    );
+  } else {
+    throw new Error(
+      "A kulcs már ki van kölcsönözve, vagy nincs jogosultságod a kölcsönzéshez.",
+    );
+  }
+
+  return true;
+}
+
+export async function unlockRadioKey() {
+const selfUser = await getAuth();
+
+  const hasAccess = hasPermission(selfUser, "radio_admin");
+
+  const key = await dbreq(`SELECT * FROM radio_key_status`);
+  const keyStatus = key[0];
+
+  if (keyStatus.borrowed === 2 && hasAccess) {
+    await dbreq(
+      `UPDATE radio_key_status SET borrowed = 0, borrowed_by = NULL, borrowed_at = NULL`
+    );
+  } else {
+    throw new Error(
+      "A kulcs már ki van kölcsönözve, vagy nincs jogosultságod a kölcsönzéshez.",
+    );
+  }
+
+  return true;
+}
+
+export async function forceReturnKey() {
+  const selfUser = await getAuth();
+
+  const hasAccess = hasPermission(selfUser, "radio_admin");
+  const radio = await dbreq(`SELECT * FROM radio_key_status`);
+  const radioStatus = radio[0];
+
+  if (
+    hasAccess
+  ) {
+    await dbreq(
+      `UPDATE radio_key_status SET borrowed = 0, borrowed_by = NULL, borrowed_at = NULL`
+    );
+    await dbreq(
+      `INSERT INTO radio_key_logs (name, email, borrowed_at, returned_at) VALUES (?, ?, ?, ?)`,
+      [`${selfUser?.name} (forced)`, selfUser?.email, radioStatus.borrowed_at, new Date()],
+    );
+  } else {
+    throw new Error(
+      "Nincs jogosultságod a visszatételehez.",
+    );
+  }
+
+  return true;
+}
+

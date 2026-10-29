@@ -73,22 +73,26 @@ export default function Client({ isAdmin, status, msg }: ClientProps) {
           <Button onPress={handleUnlock}>Tiltás levétele</Button>
         </>
       )}
-      {status !== 2 && isAdmin && (
-        <>
-          <Input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          ></Input>
-          <Button onPress={handleLock}>Tiltás</Button>
-        </>
-      )}
-      {status == 1 && isAdmin && (
-        <>
-          <Button onPress={handleForce} color="danger">
-            Visszatétel kényszerítése
-          </Button>
-        </>
-      )}
+      <div className="m-3 w-full gap-2">
+        {status !== 2 && isAdmin && (
+          <>
+            <Input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            ></Input>
+            <Button onPress={handleLock} className="m-2">
+              Tiltás
+            </Button>
+          </>
+        )}
+        {status == 1 && isAdmin && (
+          <>
+            <Button onPress={handleForce} color="danger" className="m-2">
+              Visszatétel kényszerítése
+            </Button>
+          </>
+        )}
+      </div>
     </>
   );
 }

@@ -15,7 +15,7 @@ export default async function Page() {
   const radioStatus = radio[0];
 
   return (
-    <div className="overflow-hidden">
+    <div className="flex flex-col items-center justify-center">
       {hasAccess &&
         (radioStatus.borrowed == 0 || radioStatus.borrowed == 1) && (
           <Client
@@ -35,16 +35,18 @@ export default async function Page() {
           msg={radioStatus.borrowed_by}
         />
       )}
-      <Link
-        isExternal
-        href="https://lbniko.com"
-        title="Nikó oldala"
-        className="bottom-30 absolute left-1/2 flex -translate-x-1/2 items-center gap-1 pb-14 text-current"
-      >
-        <span>Ezt az oldalt</span>
-        <p className="text-selfprimary">Lengyel-Barsi Dominik</p>
-        <span>fejlesztette</span>
-      </Link>
+      <div className="m-6 flex w-full items-center justify-center">
+        <Link
+          isExternal
+          href="https://lbniko.com"
+          title="Nikó oldala"
+          className="flex items-center gap-1 pb-14 text-center text-current"
+        >
+          <span>Ezt az oldalt</span>
+          <p className="text-selfprimary">Lengyel-Barsi Dominik</p>
+          <span>fejlesztette</span>
+        </Link>
+      </div>
     </div>
   );
 }

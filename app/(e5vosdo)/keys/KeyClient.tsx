@@ -26,7 +26,7 @@ export default function Page({
   name,
   title,
   org,
-  svg
+  svg,
 }: ClientProps) {
   const router = useRouter();
   const [hidden, setHidden] = useState(true);
@@ -38,19 +38,11 @@ export default function Page({
   });
   const [errorMessage, setErrorMessage] = useState("");
 
-  const orgFixed =
-    org === "radio" ? "radio"  : org === "hoki" ? "hoki" : "";
-
+  const orgFixed = org === "radio" ? "radio" : org === "hoki" ? "hoki" : "";
 
   const table = `${orgFixed}_key_status`;
   const logTable = `${orgFixed}_key_logs`;
   const permission = `${orgFixed}_access`;
-
-
-
-
-
-
 
   const readableTime = borrowedAt
     ? new Date(borrowedAt.toISOString()).toLocaleString("hu-HU", {
@@ -122,10 +114,11 @@ export default function Page({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center overflow-hidden">
-      <h1>{title}</h1>
+    <div className="flex w-full flex-col items-center justify-center overflow-hidden">
+      <h1 className="text-center">{title}</h1>
       <p>Ezen a lapon tudod kölcsönvenni a kulcsot.</p>
       {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      <div className="m-4 h-[1px] w-full bg-zinc-400 opacity-40 sm:opacity-0"></div>
 
       {borrowedBy === name && (
         <>
@@ -152,7 +145,7 @@ export default function Page({
         </div>
       ) : (
         <>
-          <p>A kulcs jelenleg a helyén van.</p>
+          <p className="m-4">A kulcs jelenleg a helyén van.</p>
           <Button onPress={handleBorrowKey}>Kulcs kölcsönzése</Button>
         </>
       )}

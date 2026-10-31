@@ -75,6 +75,71 @@ export async function getAllTags(selfUser: UserType): Promise<MediaTagType[]> {
   )) as MediaTagType[];
 }
 
+export async function getMediaNavigationTags(
+  selfUser: UserType,
+  yearName?: string,
+  eventMainName?: string,
+): Promise<MediaTagType[]> {
+  gate(selfUser, ["user", "media_view"]);
+
+  if (!yearName) {
+    return (await dbreq(
+      `SELECT id, tag_name, tag_type
+       FROM media_images_tags
+       WHERE tag_type = 'year'
+       ORDER BY id DESC`,
+    )) as MediaTagType[];
+  }
+
+  const yearRows = (await dbreq(
+    "SELECT id FROM media_images_tags WHERE tag_name = ? AND tag_type = 'year'",
+    [yearName],
+  )) as { id: number }[];
+  if (yearRows.length === 0) return [];
+  const yearId = yearRows[0].id;
+
+  if (!eventMainName) {
+    return (await dbreq(
+      `SELECT DISTINCT tags.id, tags.tag_name, tags.tag_type
+       FROM media_images_pinned_tags pinned
+       JOIN media_images_tags tags ON tags.id = pinned.tag_id
+       WHERE pinned.year_tag_id = ? AND tags.tag_type = 'event_main'
+       ORDER BY tags.id DESC`,
+      [yearId],
+    )) as MediaTagType[];
+  }
+
+  const eventRows = (await dbreq(
+    `SELECT id FROM media_images_tags
+     WHERE tag_name = ? AND tag_type = 'event_main'`,
+    [eventMainName],
+  )) as { id: number }[];
+  if (eventRows.length === 0) return [];
+  const eventMainId = eventRows[0].id;
+
+  return (await dbreq(
+    `SELECT DISTINCT event_parts.id, event_parts.tag_name, event_parts.tag_type
+     FROM media_images_pinned_tags pinned
+     JOIN media_images_tags event_parts ON event_parts.id = pinned.tag_id
+     WHERE pinned.year_tag_id = ?
+       AND pinned.event_main_tag_id = ?
+       AND event_parts.tag_type = 'event_part'
+       AND EXISTS (
+         SELECT 1
+         FROM media_images_to_tags part_relation
+         JOIN media_images_to_tags year_relation
+           ON year_relation.media_image_id = part_relation.media_image_id
+         JOIN media_images_to_tags event_relation
+           ON event_relation.media_image_id = part_relation.media_image_id
+         WHERE part_relation.media_image_tag_id = event_parts.id
+           AND year_relation.media_image_tag_id = ?
+           AND event_relation.media_image_tag_id = ?
+       )
+     ORDER BY event_parts.id DESC`,
+    [yearId, eventMainId, yearId, eventMainId],
+  )) as MediaTagType[];
+}
+
 /**
  * Get tags that are relevant for BIMUN:
  * only tags that appear on at least one image that also has the BIMUN tag.

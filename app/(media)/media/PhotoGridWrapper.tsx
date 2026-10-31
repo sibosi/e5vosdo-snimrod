@@ -25,13 +25,11 @@ const PhotoGridWrapper = ({
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/getAllTags", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        module: "mediaTags",
-      },
-    })
+    const params = new URLSearchParams();
+    if (selectedTags[0]) params.set("year", selectedTags[0]);
+    if (selectedTags[1]) params.set("event_main", selectedTags[1]);
+
+    fetch(`/api/media/navigation-tags?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -41,18 +39,19 @@ const PhotoGridWrapper = ({
       .catch((err) => {
         console.error("Error fetching tags:", err);
       });
-  }, []);
+  }, [selectedTags[0], selectedTags[1]]);
 
   const filteredTags = availableTags.filter((tag) =>
     tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const toggleTag = (tagName: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tagName)
-        ? prev.filter((t) => t !== tagName)
-        : [...prev, tagName],
-    );
+    setSelectedTags((prev) => {
+      const selectedIndex = prev.indexOf(tagName);
+      if (selectedIndex >= 0) return prev.slice(0, selectedIndex);
+      if (prev.length >= 3) return prev;
+      return [...prev, tagName];
+    });
   };
 
   const clearAllTags = () => {

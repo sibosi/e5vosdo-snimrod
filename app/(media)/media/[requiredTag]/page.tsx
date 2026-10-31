@@ -12,8 +12,11 @@ const MediaPage = async ({ params }: PageProps) => {
   if (!selfUser) return <PleaseLogin />;
 
   const { requiredTag } = await params;
-  const encodedRequiredTag = decodeURIComponent(requiredTag);
-  console.log("Required tag from params:", encodedRequiredTag);
+  const initialTags = decodeURIComponent(requiredTag)
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+  const [encodedRequiredTag, ...additionalTags] = initialTags;
 
   return (
     <div className="flex flex-col">
@@ -23,7 +26,10 @@ const MediaPage = async ({ params }: PageProps) => {
       >
         <span className="text-center">Szalagavatós képek megtekintése ➜</span>
       </Link>
-      <PhotoGridWrapper requiredTag={encodedRequiredTag} />
+      <PhotoGridWrapper
+        requiredTag={encodedRequiredTag}
+        initialTags={additionalTags}
+      />
     </div>
   );
 };

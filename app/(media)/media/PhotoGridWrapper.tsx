@@ -12,12 +12,17 @@ const PhotoGrid = dynamic(() => import("./PhotoGrid"), {
   ),
 });
 
-const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
+const PhotoGridWrapper = ({
+  requiredTag,
+  initialTags = [],
+}: {
+  requiredTag?: string;
+  initialTags?: string[];
+}) => {
   const [availableTags, setAvailableTags] = useState<MediaTagType[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
-  const [matchAll, setMatchAll] = useState(false); // false = VAGY, true = ÉS
 
   useEffect(() => {
     fetch("/api/getAllTags", {
@@ -83,31 +88,6 @@ const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
               </span>
             )}
           </button>
-
-          {selectedTags.length > 1 && (
-            <div className="flex items-center gap-1 rounded-lg bg-foreground-100 p-1">
-              <button
-                onClick={() => setMatchAll(false)}
-                className={`rounded-md px-3 py-1 text-sm transition ${
-                  !matchAll
-                    ? "bg-selfprimary-600 text-white"
-                    : "text-foreground-600 hover:bg-foreground-200"
-                }`}
-              >
-                VAGY
-              </button>
-              <button
-                onClick={() => setMatchAll(true)}
-                className={`rounded-md px-3 py-1 text-sm transition ${
-                  matchAll
-                    ? "bg-selfprimary-600 text-white"
-                    : "text-foreground-600 hover:bg-foreground-200"
-                }`}
-              >
-                ÉS
-              </button>
-            </div>
-          )}
 
           {selectedTags.map((tag) => (
             <span
@@ -189,7 +169,6 @@ const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
       <PhotoGrid
         requiredTag={requiredTag}
         filterTags={selectedTags}
-        matchAll={matchAll}
       />
     </div>
   );

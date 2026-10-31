@@ -180,13 +180,11 @@ const LazyMedia = ({
 export interface PhotoGridProps {
   requiredTag?: string;
   filterTags?: string[];
-  matchAll?: boolean;
 }
 
 const PhotoGrid = ({
   requiredTag,
   filterTags = [],
-  matchAll = false,
 }: PhotoGridProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
@@ -217,7 +215,7 @@ const PhotoGrid = ({
 
     if (hasFilters) {
       // Készítsük el a kérést a szerver felé
-      // requiredTag mindig ÉS kapcsolatban van, filterTags között a matchAll dönt
+      // A megadott tagek és a requiredTag is kötelező szűrők.
       // Az options objektum egyetlen paraméterként kerül átadásra
       fetch("/api/searchImagesByTags", {
         method: "POST",
@@ -228,7 +226,6 @@ const PhotoGrid = ({
         body: JSON.stringify({
           options: {
             tagNames: filterTags,
-            matchAll: matchAll,
             requiredTag: requiredTag || null,
           },
         }),
@@ -278,7 +275,7 @@ const PhotoGrid = ({
 
   useEffect(() => {
     loadImages();
-  }, [requiredTag, filterTags.join(","), matchAll]);
+  }, [requiredTag, filterTags.join(",")]);
 
   const handleNextImage = useCallback(() => {
     if (!selected || !imageFiles) return;
@@ -516,7 +513,7 @@ async function getMadeByTagsForImage(imageId: number): Promise<string[]> {
     return data.tags
       .filter(
         (t: MediaTagType) =>
-          t.priority === "madeBy" || t.tag_name.startsWith("Made by:"),
+          t.tag_type === "madeBy" || t.tag_name.startsWith("Made by:"),
       )
       .map((t: { tag_name: string }) =>
         t.tag_name.replaceAll("Made by:", "").trim(),

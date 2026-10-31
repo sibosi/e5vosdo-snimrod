@@ -3,9 +3,19 @@ import PleaseLogin from "../../(e5vosdo)/me/redirectToLogin";
 import PhotoGridWrapper from "./PhotoGridWrapper";
 import { Link } from "@heroui/react";
 
-const MediaPage = async () => {
+type PageProps = {
+  searchParams: Promise<{ tags?: string | string[] }>;
+};
+
+const MediaPage = async ({ searchParams }: PageProps) => {
   const selfUser = await getAuth();
   if (!selfUser) return <PleaseLogin />;
+  const params = await searchParams;
+  const rawTags = Array.isArray(params.tags) ? params.tags : [params.tags ?? ""];
+  const initialTags = rawTags
+    .flatMap((value) => value.split(","))
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 
   return (
     <div className="flex flex-col">
@@ -15,7 +25,7 @@ const MediaPage = async () => {
       >
         <span className="text-center">Szalagavatós képek megtekintése ➜</span>
       </Link>
-      <PhotoGridWrapper />
+      <PhotoGridWrapper initialTags={initialTags} />
     </div>
   );
 };

@@ -56,7 +56,7 @@ interface TagStats {
   tag_id: number;
   tag_name: string;
   usage_count: number;
-  priority: "madeBy" | "normal" | "high";
+  tag_type: "year" | "event_main" | "event_part" | "madeBy" | "person";
 }
 
 function formatBytes(bytes: number): string {

@@ -82,6 +82,7 @@ export async function getMediaNavigationTags(
 ): Promise<MediaTagType[]> {
   gate(selfUser, ["user", "media_view"]);
 
+  // Case 1: No yearName provided, return all year tags
   if (!yearName) {
     return (await dbreq(
       `SELECT id, tag_name, tag_type
@@ -91,52 +92,68 @@ export async function getMediaNavigationTags(
     )) as MediaTagType[];
   }
 
-  const yearRows = (await dbreq(
-    "SELECT id FROM media_images_tags WHERE tag_name = ? AND tag_type = 'year'",
-    [yearName],
-  )) as { id: number }[];
-  if (yearRows.length === 0) return [];
-  const yearId = yearRows[0].id;
-
+  // Case 2: Year provided, but no eventMainName, return all event_main tags for that year
   if (!eventMainName) {
     return (await dbreq(
-      `SELECT DISTINCT tags.id, tags.tag_name, tags.tag_type
-       FROM media_images_pinned_tags pinned
-       JOIN media_images_tags tags ON tags.id = pinned.tag_id
-       WHERE pinned.year_tag_id = ? AND tags.tag_type = 'event_main'
-       ORDER BY tags.id DESC`,
-      [yearId],
+      `SELECT
+        event_tags.id,
+        event_tags.tag_name,
+        event_tags.tag_type
+      FROM media_images_tags AS event_tags
+      JOIN media_images_to_tags AS event_relation
+        ON event_relation.media_image_tag_id = event_tags.id
+      JOIN media_images AS images
+        ON images.id = event_relation.media_image_id
+      WHERE event_tags.tag_type = 'event_main'
+        AND EXISTS (
+          SELECT 1
+          FROM media_images_to_tags AS year_relation
+          JOIN media_images_tags AS year_tags
+            ON year_tags.id = year_relation.media_image_tag_id
+          WHERE year_relation.media_image_id = event_relation.media_image_id
+            AND year_tags.tag_type = 'year'
+            AND year_tags.tag_name = ?
+        )
+      GROUP BY event_tags.id, event_tags.tag_name, event_tags.tag_type
+      ORDER BY MIN(images.id) DESC, event_tags.id ASC;`,
+      [yearName],
     )) as MediaTagType[];
   }
 
-  const eventRows = (await dbreq(
-    `SELECT id FROM media_images_tags
-     WHERE tag_name = ? AND tag_type = 'event_main'`,
-    [eventMainName],
-  )) as { id: number }[];
-  if (eventRows.length === 0) return [];
-  const eventMainId = eventRows[0].id;
-
+  // Case 3: Both yearName and eventMainName provided, return all event_part tags for that combination
   return (await dbreq(
-    `SELECT DISTINCT event_parts.id, event_parts.tag_name, event_parts.tag_type
-     FROM media_images_pinned_tags pinned
-     JOIN media_images_tags event_parts ON event_parts.id = pinned.tag_id
-     WHERE pinned.year_tag_id = ?
-       AND pinned.event_main_tag_id = ?
-       AND event_parts.tag_type = 'event_part'
-       AND EXISTS (
-         SELECT 1
-         FROM media_images_to_tags part_relation
-         JOIN media_images_to_tags year_relation
-           ON year_relation.media_image_id = part_relation.media_image_id
-         JOIN media_images_to_tags event_relation
-           ON event_relation.media_image_id = part_relation.media_image_id
-         WHERE part_relation.media_image_tag_id = event_parts.id
-           AND year_relation.media_image_tag_id = ?
-           AND event_relation.media_image_tag_id = ?
-       )
-     ORDER BY event_parts.id DESC`,
-    [yearId, eventMainId, yearId, eventMainId],
+    `SELECT
+        event_parts.id,
+        event_parts.tag_name,
+        event_parts.tag_type
+      FROM media_images_tags AS event_parts
+      JOIN media_images_to_tags AS part_relation
+        ON part_relation.media_image_tag_id = event_parts.id
+      JOIN media_images AS images
+        ON images.id = part_relation.media_image_id
+      WHERE (event_parts.tag_type = 'event_part'
+        OR event_parts.tag_type = 'event_main')
+        AND EXISTS (
+          SELECT 1
+          FROM media_images_to_tags AS year_relation
+          JOIN media_images_tags AS year_tags
+            ON year_tags.id = year_relation.media_image_tag_id
+          WHERE year_relation.media_image_id = part_relation.media_image_id
+            AND year_tags.tag_type = 'year'
+            AND year_tags.tag_name = ?
+        )
+        AND EXISTS (
+          SELECT 1
+          FROM media_images_to_tags AS event_relation
+          JOIN media_images_tags AS event_tags
+            ON event_tags.id = event_relation.media_image_tag_id
+          WHERE event_relation.media_image_id = part_relation.media_image_id
+            AND event_tags.tag_type = 'event_main'
+            AND event_tags.tag_name = ?
+        )
+      GROUP BY event_parts.id, event_parts.tag_name, event_parts.tag_type
+      ORDER BY MIN(images.id) DESC, event_parts.id ASC;`,
+    [yearName, eventMainName],
   )) as MediaTagType[];
 }
 

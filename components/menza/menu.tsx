@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { PossibleUserType } from "@/db/dbreq";
 import { Section } from "../home/section";
 import Arrow from "@/icons/arrow.svg";
+import { respectAB } from "./respect";
 
 type MenuType = {
   [x: string]: {
@@ -46,7 +47,13 @@ function formatDate(date: Date, simple = false) {
 
 const mindenkorimenu = nyersMenu as unknown as MenuType;
 
-const MenuCard = ({ menu, items }: { menu: "A" | "B"; items: string[] }) => {
+const MenuCard = ({
+  menu,
+  items,
+}: {
+  menu: "A" | "B" | "∆";
+  items: string[];
+}) => {
   const color = menu === "A" ? "selfprimary" : "selfsecondary";
   return (
     <div
@@ -125,24 +132,38 @@ export const Menu = ({
   const [realMenu, setRealMenu] = useState(menu);
 
   useEffect(() => {
-    fetch("/api/getAuth").then((res) => {
-      res.json().then((data: PossibleUserType) => {
-        if (!data) return;
-        setRealMenu(data.food_menu as any);
+    void fetch("/api/getAuth").then((res) => {
+      void res.json().then((selfUser: PossibleUserType) => {
+        if (!selfUser) return;
+        setRealMenu(selfUser.food_menu as any);
       });
     });
   }, [menu]);
 
+  const menuA_init = tableData[formatDate(date)]?.A ?? [];
+  const menuB_init = tableData[formatDate(date)]?.B ?? [];
+  const [menuA, menuB] = respectAB(menuA_init, menuB_init);
+
+  const isAbsoluteRespect =
+    [...menuA_init, ...menuB_init]
+      .join("")
+      .replaceAll("respectrespect", "respect") === "respect";
+
+  if (isAbsoluteRespect) {
+    return (
+      <div className="text-foreground">
+        <div className="flex gap-2 md:max-w-4xl">
+          <MenuCard menu="∆" items={menuA} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="text-foreground">
       <div className="flex gap-2 md:max-w-4xl">
-        {realMenu !== "B" && (
-          <MenuCard menu="A" items={tableData[formatDate(date)]?.A ?? []} />
-        )}
-
-        {realMenu !== "A" && (
-          <MenuCard menu="B" items={tableData[formatDate(date)]?.B ?? []} />
-        )}
+        {realMenu !== "B" && <MenuCard menu="A" items={menuA} />}
+        {realMenu !== "A" && <MenuCard menu="B" items={menuB} />}
       </div>
     </div>
   );

@@ -90,6 +90,7 @@ const NavbarForPhone = ({
                 height="16"
                 fill="currentColor"
                 viewBox="0 0 16 16"
+                aria-label="Tester badge"
               >
                 <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0m6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0" />
               </svg>
@@ -104,11 +105,12 @@ const NavbarForPhone = ({
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               className="p-1"
+              aria-label="TSZ logo"
             >
               <path
                 d="M166.123 81H118.369V106H166.123V81ZM214.893 125.5L227.086 106H214.893V81H262.139V104L214.893 179V125.5ZM167.139 201L118.369 278.5V304H167.139V278.5H152.406L167.139 255V201ZM214.893 278.5V304H262.139V278.5H214.893Z"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 fill="white"
               />
               <g filter="url(#filter0_d_7_47)">
@@ -119,8 +121,8 @@ const NavbarForPhone = ({
               </g>
               <path
                 d="M167.139 303V277C154.212 269.24 149.689 260.581 145.802 243.5H114.534C113.289 268 134.626 297 167.139 303Z"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 fill="white"
               />
               <path
@@ -143,9 +145,9 @@ const NavbarForPhone = ({
                   width="286.66"
                   height="334.2"
                   filterUnits="userSpaceOnUse"
-                  color-interpolation-filters="sRGB"
+                  colorInterpolationFilters="sRGB"
                 >
-                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feFlood floodOpacity="0" result="BackgroundImageFix" />
                   <feColorMatrix
                     in="SourceAlpha"
                     type="matrix"

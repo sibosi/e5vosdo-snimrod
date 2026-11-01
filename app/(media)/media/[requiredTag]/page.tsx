@@ -16,7 +16,6 @@ const MediaPage = async ({ params }: PageProps) => {
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean);
-  const [encodedRequiredTag, ...additionalTags] = initialTags;
 
   return (
     <div className="flex flex-col">
@@ -26,10 +25,7 @@ const MediaPage = async ({ params }: PageProps) => {
       >
         <span className="text-center">Szalagavatós képek megtekintése ➜</span>
       </Link>
-      <PhotoGridWrapper
-        requiredTag={encodedRequiredTag}
-        initialTags={additionalTags}
-      />
+      <PhotoGridWrapper initialTags={initialTags} />
     </div>
   );
 };

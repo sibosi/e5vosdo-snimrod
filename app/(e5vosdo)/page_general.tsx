@@ -120,22 +120,18 @@ function MainContent({
           defaultStatus="opened"
           savable={true}
           chip={
-            <Chip color="secondary" size="sm">
-              Nem hivatalos
-            </Chip>
+            <Link href="https://drive.google.com/drive/folders/1d9btMmtRQq617f4CoxkVNNf3TzybFPpH">
+              <Chip
+                color="secondary"
+                size="sm"
+                className="font-semibold"
+              >
+                Hivatalos drive ⤤
+              </Chip>
+            </Link>
           }
         >
           <div className="max-w-md">
-            <div className="my-2 rounded-xl border-2 border-selfprimary-300 bg-selfprimary-50 px-4 py-2 text-selfprimary-900">
-              <p>
-                <Link
-                  href="https://drive.google.com/drive/folders/1d9btMmtRQq617f4CoxkVNNf3TzybFPpH"
-                  className="font-semibold underline"
-                >
-                  Órarendek mappája
-                </Link>
-              </p>
-            </div>
             <HeadTimetable selfUser={selfUser} />
           </div>
         </Section>

@@ -50,7 +50,7 @@ const NavbarForPhone = ({
     <NextUINavbar
       maxWidth="xl"
       position="sticky"
-      className={"top-0 " + className}
+      className={"top-0 lg:hidden " + className}
     >
       <NavbarContent className="flex" justify="start">
         <NavbarBrand as="li" className="max-w-fit gap-3">

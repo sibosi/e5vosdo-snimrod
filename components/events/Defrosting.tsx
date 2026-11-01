@@ -344,7 +344,7 @@ export default function IceBlock({
 const css = `
 .ice-root{
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:18px; padding:24px 12px; font-family:inherit; color:inherit;
+  gap:18px; padding:0px 0px; font-family:inherit; color:inherit;
 }
 .ice-wrap{
   position:relative;

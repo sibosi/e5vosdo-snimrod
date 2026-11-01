@@ -12,18 +12,22 @@ const MediaPage = async ({ params }: PageProps) => {
   if (!selfUser) return <PleaseLogin />;
 
   const { requiredTag } = await params;
-  const encodedRequiredTag = decodeURIComponent(requiredTag);
-  console.log("Required tag from params:", encodedRequiredTag);
+  const initialTags = decodeURIComponent(requiredTag)
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 
   return (
     <div className="flex flex-col">
+      {/*
       <Link
         href="/media/szalagavato"
         className="mx-auto w-full max-w-lg justify-center rounded-xl bg-selfsecondary-300 px-3 py-2 text-sm text-foreground"
       >
         <span className="text-center">Szalagavatós képek megtekintése ➜</span>
       </Link>
-      <PhotoGridWrapper requiredTag={encodedRequiredTag} />
+      */}
+      <PhotoGridWrapper initialTags={initialTags} />
     </div>
   );
 };

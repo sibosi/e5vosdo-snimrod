@@ -12,21 +12,32 @@ const PhotoGrid = dynamic(() => import("./PhotoGrid"), {
   ),
 });
 
-const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
+const PhotoGridWrapper = ({
+  requiredTag,
+  initialTags = [],
+}: {
+  requiredTag?: string;
+  initialTags?: string[];
+}) => {
   const [availableTags, setAvailableTags] = useState<MediaTagType[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
-  const [matchAll, setMatchAll] = useState(false); // false = VAGY, true = ÉS
 
   useEffect(() => {
-    fetch("/api/getAllTags", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        module: "mediaTags",
-      },
-    })
+    const path = selectedTags.length
+      ? `/media/${selectedTags.map((tag) => encodeURIComponent(tag)).join(",")}`
+      : "/media";
+
+    window.history.replaceState(null, "", path);
+  }, [selectedTags]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedTags[0]) params.set("year", selectedTags[0]);
+    if (selectedTags[1]) params.set("event_main", selectedTags[1]);
+
+    fetch(`/api/media/navigation-tags?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -36,18 +47,31 @@ const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
       .catch((err) => {
         console.error("Error fetching tags:", err);
       });
-  }, []);
+  }, [selectedTags[0], selectedTags[1]]);
 
-  const filteredTags = availableTags.filter((tag) =>
-    tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredTags =
+    selectedTags.length === 0
+      ? availableTags.filter(
+          (tag) =>
+            (searchQuery.trim() || tag.tag_type == "year") &&
+            tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : availableTags.filter(
+          (tag) =>
+            (searchQuery.trim() ||
+              (tag.tag_type !== "madeBy" && tag.tag_type !== "person")) &&
+            tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
 
   const toggleTag = (tagName: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tagName)
-        ? prev.filter((t) => t !== tagName)
-        : [...prev, tagName],
-    );
+    setSelectedTags((prev) => {
+      const selectedIndex = prev.indexOf(tagName);
+      if (selectedIndex >= 0) {
+        return prev.filter((tag) => tag !== tagName);
+      }
+      if (prev.length >= 3) return prev;
+      return [...prev, tagName];
+    });
   };
 
   const clearAllTags = () => {
@@ -56,7 +80,11 @@ const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
   };
 
   return (
-    <div className="py-8">
+    <div className="pb-8">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="pt-2 text-2xl font-bold">Eötvös Média - Gallery</h1>
+      </div>
+
       <div className="mb-6">
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -76,38 +104,13 @@ const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
               />
             </svg>
-            Szűrés tag alapján
+            Szűrés címke alapján
             {selectedTags.length > 0 && (
               <span className="ml-1 rounded-full bg-selfprimary-600 px-2 py-0.5 text-xs text-white">
                 {selectedTags.length}
               </span>
             )}
           </button>
-
-          {selectedTags.length > 1 && (
-            <div className="flex items-center gap-1 rounded-lg bg-foreground-100 p-1">
-              <button
-                onClick={() => setMatchAll(false)}
-                className={`rounded-md px-3 py-1 text-sm transition ${
-                  !matchAll
-                    ? "bg-selfprimary-600 text-white"
-                    : "text-foreground-600 hover:bg-foreground-200"
-                }`}
-              >
-                VAGY
-              </button>
-              <button
-                onClick={() => setMatchAll(true)}
-                className={`rounded-md px-3 py-1 text-sm transition ${
-                  matchAll
-                    ? "bg-selfprimary-600 text-white"
-                    : "text-foreground-600 hover:bg-foreground-200"
-                }`}
-              >
-                ÉS
-              </button>
-            </div>
-          )}
 
           {selectedTags.map((tag) => (
             <span
@@ -145,10 +148,10 @@ const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
         </div>
 
         {isTagMenuOpen && (
-          <div className="mt-2 rounded-lg border bg-selfprimary-bg p-4 shadow-lg">
+          <div className="mt-2 rounded-lg border border-selfprimary-50 bg-selfprimary-bg p-4 shadow-lg">
             <input
               type="text"
-              placeholder="Tag keresése..."
+              placeholder="Címke keresése..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="focus:outline-hidden mb-3 w-full rounded-lg border border-selfprimary-300 bg-transparent px-3 py-2 focus:border-selfprimary-500"
@@ -157,7 +160,7 @@ const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
             <div className="flex max-h-60 flex-wrap gap-2 overflow-y-auto">
               {filteredTags.length === 0 ? (
                 <p className="text-sm text-foreground-500">
-                  {searchQuery ? "Nincs találat" : "Nincsenek elérhető tagek"}
+                  {searchQuery ? "Nincs találat" : "Nincsenek elérhető címkék"}
                 </p>
               ) : (
                 filteredTags.map((tag) => (
@@ -175,22 +178,11 @@ const PhotoGridWrapper = ({ requiredTag }: { requiredTag?: string }) => {
                 ))
               )}
             </div>
-
-            <button
-              onClick={() => setIsTagMenuOpen(false)}
-              className="mt-3 text-sm text-foreground-500 hover:text-foreground-700"
-            >
-              Bezárás
-            </button>
           </div>
         )}
       </div>
 
-      <PhotoGrid
-        requiredTag={requiredTag}
-        filterTags={selectedTags}
-        matchAll={matchAll}
-      />
+      <PhotoGrid requiredTag={requiredTag} filterTags={selectedTags} />
     </div>
   );
 };

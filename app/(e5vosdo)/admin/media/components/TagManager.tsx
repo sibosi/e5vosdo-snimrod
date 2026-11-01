@@ -6,7 +6,7 @@ interface TagStats {
   tag_id: number;
   tag_name: string;
   usage_count: number;
-  priority: "madeBy" | "normal" | "high";
+  tag_type: "year" | "event_main" | "event_part" | "madeBy" | "person";
 }
 
 interface TagManagerProps {
@@ -21,6 +21,7 @@ const TagManager: React.FC<TagManagerProps> = ({
   onTagsChange,
 }) => {
   const [newTagName, setNewTagName] = useState("");
+  const [newTagType, setNewTagType] = useState<TagStats["tag_type"]>("event_part");
   const [editingTag, setEditingTag] = useState<{
     id: number;
     name: string;
@@ -45,7 +46,10 @@ const TagManager: React.FC<TagManagerProps> = ({
       const res = await fetch("/api/admin/media/tags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tag_name: newTagName.trim() }),
+        body: JSON.stringify({
+          tag_name: newTagName.trim(),
+          tag_type: newTagType,
+        }),
       });
 
       if (!res.ok) {
@@ -123,9 +127,9 @@ const TagManager: React.FC<TagManagerProps> = ({
     }
   };
 
-  const handleUpdatePriority = async (
+  const handleUpdateType = async (
     tagId: number,
-    priority: "madeBy" | "normal" | "high",
+    tag_type: TagStats["tag_type"],
   ) => {
     setError(null);
     const scrollTop = scrollContainerRef.current?.scrollTop ?? 0;
@@ -134,12 +138,12 @@ const TagManager: React.FC<TagManagerProps> = ({
       const res = await fetch("/api/admin/media/tags", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: tagId, priority }),
+        body: JSON.stringify({ id: tagId, tag_type }),
       });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to update priority");
+        throw new Error(data.error || "Failed to update tag type");
       }
 
       await onTagsChange();
@@ -170,6 +174,18 @@ const TagManager: React.FC<TagManagerProps> = ({
       {error && (
         <div className="mb-4 rounded-lg bg-danger-100 p-3 text-danger-700">
           {error}
+          <select
+            value={newTagType}
+            onChange={(e) => setNewTagType(e.target.value as TagStats["tag_type"])}
+            className="rounded-lg border px-3 py-2"
+            disabled={isSubmitting}
+          >
+            <option value="year">year</option>
+            <option value="event_main">event_main</option>
+            <option value="event_part">event_part</option>
+            <option value="madeBy">madeBy</option>
+            <option value="person">person</option>
+          </select>
           <button
             onClick={() => setError(null)}
             className="ml-2 text-danger-900 underline"
@@ -215,7 +231,7 @@ const TagManager: React.FC<TagManagerProps> = ({
           <thead className="sticky top-0 bg-foreground-100">
             <tr>
               <th className="px-4 py-2 text-left">Címke</th>
-              <th className="px-4 py-2 text-center">Prioritás</th>
+              <th className="px-4 py-2 text-center">Típus</th>
               <th className="px-4 py-2 text-center">Használat</th>
               <th className="px-4 py-2 text-right">Műveletek</th>
             </tr>
@@ -240,24 +256,20 @@ const TagManager: React.FC<TagManagerProps> = ({
                 </td>
                 <td className="px-4 py-2 text-center">
                   <select
-                    value={tag.priority}
+                    value={tag.tag_type}
                     onChange={(e) =>
-                      handleUpdatePriority(
+                      handleUpdateType(
                         tag.tag_id,
-                        e.target.value as "madeBy" | "normal" | "high",
+                        e.target.value as TagStats["tag_type"],
                       )
                     }
-                    className={`focus:outline-hidden rounded border px-2 py-1 text-sm focus:border-selfprimary-500 ${
-                      tag.priority === "madeBy"
-                        ? "border-purple-400 bg-purple-100 text-purple-800"
-                        : tag.priority === "high"
-                          ? "border-green-400 bg-green-100 text-green-800"
-                          : "border-foreground-300 bg-foreground-100"
-                    }`}
+                    className="focus:outline-hidden rounded border px-2 py-1 text-sm focus:border-selfprimary-500"
                   >
-                    <option value="normal">Normal</option>
-                    <option value="high">Kiemelt</option>
-                    <option value="madeBy">Készítő</option>
+                    <option value="year">year</option>
+                    <option value="event_main">event_main</option>
+                    <option value="event_part">event_part</option>
+                    <option value="madeBy">madeBy</option>
+                    <option value="person">person</option>
                   </select>
                 </td>
                 <td className="px-4 py-2 text-center">

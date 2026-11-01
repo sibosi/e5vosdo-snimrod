@@ -27,7 +27,6 @@ const SzalagavatoGallery: React.FC<SzalagavatoGalleryProps> = ({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
-  const [matchAll, setMatchAll] = useState(false);
   const [filteredTags, setFilteredTags] = useState<MediaTagType[]>([]);
 
   useEffect(() => {
@@ -54,7 +53,7 @@ const SzalagavatoGallery: React.FC<SzalagavatoGalleryProps> = ({
     setFilteredTags(
       availableTags.filter(
         (tag) =>
-          (!searchQuery && tag.priority === "high") ||
+          (!searchQuery) ||
           (searchQuery &&
             tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase())),
       ),
@@ -115,31 +114,6 @@ const SzalagavatoGallery: React.FC<SzalagavatoGalleryProps> = ({
                 </span>
               )}
             </button>
-
-            {selectedTags.length > 0 && (
-              <div className="flex items-center gap-1 rounded-lg bg-foreground-100 p-1">
-                <button
-                  onClick={() => setMatchAll(false)}
-                  className={`rounded-md px-3 py-1 text-sm transition ${
-                    !matchAll
-                      ? "bg-selfprimary-600 text-white"
-                      : "text-foreground-600 hover:bg-foreground-200"
-                  }`}
-                >
-                  VAGY
-                </button>
-                <button
-                  onClick={() => setMatchAll(true)}
-                  className={`rounded-md px-3 py-1 text-sm transition ${
-                    matchAll
-                      ? "bg-selfprimary-600 text-white"
-                      : "text-foreground-600 hover:bg-foreground-200"
-                  }`}
-                >
-                  ÉS
-                </button>
-              </div>
-            )}
 
             {selectedTags.map((tag) => (
               <span
@@ -221,7 +195,6 @@ const SzalagavatoGallery: React.FC<SzalagavatoGalleryProps> = ({
         <PhotoGrid
           requiredTag={SZALAGAVATO_TAG}
           filterTags={selectedTags}
-          matchAll={matchAll}
         />
       </div>
     </PasswordGate>

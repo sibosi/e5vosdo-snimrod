@@ -24,7 +24,8 @@ CREATE TABLE
     IF NOT EXISTS media_images_tags (
         id INT AUTO_INCREMENT PRIMARY KEY,
         tag_name VARCHAR(100) NOT NULL,
-        priority VARCHAR(10) DEFAULT 'normal' CHECK (priority IN ('madeBy', 'normal', 'high')),
+        tag_type VARCHAR(20) NOT NULL DEFAULT 'event_main'
+            CHECK (tag_type IN ('year', 'event_main', 'event_part', 'madeBy', 'person')),
         UNIQUE KEY unique_tag_name (tag_name)
     );
 
@@ -42,10 +43,31 @@ CREATE TABLE
         FOREIGN KEY (media_image_tag_id) REFERENCES media_images_tags (id) ON DELETE CASCADE
     );
 
+CREATE TABLE
+    IF NOT EXISTS media_images_pinned_tags (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        tag_id INT NOT NULL,
+        year_tag_id INT NOT NULL,
+        event_main_tag_id INT NOT NULL,
+        UNIQUE KEY unique_pinned_tag_context (tag_id, year_tag_id, event_main_tag_id),
+        FOREIGN KEY (tag_id) REFERENCES media_images_tags (id) ON DELETE CASCADE,
+        FOREIGN KEY (year_tag_id) REFERENCES media_images_tags (id) ON DELETE CASCADE,
+        FOREIGN KEY (event_main_tag_id) REFERENCES media_images_tags (id) ON DELETE CASCADE
+    );
+
 --@block - Migration (átmenet)
 --@block
 ALTER TABLE media_images_tags
-ADD COLUMN priority VARCHAR(10) DEFAULT 'normal' CHECK (priority IN ('madeBy', 'normal', 'high'));
+ADD COLUMN tag_type VARCHAR(20) NOT NULL DEFAULT 'event_main'
+    CHECK (tag_type IN ('year', 'event_main', 'event_part', 'madeBy', 'person'));
+
+-- A régi madeBy prioritású tagek megőrzése az új modellben.
+UPDATE media_images_tags
+SET tag_type = 'madeBy'
+WHERE priority = 'madeBy';
+
+ALTER TABLE media_images_tags
+DROP COLUMN priority;
 
 --@block
 ALTER TABLE media_images

@@ -41,7 +41,7 @@ export const siteConfig = {
     },
     {
       label: "Média",
-      href: "/media",
+      href: "/e5media",
     },
     {
       label: "E5 Podcast",
@@ -55,7 +55,7 @@ export const siteConfig = {
     github: "https://github.com/sibosi",
     mypage: "https://yoursit.ee/snimrod",
     instagram: "https://instagram.com/e5vosdo/",
-    mediaGallery: "/media",
+    mediaGallery: "/e5media",
     gdrive:
       "https://drive.google.com/drive/folders/0BzvbwQrx8NJEVnJfM2tSTjJsaTA?resourcekey=0-dexBffraBCSqohIM_y4Xiw",
     feedback: "https://forms.gle/XdMtAx6fsubWEBW97",

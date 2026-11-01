@@ -16,7 +16,6 @@ import {
  * Query params:
  *   - imageId: get tags for specific image
  *   - search: comma-separated tag names to search
- *   - matchAll: if true, all tags must match (default: false)
  *   - limit: number of images per page (default: 20)
  *   - offset: pagination offset (default: 0)
  */
@@ -31,7 +30,6 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const imageId = searchParams.get("imageId");
     const search = searchParams.get("search");
-    const matchAll = searchParams.get("matchAll") === "true";
     const limit = Number.parseInt(searchParams.get("limit") || "20", 10);
     const offset = Number.parseInt(searchParams.get("offset") || "0", 10);
 
@@ -52,7 +50,6 @@ export async function GET(request: NextRequest) {
         .filter((t) => t.length > 0);
       const images = await searchImagesByTags(selfUser, {
         tagNames: tagNames,
-        matchAll: matchAll,
       });
       return NextResponse.json({
         images,

@@ -29,7 +29,6 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false);
-  const [matchAll, setMatchAll] = useState(false);
   const [filteredTags, setFilteredTags] = useState<MediaTagType[]>([]);
 
   const fetchRelevantTags = () => {
@@ -76,7 +75,7 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
     setFilteredTags(
       availableTags.filter(
         (tag) =>
-          (!searchQuery && tag.priority === "high") ||
+          (!searchQuery) ||
           (searchQuery &&
             tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase())),
       ),
@@ -136,31 +135,6 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
                 </span>
               )}
             </button>
-
-            {selectedTags.length > 0 && (
-              <div className="flex items-center gap-1 rounded-lg bg-foreground-100 p-1">
-                <button
-                  onClick={() => setMatchAll(false)}
-                  className={`rounded-md px-3 py-1 text-sm transition ${
-                    matchAll
-                      ? "text-foreground-600 hover:bg-foreground-200"
-                      : "bg-selfprimary-600 text-white"
-                  }`}
-                >
-                  OR
-                </button>
-                <button
-                  onClick={() => setMatchAll(true)}
-                  className={`rounded-md px-3 py-1 text-sm transition ${
-                    matchAll
-                      ? "bg-selfprimary-600 text-white"
-                      : "text-foreground-600 hover:bg-foreground-200"
-                  }`}
-                >
-                  AND
-                </button>
-              </div>
-            )}
 
             {selectedTags.map((tag) => (
               <span
@@ -242,7 +216,6 @@ const BimunGallery: React.FC<BimunGalleryProps> = ({
         <PhotoGrid
           requiredTag={BIMUN_TAG}
           filterTags={selectedTags}
-          matchAll={matchAll}
         />
       </div>
     </PasswordGate>

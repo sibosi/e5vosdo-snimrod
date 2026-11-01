@@ -2,10 +2,24 @@ import { dbreq } from "./db";
 import { UserType } from "./dbreq";
 import { gate } from "./permissions";
 
+export type MediaTagTypeName =
+  | "year"
+  | "event_main"
+  | "event_part"
+  | "madeBy"
+  | "person";
+
+export interface PinnedMediaTag {
+  id: number;
+  tag_id: number;
+  year_tag_id: number;
+  event_main_tag_id: number;
+}
+
 export interface MediaTagType {
   id: number;
   tag_name: string;
-  priority: "madeBy" | "normal" | "high";
+  tag_type: MediaTagTypeName;
 }
 
 export interface MediaImageTagRelation {
@@ -33,6 +47,7 @@ export interface MediaImageWithTags {
   tags: Array<{
     tag_id: number;
     tag_name: string;
+    tag_type: MediaTagTypeName;
     coordinate1_x: number | null;
     coordinate1_y: number | null;
     coordinate2_x: number | null;
@@ -56,7 +71,82 @@ export interface TagAttachment {
 export async function getAllTags(selfUser: UserType): Promise<MediaTagType[]> {
   gate(selfUser, ["user", "media_view"]);
   return (await dbreq(
-    "SELECT * FROM media_images_tags ORDER BY priority = 'high' DESC, priority = 'normal' DESC, tag_name ASC",
+    "SELECT * FROM media_images_tags ORDER BY tag_type ASC, tag_name ASC",
+  )) as MediaTagType[];
+}
+
+export async function getMediaNavigationTags(
+  selfUser: UserType,
+  yearName?: string,
+  eventMainName?: string,
+): Promise<MediaTagType[]> {
+  gate(selfUser, ["user", "media_view"]);
+
+  if (!yearName) {
+    return (await dbreq(
+      `SELECT id, tag_name, tag_type
+       FROM media_images_tags
+       ORDER BY tag_type ASC, id DESC`,
+    )) as MediaTagType[];
+  }
+
+  if (!eventMainName) {
+    return (await dbreq(
+      `SELECT
+        event_tags.id,
+        event_tags.tag_name,
+        event_tags.tag_type
+      FROM media_images_tags AS event_tags
+      JOIN media_images_to_tags AS event_relation
+        ON event_relation.media_image_tag_id = event_tags.id
+      JOIN media_images AS images
+        ON images.id = event_relation.media_image_id
+      WHERE EXISTS (
+          SELECT 1
+          FROM media_images_to_tags AS year_relation
+          JOIN media_images_tags AS year_tags
+            ON year_tags.id = year_relation.media_image_tag_id
+          WHERE year_relation.media_image_id = event_relation.media_image_id
+            AND year_tags.tag_type = 'year'
+            AND year_tags.tag_name = ?
+        )
+      GROUP BY event_tags.id, event_tags.tag_name, event_tags.tag_type
+      ORDER BY MIN(images.id) DESC, event_tags.id ASC;`,
+      [yearName],
+    )) as MediaTagType[];
+  }
+
+  return (await dbreq(
+    `SELECT
+        event_parts.id,
+        event_parts.tag_name,
+        event_parts.tag_type
+      FROM media_images_tags AS event_parts
+      JOIN media_images_to_tags AS part_relation
+        ON part_relation.media_image_tag_id = event_parts.id
+      JOIN media_images AS images
+        ON images.id = part_relation.media_image_id
+      WHERE EXISTS (
+          SELECT 1
+          FROM media_images_to_tags AS year_relation
+          JOIN media_images_tags AS year_tags
+            ON year_tags.id = year_relation.media_image_tag_id
+          WHERE year_relation.media_image_id = part_relation.media_image_id
+            AND year_tags.tag_type = 'year'
+            AND year_tags.tag_name = ?
+        )
+        AND EXISTS (
+          SELECT 1
+          FROM media_images_to_tags AS event_relation
+          JOIN media_images_tags AS event_tags
+            ON event_tags.id = event_relation.media_image_tag_id
+          WHERE event_relation.media_image_id = part_relation.media_image_id
+            AND event_tags.tag_type = 'event_main'
+            AND event_tags.tag_name = ?
+        )
+      GROUP BY event_parts.id, event_parts.tag_name, event_parts.tag_type
+      ORDER BY MIN(images.id) DESC, event_parts.id ASC;`,
+    [yearName, eventMainName],
   )) as MediaTagType[];
 }
 
@@ -72,9 +162,9 @@ export async function getAllBimunRelevantTags(
   const BIMUN_TAG = "BIMUN";
 
   return (await dbreq(
-    `SELECT relevant_tags.id, relevant_tags.tag_name, relevant_tags.priority
+    `SELECT relevant_tags.id, relevant_tags.tag_name, relevant_tags.tag_type
      FROM (
-       SELECT DISTINCT tags.id, tags.tag_name, tags.priority
+       SELECT DISTINCT tags.id, tags.tag_name, tags.tag_type
        FROM media_images_tags tags
        JOIN media_images_to_tags relations
          ON relations.media_image_tag_id = tags.id
@@ -89,8 +179,7 @@ export async function getAllBimunRelevantTags(
          AND UPPER(TRIM(tags.tag_name)) <> UPPER(TRIM(?))
      ) AS relevant_tags
      ORDER BY
-       relevant_tags.priority = 'high' DESC,
-       relevant_tags.priority = 'normal' DESC,
+       relevant_tags.tag_type ASC,
        relevant_tags.tag_name ASC`,
     [BIMUN_TAG, BIMUN_TAG],
   )) as MediaTagType[];
@@ -102,12 +191,13 @@ export async function getAllBimunRelevantTags(
 export async function createTag(
   selfUser: UserType,
   tagName: string,
+  tagType: MediaTagTypeName = "event_part",
 ): Promise<number> {
   gate(selfUser, ["admin", "media_admin"]);
 
   const result = await dbreq(
-    "INSERT INTO media_images_tags (tag_name) VALUES (?) ON DUPLICATE KEY UPDATE id = id",
-    [tagName],
+    "INSERT INTO media_images_tags (tag_name, tag_type) VALUES (?, ?) ON DUPLICATE KEY UPDATE id = id",
+    [tagName, tagType],
   );
 
   // If it was a duplicate, get the existing ID
@@ -161,7 +251,7 @@ export async function getTagsForImage(
   Array<{
     tag_id: number;
     tag_name: string;
-    priority: "madeBy" | "normal" | "high";
+    tag_type: MediaTagTypeName;
     coordinate1_x: number | null;
     coordinate1_y: number | null;
     coordinate2_x: number | null;
@@ -173,7 +263,7 @@ export async function getTagsForImage(
     `SELECT
       tags.id as tag_id,
       tags.tag_name,
-      tags.priority,
+      tags.tag_type,
       relatons.coordinate1_x,
       relatons.coordinate1_y,
       relatons.coordinate2_x,
@@ -296,7 +386,7 @@ export async function removeAllTagsFromImage(
 // ============ Search Operations ============
 // @sibosi TODO: Refactor
 
-// 5 perces cache a Szalagavató tag-hez (requiredTag: "Szalagavató", tagNames: [], matchAll: false)
+// 5 perces cache a Szalagavató tag-hez.
 let szalagavatoCache: {
   value: MediaImageWithTags[];
   expires: number;
@@ -321,6 +411,7 @@ async function batchFetchTagsForImages(
       relatons.media_image_id,
       tags.id as tag_id,
       tags.tag_name,
+      tags.tag_type,
       relatons.coordinate1_x,
       relatons.coordinate1_y,
       relatons.coordinate2_x,
@@ -341,6 +432,7 @@ async function batchFetchTagsForImages(
     tagsByImageId.get(imgId)!.push({
       tag_id: tag.tag_id,
       tag_name: tag.tag_name,
+      tag_type: tag.tag_type,
       coordinate1_x: tag.coordinate1_x,
       coordinate1_y: tag.coordinate1_y,
       coordinate2_x: tag.coordinate2_x,
@@ -358,23 +450,21 @@ async function batchFetchTagsForImages(
 /**
  * Search images by tags (user access)
  * @param options.tagNames - Filter tags
- * @param options.matchAll - If true, all filterTags must match (AND), if false any can match (OR)
+ * All supplied tags must match.
  * @param options.requiredTag - Tag that must be present on all results (always AND)
  */
 export async function searchImagesByTags(
   selfUser: UserType,
   options: {
     tagNames: string[];
-    matchAll?: boolean;
     requiredTag?: string | null;
   },
 ): Promise<MediaImageWithTags[]> {
   gate(selfUser, ["user", "media_view"]);
 
-  const { tagNames, matchAll = false, requiredTag } = options;
-
-  // Cache ellenőrzés: Szalagavató tag, üres tagNames, matchAll: false
-  if (requiredTag === "Szalagavató" && tagNames.length === 0 && !matchAll) {
+  const { tagNames, requiredTag } = options;
+  // Cache ellenőrzés: Szalagavató tag, üres tagNames.
+  if (requiredTag === "Szalagavató" && tagNames.length === 0) {
     const now = Date.now();
     if (szalagavatoCache && szalagavatoCache.expires > now) {
       return szalagavatoCache.value;
@@ -400,7 +490,7 @@ export async function searchImagesByTags(
     const result = await batchFetchTagsForImages(images);
 
     // Cache frissítése Szalagavató tag esetén
-    if (requiredTag === "Szalagavató" && !matchAll) {
+    if (requiredTag === "Szalagavató") {
       szalagavatoCache = {
         value: result,
         expires: Date.now() + SZALAGAVATO_CACHE_TTL,
@@ -436,33 +526,18 @@ export async function searchImagesByTags(
     let query: string;
     let params: (string | number)[];
 
-    if (matchAll) {
-      // Minden filterTag-nek meg kell egyeznie
-      query = `
-        SELECT DISTINCT images.*
-        FROM media_images images
-        JOIN media_images_to_tags relations ON images.id = relations.media_image_id
-        JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
-        WHERE images.id IN (${idPlaceholders})
-          AND tags.tag_name IN (${tagPlaceholders})
-        GROUP BY images.id
-        HAVING COUNT(DISTINCT tags.tag_name) = ?
-        ORDER BY images.id DESC
-      `;
-      params = [...requiredIds, ...tagNames, tagNames.length];
-    } else {
-      // Bármelyik filterTag egyezhet (VAGY)
-      query = `
-        SELECT DISTINCT images.*
-        FROM media_images images
-        JOIN media_images_to_tags relations ON images.id = relations.media_image_id
-        JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
-        WHERE images.id IN (${idPlaceholders})
-          AND tags.tag_name IN (${tagPlaceholders})
-        ORDER BY images.id DESC
-      `;
-      params = [...requiredIds, ...tagNames];
-    }
+    query = `
+      SELECT DISTINCT images.*
+      FROM media_images images
+      JOIN media_images_to_tags relations ON images.id = relations.media_image_id
+      JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
+      WHERE images.id IN (${idPlaceholders})
+        AND tags.tag_name IN (${tagPlaceholders})
+      GROUP BY images.id
+      HAVING COUNT(DISTINCT tags.tag_name) = ?
+      ORDER BY images.id DESC
+    `;
+    params = [...requiredIds, ...tagNames, tagNames.length];
 
     const images = (await dbreq(query, params)) as any[];
     return await batchFetchTagsForImages(images);
@@ -471,33 +546,18 @@ export async function searchImagesByTags(
   // Ha csak filterTags van (eredeti logika)
   const placeholders = tagNames.map(() => "?").join(",");
 
-  let query: string;
-  if (matchAll) {
-    // All tags must match
-    query = `
-      SELECT DISTINCT images.*
-      FROM media_images images
-      JOIN media_images_to_tags relations ON images.id = relations.media_image_id
-      JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
-      WHERE tags.tag_name IN (${placeholders})
-      GROUP BY images.id
-      HAVING COUNT(DISTINCT tags.tag_name) = ?
-      ORDER BY images.id DESC
-    `;
-    tagNames.push(String(tagNames.length));
-  } else {
-    // Any tag matches
-    query = `
-      SELECT DISTINCT images.*
-      FROM media_images images
-      JOIN media_images_to_tags relations ON images.id = relations.media_image_id
-      JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
-      WHERE tags.tag_name IN (${placeholders})
-      ORDER BY images.id DESC
-    `;
-  }
+  const query = `
+    SELECT DISTINCT images.*
+    FROM media_images images
+    JOIN media_images_to_tags relations ON images.id = relations.media_image_id
+    JOIN media_images_tags tags ON relations.media_image_tag_id = tags.id
+    WHERE tags.tag_name IN (${placeholders})
+    GROUP BY images.id
+    HAVING COUNT(DISTINCT tags.tag_name) = ?
+    ORDER BY images.id DESC
+  `;
 
-  const images = (await dbreq(query, tagNames)) as any[];
+  const images = (await dbreq(query, [...tagNames, tagNames.length])) as any[];
 
   // Batch fetch tags for all images
   return await batchFetchTagsForImages(images);
@@ -609,7 +669,7 @@ export async function getTagStats(selfUser: UserType): Promise<
     tag_id: number;
     tag_name: string;
     usage_count: number;
-    priority: "madeBy" | "normal" | "high";
+    tag_type: MediaTagTypeName;
   }>
 > {
   gate(selfUser, ["admin", "media_admin"]);
@@ -618,27 +678,72 @@ export async function getTagStats(selfUser: UserType): Promise<
     SELECT
       tags.id as tag_id,
       tags.tag_name,
-      tags.priority,
+      tags.tag_type,
       COUNT(relatons.id) as usage_count
     FROM media_images_tags tags
     LEFT JOIN media_images_to_tags relatons
       ON tags.id = relatons.media_image_tag_id
-    GROUP BY tags.id, tags.tag_name, tags.priority
+    GROUP BY tags.id, tags.tag_name, tags.tag_type
     ORDER BY usage_count DESC, tags.tag_name ASC
   `)) as any[];
 }
 
 /**
- * Update a tag's priority (media_admin only)
+ * Update a tag's type (media_admin only)
  */
-export async function updateTagPriority(
+export async function updateTagType(
   selfUser: UserType,
   tagId: number,
-  priority: "madeBy" | "normal" | "high",
+  tagType: MediaTagTypeName,
 ): Promise<void> {
   gate(selfUser, ["admin", "media_admin"]);
-  await dbreq("UPDATE media_images_tags SET priority = ? WHERE id = ?", [
-    priority,
+  await dbreq("UPDATE media_images_tags SET tag_type = ? WHERE id = ?", [
+    tagType,
     tagId,
   ]);
+}
+
+// TODO: Add tag pinning for years without event_main tags
+export async function getPinnedTags(
+  selfUser: UserType,
+  yearTagId?: number,
+  eventMainTagId?: number,
+): Promise<PinnedMediaTag[]> {
+  gate(selfUser, ["user", "media_view"]);
+  let query = "SELECT * FROM media_images_pinned_tags";
+  const params: number[] = [];
+  if (yearTagId !== undefined || eventMainTagId !== undefined) {
+    query += " WHERE year_tag_id = ? AND event_main_tag_id = ?";
+    params.push(yearTagId ?? 0, eventMainTagId ?? 0);
+  }
+  return (await dbreq(query, params)) as PinnedMediaTag[];
+}
+
+export async function pinTag(
+  selfUser: UserType,
+  tagId: number,
+  yearTagId: number,
+  eventMainTagId: number,
+): Promise<void> {
+  gate(selfUser, ["admin", "media_admin"]);
+  await dbreq(
+    `INSERT INTO media_images_pinned_tags (tag_id, year_tag_id, event_main_tag_id)
+     VALUES (?, ?, ?)
+     ON DUPLICATE KEY UPDATE tag_id = VALUES(tag_id)`,
+    [tagId, yearTagId, eventMainTagId],
+  );
+}
+
+export async function unpinTag(
+  selfUser: UserType,
+  tagId: number,
+  yearTagId: number,
+  eventMainTagId: number,
+): Promise<void> {
+  gate(selfUser, ["admin", "media_admin"]);
+  await dbreq(
+    `DELETE FROM media_images_pinned_tags
+     WHERE tag_id = ? AND year_tag_id = ? AND event_main_tag_id = ?`,
+    [tagId, yearTagId, eventMainTagId],
+  );
 }

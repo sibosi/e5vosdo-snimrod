@@ -56,7 +56,7 @@ interface TagStats {
   tag_id: number;
   tag_name: string;
   usage_count: number;
-  priority: "madeBy" | "normal" | "high";
+  tag_type: "year" | "event_main" | "event_part" | "madeBy" | "person";
 }
 
 function formatBytes(bytes: number): string {
@@ -392,7 +392,7 @@ export default function MediaAdminClient() {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Média Admin</h1>
         <a
-          href="/media"
+          href="/e5media"
           className="rounded-sm bg-default-200 px-4 py-2 text-default-700 hover:bg-default-300"
         >
           ← Vissza a galériához

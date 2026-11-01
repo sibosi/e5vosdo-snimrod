@@ -180,14 +180,9 @@ const LazyMedia = ({
 export interface PhotoGridProps {
   requiredTag?: string;
   filterTags?: string[];
-  matchAll?: boolean;
 }
 
-const PhotoGrid = ({
-  requiredTag,
-  filterTags = [],
-  matchAll = false,
-}: PhotoGridProps) => {
+const PhotoGrid = ({ requiredTag, filterTags = [] }: PhotoGridProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<MediaImageType[]>();
@@ -217,7 +212,7 @@ const PhotoGrid = ({
 
     if (hasFilters) {
       // Készítsük el a kérést a szerver felé
-      // requiredTag mindig ÉS kapcsolatban van, filterTags között a matchAll dönt
+      // A megadott tagek és a requiredTag is kötelező szűrők.
       // Az options objektum egyetlen paraméterként kerül átadásra
       fetch("/api/searchImagesByTags", {
         method: "POST",
@@ -228,7 +223,6 @@ const PhotoGrid = ({
         body: JSON.stringify({
           options: {
             tagNames: filterTags,
-            matchAll: matchAll,
             requiredTag: requiredTag || null,
           },
         }),
@@ -278,7 +272,7 @@ const PhotoGrid = ({
 
   useEffect(() => {
     loadImages();
-  }, [requiredTag, filterTags.join(","), matchAll]);
+  }, [requiredTag, filterTags.join(",")]);
 
   const handleNextImage = useCallback(() => {
     if (!selected || !imageFiles) return;
@@ -291,10 +285,10 @@ const PhotoGrid = ({
     const prefetch2 = imageFiles[(nextIndex + 2) % imageFiles.length];
 
     if (prefetch1 && (prefetch1.media_type ?? "image") === "image") {
-      fetch(`/api/media/${prefetch1.id}?size=large`);
+      void fetch(`/api/media/${prefetch1.id}?size=large`);
     }
     if (prefetch2 && (prefetch2.media_type ?? "image") === "image") {
-      fetch(`/api/media/${prefetch2.id}?size=large`);
+      void fetch(`/api/media/${prefetch2.id}?size=large`);
     }
   }, [selected, imageFiles]);
 
@@ -312,10 +306,10 @@ const PhotoGrid = ({
       imageFiles[(previousIndex - 2 + imageFiles.length) % imageFiles.length];
 
     if (prefetch1 && (prefetch1.media_type ?? "image") === "image") {
-      fetch(`/api/media/${prefetch1.id}?size=large`);
+      void fetch(`/api/media/${prefetch1.id}?size=large`);
     }
     if (prefetch2 && (prefetch2.media_type ?? "image") === "image") {
-      fetch(`/api/media/${prefetch2.id}?size=large`);
+      void fetch(`/api/media/${prefetch2.id}?size=large`);
     }
   }, [selected, imageFiles]);
 
@@ -450,9 +444,6 @@ const PhotoGrid = ({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Eötvös Média - Gallery</h1>
-      </div>
 
       {imageFiles === undefined && (
         <div className="p-8 text-center">
@@ -516,7 +507,7 @@ async function getMadeByTagsForImage(imageId: number): Promise<string[]> {
     return data.tags
       .filter(
         (t: MediaTagType) =>
-          t.priority === "madeBy" || t.tag_name.startsWith("Made by:"),
+          t.tag_type === "madeBy" || t.tag_name.startsWith("Made by:"),
       )
       .map((t: { tag_name: string }) =>
         t.tag_name.replaceAll("Made by:", "").trim(),
@@ -676,7 +667,7 @@ const MediaModal = ({
       return;
     }
 
-    getMadeByTagsForImage(media.id).then((tags) => setMadeByTags(tags));
+    void getMadeByTagsForImage(media.id).then((tags) => setMadeByTags(tags));
   }, [media.id, media.media_type]);
 
   const title = media.original_file_name || "Image";
@@ -745,7 +736,7 @@ const MediaModal = ({
               className="rounded-sm bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDownload();
+                void handleDownload();
               }}
               disabled={downloading}
             >

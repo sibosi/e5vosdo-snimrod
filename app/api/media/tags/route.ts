@@ -16,7 +16,6 @@ import {
  * Query params:
  *   - imageId: get tags for specific image
  *   - search: comma-separated tag names to search
- *   - matchAll: if true, all tags must match (default: false)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -29,7 +28,6 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const imageId = searchParams.get("imageId");
     const search = searchParams.get("search");
-    const matchAll = searchParams.get("matchAll") === "true";
 
     // Get tags for specific image
     if (imageId) {
@@ -48,7 +46,6 @@ export async function GET(request: NextRequest) {
         .filter((t) => t.length > 0);
       const images = await searchImagesByTags(selfUser, {
         tagNames: tagNames,
-        matchAll: matchAll,
       });
       return NextResponse.json({ images });
     }

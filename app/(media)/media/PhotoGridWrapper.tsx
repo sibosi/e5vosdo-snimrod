@@ -49,9 +49,19 @@ const PhotoGridWrapper = ({
       });
   }, [selectedTags[0], selectedTags[1]]);
 
-  const filteredTags = availableTags.filter((tag) =>
-    tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredTags =
+    selectedTags.length === 0
+      ? availableTags.filter(
+          (tag) =>
+            (searchQuery.trim() || tag.tag_type == "year") &&
+            tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : availableTags.filter(
+          (tag) =>
+            (searchQuery.trim() ||
+              (tag.tag_type !== "madeBy" && tag.tag_type !== "person")) &&
+            tag.tag_name.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
 
   const toggleTag = (tagName: string) => {
     setSelectedTags((prev) => {
@@ -70,7 +80,11 @@ const PhotoGridWrapper = ({
   };
 
   return (
-    <div className="py-8">
+    <div className="pb-8">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="pt-2 text-2xl font-bold">Eötvös Média - Gallery</h1>
+      </div>
+
       <div className="mb-6">
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -90,7 +104,7 @@ const PhotoGridWrapper = ({
                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
               />
             </svg>
-            Szűrés tag alapján
+            Szűrés címke alapján
             {selectedTags.length > 0 && (
               <span className="ml-1 rounded-full bg-selfprimary-600 px-2 py-0.5 text-xs text-white">
                 {selectedTags.length}
@@ -134,10 +148,10 @@ const PhotoGridWrapper = ({
         </div>
 
         {isTagMenuOpen && (
-          <div className="mt-2 rounded-lg border bg-selfprimary-bg p-4 shadow-lg">
+          <div className="mt-2 rounded-lg border border-selfprimary-50 bg-selfprimary-bg p-4 shadow-lg">
             <input
               type="text"
-              placeholder="Tag keresése..."
+              placeholder="Címke keresése..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="focus:outline-hidden mb-3 w-full rounded-lg border border-selfprimary-300 bg-transparent px-3 py-2 focus:border-selfprimary-500"
@@ -146,7 +160,7 @@ const PhotoGridWrapper = ({
             <div className="flex max-h-60 flex-wrap gap-2 overflow-y-auto">
               {filteredTags.length === 0 ? (
                 <p className="text-sm text-foreground-500">
-                  {searchQuery ? "Nincs találat" : "Nincsenek elérhető tagek"}
+                  {searchQuery ? "Nincs találat" : "Nincsenek elérhető címkék"}
                 </p>
               ) : (
                 filteredTags.map((tag) => (
@@ -164,13 +178,6 @@ const PhotoGridWrapper = ({
                 ))
               )}
             </div>
-
-            <button
-              onClick={() => setIsTagMenuOpen(false)}
-              className="mt-3 text-sm text-foreground-500 hover:text-foreground-700"
-            >
-              Bezárás
-            </button>
           </div>
         )}
       </div>

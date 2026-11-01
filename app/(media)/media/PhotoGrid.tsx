@@ -182,10 +182,7 @@ export interface PhotoGridProps {
   filterTags?: string[];
 }
 
-const PhotoGrid = ({
-  requiredTag,
-  filterTags = [],
-}: PhotoGridProps) => {
+const PhotoGrid = ({ requiredTag, filterTags = [] }: PhotoGridProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [imageFiles, setImageFiles] = useState<MediaImageType[]>();
@@ -288,10 +285,10 @@ const PhotoGrid = ({
     const prefetch2 = imageFiles[(nextIndex + 2) % imageFiles.length];
 
     if (prefetch1 && (prefetch1.media_type ?? "image") === "image") {
-      fetch(`/api/media/${prefetch1.id}?size=large`);
+      void fetch(`/api/media/${prefetch1.id}?size=large`);
     }
     if (prefetch2 && (prefetch2.media_type ?? "image") === "image") {
-      fetch(`/api/media/${prefetch2.id}?size=large`);
+      void fetch(`/api/media/${prefetch2.id}?size=large`);
     }
   }, [selected, imageFiles]);
 
@@ -309,10 +306,10 @@ const PhotoGrid = ({
       imageFiles[(previousIndex - 2 + imageFiles.length) % imageFiles.length];
 
     if (prefetch1 && (prefetch1.media_type ?? "image") === "image") {
-      fetch(`/api/media/${prefetch1.id}?size=large`);
+      void fetch(`/api/media/${prefetch1.id}?size=large`);
     }
     if (prefetch2 && (prefetch2.media_type ?? "image") === "image") {
-      fetch(`/api/media/${prefetch2.id}?size=large`);
+      void fetch(`/api/media/${prefetch2.id}?size=large`);
     }
   }, [selected, imageFiles]);
 
@@ -447,9 +444,6 @@ const PhotoGrid = ({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Eötvös Média - Gallery</h1>
-      </div>
 
       {imageFiles === undefined && (
         <div className="p-8 text-center">
@@ -673,7 +667,7 @@ const MediaModal = ({
       return;
     }
 
-    getMadeByTagsForImage(media.id).then((tags) => setMadeByTags(tags));
+    void getMadeByTagsForImage(media.id).then((tags) => setMadeByTags(tags));
   }, [media.id, media.media_type]);
 
   const title = media.original_file_name || "Image";
@@ -742,7 +736,7 @@ const MediaModal = ({
               className="rounded-sm bg-selfprimary-600 px-3 py-2 text-sm text-foreground-50 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDownload();
+                void handleDownload();
               }}
               disabled={downloading}
             >

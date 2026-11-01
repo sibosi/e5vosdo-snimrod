@@ -82,17 +82,14 @@ export async function getMediaNavigationTags(
 ): Promise<MediaTagType[]> {
   gate(selfUser, ["user", "media_view"]);
 
-  // Case 1: No yearName provided, return all year tags
   if (!yearName) {
     return (await dbreq(
       `SELECT id, tag_name, tag_type
        FROM media_images_tags
-       WHERE tag_type = 'year'
-       ORDER BY id DESC`,
+       ORDER BY tag_type ASC, id DESC`,
     )) as MediaTagType[];
   }
 
-  // Case 2: Year provided, but no eventMainName, return all event_main tags for that year
   if (!eventMainName) {
     return (await dbreq(
       `SELECT
@@ -104,8 +101,7 @@ export async function getMediaNavigationTags(
         ON event_relation.media_image_tag_id = event_tags.id
       JOIN media_images AS images
         ON images.id = event_relation.media_image_id
-      WHERE event_tags.tag_type = 'event_main'
-        AND EXISTS (
+      WHERE EXISTS (
           SELECT 1
           FROM media_images_to_tags AS year_relation
           JOIN media_images_tags AS year_tags
@@ -120,7 +116,6 @@ export async function getMediaNavigationTags(
     )) as MediaTagType[];
   }
 
-  // Case 3: Both yearName and eventMainName provided, return all event_part tags for that combination
   return (await dbreq(
     `SELECT
         event_parts.id,
@@ -131,9 +126,7 @@ export async function getMediaNavigationTags(
         ON part_relation.media_image_tag_id = event_parts.id
       JOIN media_images AS images
         ON images.id = part_relation.media_image_id
-      WHERE (event_parts.tag_type = 'event_part'
-        OR event_parts.tag_type = 'event_main')
-        AND EXISTS (
+      WHERE EXISTS (
           SELECT 1
           FROM media_images_to_tags AS year_relation
           JOIN media_images_tags AS year_tags

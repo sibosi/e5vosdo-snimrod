@@ -34,9 +34,9 @@ const NavbarForPhone = ({
     "/me": "Profilom",
     "/est": "E5 Podcast",
     "/admin/page": "Admin",
-    "/media": "Média",
+    "/e5media": "Média",
     "/dev": "Admin",
-    "/fal": "Fal"
+    "/fal": "Fal",
   };
 
   const pathname = usePathname();

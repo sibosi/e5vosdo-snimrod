@@ -392,7 +392,7 @@ export default function MediaAdminClient() {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Média Admin</h1>
         <a
-          href="/media"
+          href="/e5media"
           className="rounded-sm bg-default-200 px-4 py-2 text-default-700 hover:bg-default-300"
         >
           ← Vissza a galériához

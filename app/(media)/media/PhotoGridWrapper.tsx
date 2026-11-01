@@ -1,7 +1,6 @@
 "use client";
 import { MediaTagType } from "@/db/mediaTags";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const PhotoGrid = dynamic(() => import("./PhotoGrid"), {
@@ -20,7 +19,6 @@ const PhotoGridWrapper = ({
   requiredTag?: string;
   initialTags?: string[];
 }) => {
-  const router = useRouter();
   const [availableTags, setAvailableTags] = useState<MediaTagType[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTags);
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,8 +28,9 @@ const PhotoGridWrapper = ({
     const path = selectedTags.length
       ? `/media/${selectedTags.map((tag) => encodeURIComponent(tag)).join(",")}`
       : "/media";
-    router.replace(path, { scroll: false });
-  }, [router, selectedTags]);
+
+    window.history.replaceState(null, "", path);
+  }, [selectedTags]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -176,10 +175,7 @@ const PhotoGridWrapper = ({
         )}
       </div>
 
-      <PhotoGrid
-        requiredTag={requiredTag}
-        filterTags={selectedTags}
-      />
+      <PhotoGrid requiredTag={requiredTag} filterTags={selectedTags} />
     </div>
   );
 };

@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import parse from "html-react-parser";
 import { EventType } from "@/db/event";
+import IceBlock from "@/components/events/Defrosting";
 import Link from "next/link";
 import {
   Modal,
@@ -201,6 +202,10 @@ function MobileCarousel({ data }: Readonly<{ data: EventType[] }>) {
               />
             ))}
 
+            <div className="mr-2 flex shrink-0 content-around gap-2 rounded-3xl bg-selfprimary-20 px-2">
+              <IceBlock width="70px" hint="" />
+            </div>
+
             <Link
               title="add item"
               href="/creator/"
@@ -220,7 +225,7 @@ function MobileCarousel({ data }: Readonly<{ data: EventType[] }>) {
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-              {data?.length == 0 && <span>Esemény feltöltése</span>}
+              {data?.length == 0 && false && <span>Esemény feltöltése</span>}
             </Link>
           </div>
         </div>

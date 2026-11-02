@@ -6,7 +6,7 @@ import { getAuth, UserType } from "@/db/dbreq";
 import Tray from "@/components/tray";
 import LoginButton from "@/components/LoginButton";
 import Carousel from "@/components/home/carousel";
-import { Chip, Link } from "@heroui/react";
+import { Chip, Link, Card, CardHeader, CardBody, Button } from "@heroui/react";
 import { getCarouselEvents } from "@/db/event";
 import { Section } from "@/components/home/section";
 import { Events } from "@/components/events";
@@ -112,6 +112,41 @@ function MainContent({
 }: Readonly<{ selfUser: UserType | null | undefined }>) {
   return (
     <>
+      <Card className="mb-0.5 mt-2.5 bg-selfsecondary-100">
+        <CardHeader className="pb-0 font-bold">
+          Tervezd meg az új E5vös merch kollekciót!
+        </CardHeader>
+        <CardBody className="pt-1">
+          Készíts egyedi designt, nyerd meg a pályázatot és a négy
+          merchterméket! <br />
+          Határidő: november 9. (részletek az e-mailben)
+          <div className="mt-1 flex flex-wrap gap-2">
+            <Button
+              as={Link}
+              href="https://forms.gle/bFXL2MxG5ULDc9jD8"
+              color="secondary"
+              variant="flat"
+              size="sm"
+              radius="full"
+              className="text-sm text-selfsecondary-900"
+            >
+              Előjelentkezés
+            </Button>
+            <Button
+              as={Link}
+              href="https://forms.gle/Quc1f16kW28bWR7X9"
+              color="secondary"
+              variant="flat"
+              size="sm"
+              radius="full"
+              className="text-sm text-selfsecondary-900"
+            >
+              Pályázat leadása
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
+
       {hasPermission(selfUser, "user") && (
         <Section
           title="Órarend"

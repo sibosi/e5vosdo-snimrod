@@ -6,12 +6,12 @@
   },
   "2026.11.03": {
     "A": ["Csurgatott tojásleves", "Édes savanyú csirkeragu", "Kuszkusz"],
-    "B": ["Daragaluskaleves", "Tarhonyáshús (marha)", "Csemege uborka"],
+    "B": ["Csurgatott tojásleves", "Tonhal rudak rántva", "Rizi-bizi", "Tartár mártás"],
     "nap": "Tuesday"
   },
   "2026.11.04": {
     "A": ["Daragaluska leves", "Magyaros tökfőzelék", "Harcsafasírt", "Tk. kenyér"],
-    "B": ["Csurgatott tojásleves", "Tonhal rudak rántva", "Rizi-bizi", "Tartár mártás"],
+    "B": ["Daragaluskaleves", "Tarhonyáshús (marha)", "Csemege uborka"],
     "nap": "Wednesday"
   },
   "2026.11.05": {
@@ -56,7 +56,7 @@
   },
   "2026.11.17": {
     "A": ["Vegyes gyümölcsleves", "Csirkepörkölt", "Galuska", "Csalamádé"],
-    "B": ["Gombaleves", "Rakott kelkáposzta", "Túró Rudi", "Tk.kenyér"],
+    "B": ["Vegyes gyümölcsleves", "Szerb rizseshús", "Csalamádé"],
     "nap": "Tuesday"
   },
   "2026.11.18": {
@@ -66,12 +66,12 @@
   },
   "2026.11.19": {
     "A": ["Gombaleves", "Paradicsomos halas tészta (orsó)", "Reszelt sajt"],
-    "B": ["Vegyes gyümölcsleves", "Szerb rizseshús", "Csalamádé"],
+    "B": ["Gombaleves", "Rakott kelkáposzta", "Túró Rudi", "Tk.kenyér"],
     "nap": "Thursday"
   },
   "2026.11.20": {
     "A": ["Négysajt krémleves", "Levesgyöngy", "Rántott karfiol", "Rizi-bizi", "Tartár mártás"],
-    "B": ["Fejtett bableves", "Túrós csusza", "Tk.kenyér"],
+    "B": ["SOON"],
     "nap": "Friday"
   },
   "2026.11.23": {
@@ -85,13 +85,13 @@
     "nap": "Tuesday"
   },
   "2026.11.25": {
-    "A": ["Sütőtök krémleves", "Pirított tökmag", "Bácskai rizses hús", "Cékla saláta"],
+    "A": ["Sütőtökkrémleves", "Pirított tökmag", "Bácskai rizses hús", "Cékla saláta"],
     "B": ["Sütőtökkrémleves", "Pirított tökmag", "Gyros csirkecomb csíkok", "Amerikai káposzta saláta", "Pita"],
     "nap": "Wednesday"
   },
   "2026.11.26": {
     "A": ["Reszelt tésztaleves", "Kelkáposzta főzelék", "Zabpelyhes sertésvagdalt", "Tk. kenyér"],
-    "B": ["Reszelttészta leves", "Meggymártás", "Párolt csirkemellfilé", "Főtt burgonya ½ adag"],
+    "B": ["Reszelt tésztaleves", "Meggymártás", "Párolt csirkemellfilé", "Főtt burgonya ½ adag"],
     "nap": "Thursday"
   },
   "2026.11.27": {
@@ -101,7 +101,7 @@
   },
   "2026.11.30": {
     "A": ["Zöldséges csontleves", "Székelykáposzta gazdagon", "Tk. kenyér"],
-    "B": ["Erőleves gazdagon", "Bolognai makaróni (marha)", "Sajt szórás"],
+    "B": ["SOON"],
     "nap": "Monday"
   },
      "2026.10.01": {

@@ -133,7 +133,7 @@ function MainContent({
             </Button>
             <Button
               as={Link}
-              href="https://forms.gle/Quc1f16kW28bWR7X9"
+              href="/merch"
               color="secondary"
               variant="flat"
               size="sm"

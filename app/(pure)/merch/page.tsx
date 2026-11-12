@@ -30,6 +30,21 @@ export default async function MerchPage() {
     (await headers()).get("x-real-ip") ??
     "unknown ip";
 
+  if (selfUser.permissions.includes("merch_voted")) {
+    void addLog("merch_form_already_voted", `email: ${email}, ip: ${ip}`);
+    return (
+      <MainLayout logLogin={logLogin}>
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4">
+          <h1 className="text-3xl font-bold">Már adtál le szavazatot!</h1>
+          <p className="text-lg">
+            A nyertes design-csomagról a DÖ e-mailben fogja a diákságot
+            értesíteni.
+          </p>
+        </div>
+      </MainLayout>
+    );
+  }
+
   void addLog("merch_form_opened", `email: ${email}, ip: ${ip}`);
 
   return (
@@ -55,8 +70,11 @@ export default async function MerchPage() {
         }}
       >
         <iframe
-          data-tally-src={"https://tally.so/r/8Naq2P?transparentBackground=1&userId=" +
-            encodeURIComponent(email) + "&userIp=" + encodeURIComponent(ip)
+          data-tally-src={
+            "https://tally.so/r/8Naq2P?transparentBackground=1&userId=" +
+            encodeURIComponent(email) +
+            "&userIp=" +
+            encodeURIComponent(ip)
           }
           width="100%"
           height="100%"

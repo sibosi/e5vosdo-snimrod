@@ -1,5 +1,5 @@
 import MainLayout from "@/app/mainLayoutWithLogLoginProp";
-import { addLog, getAuth } from "@/db/dbreq";
+import { addLog, addUserPermission, getAuth } from "@/db/dbreq";
 import { headers } from "next/headers";
 
 async function logLogin(email: string | undefined | null) {
@@ -23,14 +23,15 @@ export default async function ThankYouForSubmitting() {
     "unknown ip";
 
   void addLog("merch_form_submitted", `email: ${email}, ip: ${ip}`);
+  if (selfUser) void addUserPermission(selfUser.email, "merch_voted");
 
   return (
     <MainLayout logLogin={logLogin}>
       <div className="flex h-full w-full flex-col items-center justify-center gap-4">
-        <h1 className="text-3xl font-bold">Köszönjük a szavazatot!</h1>
+        <h1 className="text-3xl font-bold">Köszönjük a szavazatod!</h1>
         <p className="text-lg">
-          A szavazás lezárult, és a nyertes termékek hamarosan elérhetőek
-          lesznek a webáruházban.
+          A nyertes design-csomagról a DÖ e-mailben fogja a diákságot
+          értesíteni.
         </p>
       </div>
     </MainLayout>

@@ -114,23 +114,22 @@ function MainContent({
     <>
       <Card className="mb-0.5 mt-2.5 bg-selfsecondary-100">
         <CardHeader className="pb-0 font-bold">
-          Tervezd meg az új E5vös merch kollekciót!
+          Szavazz a kedvenc design-csomagodra!
         </CardHeader>
         <CardBody className="pt-1">
-          Készíts egyedi designt, nyerd meg a pályázatot és a négy
-          merchterméket! <br />
-          Határidő: november 9. (részletek az e-mailben)
-          <div className="mt-1 flex flex-wrap gap-2">
+          Tekintsd meg a 9 beadott pályaművet, és add le a szavazatod péntek
+          éjfélig!
+          <div className="mt-2 flex flex-wrap gap-2">
             <Button
               as={Link}
-              href="https://forms.gle/bFXL2MxG5ULDc9jD8"
+              href="https://drive.google.com/drive/folders/1vWpvp6Pt1HyoC5bBqycqHrH5Fl1Rlf68?usp=sharing"
               color="secondary"
               variant="flat"
               size="sm"
               radius="full"
               className="text-sm text-selfsecondary-900"
             >
-              Előjelentkezés
+              Designok megtekintése
             </Button>
             <Button
               as={Link}
@@ -141,7 +140,7 @@ function MainContent({
               radius="full"
               className="text-sm text-selfsecondary-900"
             >
-              Pályázat leadása
+              Szavazat leadása
             </Button>
           </div>
         </CardBody>
@@ -156,11 +155,7 @@ function MainContent({
           savable={true}
           chip={
             <Link href="https://drive.google.com/drive/folders/1d9btMmtRQq617f4CoxkVNNf3TzybFPpH">
-              <Chip
-                color="secondary"
-                size="sm"
-                className="font-semibold"
-              >
+              <Chip color="secondary" size="sm" className="font-semibold">
                 Hivatalos drive ⤤
               </Chip>
             </Link>

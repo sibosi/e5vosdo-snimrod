@@ -55,7 +55,9 @@ export default async function MerchPage() {
         }}
       >
         <iframe
-          data-tally-src="https://tally.so/r/8Naq2P?transparentBackground=1"
+          data-tally-src={"https://tally.so/r/8Naq2P?transparentBackground=1&userId=" +
+            encodeURIComponent(email) + "&userIp=" + encodeURIComponent(ip)
+          }
           width="100%"
           height="100%"
           className="fixed inset-0 block h-dvh w-screen border-0"

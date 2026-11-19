@@ -114,33 +114,21 @@ function MainContent({
     <>
       <Card className="mb-0.5 mt-2.5 bg-selfsecondary-100">
         <CardHeader className="pb-0 font-bold">
-          Szavazz a kedvenc design-csomagodra!
+          Török Zsófi nyertes designja
         </CardHeader>
-        <CardBody className="pt-1">
-          Tekintsd meg a 9 beadott pályaművet, és add le a szavazatod péntek
-          éjfélig!
+        <CardBody className="pt-1">         
+A termékek rendelésére várhatóan jövő héten lesz lehetőség. Kérünk mindenkit, hogy előre gondolja át, hogy milyen termékeket kíván majd vásárolni.
           <div className="mt-2 flex flex-wrap gap-2">
             <Button
               as={Link}
-              href="https://drive.google.com/drive/folders/1vWpvp6Pt1HyoC5bBqycqHrH5Fl1Rlf68?usp=sharing"
+              href="https://drive.google.com/drive/folders/1PZBbrcHVVz3PcqPlXbdahyW8MxYsOyk5"
               color="secondary"
               variant="flat"
               size="sm"
               radius="full"
               className="text-sm text-selfsecondary-900"
             >
-              Designok megtekintése
-            </Button>
-            <Button
-              as={Link}
-              href="/merch"
-              color="secondary"
-              variant="flat"
-              size="sm"
-              radius="full"
-              className="text-sm text-selfsecondary-900"
-            >
-              Szavazat leadása
+              A nyertes design
             </Button>
           </div>
         </CardBody>

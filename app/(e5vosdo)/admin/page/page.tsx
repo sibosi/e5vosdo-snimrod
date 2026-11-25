@@ -5,6 +5,7 @@ import NewNotification from "@/components/account/notification";
 import PageSettings from "@/components/pagesettings";
 import { Section } from "@/components/home/section";
 import PresentationAPIButtons from "./PresentationAPIButtons";
+import BackupButton from "./BackupButton";
 import AlertManager from "@/components/admin/AlertManager";
 
 const PagePage = async () => {
@@ -37,6 +38,15 @@ const PagePage = async () => {
 
       {hasPermission(selfUser, "admin") ? (
         <>
+          <Section
+            title="Adatbázis mentés"
+            dropdownable={false}
+            defaultStatus="opened"
+            isCard={true}
+          >
+            <BackupButton />
+          </Section>
+
           <Section
             title="Alert kezelése"
             dropdownable={true}

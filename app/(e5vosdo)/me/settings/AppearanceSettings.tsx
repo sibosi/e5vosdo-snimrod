@@ -14,7 +14,7 @@ const AppearanceSettings = ({ selfUser }: { selfUser: PossibleUserType }) => {
     localStorage.getItem("materialBg") === "true",
   );
   const [isSnowing, setIsSnowing] = useState<boolean>(
-    localStorage.getItem("hideSnowfall") !== "true",
+    localStorage.getItem("hideSnowfall2627") !== "true",
   );
 
   return (
@@ -42,7 +42,10 @@ const AppearanceSettings = ({ selfUser }: { selfUser: PossibleUserType }) => {
         <Switch
           isSelected={isSnowing}
           onChange={() => {
-            localStorage.setItem("hideSnowfall", isSnowing ? "true" : "false");
+            localStorage.setItem(
+              "hideSnowfall2627",
+              isSnowing ? "true" : "false",
+            );
             setIsSnowing(!isSnowing);
             location.reload();
           }}

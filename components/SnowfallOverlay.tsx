@@ -8,7 +8,8 @@ export default function SnowfallOverlay() {
   // const [images, setImages] = useState<HTMLImageElement[]>([]);
 
   useEffect(() => {
-    if (localStorage.getItem("hideSnowfall") === "true") setIsVisible(false);
+    if (localStorage.getItem("hideSnowfall2627") === "true")
+      setIsVisible(false);
     else setIsVisible(true);
 
     // const snowflake = document.createElement("img");
